@@ -146,6 +146,53 @@ workflows:
             - "HTTPS response codes"
             - "WAF policy application"
 
+    - id: enable_request_logging
+      name: Enable Request Logging (All Requests)
+      description: >-
+        Stream logs for every request a load balancer serves — not just WAF
+        security-event/violation logs. WAF violations show up under Security
+        Events; capturing legitimate (allowed) requests requires a Global Log
+        Receiver configured with the Request Logs log type.
+      complexity: medium
+      estimated_steps: 3
+      prerequisites:
+        - "An existing HTTP load balancer serving traffic"
+        - "A reachable log collector (HTTP endpoint, Syslog, Kafka, AWS S3, GCP, Datadog, Splunk, …)"
+      steps:
+        - order: 1
+          action: create_global_log_receiver
+          name: Create a Global Log Receiver for request logs
+          description: >-
+            Create a global_log_receiver whose log type is Request Logs so every
+            request (allowed and blocked) is exported, then point it at your collector.
+          resource: global_log_receiver
+          required_fields:
+            - name
+            - request_logs
+          tips:
+            - "Select the 'Request Logs' log type (spec.request_logs) — this captures legitimate/allowed requests, unlike Security Events which only capture WAF violations."
+            - "Scope by namespace, or use the shared/system namespace for tenant-wide collection."
+            - "Pick exactly one receiver sink: http_receiver, syslog, kafka_receiver, aws_cloud_watch, s3_receiver, gcp_bucket, datadog, or splunk."
+        - order: 2
+          action: confirm_loadbalancer_scope
+          name: Confirm the load balancers in scope
+          description: >-
+            Request logs stream for the load balancers in the receiver's namespace
+            scope; confirm the target http_loadbalancer is included.
+          resource: http_loadbalancer
+          depends_on: [1]
+          tips:
+            - "Enhanced request analytics and extra log fields can be tuned on the load balancer but are not required to receive request logs."
+        - order: 3
+          action: verify_request_logs
+          name: Verify legitimate requests are logged
+          description: Send allowed traffic and confirm request-log entries arrive at the collector.
+          depends_on: [1]
+          verification:
+            - "Non-violation (2xx/3xx) requests appear at the collector, not only blocked ones"
+            - "Use the Test action on the Global Log Receiver to validate delivery"
+            - "The Requests dashboard in the console shows the traffic"
+
   waf:
     - id: enable_waf_protection
       name: Enable WAF Protection
