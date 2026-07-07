@@ -1,0 +1,102 @@
+# UI Interruptions Catalog — blocking modals/dialogs the F5 XC console shows.
+# Single source of truth for dismiss selectors + detection patterns.
+# The xcsh chat agent uses this to resolve "dismiss the popup" to a deterministic
+# action, and the workflow runner auto-dismisses known blockers pre-step.
+#
+# Detection patterns: these surveys share a common structure (modal overlay with
+# a close × button, NPS 7-point scale, "Next page" / "Next" button). They appear
+# randomly after ~5 minutes of activity. The branding varies (F5, NGINX, XC).
+
+version: "1.0.0"
+
+interruptions:
+  # ---- NPS / marketing surveys (random popups) ----
+  nps_survey_f5:
+    description: "F5 Distributed Cloud NPS survey — 'How easy was it to use Distributed Cloud today?'"
+    branding: "F5"
+    trigger: "random (after ~5 min of console activity)"
+    blocking: true
+    detection:
+      text_contains: ["How easy was it for you to use Distributed Cloud today"]
+      modal_selector: ".cdk-overlay-container .mat-dialog-container, [class*='survey'], [class*='nps']"
+    dismiss_selector: ".cdk-overlay-container button.close, .cdk-overlay-container [aria-label='Close'], .cdk-overlay-backdrop"
+    natural_language_triggers:
+      - "dismiss the popup"
+      - "close the survey"
+      - "skip the survey"
+      - "get rid of this"
+      - "close this"
+
+  nps_survey_nginx:
+    description: "NGINX NPS survey — 'How easy was it for you to use NGINX today?'"
+    branding: "NGINX Part of F5"
+    trigger: "random (after ~5 min of console activity)"
+    blocking: true
+    detection:
+      text_contains: ["How easy was it for you to use NGINX today"]
+      modal_selector: ".cdk-overlay-container .mat-dialog-container, [class*='survey'], [class*='nps']"
+    dismiss_selector: ".cdk-overlay-container button.close, .cdk-overlay-container [aria-label='Close'], .cdk-overlay-backdrop"
+    natural_language_triggers:
+      - "dismiss the popup"
+      - "close the survey"
+      - "skip the survey"
+
+  # ---- Session / auth interruptions ----
+  session_expiry:
+    description: "Session expired — re-authentication required (Keycloak redirect)"
+    trigger: "session timeout (~30 min idle) or token expiry"
+    blocking: true
+    detection:
+      url_contains: ["/auth/realms/", "/protocol/openid-connect/auth"]
+      text_contains: ["Please enter your email address and password to log in"]
+    dismiss_selector: null  # requires re-login (login tool or manual)
+    natural_language_triggers:
+      - "login"
+      - "log me in"
+      - "re-authenticate"
+      - "session expired"
+
+  # ---- Form / workflow interruptions ----
+  json_unresolved_errors:
+    description: "'JSON contains unresolved errors' modal — blocks JSON→Form tab switch"
+    trigger: "switching JSON tab → Form tab with invalid JSON content"
+    blocking: true
+    detection:
+      text_contains: ["JSON contains unresolved errors"]
+    dismiss_selector: "button:text('Discard changes')"
+    natural_language_triggers:
+      - "discard changes"
+      - "dismiss the error"
+      - "close the JSON error"
+
+  beforeunload_dialog:
+    description: "Unsaved changes confirmation — blocks navigation away from a dirty form"
+    trigger: "navigating away from a form with unsaved changes"
+    blocking: true
+    detection:
+      dialog_type: "beforeunload"
+    dismiss_selector: null  # handled via CDP Page.handleJavaScriptDialog
+    natural_language_triggers:
+      - "leave the page"
+      - "discard unsaved changes"
+      - "navigate anyway"
+
+  # ---- Generic detection pattern for UNKNOWN surveys ----
+  # The NPS surveys share a visual pattern even when the branding varies:
+  #   - Modal overlay (cdk-overlay-container)
+  #   - 7-point radio scale (Not at all easy → Extremely easy)
+  #   - Close × button (top-right)
+  #   - "Next page" or "Next" button
+  # Detection: if a modal contains radio buttons + "easy" + a close button,
+  # it's likely an NPS survey regardless of branding.
+  generic_nps_survey:
+    description: "Generic NPS survey (unknown branding) — detected by structure, not text"
+    trigger: "random"
+    blocking: true
+    detection:
+      structural: "modal with 7 radio buttons + text containing 'easy' + close button"
+      modal_selector: ".cdk-overlay-container .mat-dialog-container"
+    dismiss_selector: ".cdk-overlay-container button.close, .cdk-overlay-container [aria-label='Close'], .cdk-overlay-backdrop"
+    natural_language_triggers:
+      - "dismiss the popup"
+      - "close whatever this is"
