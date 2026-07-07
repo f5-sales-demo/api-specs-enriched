@@ -6,6 +6,17 @@
 # Used by NamespaceProfileEnricher to add x-f5xc-namespace-profile extension.
 #
 # Resources not listed use default_profile.
+#
+# _verification.status gates constraint.enforced (verified => enforced). Only
+# resources confirmed by a live CRUD probe (method: crud) or a strong spec
+# signal (method: spec_signal) are enforced; everything else is advisory so
+# downstream tooling never over-restricts a namespace on a guess.
+#
+# 2026-07-07 staging CRUD pass (nferreira.staging): re-confirmed the DNS
+# resources and existing system-only classifications; promoted network_firewall
+# and virtual_network to verified (same live signature as fleet_config /
+# rate_limit_threshold / k8s_cluster_role). Tenant-resource allowed-lists were
+# confirmed correct (system deliberately excluded — see test_tenant_resource_scope).
 
 default_profile:
   constraint:
@@ -190,6 +201,7 @@ resources:
       multi_tenant_pattern: "none"
 
   virtual_network:
+    _verification: {status: verified, method: crud, date: "2026-07-07"}
     constraint:
       allowed: ["system"]
     recommendation:
@@ -666,6 +678,7 @@ resources:
       multi_tenant_pattern: "none"
 
   network_firewall:
+    _verification: {status: verified, method: crud, date: "2026-07-07"}
     constraint:
       allowed: ["system"]
     recommendation:
