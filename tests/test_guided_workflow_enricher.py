@@ -305,8 +305,6 @@ class TestAuthenticationApiTokenWorkflow:
         self, enricher, spec_with_authentication_domain
     ):
         """The workflow is emitted under x-f5xc-guided-workflows for the domain."""
-        enriched = enricher.enrich_spec(
-            spec_with_authentication_domain, domain="authentication"
-        )
+        enriched = enricher.enrich_spec(spec_with_authentication_domain, domain="authentication")
         workflows = enriched["info"]["x-f5xc-guided-workflows"]
         assert any(w["id"] == self.WORKFLOW_ID for w in workflows)
