@@ -401,3 +401,40 @@ workflows:
             - "Site shows online status"
             - "Tunnel connectivity established"
             - "Services deployed successfully"
+
+  authentication:
+    - id: create_and_use_api_token
+      name: Create and Use an API Token
+      description: Create an API token in the console via guided browser automation, then call the F5 XC API with it
+      complexity: low
+      estimated_steps: 3
+      prerequisites:
+        - "Logged in to the F5 XC console"
+        - "User role: admin (access to Personal Management > Credentials)"
+      steps:
+        - order: 1
+          action: create_api_token
+          name: Create API Token
+          description: In Administration > Personal Management > Credentials, click Add Credentials, set Credential Type to API Token, enter a Credential Name and Expiry Date, then Generate
+          resource: api_credential
+          required_fields:
+            - credential_name
+            - credential_type
+            - expiry_date
+          tips:
+            - "Set Credential Type to API Token. The default is API Certificate, which produces a P12 file, not a bearer token."
+            - "The token string is shown only once on the reveal panel. Capture it immediately, before dismissing the panel."
+        - order: 2
+          action: capture_token
+          name: Capture the Generated Token
+          description: Read the one-time token value from the reveal panel
+          depends_on: [1]
+          verification:
+            - "Token value captured before the reveal panel is dismissed"
+        - order: 3
+          action: call_api_with_token
+          name: Call the F5 XC API with the Token
+          description: Use the captured token in an XC-API call with header Authorization APIToken to confirm it works, for example list namespaces
+          depends_on: [2]
+          verification:
+            - "XC-API GET /api/web/namespaces returns HTTP 200 with the tenant namespaces"
