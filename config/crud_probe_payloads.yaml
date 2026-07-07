@@ -1,0 +1,169 @@
+# Payload overrides for CRUD namespace probing.
+# These provide valid-enough payloads to get past field validation
+# so the namespace constraint check can fire.
+
+cdn_loadbalancer:
+  metadata: {name: crud-probe}
+  spec:
+    domains: ["crud-probe.example.com"]
+    https_auto_cert: {http_redirect: true, add_hsts: false, tls_config: {default_security: {}}}
+    origin_pool:
+      origin_servers: [{public_ip: {ip: "203.0.113.1"}}]
+      port: 443
+      use_tls: {use_host_header_as_sni: {}, tls_config: {default_security: {}}, skip_server_cert_verification: {}}
+      loadbalancer_algorithm: ROUND_ROBIN
+      endpoint_selection: LOCAL_PREFERRED
+      same_as_endpoint_port: {}
+    disable_waf: {}
+    no_challenge: {}
+    disable_rate_limit: {}
+    no_service_policies: {}
+    disable_api_definition: {}
+    disable_api_discovery: {}
+    disable_ip_reputation: {}
+    disable_malicious_user_detection: {}
+    disable_client_side_defense: {}
+    disable_threat_mesh: {}
+    user_id_client_ip: {}
+    l7_ddos_action_default: {}
+    default_cache_action: {}
+    system_default_timeouts: {}
+
+tcp_loadbalancer:
+  metadata: {name: crud-probe}
+  spec:
+    listen_port: 9443
+    do_not_advertise: {}
+    origin_pools_weights:
+      - pool: {namespace: "{namespace}", name: "crud-probe-pool"}
+        weight: 1
+  _prereqs:
+    - type: origin_pool
+      path: "/api/config/namespaces/{namespace}/origin_pools"
+      payload:
+        metadata: {name: crud-probe-pool}
+        spec:
+          origin_servers: [{public_ip: {ip: "203.0.113.1"}}]
+          port: 443
+          use_tls: {use_host_header_as_sni: {}, tls_config: {default_security: {}}, skip_server_cert_verification: {}}
+          loadbalancer_algorithm: ROUND_ROBIN
+          endpoint_selection: LOCAL_PREFERRED
+
+certificate:
+  metadata: {name: crud-probe}
+  spec:
+    certificate_url: "string:///{CERT_B64}"
+    private_key:
+      clear_secret_info:
+        url: "string:///{KEY_B64}"
+
+certificate_chain:
+  metadata: {name: crud-probe}
+  spec:
+    certificate_url: "string:///{CERT_B64}"
+
+cloud_credentials:
+  metadata: {name: crud-probe}
+  spec:
+    aws_secret_key:
+      access_key: "AKIAIOSFODNN7EXAMPLE"
+      secret_key:
+        blindfold_secret_info:
+          location: "string:///dGVzdA=="
+
+container_registry:
+  metadata: {name: crud-probe}
+  spec:
+    server_address: "registry.example.com"
+    user_name: "testuser"
+    password:
+      clear_secret_info:
+        url: "string:///dGVzdHBhc3M="
+
+data_classification:
+  metadata: {name: crud-probe}
+  spec:
+    rules:
+      - data_type_ref: {name: test, namespace: shared}
+
+ddos_mitigation_rule:
+  metadata: {name: crud-probe}
+  spec:
+    mitigation_type: {ip_blocklist: {}}
+    destination_prefix: {ipv4: {prefix: "10.0.0.0", plen: 8}}
+
+dns_domain:
+  metadata: {name: crud-probe-test.example.com}
+  spec:
+    volterra_managed: {}
+
+dns_zone:
+  metadata: {name: crud-probe-zone.example.com}
+  spec:
+    primary: {}
+
+endpoint:
+  metadata: {name: crud-probe}
+  spec:
+    protocol: TCP
+    port: 80
+    where: {site: {name: test, network_type: VIRTUAL_NETWORK_SITE_LOCAL}}
+
+k8s_cluster_role:
+  metadata: {name: crud-probe}
+  spec:
+    policy_rule_list:
+      policy_rule:
+        - resource_list:
+            resource_types: ["pods"]
+            api_groups: [""]
+            verbs: ["get"]
+
+rate_limiter_policy:
+  metadata: {name: crud-probe}
+  spec:
+    burst_size: 10
+    total_number: 100
+    unit: SECOND
+
+registration_token:
+  metadata: {name: crud-probe}
+  spec:
+    infra: {volterra: {}}
+    passport: {cluster_size: 1}
+
+support_case:
+  metadata: {name: crud-probe}
+  spec:
+    description: "Automated namespace CRUD probe - safe to ignore"
+
+threat_category:
+  metadata: {name: crud-probe}
+  spec:
+    tpm_manager_ref:
+      - {name: test, namespace: shared}
+
+workload:
+  metadata: {name: crud-probe}
+  spec:
+    simple_service:
+      container:
+        name: main
+        image: {name: "docker.io/library/nginx:latest", public: {}}
+      do_not_advertise: {}
+      no_replicas: {}
+      no_volume: {}
+
+fleet_config:
+  metadata: {name: crud-probe}
+  spec:
+    fleet_label: test
+
+usage_report:
+  metadata: {name: crud-probe}
+  spec: {}
+
+ddos_protection:
+  metadata: {name: crud-probe}
+  spec:
+    protected_entity: {}

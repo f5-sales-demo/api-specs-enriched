@@ -27,6 +27,12 @@ class NamespaceProfileStats:
     tenant: int = 0
     shared_ref: int = 0
     overridden: int = 0
+    explicit_count: int = 0
+    default_fallback_count: int = 0
+    verified_count: int = 0
+    assumed_count: int = 0
+    unverified_count: int = 0
+    default_fallback_resources: list[str] = field(default_factory=list)
     errors: list[dict[str, Any]] = field(default_factory=list)
 
 
@@ -56,7 +62,9 @@ class NamespaceProfileEnricher:
         with self.config_path.open() as f:
             self.config = yaml.safe_load(f)
 
-    def get_profile_for_resource(self, resource_type: str) -> dict[str, Any]:
+    def get_profile_for_resource(
+        self, resource_type: str, *, track_stats: bool = False
+    ) -> dict[str, Any]:
         """Get the full namespace profile for a resource type, merged with defaults."""
         default = self.config["default_profile"]
         resources = self.config.get("resources", {})
@@ -68,7 +76,57 @@ class NamespaceProfileEnricher:
                 lookup = lookup_without_views
 
         override = resources.get(lookup, {})
-        return _deep_merge(default, override)
+        is_explicit = bool(override)
+
+        if track_stats:
+            if is_explicit:
+                self.stats.explicit_count += 1
+                verification = override.get("_verification", {})
+                status = verification.get("status", "unverified")
+                if status == "verified":
+                    self.stats.verified_count += 1
+                elif status == "assumed":
+                    self.stats.assumed_count += 1
+                else:
+                    self.stats.unverified_count += 1
+            else:
+                self.stats.default_fallback_count += 1
+                self.stats.default_fallback_resources.append(resource_type)
+
+        profile = _deep_merge(default, override)
+
+        # Gate enforcement on verification. `constraint.enforced` means "downstream
+        # tooling should enforce this restriction" — we only assert that for
+        # constraints whose _verification.status is 'verified' (live CRUD probe or a
+        # strong spec signal). Assumed/restricted/unverified classifications are
+        # advisory (enforced=False) so consumers (e.g. the Terraform provider) don't
+        # over-restrict a namespace on a guess.
+        status = (override.get("_verification") or {}).get("status")
+        profile.setdefault("constraint", {})["enforced"] = status == "verified"
+
+        profile.pop("_verification", None)
+        return profile
+
+    def is_resource_explicit(self, resource_type: str) -> bool:
+        """Check whether a resource has an explicit entry in the config."""
+        resources = self.config.get("resources", {})
+        lookup = resource_type
+        if lookup.startswith("views_") and lookup not in resources:
+            lookup_without_views = lookup[len("views_") :]
+            if lookup_without_views in resources:
+                lookup = lookup_without_views
+        return lookup in resources
+
+    def get_verification_status(self, resource_type: str) -> dict[str, Any]:
+        """Get the verification metadata for a resource."""
+        resources = self.config.get("resources", {})
+        lookup = resource_type
+        if lookup.startswith("views_") and lookup not in resources:
+            lookup_without_views = lookup[len("views_") :]
+            if lookup_without_views in resources:
+                lookup = lookup_without_views
+        override = resources.get(lookup, {})
+        return override.get("_verification", {})
 
     def enrich_spec(self, spec: dict[str, Any]) -> dict[str, Any]:
         """Add x-f5xc-namespace-profile to a spec. Removes old x-f5xc-namespace-scope.
@@ -89,7 +147,7 @@ class NamespaceProfileEnricher:
                 del info["x-f5xc-namespace-scope"]
 
             resource_type = self._detect_resource_type(spec)
-            profile = self.get_profile_for_resource(resource_type)
+            profile = self.get_profile_for_resource(resource_type, track_stats=True)
 
             info[X_F5XC_NAMESPACE_PROFILE] = profile
 
@@ -165,8 +223,10 @@ class NamespaceProfileEnricher:
                 name = name[: -len(suffix)]
                 break
 
-        # Strip common prefixes
-        for prefix in ("views",):
+        # Strip common prefixes. Some spec schema keys are 'schema'-prefixed
+        # (e.g. schemadns_load_balancerCreateSpecType); without stripping it the
+        # name would never match its resource and would inherit the domain default.
+        for prefix in ("views", "schema"):
             name = name.removeprefix(prefix)
 
         s1 = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)

@@ -1,6 +1,6 @@
 {
-  "version": "2.1.163",
-  "generated_at": "2026-06-26T16:10:19.459525+00:00",
+  "version": "2.1.169",
+  "generated_at": "2026-07-07T15:23:34.262697+00:00",
   "source": "api-specs-enriched/config/namespace_profile.yaml",
   "default": {
     "constraint": {
@@ -27,7 +27,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -37,23 +37,101 @@
       "classification": {
         "category": "networking",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
+      }
+    },
+    "ai_gateway": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
+      }
+    },
+    "ai_policy": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
+      }
+    },
+    "alert": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "observability",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
       }
     },
     "alert_policy": {
       "constraint": {
         "allowed": [
-          "system"
+          "custom",
+          "default",
+          "shared"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
-        "primary": "system",
+        "primary": "custom",
         "alternatives": [],
-        "rationale": "Alert policies are platform-level monitoring"
+        "rationale": "Alert policies are namespace-scoped monitoring configurations"
       },
       "classification": {
         "category": "observability",
-        "multi_tenant_pattern": "none"
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "alert_policy_set": {
@@ -61,7 +139,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -71,6 +149,11 @@
       "classification": {
         "category": "observability",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "alert_receiver": {
@@ -78,7 +161,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -88,6 +171,77 @@
       "classification": {
         "category": "observability",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
+      }
+    },
+    "allowed_domain": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "security",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
+      }
+    },
+    "analytics_query": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
+      }
+    },
+    "api_crawler": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "security",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
       }
     },
     "api_credential": {
@@ -95,7 +249,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -105,6 +259,11 @@
       "classification": {
         "category": "identity",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "api_credential_api_token": {
@@ -112,7 +271,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -122,23 +281,145 @@
       "classification": {
         "category": "identity",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "api_definition": {
       "constraint": {
         "allowed": [
-          "system"
+          "custom",
+          "default",
+          "shared"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
-        "primary": "system",
+        "primary": "custom",
         "alternatives": [],
-        "rationale": "API definition management is platform-level"
+        "rationale": "API definitions are scoped to application namespaces"
+      },
+      "classification": {
+        "category": "security",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
+      }
+    },
+    "api_discovery": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
       },
       "classification": {
         "category": "security",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
+      }
+    },
+    "api_endpoint": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "security",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
+      }
+    },
+    "api_group": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "security",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
+      }
+    },
+    "api_rate_limit": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "security",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
+      }
+    },
+    "api_testing": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "security",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
       }
     },
     "app_firewall": {
@@ -148,7 +429,7 @@
           "default",
           "shared"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "shared",
@@ -163,6 +444,11 @@
       "classification": {
         "category": "security",
         "multi_tenant_pattern": "shared-ref"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "app_setting": {
@@ -170,7 +456,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -180,6 +466,11 @@
       "classification": {
         "category": "application",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "app_type": {
@@ -187,7 +478,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -197,6 +488,55 @@
       "classification": {
         "category": "application",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
+      }
+    },
+    "audit_log": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "observability",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
+      }
+    },
+    "authentication_policy": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "security",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
       }
     },
     "aws_tgw_site": {
@@ -204,7 +544,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -214,6 +554,11 @@
       "classification": {
         "category": "infrastructure",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "aws_vpc_site": {
@@ -221,7 +566,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -231,6 +576,11 @@
       "classification": {
         "category": "infrastructure",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "azure_vnet_site": {
@@ -238,7 +588,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -248,6 +598,11 @@
       "classification": {
         "category": "infrastructure",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "bgp": {
@@ -255,7 +610,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -265,6 +620,11 @@
       "classification": {
         "category": "networking",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "bgp_asn_set": {
@@ -272,7 +632,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -282,6 +642,11 @@
       "classification": {
         "category": "networking",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "bgp_routing_policy": {
@@ -289,7 +654,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -299,6 +664,143 @@
       "classification": {
         "category": "networking",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
+      }
+    },
+    "bigip_device": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
+      }
+    },
+    "bigip_irule": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
+      }
+    },
+    "bigip_pool": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
+      }
+    },
+    "bigip_virtual_server": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
+      }
+    },
+    "blindfold_secret": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "security",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
+      }
+    },
+    "bot_allowlist_policy": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "security",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
       }
     },
     "bot_defense_app_infrastructure": {
@@ -308,7 +810,7 @@
           "default",
           "shared"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "shared",
@@ -318,40 +820,239 @@
       "classification": {
         "category": "security",
         "multi_tenant_pattern": "shared-ref"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
+      }
+    },
+    "bot_defense_instance": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "security",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
+      }
+    },
+    "bot_detection_rule": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "security",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
+      }
+    },
+    "bot_endpoint_policy": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "security",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
+      }
+    },
+    "bot_network_policy": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "security",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
+      }
+    },
+    "bucket": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
+      }
+    },
+    "ca_certificate": {
+      "constraint": {
+        "allowed": [
+          "custom",
+          "default",
+          "shared"
+        ],
+        "enforced": true
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "certificate",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "verified",
+        "method": "crud"
+      }
+    },
+    "cdn_loadbalancer": {
+      "constraint": {
+        "allowed": [
+          "custom",
+          "default",
+          "shared"
+        ],
+        "enforced": true
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "verified",
+        "method": "crud"
+      }
+    },
+    "cdn_origin_pool": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
       }
     },
     "certificate": {
       "constraint": {
         "allowed": [
-          "system"
+          "custom",
+          "default",
+          "shared"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
-        "primary": "system",
+        "primary": "custom",
         "alternatives": [],
-        "rationale": "Certificate management is platform-level"
+        "rationale": "Certificates can be managed in any namespace"
       },
       "classification": {
         "category": "certificate",
-        "multi_tenant_pattern": "none"
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "certificate_chain": {
       "constraint": {
         "allowed": [
-          "system"
+          "custom",
+          "default",
+          "shared"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
-        "primary": "system",
+        "primary": "custom",
         "alternatives": [],
-        "rationale": "Certificate chain management is platform-level"
+        "rationale": "Certificate chains can be managed in any namespace"
       },
       "classification": {
         "category": "certificate",
-        "multi_tenant_pattern": "none"
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "cloud_connect": {
@@ -359,7 +1060,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -369,6 +1070,11 @@
       "classification": {
         "category": "infrastructure",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "cloud_credentials": {
@@ -376,7 +1082,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -386,6 +1092,11 @@
       "classification": {
         "category": "infrastructure",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "cloud_elastic_ip": {
@@ -393,7 +1104,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -403,6 +1114,11 @@
       "classification": {
         "category": "infrastructure",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "cloud_link": {
@@ -410,7 +1126,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -420,6 +1136,35 @@
       "classification": {
         "category": "infrastructure",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
+      }
+    },
+    "container_registry": {
+      "constraint": {
+        "allowed": [
+          "custom",
+          "default",
+          "shared"
+        ],
+        "enforced": true
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "infrastructure",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "verified",
+        "method": "crud"
       }
     },
     "crl": {
@@ -429,7 +1174,7 @@
           "default",
           "shared"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "shared",
@@ -439,6 +1184,77 @@
       "classification": {
         "category": "certificate",
         "multi_tenant_pattern": "shared-ref"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
+      }
+    },
+    "dashboard": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "observability",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
+      }
+    },
+    "data_classification": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "security",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
+      }
+    },
+    "data_export": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
       }
     },
     "data_group": {
@@ -448,7 +1264,7 @@
           "default",
           "shared"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "shared",
@@ -458,6 +1274,11 @@
       "classification": {
         "category": "security",
         "multi_tenant_pattern": "shared-ref"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "data_type": {
@@ -467,7 +1288,7 @@
           "default",
           "shared"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "shared",
@@ -477,6 +1298,11 @@
       "classification": {
         "category": "security",
         "multi_tenant_pattern": "shared-ref"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "dc_cluster_group": {
@@ -484,7 +1310,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -494,6 +1320,77 @@
       "classification": {
         "category": "infrastructure",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
+      }
+    },
+    "ddos_mitigation_rule": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "networking",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
+      }
+    },
+    "ddos_protection": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "networking",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
+      }
+    },
+    "discovered_service": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "infrastructure",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
       }
     },
     "discovery": {
@@ -501,7 +1398,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -511,6 +1408,11 @@
       "classification": {
         "category": "infrastructure",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "dns_domain": {
@@ -528,82 +1430,99 @@
       "classification": {
         "category": "networking",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "verified",
+        "method": "spec_signal"
       }
     },
     "dns_lb_health_check": {
       "constraint": {
         "allowed": [
-          "custom",
-          "default",
-          "shared"
+          "system"
         ],
         "enforced": true
       },
       "recommendation": {
-        "primary": "custom",
+        "primary": "system",
         "alternatives": [],
-        "rationale": "Standard tenant resource"
+        "rationale": "DNS LB health check is a DNS object — system namespace enforced by API"
       },
       "classification": {
         "category": "networking",
-        "multi_tenant_pattern": "per-tenant"
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "verified",
+        "method": "crud"
       }
     },
     "dns_lb_pool": {
       "constraint": {
         "allowed": [
-          "custom",
-          "default",
-          "shared"
+          "system"
         ],
         "enforced": true
       },
       "recommendation": {
-        "primary": "custom",
+        "primary": "system",
         "alternatives": [],
-        "rationale": "Standard tenant resource"
+        "rationale": "DNS LB pool is a DNS object — system namespace enforced by API"
       },
       "classification": {
         "category": "networking",
-        "multi_tenant_pattern": "per-tenant"
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "verified",
+        "method": "crud"
       }
     },
     "dns_load_balancer": {
       "constraint": {
         "allowed": [
-          "custom",
-          "default",
-          "shared"
+          "system"
         ],
         "enforced": true
       },
       "recommendation": {
-        "primary": "custom",
+        "primary": "system",
         "alternatives": [],
-        "rationale": "Standard tenant resource"
+        "rationale": "DNS load balancing requires system namespace — API enforces restriction"
       },
       "classification": {
         "category": "networking",
-        "multi_tenant_pattern": "per-tenant"
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "verified",
+        "method": "crud"
       }
     },
     "dns_proxy": {
       "constraint": {
         "allowed": [
-          "custom",
-          "default",
-          "shared"
+          "system"
         ],
         "enforced": true
       },
       "recommendation": {
-        "primary": "custom",
+        "primary": "system",
         "alternatives": [],
-        "rationale": "Standard tenant resource"
+        "rationale": "DNS proxy is a DNS object — system namespace enforced by API"
       },
       "classification": {
         "category": "networking",
-        "multi_tenant_pattern": "per-tenant"
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "verified",
+        "method": "crud"
       }
     },
     "dns_zone": {
@@ -621,6 +1540,57 @@
       "classification": {
         "category": "networking",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "verified",
+        "method": "spec_signal"
+      }
+    },
+    "endpoint": {
+      "constraint": {
+        "allowed": [
+          "custom",
+          "default",
+          "shared"
+        ],
+        "enforced": true
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "networking",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "verified",
+        "method": "crud"
+      }
+    },
+    "enhanced_firewall_policy": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "networking",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
       }
     },
     "fast_acl": {
@@ -628,7 +1598,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -638,6 +1608,11 @@
       "classification": {
         "category": "security",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "filter_set": {
@@ -647,7 +1622,7 @@
           "default",
           "shared"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "shared",
@@ -657,6 +1632,11 @@
       "classification": {
         "category": "security",
         "multi_tenant_pattern": "shared-ref"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "fleet": {
@@ -664,7 +1644,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -674,6 +1654,55 @@
       "classification": {
         "category": "infrastructure",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
+      }
+    },
+    "fleet_config": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": true
+      },
+      "recommendation": {
+        "primary": "system",
+        "alternatives": [],
+        "rationale": "Fleet config creation restricted to system namespace by API"
+      },
+      "classification": {
+        "category": "infrastructure",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "verified",
+        "method": "crud"
+      }
+    },
+    "flow_anomaly": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "observability",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
       }
     },
     "forward_proxy_policy": {
@@ -683,7 +1712,7 @@
           "default",
           "shared"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "shared",
@@ -698,6 +1727,11 @@
       "classification": {
         "category": "security",
         "multi_tenant_pattern": "shared-ref"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "forwarding_class": {
@@ -707,7 +1741,7 @@
           "default",
           "shared"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "shared",
@@ -717,6 +1751,11 @@
       "classification": {
         "category": "networking",
         "multi_tenant_pattern": "shared-ref"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "gcp_vpc_site": {
@@ -724,7 +1763,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -734,6 +1773,11 @@
       "classification": {
         "category": "infrastructure",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "geo_location_set": {
@@ -743,7 +1787,7 @@
           "default",
           "shared"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "shared",
@@ -753,6 +1797,11 @@
       "classification": {
         "category": "security",
         "multi_tenant_pattern": "shared-ref"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "global_log_receiver": {
@@ -760,7 +1809,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -770,6 +1819,11 @@
       "classification": {
         "category": "observability",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "global_network": {
@@ -777,7 +1831,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -787,6 +1841,11 @@
       "classification": {
         "category": "networking",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "healthcheck": {
@@ -796,7 +1855,7 @@
           "default",
           "shared"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "custom",
@@ -806,6 +1865,11 @@
       "classification": {
         "category": "networking",
         "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "http_loadbalancer": {
@@ -815,7 +1879,7 @@
           "default",
           "shared"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "custom",
@@ -825,6 +1889,209 @@
       "classification": {
         "category": "networking",
         "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
+      }
+    },
+    "infraprotect_asn": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "networking",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
+      }
+    },
+    "infraprotect_asn_prefix": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "networking",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
+      }
+    },
+    "infraprotect_deny_list_rule": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "networking",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
+      }
+    },
+    "infraprotect_firewall_rule": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "networking",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
+      }
+    },
+    "infraprotect_firewall_rule_group": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "networking",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
+      }
+    },
+    "infraprotect_firewall_ruleset": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "networking",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
+      }
+    },
+    "infraprotect_internet_prefix_advertisement": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "networking",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
+      }
+    },
+    "infraprotect_tunnel": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "networking",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
+      }
+    },
+    "insight_query": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "observability",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
       }
     },
     "interface": {
@@ -832,7 +2099,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -842,6 +2109,11 @@
       "classification": {
         "category": "networking",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "ip_prefix_set": {
@@ -851,7 +2123,7 @@
           "default",
           "shared"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "shared",
@@ -866,6 +2138,11 @@
       "classification": {
         "category": "security",
         "multi_tenant_pattern": "shared-ref"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "k8s_cluster": {
@@ -873,7 +2150,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -883,6 +2160,33 @@
       "classification": {
         "category": "infrastructure",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
+      }
+    },
+    "k8s_cluster_role": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": true
+      },
+      "recommendation": {
+        "primary": "system",
+        "alternatives": [],
+        "rationale": "K8s cluster roles allowed to be created only in system namespace"
+      },
+      "classification": {
+        "category": "infrastructure",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "verified",
+        "method": "crud"
       }
     },
     "known_label": {
@@ -890,7 +2194,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -900,6 +2204,11 @@
       "classification": {
         "category": "infrastructure",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "known_label_key": {
@@ -907,7 +2216,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -917,6 +2226,11 @@
       "classification": {
         "category": "infrastructure",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "label": {
@@ -924,7 +2238,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -934,6 +2248,11 @@
       "classification": {
         "category": "infrastructure",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "label_group": {
@@ -941,7 +2260,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -951,6 +2270,33 @@
       "classification": {
         "category": "infrastructure",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
+      }
+    },
+    "lma_region": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "observability",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
       }
     },
     "log_receiver": {
@@ -958,7 +2304,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -968,6 +2314,33 @@
       "classification": {
         "category": "observability",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
+      }
+    },
+    "malicious_user_detection": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "security",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
       }
     },
     "malicious_user_mitigation": {
@@ -977,7 +2350,7 @@
           "default",
           "shared"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "shared",
@@ -987,6 +2360,147 @@
       "classification": {
         "category": "security",
         "multi_tenant_pattern": "shared-ref"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
+      }
+    },
+    "malicious_user_rule": {
+      "constraint": {
+        "allowed": [
+          "custom",
+          "default",
+          "shared"
+        ],
+        "enforced": true
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "security",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "verified",
+        "method": "crud"
+      }
+    },
+    "marketplace_item": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
+      }
+    },
+    "metrics_receiver": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "observability",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
+      }
+    },
+    "mitigated_domain": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "security",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
+      }
+    },
+    "mitigation_policy": {
+      "constraint": {
+        "allowed": [
+          "custom",
+          "default",
+          "shared"
+        ],
+        "enforced": true
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "security",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "verified",
+        "method": "crud"
+      }
+    },
+    "mk8s_cluster": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "infrastructure",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
       }
     },
     "namespace": {
@@ -994,7 +2508,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -1004,6 +2518,33 @@
       "classification": {
         "category": "infrastructure",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
+      }
+    },
+    "namespace_role": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "identity",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
       }
     },
     "namespace_role_binding": {
@@ -1011,7 +2552,7 @@
         "allowed": [
           "shared"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "shared",
@@ -1021,6 +2562,33 @@
       "classification": {
         "category": "identity",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
+      }
+    },
+    "nat_policy": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "networking",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
       }
     },
     "network_connector": {
@@ -1028,7 +2596,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -1038,6 +2606,11 @@
       "classification": {
         "category": "networking",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "network_firewall": {
@@ -1055,6 +2628,11 @@
       "classification": {
         "category": "security",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "verified",
+        "method": "crud"
       }
     },
     "network_interface": {
@@ -1062,7 +2640,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -1072,43 +2650,14 @@
       "classification": {
         "category": "networking",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
-    "network_policy_rule": {
-      "constraint": {
-        "allowed": [
-          "system"
-        ],
-        "enforced": true
-      },
-      "recommendation": {
-        "primary": "system",
-        "alternatives": [],
-        "rationale": "Network policy rules are platform-level"
-      },
-      "classification": {
-        "category": "networking",
-        "multi_tenant_pattern": "none"
-      }
-    },
-    "network_policy_set": {
-      "constraint": {
-        "allowed": [
-          "system"
-        ],
-        "enforced": true
-      },
-      "recommendation": {
-        "primary": "system",
-        "alternatives": [],
-        "rationale": "Network policy sets are platform-level"
-      },
-      "classification": {
-        "category": "networking",
-        "multi_tenant_pattern": "none"
-      }
-    },
-    "origin_pool": {
+    "network_policy": {
       "constraint": {
         "allowed": [
           "custom",
@@ -1125,6 +2674,277 @@
       "classification": {
         "category": "networking",
         "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "verified",
+        "method": "crud"
+      }
+    },
+    "network_policy_rule": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "system",
+        "alternatives": [],
+        "rationale": "Network policy rules are platform-level"
+      },
+      "classification": {
+        "category": "networking",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
+      }
+    },
+    "network_policy_set": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "system",
+        "alternatives": [],
+        "rationale": "Network policy sets are platform-level"
+      },
+      "classification": {
+        "category": "networking",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
+      }
+    },
+    "nginx_config": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
+      }
+    },
+    "nginx_csg": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
+      }
+    },
+    "nginx_instance": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
+      }
+    },
+    "nginx_server": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
+      }
+    },
+    "nginx_service_discovery": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
+      }
+    },
+    "nginx_upstream": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
+      }
+    },
+    "node_config": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "system",
+        "alternatives": [],
+        "rationale": "Node configs are platform-level"
+      },
+      "classification": {
+        "category": "infrastructure",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "assumed",
+        "method": "domain_knowledge"
+      }
+    },
+    "object_store": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
+      }
+    },
+    "origin_pool": {
+      "constraint": {
+        "allowed": [
+          "custom",
+          "default",
+          "shared"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "networking",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
+      }
+    },
+    "otp_policy": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "system",
+        "alternatives": [],
+        "rationale": "OTP policies are platform-level authentication config"
+      },
+      "classification": {
+        "category": "identity",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "assumed",
+        "method": "domain_knowledge"
       }
     },
     "physical_k8s_site": {
@@ -1132,7 +2952,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -1142,6 +2962,33 @@
       "classification": {
         "category": "infrastructure",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
+      }
+    },
+    "pod_security_policy": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "security",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
       }
     },
     "policer": {
@@ -1151,7 +2998,7 @@
           "default",
           "shared"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "shared",
@@ -1161,6 +3008,99 @@
       "classification": {
         "category": "security",
         "multi_tenant_pattern": "shared-ref"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
+      }
+    },
+    "policy_based_routing": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "networking",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
+      }
+    },
+    "policy_document": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "security",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
+      }
+    },
+    "protected_application": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "security",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
+      }
+    },
+    "protected_domain": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "security",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
       }
     },
     "protocol_inspection": {
@@ -1168,7 +3108,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -1178,6 +3118,11 @@
       "classification": {
         "category": "security",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "protocol_policer": {
@@ -1187,7 +3132,7 @@
           "default",
           "shared"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "shared",
@@ -1197,6 +3142,55 @@
       "classification": {
         "category": "security",
         "multi_tenant_pattern": "shared-ref"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
+      }
+    },
+    "quota": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "system",
+        "alternatives": [],
+        "rationale": "Quotas are platform-level limits"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "assumed",
+        "method": "domain_knowledge"
+      }
+    },
+    "rate_limit_threshold": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": true
+      },
+      "recommendation": {
+        "primary": "system",
+        "alternatives": [],
+        "rationale": "Protocol policer objects allowed to be created only in system namespace"
+      },
+      "classification": {
+        "category": "networking",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "verified",
+        "method": "crud"
       }
     },
     "rate_limiter": {
@@ -1206,7 +3200,7 @@
           "default",
           "shared"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "shared",
@@ -1221,6 +3215,11 @@
       "classification": {
         "category": "security",
         "multi_tenant_pattern": "shared-ref"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "rate_limiter_policy": {
@@ -1230,7 +3229,7 @@
           "default",
           "shared"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "shared",
@@ -1240,6 +3239,11 @@
       "classification": {
         "category": "security",
         "multi_tenant_pattern": "shared-ref"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "registration": {
@@ -1247,7 +3251,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -1257,6 +3261,33 @@
       "classification": {
         "category": "infrastructure",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
+      }
+    },
+    "registration_token": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": true
+      },
+      "recommendation": {
+        "primary": "system",
+        "alternatives": [],
+        "rationale": "Registration objects allowed to be created only in system namespace"
+      },
+      "classification": {
+        "category": "infrastructure",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "verified",
+        "method": "crud"
       }
     },
     "role": {
@@ -1264,7 +3295,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -1274,6 +3305,11 @@
       "classification": {
         "category": "identity",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "route": {
@@ -1281,7 +3317,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -1291,6 +3327,33 @@
       "classification": {
         "category": "networking",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
+      }
+    },
+    "saved_query": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "observability",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
       }
     },
     "secret": {
@@ -1298,7 +3361,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -1308,6 +3371,33 @@
       "classification": {
         "category": "identity",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
+      }
+    },
+    "secret_management_access": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "security",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
       }
     },
     "secret_policy": {
@@ -1317,7 +3407,7 @@
           "default",
           "shared"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "shared",
@@ -1327,6 +3417,33 @@
       "classification": {
         "category": "security",
         "multi_tenant_pattern": "shared-ref"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
+      }
+    },
+    "secret_policy_rule": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "security",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
       }
     },
     "securemesh_site": {
@@ -1334,7 +3451,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -1344,6 +3461,33 @@
       "classification": {
         "category": "infrastructure",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
+      }
+    },
+    "securemesh_site_v2": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "infrastructure",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
       }
     },
     "sensitive_data_policy": {
@@ -1353,7 +3497,7 @@
           "default",
           "shared"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "shared",
@@ -1363,6 +3507,11 @@
       "classification": {
         "category": "security",
         "multi_tenant_pattern": "shared-ref"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "service_credential": {
@@ -1370,7 +3519,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -1380,6 +3529,33 @@
       "classification": {
         "category": "identity",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
+      }
+    },
+    "service_discovery": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "infrastructure",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
       }
     },
     "service_policy": {
@@ -1389,7 +3565,7 @@
           "default",
           "shared"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "shared",
@@ -1404,6 +3580,143 @@
       "classification": {
         "category": "security",
         "multi_tenant_pattern": "shared-ref"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
+      }
+    },
+    "session": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "system",
+        "alternatives": [],
+        "rationale": "Sessions are platform-level"
+      },
+      "classification": {
+        "category": "identity",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "assumed",
+        "method": "domain_knowledge"
+      }
+    },
+    "shape_app_firewall": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "security",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
+      }
+    },
+    "shape_bot_defense_instance": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "security",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
+      }
+    },
+    "shape_recognizer": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "system",
+        "alternatives": [],
+        "rationale": "System-only API paths"
+      },
+      "classification": {
+        "category": "security",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "assumed",
+        "method": "spec_signal"
+      }
+    },
+    "site": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "system",
+        "alternatives": [],
+        "rationale": "Sites are platform-level infrastructure"
+      },
+      "classification": {
+        "category": "infrastructure",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "assumed",
+        "method": "domain_knowledge"
+      }
+    },
+    "site_config": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "system",
+        "alternatives": [],
+        "rationale": "Site configs are platform-level"
+      },
+      "classification": {
+        "category": "infrastructure",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "assumed",
+        "method": "domain_knowledge"
       }
     },
     "site_mesh": {
@@ -1411,7 +3724,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -1421,6 +3734,11 @@
       "classification": {
         "category": "infrastructure",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "site_mesh_group": {
@@ -1428,7 +3746,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -1438,6 +3756,11 @@
       "classification": {
         "category": "infrastructure",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "software_version": {
@@ -1445,7 +3768,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -1455,6 +3778,33 @@
       "classification": {
         "category": "infrastructure",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
+      }
+    },
+    "static_asset": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
       }
     },
     "subnet": {
@@ -1462,7 +3812,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -1472,6 +3822,55 @@
       "classification": {
         "category": "networking",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
+      }
+    },
+    "subscription": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "system",
+        "alternatives": [],
+        "rationale": "Subscriptions are platform-level billing"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "assumed",
+        "method": "domain_knowledge"
+      }
+    },
+    "support_case": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
       }
     },
     "tcp_loadbalancer": {
@@ -1481,7 +3880,7 @@
           "default",
           "shared"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "custom",
@@ -1491,6 +3890,33 @@
       "classification": {
         "category": "networking",
         "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
+      }
+    },
+    "telemetry_receiver": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "observability",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
       }
     },
     "tenant": {
@@ -1498,7 +3924,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -1508,6 +3934,11 @@
       "classification": {
         "category": "infrastructure",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "tenant_configuration": {
@@ -1515,7 +3946,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -1525,6 +3956,11 @@
       "classification": {
         "category": "infrastructure",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "tenant_settings": {
@@ -1532,7 +3968,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -1542,6 +3978,55 @@
       "classification": {
         "category": "infrastructure",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
+      }
+    },
+    "threat_campaign_policy": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "security",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
+      }
+    },
+    "threat_category": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "security",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
       }
     },
     "token": {
@@ -1549,7 +4034,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -1559,6 +4044,11 @@
       "classification": {
         "category": "identity",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "trusted_ca_list": {
@@ -1568,7 +4058,7 @@
           "default",
           "shared"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "shared",
@@ -1578,6 +4068,11 @@
       "classification": {
         "category": "certificate",
         "multi_tenant_pattern": "shared-ref"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "tunnel": {
@@ -1585,7 +4080,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -1595,6 +4090,55 @@
       "classification": {
         "category": "networking",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
+      }
+    },
+    "udp_loadbalancer": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "networking",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
+      }
+    },
+    "ui_component": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
       }
     },
     "upgrade_os": {
@@ -1602,7 +4146,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -1612,6 +4156,33 @@
       "classification": {
         "category": "infrastructure",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
+      }
+    },
+    "usage_report": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": true
+      },
+      "recommendation": {
+        "primary": "system",
+        "alternatives": [],
+        "rationale": "Usage reports namespace must be constant system"
+      },
+      "classification": {
+        "category": "observability",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "verified",
+        "method": "crud"
       }
     },
     "user": {
@@ -1619,7 +4190,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -1629,6 +4200,11 @@
       "classification": {
         "category": "identity",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "user_identification": {
@@ -1638,7 +4214,7 @@
           "default",
           "shared"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "shared",
@@ -1648,6 +4224,99 @@
       "classification": {
         "category": "security",
         "multi_tenant_pattern": "shared-ref"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
+      }
+    },
+    "user_profile": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "system",
+        "alternatives": [],
+        "rationale": "User profiles are platform-level"
+      },
+      "classification": {
+        "category": "identity",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "assumed",
+        "method": "domain_knowledge"
+      }
+    },
+    "user_role": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "identity",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
+      }
+    },
+    "v1_dns_monitor": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "observability",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
+      }
+    },
+    "v1_http_monitor": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "observability",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "conservative_default"
       }
     },
     "views_advertise_policy": {
@@ -1655,7 +4324,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -1665,6 +4334,11 @@
       "classification": {
         "category": "networking",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "views_aws_tgw_site": {
@@ -1672,7 +4346,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -1682,6 +4356,11 @@
       "classification": {
         "category": "infrastructure",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "views_aws_vpc_site": {
@@ -1689,7 +4368,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -1699,6 +4378,11 @@
       "classification": {
         "category": "infrastructure",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "views_azure_vnet_site": {
@@ -1706,7 +4390,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -1716,6 +4400,11 @@
       "classification": {
         "category": "infrastructure",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "views_gcp_vpc_site": {
@@ -1723,7 +4412,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -1733,6 +4422,11 @@
       "classification": {
         "category": "infrastructure",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "views_physical_k8s_site": {
@@ -1740,7 +4434,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -1750,6 +4444,11 @@
       "classification": {
         "category": "infrastructure",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "views_voltstack_site": {
@@ -1757,7 +4456,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -1767,6 +4466,11 @@
       "classification": {
         "category": "infrastructure",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "virtual_host": {
@@ -1774,7 +4478,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -1784,23 +4488,35 @@
       "classification": {
         "category": "networking",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "virtual_k8s": {
       "constraint": {
         "allowed": [
-          "system"
+          "custom",
+          "default",
+          "shared"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
-        "primary": "system",
+        "primary": "custom",
         "alternatives": [],
-        "rationale": "Virtual K8s provisioning is platform-level"
+        "rationale": "Virtual K8s clusters are tenant-scoped workload resources"
       },
       "classification": {
         "category": "infrastructure",
-        "multi_tenant_pattern": "none"
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "virtual_network": {
@@ -1818,23 +4534,35 @@
       "classification": {
         "category": "networking",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "verified",
+        "method": "crud"
       }
     },
     "virtual_site": {
       "constraint": {
         "allowed": [
-          "system"
+          "custom",
+          "default",
+          "shared"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
-        "primary": "system",
+        "primary": "custom",
         "alternatives": [],
-        "rationale": "Virtual site is platform-level abstraction"
+        "rationale": "Virtual sites are tenant-scoped label-based abstractions"
       },
       "classification": {
         "category": "infrastructure",
-        "multi_tenant_pattern": "none"
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "voltstack_site": {
@@ -1842,7 +4570,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -1852,6 +4580,33 @@
       "classification": {
         "category": "infrastructure",
         "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
+      }
+    },
+    "vpm_config": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "system",
+        "alternatives": [],
+        "rationale": "VPM configs are platform-level"
+      },
+      "classification": {
+        "category": "infrastructure",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "assumed",
+        "method": "domain_knowledge"
       }
     },
     "waf": {
@@ -1861,7 +4616,7 @@
           "default",
           "shared"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "shared",
@@ -1876,6 +4631,11 @@
       "classification": {
         "category": "security",
         "multi_tenant_pattern": "shared-ref"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
       }
     },
     "waf_exclusion_policy": {
@@ -1885,7 +4645,7 @@
           "default",
           "shared"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "shared",
@@ -1900,10 +4660,45 @@
       "classification": {
         "category": "security",
         "multi_tenant_pattern": "shared-ref"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": ""
+      }
+    },
+    "workload": {
+      "constraint": {
+        "allowed": [
+          "custom",
+          "default",
+          "shared"
+        ],
+        "enforced": true
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "verified",
+        "method": "crud"
       }
     }
   },
+  "_coverage": {
+    "total_explicit": 207,
+    "verified": 21,
+    "assumed": 10,
+    "unverified": 176
+  },
   "info": {
-    "version": "2.1.164"
+    "version": "2.1.170"
   }
 }

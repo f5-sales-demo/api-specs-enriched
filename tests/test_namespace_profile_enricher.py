@@ -137,7 +137,9 @@ class TestDeepMerge:
     def test_partial_override_merges_with_default(self, enricher: NamespaceProfileEnricher) -> None:
         profile = enricher.get_profile_for_resource("http_loadbalancer")
         assert profile["constraint"]["allowed"] == ["custom", "default", "shared"]
-        assert profile["constraint"]["enforced"] is True
+        # enforced now reflects verification status, not a hardcoded default:
+        # http_loadbalancer is not 'verified', so the constraint is advisory.
+        assert profile["constraint"]["enforced"] is False
         assert profile["classification"]["category"] == "networking"
         assert profile["recommendation"]["primary"] == "custom"
 
@@ -183,6 +185,48 @@ class TestProfileValidation:
 # -- Resource Type Extraction Tests --
 
 
+class TestVerificationGate:
+    """constraint.enforced must reflect verification: only 'verified' resources are
+    enforced; assumed/restricted/unverified/default-fallback are advisory."""
+
+    def test_verified_resource_is_enforced(self, enricher: NamespaceProfileEnricher) -> None:
+        # dns_load_balancer is _verification.status == 'verified' (live CRUD probe).
+        profile = enricher.get_profile_for_resource("dns_load_balancer")
+        assert profile["constraint"]["allowed"] == ["system"]
+        assert profile["constraint"]["enforced"] is True
+
+    def test_unverified_single_allowed_is_advisory(
+        self, enricher: NamespaceProfileEnricher
+    ) -> None:
+        # A single-allowed resource that is not 'verified' must be advisory, so the
+        # provider keeps namespace Required rather than over-restricting.
+        res = enricher.config["resources"]
+        target = next(
+            r
+            for r, p in res.items()
+            if len((p.get("constraint") or {}).get("allowed", [])) == 1
+            and (p.get("_verification") or {}).get("status") != "verified"
+        )
+        profile = enricher.get_profile_for_resource(target)
+        assert profile["constraint"]["enforced"] is False, target
+
+    def test_default_fallback_is_advisory(self, enricher: NamespaceProfileEnricher) -> None:
+        profile = enricher.get_profile_for_resource("some_unknown_resource_xyz")
+        assert profile["constraint"]["enforced"] is False
+
+    @pytest.mark.parametrize("resource_name", ["network_firewall", "virtual_network"])
+    def test_staging_crud_promoted_resources_are_enforced(
+        self, enricher: NamespaceProfileEnricher, resource_name: str
+    ) -> None:
+        # Promoted to verified by the 2026-07-07 staging CRUD pass (same live
+        # signature as fleet_config / rate_limit_threshold / k8s_cluster_role):
+        # created in system, rejected in tenant namespaces. Must be enforced and
+        # remain system-only.
+        profile = enricher.get_profile_for_resource(resource_name)
+        assert profile["constraint"]["allowed"] == ["system"], resource_name
+        assert profile["constraint"]["enforced"] is True, resource_name
+
+
 class TestResourceTypeExtraction:
     def test_from_title(self, enricher: NamespaceProfileEnricher) -> None:
         spec = {"info": {"title": "Alert Policy API"}}
@@ -209,6 +253,21 @@ class TestResourceTypeExtraction:
     def test_views_prefix_handled(self, enricher: NamespaceProfileEnricher) -> None:
         profile = enricher.get_profile_for_resource("views_aws_vpc_site")
         assert profile["constraint"]["allowed"] == ["system"]
+
+    def test_schema_prefix_stripped(self, enricher: NamespaceProfileEnricher) -> None:
+        # Some spec schema keys are 'schema'-prefixed (e.g.
+        # schemadns_load_balancerCreateSpecType). They must map back to their
+        # resource, not fall through to the domain default.
+        assert (
+            enricher._schema_name_to_resource_type("schemadns_load_balancerCreateSpecType")
+            == "dns_load_balancer"
+        )
+        assert (
+            enricher._match_schema_to_resource(
+                "schemadns_load_balancerCreateSpecType", enricher.config.get("resources", {})
+            )
+            == "dns_load_balancer"
+        )
 
 
 # -- Spec Enrichment Tests --
@@ -239,6 +298,28 @@ class TestSpecEnrichment:
         result = enricher.enrich_spec(shared_spec)
         profile = result["info"]["x-f5xc-namespace-profile"]
         assert profile["constraint"]["allowed"] == ["shared"]
+
+    def test_schema_prefixed_createspec_gets_resource_profile(
+        self, enricher: NamespaceProfileEnricher
+    ) -> None:
+        # A 'schema'-prefixed CreateSpecType must receive its resource's profile
+        # (system for dns_load_balancer), not the domain default — even when the
+        # domain-level detection falls back to the default.
+        spec: dict[str, Any] = {
+            "info": {"title": "DNS API"},
+            "paths": {},
+            "components": {
+                "schemas": {
+                    "schemadns_load_balancerCreateSpecType": {"type": "object"},
+                    "schemadns_load_balancerGetSpecType": {"type": "object"},
+                }
+            },
+        }
+        result = enricher.enrich_spec(spec)
+        schemas = result["components"]["schemas"]
+        for name in ("schemadns_load_balancerCreateSpecType", "schemadns_load_balancerGetSpecType"):
+            profile = schemas[name]["x-f5xc-namespace-profile"]
+            assert profile["constraint"]["allowed"] == ["system"], name
 
     def test_idempotent(self, enricher: NamespaceProfileEnricher, sample_spec: dict) -> None:
         result1 = enricher.enrich_spec(sample_spec)
@@ -296,7 +377,6 @@ class TestSpecEnrichment:
 
 
 SYSTEM_RESOURCES = [
-    "alert_policy",
     "aws_vpc_site",
     "azure_vnet_site",
     "gcp_vpc_site",
@@ -304,7 +384,6 @@ SYSTEM_RESOURCES = [
     "namespace",
     "role",
     "user",
-    "certificate",
     "global_network",
     "virtual_network",
     "k8s_cluster",
@@ -356,4 +435,37 @@ def test_tenant_resource_scope(enricher: NamespaceProfileEnricher, resource_name
     assert "custom" in profile["constraint"]["allowed"], f"{resource_name} should allow custom"
     assert "system" not in profile["constraint"]["allowed"], (
         f"{resource_name} should not allow system"
+    )
+
+
+# -- Completeness Gate --
+
+
+def test_all_primary_resources_have_explicit_namespace_profile() -> None:
+    """Every primary resource in the spec index must have an explicit entry
+    in namespace_profile.yaml. Silent default inheritance is not acceptable
+    for primary resources — it leads to misclassified resources in the tree."""
+    import json
+    from pathlib import Path
+
+    index_path = Path("docs/specifications/api/index.json")
+    if not index_path.exists():
+        pytest.skip("index.json not available")
+
+    with index_path.open() as f:
+        index = json.load(f)
+
+    primary_names: set[str] = set()
+    specs = index.get("specifications", [])
+    if isinstance(specs, dict):
+        specs = list(specs.values())
+    for domain_info in specs:
+        for resource in domain_info.get("x-f5xc-primary-resources", []):
+            primary_names.add(resource["name"])
+
+    enricher = NamespaceProfileEnricher()
+    missing = sorted(name for name in primary_names if not enricher.is_resource_explicit(name))
+
+    assert missing == [], (
+        f"{len(missing)} primary resources lack explicit namespace profile entries: {missing}"
     )

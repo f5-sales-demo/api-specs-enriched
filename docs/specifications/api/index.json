@@ -1,6 +1,6 @@
 {
-  "version": "2.1.164",
-  "timestamp": "2026-06-26T16:10:16.711878+00:00",
+  "version": "2.1.170",
+  "timestamp": "2026-07-07T15:23:31.157833+00:00",
   "specifications": [
     {
       "domain": "admin_console_and_ui",
@@ -4224,16 +4224,71 @@
   },
   "x-f5xc-guided-workflows": {
     "version": "1.0.0",
-    "total_workflows": 7,
+    "total_workflows": 9,
     "domains": [
       "virtual",
       "waf",
       "dns",
       "cdn",
       "origin_pool",
-      "sites"
+      "sites",
+      "authentication"
     ],
     "workflows": [
+      {
+        "id": "create_and_use_api_token",
+        "name": "Create and Use an API Token",
+        "description": "Create an API token in the console via guided browser automation, then call the F5 XC API with it",
+        "complexity": "low",
+        "estimated_steps": 3,
+        "prerequisites": [
+          "Logged in to the F5 XC console",
+          "User role: admin (access to Personal Management > Credentials)"
+        ],
+        "steps": [
+          {
+            "order": 1,
+            "action": "create_api_token",
+            "name": "Create API Token",
+            "description": "In Administration > Personal Management > Credentials, click Add Credentials, set Credential Type to API Token, enter a Credential Name and Expiry Date, then Generate",
+            "resource": "api_credential",
+            "required_fields": [
+              "credential_name",
+              "credential_type",
+              "expiry_date"
+            ],
+            "tips": [
+              "Set Credential Type to API Token. The default is API Certificate, which produces a P12 file, not a bearer token.",
+              "The token string is shown only once on the reveal panel. Capture it immediately, before dismissing the panel."
+            ]
+          },
+          {
+            "order": 2,
+            "action": "capture_token",
+            "name": "Capture the Generated Token",
+            "description": "Read the one-time token value from the reveal panel",
+            "depends_on": [
+              1
+            ],
+            "verification": [
+              "Token value captured before the reveal panel is dismissed"
+            ]
+          },
+          {
+            "order": 3,
+            "action": "call_api_with_token",
+            "name": "Call the F5 XC API with the Token",
+            "description": "Use the captured token in an XC-API call with header Authorization APIToken to confirm it works, for example list namespaces",
+            "depends_on": [
+              2
+            ],
+            "verification": [
+              "XC-API GET /api/web/namespaces returns HTTP 200 with the tenant namespaces"
+            ]
+          }
+        ],
+        "domain": "authentication"
+      },
       {
         "id": "enable_cdn_distribution",
         "name": "Enable CDN Distribution",
@@ -4657,6 +4712,63 @@
               "TLS certificate validation",
               "HTTPS response codes",
               "WAF policy application"
+            ]
+          }
+        ],
+        "domain": "virtual"
+      },
+      {
+        "id": "enable_request_logging",
+        "name": "Enable Request Logging (All Requests)",
+        "description": "Stream logs for every request a load balancer serves — not just WAF security-event/violation logs. WAF violations show up under Security Events; capturing legitimate (allowed) requests requires a Global Log Receiver configured with the Request Logs log type.",
+        "complexity": "medium",
+        "estimated_steps": 3,
+        "prerequisites": [
+          "An existing HTTP load balancer serving traffic",
+          "A reachable log collector (HTTP endpoint, Syslog, Kafka, AWS S3, GCP, Datadog, Splunk, …)"
+        ],
+        "steps": [
+          {
+            "order": 1,
+            "action": "create_global_log_receiver",
+            "name": "Create a Global Log Receiver for request logs",
+            "description": "Create a global_log_receiver whose log type is Request Logs so every request (allowed and blocked) is exported, then point it at your collector.",
+            "resource": "global_log_receiver",
+            "required_fields": [
+              "name",
+              "request_logs"
+            ],
+            "tips": [
+              "Select the 'Request Logs' log type (spec.request_logs) — this captures legitimate/allowed requests, unlike Security Events which only capture WAF violations.",
+              "Scope by namespace, or use the shared/system namespace for tenant-wide collection.",
+              "Pick exactly one receiver sink: http_receiver, syslog, kafka_receiver, aws_cloud_watch, s3_receiver, gcp_bucket, datadog, or splunk."
+            ]
+          },
+          {
+            "order": 2,
+            "action": "confirm_loadbalancer_scope",
+            "name": "Confirm the load balancers in scope",
+            "description": "Request logs stream for the load balancers in the receiver's namespace scope; confirm the target http_loadbalancer is included.",
+            "resource": "http_loadbalancer",
+            "depends_on": [
+              1
+            ],
+            "tips": [
+              "Enhanced request analytics and extra log fields can be tuned on the load balancer but are not required to receive request logs."
+            ]
+          },
+          {
+            "order": 3,
+            "action": "verify_request_logs",
+            "name": "Verify legitimate requests are logged",
+            "description": "Send allowed traffic and confirm request-log entries arrive at the collector.",
+            "depends_on": [
+              1
+            ],
+            "verification": [
+              "Non-violation (2xx/3xx) requests appear at the collector, not only blocked ones",
+              "Use the Test action on the Global Log Receiver to validate delivery",
+              "The Requests dashboard in the console shows the traffic"
             ]
           }
         ],

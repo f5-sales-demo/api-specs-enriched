@@ -60,17 +60,49 @@ class NamespaceProfilesExporter:
         resource_keys = config.get("resources", {})
 
         resources: dict[str, Any] = {}
+        verified_count = 0
+        assumed_count = 0
+        unverified_count = 0
+
         for name in sorted(resource_keys):
-            # Fully merged (default + override) profile, identical to what the
-            # enricher embeds as x-f5xc-namespace-profile for this resource.
-            resources[name] = self.enricher.get_profile_for_resource(name)
+            profile = self.enricher.get_profile_for_resource(name)
+            verification = self.enricher.get_verification_status(name)
+
+            entry: dict[str, Any] = {**profile}
+            if verification:
+                status = verification.get("status", "unverified")
+                entry["_meta"] = {
+                    "explicit": True,
+                    "verification": status,
+                    "method": verification.get("method", ""),
+                }
+                if status == "verified":
+                    verified_count += 1
+                elif status == "assumed":
+                    assumed_count += 1
+                else:
+                    unverified_count += 1
+            else:
+                entry["_meta"] = {"explicit": True, "verification": "unverified", "method": ""}
+                unverified_count += 1
+
+            resources[name] = entry
+
+        default_profile = config["default_profile"]
+        default_profile.pop("_verification", None)
 
         return {
             "version": version or "0.0.0",
             "generated_at": datetime.now(tz=timezone.utc).isoformat(),
             "source": "api-specs-enriched/config/namespace_profile.yaml",
-            "default": config["default_profile"],
+            "default": default_profile,
             "resources": resources,
+            "_coverage": {
+                "total_explicit": len(resources),
+                "verified": verified_count,
+                "assumed": assumed_count,
+                "unverified": unverified_count,
+            },
         }
 
     def export(self, output_path: Path, version: str | None = None) -> dict[str, Any]:

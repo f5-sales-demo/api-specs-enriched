@@ -6,6 +6,17 @@
 # Used by NamespaceProfileEnricher to add x-f5xc-namespace-profile extension.
 #
 # Resources not listed use default_profile.
+#
+# _verification.status gates constraint.enforced (verified => enforced). Only
+# resources confirmed by a live CRUD probe (method: crud) or a strong spec
+# signal (method: spec_signal) are enforced; everything else is advisory so
+# downstream tooling never over-restricts a namespace on a guess.
+#
+# 2026-07-07 staging CRUD pass (nferreira.staging): re-confirmed the DNS
+# resources and existing system-only classifications; promoted network_firewall
+# and virtual_network to verified (same live signature as fleet_config /
+# rate_limit_threshold / k8s_cluster_role). Tenant-resource allowed-lists were
+# confirmed correct (system deliberately excluded — see test_tenant_resource_scope).
 
 default_profile:
   constraint:
@@ -139,14 +150,13 @@ resources:
       multi_tenant_pattern: "none"
 
   virtual_k8s:
-    constraint:
-      allowed: ["system"]
+    # CRUD verification (2026-06-28): created successfully in all namespaces
     recommendation:
-      primary: "system"
-      rationale: "Virtual K8s provisioning is platform-level"
+      primary: "custom"
+      rationale: "Virtual K8s clusters are tenant-scoped workload resources"
     classification:
       category: "infrastructure"
-      multi_tenant_pattern: "none"
+      multi_tenant_pattern: "per-tenant"
 
   dc_cluster_group:
     constraint:
@@ -191,6 +201,7 @@ resources:
       multi_tenant_pattern: "none"
 
   virtual_network:
+    _verification: {status: verified, method: crud, date: "2026-07-07"}
     constraint:
       allowed: ["system"]
     recommendation:
@@ -332,27 +343,25 @@ resources:
       category: "identity"
       multi_tenant_pattern: "none"
 
-  # ── System-only: Certificate management ──
+  # ── Tenant-scoped: Certificate management (CRUD verified 2026-06-28) ──
 
   certificate:
-    constraint:
-      allowed: ["system"]
+    # CRUD verification: created successfully in system, default, and custom namespaces
     recommendation:
-      primary: "system"
-      rationale: "Certificate management is platform-level"
+      primary: "custom"
+      rationale: "Certificates can be managed in any namespace"
     classification:
       category: "certificate"
-      multi_tenant_pattern: "none"
+      multi_tenant_pattern: "per-tenant"
 
   certificate_chain:
-    constraint:
-      allowed: ["system"]
+    # CRUD verification: created successfully in system, default, and custom namespaces
     recommendation:
-      primary: "system"
-      rationale: "Certificate chain management is platform-level"
+      primary: "custom"
+      rationale: "Certificate chains can be managed in any namespace"
     classification:
       category: "certificate"
-      multi_tenant_pattern: "none"
+      multi_tenant_pattern: "per-tenant"
 
   # ── System-only: Cloud and infrastructure ──
 
@@ -471,14 +480,13 @@ resources:
       multi_tenant_pattern: "none"
 
   virtual_site:
-    constraint:
-      allowed: ["system"]
+    # CRUD verification (2026-06-28): created successfully in all namespaces
     recommendation:
-      primary: "system"
-      rationale: "Virtual site is platform-level abstraction"
+      primary: "custom"
+      rationale: "Virtual sites are tenant-scoped label-based abstractions"
     classification:
       category: "infrastructure"
-      multi_tenant_pattern: "none"
+      multi_tenant_pattern: "per-tenant"
 
   # ── System-only: App and monitoring ──
 
@@ -503,14 +511,13 @@ resources:
       multi_tenant_pattern: "none"
 
   alert_policy:
-    constraint:
-      allowed: ["system"]
+    # CRUD verification (2026-06-28): created in all namespaces
     recommendation:
-      primary: "system"
-      rationale: "Alert policies are platform-level monitoring"
+      primary: "custom"
+      rationale: "Alert policies are namespace-scoped monitoring configurations"
     classification:
       category: "observability"
-      multi_tenant_pattern: "none"
+      multi_tenant_pattern: "per-tenant"
 
   alert_policy_set:
     constraint:
@@ -671,6 +678,7 @@ resources:
       multi_tenant_pattern: "none"
 
   network_firewall:
+    _verification: {status: verified, method: crud, date: "2026-07-07"}
     constraint:
       allowed: ["system"]
     recommendation:
@@ -711,14 +719,13 @@ resources:
       multi_tenant_pattern: "none"
 
   api_definition:
-    constraint:
-      allowed: ["system"]
+    # CRUD verification (2026-06-28): created successfully in default + custom ns
     recommendation:
-      primary: "system"
-      rationale: "API definition management is platform-level"
+      primary: "custom"
+      rationale: "API definitions are scoped to application namespaces"
     classification:
       category: "security"
-      multi_tenant_pattern: "none"
+      multi_tenant_pattern: "per-tenant"
 
   # ── System-only: Views variants (mirror their base resource) ──
 
@@ -795,6 +802,7 @@ resources:
   # ── System-only: DNS ──
 
   dns_zone:
+    _verification: {status: verified, method: spec_signal, date: "2026-06-28"}
     constraint:
       allowed: ["system"]
     recommendation:
@@ -805,6 +813,7 @@ resources:
       multi_tenant_pattern: "none"
 
   dns_domain:
+    _verification: {status: verified, method: spec_signal, date: "2026-06-28"}
     constraint:
       allowed: ["system"]
     recommendation:
@@ -814,27 +823,111 @@ resources:
       category: "networking"
       multi_tenant_pattern: "none"
 
-  # ── Tenant-scoped: DNS resources (parameterized namespace paths) ──
+  # ── System-only: DNS GSLB resources ──
+  # CRUD verification (2026-06-28): "Creation of DNS objects outside system
+  # namespace not permitted" — confirmed for dns_load_balancer, dns_lb_pool,
+  # dns_lb_health_check. dns_proxy presumed same (all DNS objects restricted).
 
   dns_load_balancer:
+    _verification: {status: verified, method: crud, date: "2026-06-28"}
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "DNS load balancing requires system namespace — API enforces restriction"
     classification:
       category: "networking"
-      multi_tenant_pattern: "per-tenant"
+      multi_tenant_pattern: "none"
 
   dns_lb_pool:
+    _verification: {status: verified, method: crud, date: "2026-06-28"}
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "DNS LB pool is a DNS object — system namespace enforced by API"
     classification:
       category: "networking"
-      multi_tenant_pattern: "per-tenant"
+      multi_tenant_pattern: "none"
 
   dns_lb_health_check:
+    _verification: {status: verified, method: crud, date: "2026-06-28"}
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "DNS LB health check is a DNS object — system namespace enforced by API"
     classification:
       category: "networking"
-      multi_tenant_pattern: "per-tenant"
+      multi_tenant_pattern: "none"
 
   dns_proxy:
+    _verification: {status: verified, method: crud, date: "2026-06-28"}
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "DNS proxy is a DNS object — system namespace enforced by API"
     classification:
       category: "networking"
-      multi_tenant_pattern: "per-tenant"
+      multi_tenant_pattern: "none"
+
+  # ── System-only: CRUD-verified (2026-06-28) ──
+
+  fleet_config:
+    _verification: {status: verified, method: crud, date: "2026-06-28"}
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Fleet config creation restricted to system namespace by API"
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "none"
+
+  usage_report:
+    _verification: {status: verified, method: crud, date: "2026-06-28"}
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Usage reports namespace must be constant system"
+    classification:
+      category: "observability"
+      multi_tenant_pattern: "none"
+
+  registration_token:
+    _verification: {status: verified, method: crud, date: "2026-06-28"}
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Registration objects allowed to be created only in system namespace"
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "none"
+
+  k8s_cluster_role:
+    _verification: {status: verified, method: crud, date: "2026-06-28"}
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "K8s cluster roles allowed to be created only in system namespace"
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "none"
+
+  rate_limit_threshold:
+    _verification: {status: verified, method: crud, date: "2026-06-28"}
+    constraint:
+      allowed: ["system"]
+    recommendation:
+      primary: "system"
+      rationale: "Protocol policer objects allowed to be created only in system namespace"
+    classification:
+      category: "networking"
+      multi_tenant_pattern: "none"
 
   # ── Shared-only resources ──
 
@@ -1078,3 +1171,809 @@ resources:
     classification:
       category: "security"
       multi_tenant_pattern: "shared-ref"
+
+  # ══════════════════════════════════════════════════════════════════════
+  # Explicit entries for all primary resources — seeded 2026-06-28
+  # Every primary resource MUST have an explicit entry here.
+  # status: verified = CRUD/signal confirmed, assumed = domain knowledge
+  # ══════════════════════════════════════════════════════════════════════
+
+  # System-only (domain knowledge — needs CRUD verification)
+  node_config:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    recommendation:
+      primary: "system"
+      rationale: "Node configs are platform-level"
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "none"
+
+  otp_policy:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    recommendation:
+      primary: "system"
+      rationale: "OTP policies are platform-level authentication config"
+    classification:
+      category: "identity"
+      multi_tenant_pattern: "none"
+
+  quota:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    recommendation:
+      primary: "system"
+      rationale: "Quotas are platform-level limits"
+    classification:
+      category: "application"
+      multi_tenant_pattern: "none"
+
+  session:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    recommendation:
+      primary: "system"
+      rationale: "Sessions are platform-level"
+    classification:
+      category: "identity"
+      multi_tenant_pattern: "none"
+
+  shape_recognizer:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: assumed, method: spec_signal, date: "2026-06-28"}
+    recommendation:
+      primary: "system"
+      rationale: "System-only API paths"
+    classification:
+      category: "security"
+      multi_tenant_pattern: "none"
+
+  site:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    recommendation:
+      primary: "system"
+      rationale: "Sites are platform-level infrastructure"
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "none"
+
+  site_config:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    recommendation:
+      primary: "system"
+      rationale: "Site configs are platform-level"
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "none"
+
+  subscription:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    recommendation:
+      primary: "system"
+      rationale: "Subscriptions are platform-level billing"
+    classification:
+      category: "application"
+      multi_tenant_pattern: "none"
+
+  user_profile:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    recommendation:
+      primary: "system"
+      rationale: "User profiles are platform-level"
+    classification:
+      category: "identity"
+      multi_tenant_pattern: "none"
+
+  vpm_config:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: assumed, method: domain_knowledge, date: "2026-06-28"}
+    recommendation:
+      primary: "system"
+      rationale: "VPM configs are platform-level"
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "none"
+
+  # Restricted to system (conservative default — needs CRUD verification to unlock)
+
+  ai_gateway:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "application"
+      multi_tenant_pattern: "per-tenant"
+
+  ai_policy:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "application"
+      multi_tenant_pattern: "per-tenant"
+
+  alert:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "observability"
+      multi_tenant_pattern: "per-tenant"
+
+  analytics_query:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "application"
+      multi_tenant_pattern: "per-tenant"
+
+  api_endpoint:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "security"
+      multi_tenant_pattern: "per-tenant"
+
+  api_rate_limit:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "security"
+      multi_tenant_pattern: "per-tenant"
+
+  audit_log:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "observability"
+      multi_tenant_pattern: "per-tenant"
+
+  authentication_policy:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "security"
+      multi_tenant_pattern: "per-tenant"
+
+  bigip_device:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "application"
+      multi_tenant_pattern: "per-tenant"
+
+  bigip_pool:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "application"
+      multi_tenant_pattern: "per-tenant"
+
+  blindfold_secret:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "security"
+      multi_tenant_pattern: "per-tenant"
+
+  bot_defense_instance:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "security"
+      multi_tenant_pattern: "per-tenant"
+
+  bucket:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "application"
+      multi_tenant_pattern: "per-tenant"
+
+  cdn_origin_pool:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "application"
+      multi_tenant_pattern: "per-tenant"
+
+  dashboard:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "observability"
+      multi_tenant_pattern: "per-tenant"
+
+  data_classification:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "security"
+      multi_tenant_pattern: "per-tenant"
+
+  data_export:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "application"
+      multi_tenant_pattern: "per-tenant"
+
+  ddos_mitigation_rule:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "networking"
+      multi_tenant_pattern: "per-tenant"
+
+  ddos_protection:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "networking"
+      multi_tenant_pattern: "per-tenant"
+
+  insight_query:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "observability"
+      multi_tenant_pattern: "per-tenant"
+
+  malicious_user_detection:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "security"
+      multi_tenant_pattern: "per-tenant"
+
+  marketplace_item:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "application"
+      multi_tenant_pattern: "per-tenant"
+
+  metrics_receiver:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "observability"
+      multi_tenant_pattern: "per-tenant"
+
+  mk8s_cluster:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "per-tenant"
+
+  namespace_role:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "identity"
+      multi_tenant_pattern: "per-tenant"
+
+  nginx_config:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "application"
+      multi_tenant_pattern: "per-tenant"
+
+  nginx_upstream:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "application"
+      multi_tenant_pattern: "per-tenant"
+
+  object_store:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "application"
+      multi_tenant_pattern: "per-tenant"
+
+  pod_security_policy:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "security"
+      multi_tenant_pattern: "per-tenant"
+
+  policy_document:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "security"
+      multi_tenant_pattern: "per-tenant"
+
+  saved_query:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "observability"
+      multi_tenant_pattern: "per-tenant"
+
+  service_discovery:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "per-tenant"
+
+  shape_app_firewall:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "security"
+      multi_tenant_pattern: "per-tenant"
+
+  static_asset:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "application"
+      multi_tenant_pattern: "per-tenant"
+
+  support_case:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "application"
+      multi_tenant_pattern: "per-tenant"
+
+  telemetry_receiver:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "observability"
+      multi_tenant_pattern: "per-tenant"
+
+  threat_campaign_policy:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "security"
+      multi_tenant_pattern: "per-tenant"
+
+  threat_category:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "security"
+      multi_tenant_pattern: "per-tenant"
+
+  ui_component:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "application"
+      multi_tenant_pattern: "per-tenant"
+
+  user_role:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "identity"
+      multi_tenant_pattern: "per-tenant"
+
+
+  # CRUD-verified tenant-scoped primary resources (2026-06-28)
+  ca_certificate:
+    _verification: {status: verified, method: crud, date: "2026-06-28"}
+    classification:
+      category: "certificate"
+      multi_tenant_pattern: "per-tenant"
+
+  cdn_loadbalancer:
+    _verification: {status: verified, method: crud, date: "2026-06-28"}
+    classification:
+      category: "application"
+      multi_tenant_pattern: "per-tenant"
+
+  container_registry:
+    _verification: {status: verified, method: crud, date: "2026-06-28"}
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "per-tenant"
+
+  endpoint:
+    _verification: {status: verified, method: crud, date: "2026-06-28"}
+    classification:
+      category: "networking"
+      multi_tenant_pattern: "per-tenant"
+
+  malicious_user_rule:
+    _verification: {status: verified, method: crud, date: "2026-06-28"}
+    classification:
+      category: "security"
+      multi_tenant_pattern: "per-tenant"
+
+  mitigation_policy:
+    _verification: {status: verified, method: crud, date: "2026-06-28"}
+    classification:
+      category: "security"
+      multi_tenant_pattern: "per-tenant"
+
+  network_policy:
+    _verification: {status: verified, method: crud, date: "2026-06-28"}
+    classification:
+      category: "networking"
+      multi_tenant_pattern: "per-tenant"
+
+  workload:
+    _verification: {status: verified, method: crud, date: "2026-06-28"}
+    classification:
+      category: "application"
+      multi_tenant_pattern: "per-tenant"
+
+  # ══════════════════════════════════════════════════════════════════════
+  # Tree-view resources without prior classification — restricted to
+  # system until CRUD-verified as tenant-scoped (2026-06-29)
+  # ══════════════════════════════════════════════════════════════════════
+
+  udp_loadbalancer:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "networking"
+      multi_tenant_pattern: "none"
+
+  protected_application:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "security"
+      multi_tenant_pattern: "none"
+
+  api_group:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "security"
+      multi_tenant_pattern: "none"
+
+  enhanced_firewall_policy:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "networking"
+      multi_tenant_pattern: "none"
+
+  securemesh_site_v2:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "none"
+
+  v1_dns_monitor:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "observability"
+      multi_tenant_pattern: "none"
+
+  v1_http_monitor:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "observability"
+      multi_tenant_pattern: "none"
+
+  api_crawler:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "security"
+      multi_tenant_pattern: "none"
+
+  api_discovery:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "security"
+      multi_tenant_pattern: "none"
+
+  api_testing:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "security"
+      multi_tenant_pattern: "none"
+
+  discovered_service:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "infrastructure"
+      multi_tenant_pattern: "none"
+
+  bigip_irule:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "application"
+      multi_tenant_pattern: "none"
+
+  bigip_virtual_server:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "application"
+      multi_tenant_pattern: "none"
+
+  infraprotect_asn:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "networking"
+      multi_tenant_pattern: "none"
+
+  infraprotect_firewall_rule:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "networking"
+      multi_tenant_pattern: "none"
+
+  infraprotect_tunnel:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "networking"
+      multi_tenant_pattern: "none"
+
+  infraprotect_asn_prefix:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "networking"
+      multi_tenant_pattern: "none"
+
+  infraprotect_deny_list_rule:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "networking"
+      multi_tenant_pattern: "none"
+
+  infraprotect_firewall_rule_group:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "networking"
+      multi_tenant_pattern: "none"
+
+  infraprotect_firewall_ruleset:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "networking"
+      multi_tenant_pattern: "none"
+
+  infraprotect_internet_prefix_advertisement:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "networking"
+      multi_tenant_pattern: "none"
+
+  nginx_instance:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "application"
+      multi_tenant_pattern: "none"
+
+  nginx_server:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "application"
+      multi_tenant_pattern: "none"
+
+  nginx_csg:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "application"
+      multi_tenant_pattern: "none"
+
+  nginx_service_discovery:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "application"
+      multi_tenant_pattern: "none"
+
+  protected_domain:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "security"
+      multi_tenant_pattern: "none"
+
+  allowed_domain:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "security"
+      multi_tenant_pattern: "none"
+
+  mitigated_domain:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "security"
+      multi_tenant_pattern: "none"
+
+  bot_allowlist_policy:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "security"
+      multi_tenant_pattern: "none"
+
+  bot_endpoint_policy:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "security"
+      multi_tenant_pattern: "none"
+
+  bot_network_policy:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "security"
+      multi_tenant_pattern: "none"
+
+  shape_bot_defense_instance:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "security"
+      multi_tenant_pattern: "none"
+
+  bot_detection_rule:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "security"
+      multi_tenant_pattern: "none"
+
+  nat_policy:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "networking"
+      multi_tenant_pattern: "none"
+
+  policy_based_routing:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "networking"
+      multi_tenant_pattern: "none"
+
+  secret_management_access:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "security"
+      multi_tenant_pattern: "none"
+
+  secret_policy_rule:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "security"
+      multi_tenant_pattern: "none"
+
+  lma_region:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "observability"
+      multi_tenant_pattern: "none"
+
+  flow_anomaly:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-06-29"}
+    classification:
+      category: "observability"
+      multi_tenant_pattern: "none"

@@ -3,7 +3,7 @@
   "info": {
     "title": "Authentication",
     "description": "Identity and access management providing APIs for configuring identity providers, access policies, and user credentials. Supports MFA, identity provider integration, and lifecycle operations for credential management across distributed deployments.",
-    "version": "2.1.164",
+    "version": "2.1.170",
     "contact": {
       "name": "F5 Distributed Cloud",
       "url": "https://docs.cloud.f5.com"
@@ -46,12 +46,67 @@
         "Implement token pooling for high-volume scenarios"
       ]
     },
+    "x-f5xc-guided-workflows": [
+      {
+        "id": "create_and_use_api_token",
+        "name": "Create and Use an API Token",
+        "description": "Create an API token in the console via guided browser automation, then call the F5 XC API with it",
+        "complexity": "low",
+        "estimated_steps": 3,
+        "prerequisites": [
+          "Logged in to the F5 XC console",
+          "User role: admin (access to Personal Management > Credentials)"
+        ],
+        "steps": [
+          {
+            "order": 1,
+            "action": "create_api_token",
+            "name": "Create API Token",
+            "description": "In Administration > Personal Management > Credentials, click Add Credentials, set Credential Type to API Token, enter a Credential Name and Expiry Date, then Generate",
+            "resource": "api_credential",
+            "required_fields": [
+              "credential_name",
+              "credential_type",
+              "expiry_date"
+            ],
+            "tips": [
+              "Set Credential Type to API Token. The default is API Certificate, which produces a P12 file, not a bearer token.",
+              "The token string is shown only once on the reveal panel. Capture it immediately, before dismissing the panel."
+            ]
+          },
+          {
+            "order": 2,
+            "action": "capture_token",
+            "name": "Capture the Generated Token",
+            "description": "Read the one-time token value from the reveal panel",
+            "depends_on": [
+              1
+            ],
+            "verification": [
+              "Token value captured before the reveal panel is dismissed"
+            ]
+          },
+          {
+            "order": 3,
+            "action": "call_api_with_token",
+            "name": "Call the F5 XC API with the Token",
+            "description": "Use the captured token in an XC-API call with header Authorization APIToken to confirm it works, for example list namespaces",
+            "depends_on": [
+              2
+            ],
+            "verification": [
+              "XC-API GET /api/web/namespaces returns HTTP 200 with the tenant namespaces"
+            ]
+          }
+        ]
+      }
+    ],
     "x-f5xc-namespace-profile": {
       "constraint": {
         "allowed": [
           "system"
         ],
-        "enforced": true
+        "enforced": false
       },
       "recommendation": {
         "primary": "system",
@@ -3943,7 +3998,7 @@
             "allowed": [
               "system"
             ],
-            "enforced": true
+            "enforced": false
           },
           "recommendation": {
             "primary": "system",
@@ -3998,7 +4053,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-06-26T15:47:27.900680+00:00"
+                "validatedAt": "2026-07-07T15:00:29.201425+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4025,7 +4080,7 @@
             "allowed": [
               "system"
             ],
-            "enforced": true
+            "enforced": false
           },
           "recommendation": {
             "primary": "system",
@@ -4099,7 +4154,7 @@
             "allowed": [
               "system"
             ],
-            "enforced": true
+            "enforced": false
           },
           "recommendation": {
             "primary": "system",
@@ -4165,7 +4220,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-06-26T15:47:27.900804+00:00"
+                "validatedAt": "2026-07-07T15:00:29.201596+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4195,7 +4250,7 @@
             "allowed": [
               "system"
             ],
-            "enforced": true
+            "enforced": false
           },
           "recommendation": {
             "primary": "system",
@@ -4262,7 +4317,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-06-26T15:47:27.900879+00:00"
+                "validatedAt": "2026-07-07T15:00:29.201705+00:00"
               },
               "deterministic": true
             },
@@ -4274,7 +4329,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-06-26T16:09:21.391735+00:00"
+            "x-reconciled-at": "2026-07-07T15:22:34.276200+00:00"
           },
           "namespace": {
             "type": "string",
@@ -4303,7 +4358,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-06-26T15:47:27.900922+00:00"
+                "validatedAt": "2026-07-07T15:00:29.201745+00:00"
               },
               "deterministic": true
             },
@@ -4315,7 +4370,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-06-26T16:09:21.391765+00:00"
+            "x-reconciled-at": "2026-07-07T15:22:34.276227+00:00"
           },
           "spec": {
             "allOf": [
@@ -4352,7 +4407,7 @@
             "allowed": [
               "system"
             ],
-            "enforced": true
+            "enforced": false
           },
           "recommendation": {
             "primary": "system",
@@ -4402,7 +4457,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-06-26T15:47:27.900974+00:00"
+                "validatedAt": "2026-07-07T15:00:29.201794+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4426,7 +4481,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-06-26T15:47:27.901030+00:00"
+                "validatedAt": "2026-07-07T15:00:29.201849+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4462,7 +4517,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-06-26T15:47:27.901073+00:00"
+                "validatedAt": "2026-07-07T15:00:29.201889+00:00"
               },
               "deterministic": true
             },
@@ -4474,7 +4529,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-06-26T16:09:21.391833+00:00"
+            "x-reconciled-at": "2026-07-07T15:22:34.276303+00:00"
           }
         },
         "x-f5xc-description-short": "CreateResponse is the response format for the credential's create request.",
@@ -4497,7 +4552,7 @@
             "allowed": [
               "system"
             ],
-            "enforced": true
+            "enforced": false
           },
           "recommendation": {
             "primary": "system",
@@ -4600,7 +4655,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-06-26T15:47:27.901150+00:00"
+                "validatedAt": "2026-07-07T15:00:29.201953+00:00"
               },
               "deterministic": true
             },
@@ -4612,7 +4667,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-06-26T16:09:21.391887+00:00"
+            "x-reconciled-at": "2026-07-07T15:22:34.276361+00:00"
           },
           "namespace": {
             "type": "string",
@@ -4641,7 +4696,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-06-26T15:47:27.901187+00:00"
+                "validatedAt": "2026-07-07T15:00:29.201990+00:00"
               },
               "deterministic": true
             },
@@ -4653,7 +4708,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-06-26T16:09:21.391911+00:00"
+            "x-reconciled-at": "2026-07-07T15:22:34.276386+00:00"
           },
           "namespace_roles": {
             "type": "array",
@@ -4697,7 +4752,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-06-26T15:47:27.901257+00:00"
+                "validatedAt": "2026-07-07T15:00:29.202054+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4772,7 +4827,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-06-26T15:47:27.901334+00:00"
+                "validatedAt": "2026-07-07T15:00:29.202131+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4798,7 +4853,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-06-26T15:47:27.901389+00:00"
+                "validatedAt": "2026-07-07T15:00:29.202184+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4856,7 +4911,7 @@
             "allowed": [
               "system"
             ],
-            "enforced": true
+            "enforced": false
           },
           "recommendation": {
             "primary": "system",
@@ -4901,7 +4956,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-06-26T15:47:27.901443+00:00"
+                "validatedAt": "2026-07-07T15:00:29.202236+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4940,7 +4995,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-06-26T15:47:27.901499+00:00"
+                "validatedAt": "2026-07-07T15:00:29.202312+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4966,7 +5021,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-06-26T15:47:27.901552+00:00"
+                "validatedAt": "2026-07-07T15:00:29.202365+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4991,12 +5046,18 @@
           "example_curl": "curl -X POST \"$F5XC_API_URL/api/config/namespaces/default/api_credential_customs\" \\\n  -H \"Authorization: APIToken $F5XC_API_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d @example.json"
         },
         "x-f5xc-cli-domain": "api",
+        "x-f5xc-field-examples": {
+          "spec.password": "value",
+          "spec.type": "value",
+          "spec.virtual_k8s_name": "value",
+          "spec.virtual_k8s_namespace": "value"
+        },
         "x-f5xc-namespace-profile": {
           "constraint": {
             "allowed": [
               "system"
             ],
-            "enforced": true
+            "enforced": false
           },
           "recommendation": {
             "primary": "system",
@@ -5074,7 +5135,7 @@
             "allowed": [
               "system"
             ],
-            "enforced": true
+            "enforced": false
           },
           "recommendation": {
             "primary": "system",
@@ -5130,7 +5191,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-06-26T15:47:27.901604+00:00"
+                "validatedAt": "2026-07-07T15:00:29.202417+00:00"
               },
               "deterministic": true
             },
@@ -5142,7 +5203,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-06-26T16:09:21.392065+00:00"
+            "x-reconciled-at": "2026-07-07T15:22:34.276541+00:00"
           },
           "namespace": {
             "type": "string",
@@ -5179,7 +5240,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-06-26T15:47:27.901646+00:00"
+                "validatedAt": "2026-07-07T15:00:29.202459+00:00"
               },
               "deterministic": true
             },
@@ -5191,7 +5252,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-06-26T16:09:21.392101+00:00"
+            "x-reconciled-at": "2026-07-07T15:22:34.276566+00:00"
           }
         },
         "x-f5xc-description-short": "GET credential object with a given name.",
@@ -5212,7 +5273,7 @@
             "allowed": [
               "system"
             ],
-            "enforced": true
+            "enforced": false
           },
           "recommendation": {
             "primary": "system",
@@ -5263,7 +5324,7 @@
             "allowed": [
               "system"
             ],
-            "enforced": true
+            "enforced": false
           },
           "recommendation": {
             "primary": "system",
@@ -5314,7 +5375,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-06-26T15:47:27.901712+00:00"
+                "validatedAt": "2026-07-07T15:00:29.202522+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5339,7 +5400,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-06-26T15:47:27.901762+00:00"
+                "validatedAt": "2026-07-07T15:00:29.202572+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5378,7 +5439,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-06-26T15:47:27.901800+00:00"
+                "validatedAt": "2026-07-07T15:00:29.202606+00:00"
               },
               "deterministic": true
             },
@@ -5390,7 +5451,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-06-26T16:09:21.392168+00:00"
+            "x-reconciled-at": "2026-07-07T15:22:34.276633+00:00"
           },
           "namespace": {
             "type": "string",
@@ -5419,7 +5480,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-06-26T15:47:27.901836+00:00"
+                "validatedAt": "2026-07-07T15:00:29.202642+00:00"
               },
               "deterministic": true
             },
@@ -5431,7 +5492,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-06-26T16:09:21.392193+00:00"
+            "x-reconciled-at": "2026-07-07T15:22:34.276657+00:00"
           },
           "namespace_access": {
             "allOf": [
@@ -5475,7 +5536,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-06-26T15:47:27.901875+00:00"
+                "validatedAt": "2026-07-07T15:00:29.202680+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5488,7 +5549,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-06-26T16:09:21.392237+00:00"
+            "x-reconciled-at": "2026-07-07T15:22:34.276699+00:00"
           },
           "user_email": {
             "type": "string",
@@ -5506,7 +5567,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-06-26T15:47:27.901920+00:00"
+                "validatedAt": "2026-07-07T15:00:29.202727+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5561,7 +5622,7 @@
             "allowed": [
               "system"
             ],
-            "enforced": true
+            "enforced": false
           },
           "recommendation": {
             "primary": "system",
@@ -5617,7 +5678,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-06-26T15:47:27.902037+00:00"
+                "validatedAt": "2026-07-07T15:00:29.202837+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5642,7 +5703,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-06-26T15:47:27.902099+00:00"
+                "validatedAt": "2026-07-07T15:00:29.202889+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5665,7 +5726,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-06-26T15:47:27.902143+00:00"
+                "validatedAt": "2026-07-07T15:00:29.202933+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5690,7 +5751,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-06-26T15:47:27.902196+00:00"
+                "validatedAt": "2026-07-07T15:00:29.202988+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5715,7 +5776,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-06-26T15:47:27.902242+00:00"
+                "validatedAt": "2026-07-07T15:00:29.203033+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5762,7 +5823,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-06-26T15:47:27.902303+00:00"
+                "validatedAt": "2026-07-07T15:00:29.203092+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5786,7 +5847,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-06-26T15:47:27.902354+00:00"
+                "validatedAt": "2026-07-07T15:00:29.203144+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5810,7 +5871,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-06-26T15:47:27.902405+00:00"
+                "validatedAt": "2026-07-07T15:00:29.203199+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5847,7 +5908,7 @@
             "allowed": [
               "system"
             ],
-            "enforced": true
+            "enforced": false
           },
           "recommendation": {
             "primary": "system",
@@ -5885,7 +5946,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.7,
-                "validatedAt": "2026-06-26T15:47:27.902448+00:00"
+                "validatedAt": "2026-07-07T15:00:29.203241+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5913,7 +5974,7 @@
             "allowed": [
               "system"
             ],
-            "enforced": true
+            "enforced": false
           },
           "recommendation": {
             "primary": "system",
@@ -5964,7 +6025,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-06-26T15:47:27.902504+00:00"
+                "validatedAt": "2026-07-07T15:00:29.203309+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5989,7 +6050,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-06-26T15:47:27.902556+00:00"
+                "validatedAt": "2026-07-07T15:00:29.203360+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6028,7 +6089,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-06-26T15:47:27.902592+00:00"
+                "validatedAt": "2026-07-07T15:00:29.203395+00:00"
               },
               "deterministic": true
             },
@@ -6040,7 +6101,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-06-26T16:09:21.392408+00:00"
+            "x-reconciled-at": "2026-07-07T15:22:34.276867+00:00"
           },
           "namespace": {
             "type": "string",
@@ -6069,7 +6130,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-06-26T15:47:27.902628+00:00"
+                "validatedAt": "2026-07-07T15:00:29.203431+00:00"
               },
               "deterministic": true
             },
@@ -6081,7 +6142,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-06-26T16:09:21.392434+00:00"
+            "x-reconciled-at": "2026-07-07T15:22:34.276891+00:00"
           },
           "type": {
             "allOf": [
@@ -6111,7 +6172,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-06-26T15:47:27.902663+00:00"
+                "validatedAt": "2026-07-07T15:00:29.203466+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6124,7 +6185,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-06-26T16:09:21.392467+00:00"
+            "x-reconciled-at": "2026-07-07T15:22:34.276925+00:00"
           },
           "user_email": {
             "type": "string",
@@ -6142,7 +6203,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-06-26T15:47:27.902709+00:00"
+                "validatedAt": "2026-07-07T15:00:29.203512+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6176,7 +6237,7 @@
             "allowed": [
               "system"
             ],
-            "enforced": true
+            "enforced": false
           },
           "recommendation": {
             "primary": "system",
@@ -6214,7 +6275,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.7,
-                "validatedAt": "2026-06-26T15:47:27.902747+00:00"
+                "validatedAt": "2026-07-07T15:00:29.203551+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6242,7 +6303,7 @@
             "allowed": [
               "system"
             ],
-            "enforced": true
+            "enforced": false
           },
           "recommendation": {
             "primary": "system",
@@ -6293,7 +6354,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-06-26T15:47:27.902803+00:00"
+                "validatedAt": "2026-07-07T15:00:29.203608+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6318,7 +6379,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-06-26T15:47:27.902854+00:00"
+                "validatedAt": "2026-07-07T15:00:29.203657+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6357,7 +6418,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-06-26T15:47:27.902892+00:00"
+                "validatedAt": "2026-07-07T15:00:29.203695+00:00"
               },
               "deterministic": true
             },
@@ -6369,7 +6430,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-06-26T16:09:21.392540+00:00"
+            "x-reconciled-at": "2026-07-07T15:22:34.276995+00:00"
           },
           "namespace": {
             "type": "string",
@@ -6398,7 +6459,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-06-26T15:47:27.902927+00:00"
+                "validatedAt": "2026-07-07T15:00:29.203731+00:00"
               },
               "deterministic": true
             },
@@ -6410,7 +6471,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-06-26T16:09:21.392566+00:00"
+            "x-reconciled-at": "2026-07-07T15:22:34.277019+00:00"
           },
           "namespace_access": {
             "allOf": [
@@ -6454,7 +6515,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-06-26T15:47:27.902968+00:00"
+                "validatedAt": "2026-07-07T15:00:29.203771+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6467,7 +6528,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-06-26T16:09:21.392609+00:00"
+            "x-reconciled-at": "2026-07-07T15:22:34.277061+00:00"
           },
           "user_email": {
             "type": "string",
@@ -6485,7 +6546,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-06-26T15:47:27.903015+00:00"
+                "validatedAt": "2026-07-07T15:00:29.203817+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6540,7 +6601,7 @@
             "allowed": [
               "system"
             ],
-            "enforced": true
+            "enforced": false
           },
           "recommendation": {
             "primary": "system",
@@ -6595,7 +6656,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-06-26T15:47:27.903104+00:00"
+                "validatedAt": "2026-07-07T15:00:29.203894+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6622,7 +6683,7 @@
             "allowed": [
               "system"
             ],
-            "enforced": true
+            "enforced": false
           },
           "recommendation": {
             "primary": "system",
@@ -6704,7 +6765,7 @@
             "allowed": [
               "system"
             ],
-            "enforced": true
+            "enforced": false
           },
           "recommendation": {
             "primary": "system",
@@ -6776,7 +6837,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-06-26T15:47:27.903182+00:00"
+                "validatedAt": "2026-07-07T15:00:29.203973+00:00"
               },
               "deterministic": true
             },
@@ -6788,7 +6849,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-06-26T16:09:21.392701+00:00"
+            "x-reconciled-at": "2026-07-07T15:22:34.277151+00:00"
           }
         },
         "x-f5xc-description-short": "RecreateScimTokenRequest is the request format for generating SCIM API credential.",
@@ -6809,7 +6870,7 @@
             "allowed": [
               "system"
             ],
-            "enforced": true
+            "enforced": false
           },
           "recommendation": {
             "primary": "system",
@@ -6882,7 +6943,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-06-26T15:47:27.903240+00:00"
+                "validatedAt": "2026-07-07T15:00:29.204029+00:00"
               },
               "deterministic": true
             },
@@ -6894,7 +6955,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-06-26T16:09:21.392740+00:00"
+            "x-reconciled-at": "2026-07-07T15:22:34.277187+00:00"
           },
           "namespace": {
             "type": "string",
@@ -6931,7 +6992,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-06-26T15:47:27.903277+00:00"
+                "validatedAt": "2026-07-07T15:00:29.204068+00:00"
               },
               "deterministic": true
             },
@@ -6943,7 +7004,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-06-26T16:09:21.392764+00:00"
+            "x-reconciled-at": "2026-07-07T15:22:34.277211+00:00"
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -6964,7 +7025,7 @@
             "allowed": [
               "system"
             ],
-            "enforced": true
+            "enforced": false
           },
           "recommendation": {
             "primary": "system",
@@ -7021,7 +7082,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-06-26T15:47:27.903316+00:00"
+                "validatedAt": "2026-07-07T15:00:29.204106+00:00"
               },
               "deterministic": true
             },
@@ -7033,7 +7094,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-06-26T16:09:21.392790+00:00"
+            "x-reconciled-at": "2026-07-07T15:22:34.277237+00:00"
           },
           "namespace": {
             "type": "string",
@@ -7063,7 +7124,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-06-26T15:47:27.903352+00:00"
+                "validatedAt": "2026-07-07T15:00:29.204141+00:00"
               },
               "deterministic": true
             },
@@ -7075,7 +7136,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-06-26T16:09:21.392814+00:00"
+            "x-reconciled-at": "2026-07-07T15:22:34.277261+00:00"
           },
           "namespace_access": {
             "allOf": [
@@ -7130,7 +7191,7 @@
             "allowed": [
               "system"
             ],
-            "enforced": true
+            "enforced": false
           },
           "recommendation": {
             "primary": "system",
@@ -7181,7 +7242,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-06-26T15:47:27.903430+00:00"
+                "validatedAt": "2026-07-07T15:00:29.204220+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7220,7 +7281,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-06-26T15:47:27.903467+00:00"
+                "validatedAt": "2026-07-07T15:00:29.204256+00:00"
               },
               "deterministic": true
             },
@@ -7232,7 +7293,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-06-26T16:09:21.392873+00:00"
+            "x-reconciled-at": "2026-07-07T15:22:34.277333+00:00"
           }
         },
         "x-f5xc-description-short": "Response format for the credential's replace request.",
@@ -7254,7 +7315,7 @@
             "allowed": [
               "system"
             ],
-            "enforced": true
+            "enforced": false
           },
           "recommendation": {
             "primary": "system",
@@ -7309,7 +7370,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-06-26T15:47:27.903510+00:00"
+                "validatedAt": "2026-07-07T15:00:29.204308+00:00"
               },
               "deterministic": true
             },
@@ -7321,7 +7382,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-06-26T16:09:21.392899+00:00"
+            "x-reconciled-at": "2026-07-07T15:22:34.277359+00:00"
           }
         },
         "x-f5xc-description-short": "ScimTokenRequest is used for fetching or revoking scim token.",
@@ -7341,7 +7402,7 @@
             "allowed": [
               "system"
             ],
-            "enforced": true
+            "enforced": false
           },
           "recommendation": {
             "primary": "system",
@@ -7395,7 +7456,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-06-26T15:47:27.903582+00:00"
+                "validatedAt": "2026-07-07T15:00:29.204382+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7422,7 +7483,7 @@
             "allowed": [
               "system"
             ],
-            "enforced": true
+            "enforced": false
           },
           "recommendation": {
             "primary": "system",
@@ -7473,7 +7534,7 @@
             "allowed": [
               "system"
             ],
-            "enforced": true
+            "enforced": false
           },
           "recommendation": {
             "primary": "system",
@@ -7510,7 +7571,7 @@
             "maxLength": 17,
             "minLength": 17,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-06-26T16:09:21.392948+00:00"
+            "x-reconciled-at": "2026-07-07T15:22:34.277408+00:00"
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -7529,7 +7590,7 @@
             "allowed": [
               "system"
             ],
-            "enforced": true
+            "enforced": false
           },
           "recommendation": {
             "primary": "system",
@@ -7570,7 +7631,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-06-26T15:47:27.903650+00:00"
+                "validatedAt": "2026-07-07T15:00:29.204449+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7602,7 +7663,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-06-26T15:47:27.903702+00:00"
+                "validatedAt": "2026-07-07T15:00:29.204502+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7630,7 +7691,7 @@
             "allowed": [
               "system"
             ],
-            "enforced": true
+            "enforced": false
           },
           "recommendation": {
             "primary": "system",
@@ -7663,7 +7724,7 @@
             "allowed": [
               "system"
             ],
-            "enforced": true
+            "enforced": false
           },
           "recommendation": {
             "primary": "system",
@@ -7712,7 +7773,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-06-26T15:47:27.903741+00:00"
+                "validatedAt": "2026-07-07T15:00:29.204542+00:00"
               },
               "deterministic": true
             },
@@ -7724,7 +7785,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-06-26T16:09:21.392998+00:00"
+            "x-reconciled-at": "2026-07-07T15:22:34.277453+00:00"
           }
         },
         "x-f5xc-description-short": "Initializer is information about an initializer that has not yet completed.",
@@ -7744,7 +7805,7 @@
             "allowed": [
               "system"
             ],
-            "enforced": true
+            "enforced": false
           },
           "recommendation": {
             "primary": "system",
@@ -7813,7 +7874,7 @@
             "allowed": [
               "system"
             ],
-            "enforced": true
+            "enforced": false
           },
           "recommendation": {
             "primary": "system",
@@ -7874,15 +7935,15 @@
             "allowed": [
               "system"
             ],
-            "enforced": true
+            "enforced": false
           },
           "recommendation": {
             "primary": "system",
             "alternatives": [],
-            "rationale": "API credentials are platform-level identity"
+            "rationale": "Namespace management is platform-level administration"
           },
           "classification": {
-            "category": "identity",
+            "category": "infrastructure",
             "multi_tenant_pattern": "none"
           }
         }
@@ -7931,7 +7992,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-06-26T15:47:27.903839+00:00"
+                "validatedAt": "2026-07-07T15:00:29.204639+00:00"
               },
               "deterministic": true
             },
@@ -7943,7 +8004,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-06-26T16:09:21.393061+00:00"
+            "x-reconciled-at": "2026-07-07T15:22:34.277511+00:00"
           },
           "role": {
             "type": "string",
@@ -7973,7 +8034,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-06-26T15:47:27.903903+00:00"
+                "validatedAt": "2026-07-07T15:00:29.204700+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8001,16 +8062,16 @@
             "allowed": [
               "system"
             ],
-            "enforced": true
+            "enforced": false
           },
           "recommendation": {
-            "primary": "system",
+            "primary": "custom",
             "alternatives": [],
-            "rationale": "API credentials are platform-level identity"
+            "rationale": "Standard tenant resource"
           },
           "classification": {
             "category": "identity",
-            "multi_tenant_pattern": "none"
+            "multi_tenant_pattern": "per-tenant"
           }
         }
       },
@@ -8075,7 +8136,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-06-26T15:47:27.903996+00:00"
+                "validatedAt": "2026-07-07T15:00:29.204792+00:00"
               },
               "byteLength": {
                 "max": 1200
@@ -8090,7 +8151,7 @@
             },
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-06-26T16:09:21.393115+00:00"
+            "x-reconciled-at": "2026-07-07T15:22:34.277556+00:00"
           },
           "disable": {
             "type": "boolean",
@@ -8162,7 +8223,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-06-26T15:47:27.904044+00:00"
+                "validatedAt": "2026-07-07T15:00:29.204839+00:00"
               },
               "deterministic": true
             },
@@ -8174,7 +8235,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-06-26T16:09:21.393163+00:00"
+            "x-reconciled-at": "2026-07-07T15:22:34.277598+00:00"
           },
           "namespace": {
             "type": "string",
@@ -8205,7 +8266,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-06-26T15:47:27.904079+00:00"
+                "validatedAt": "2026-07-07T15:00:29.204874+00:00"
               },
               "deterministic": true
             },
@@ -8217,7 +8278,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-06-26T16:09:21.393189+00:00"
+            "x-reconciled-at": "2026-07-07T15:22:34.277622+00:00"
           },
           "uid": {
             "type": "string",
@@ -8236,7 +8297,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-06-26T15:47:27.904120+00:00"
+                "validatedAt": "2026-07-07T15:00:29.204906+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8250,7 +8311,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-06-26T16:09:21.393214+00:00"
+            "x-reconciled-at": "2026-07-07T15:22:34.277648+00:00"
           }
         },
         "x-f5xc-description-short": "ObjectMetaType is metadata(common attributes) of an object that all configuration objects will have.",
@@ -8277,7 +8338,7 @@
             "allowed": [
               "system"
             ],
-            "enforced": true
+            "enforced": false
           },
           "recommendation": {
             "primary": "system",
@@ -8314,7 +8375,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-06-26T15:47:27.904159+00:00"
+                "validatedAt": "2026-07-07T15:00:29.204944+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8326,7 +8387,7 @@
             "readOnly": true,
             "minLength": 12,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-06-26T16:09:21.393240+00:00"
+            "x-reconciled-at": "2026-07-07T15:22:34.277673+00:00"
           },
           "name": {
             "type": "string",
@@ -8359,7 +8420,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-06-26T15:47:27.904196+00:00"
+                "validatedAt": "2026-07-07T15:00:29.204978+00:00"
               },
               "deterministic": true
             },
@@ -8371,7 +8432,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-06-26T16:09:21.393266+00:00"
+            "x-reconciled-at": "2026-07-07T15:22:34.277697+00:00"
           },
           "namespace": {
             "type": "string",
@@ -8402,7 +8463,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-06-26T15:47:27.904232+00:00"
+                "validatedAt": "2026-07-07T15:00:29.205013+00:00"
               },
               "deterministic": true
             },
@@ -8414,7 +8475,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-06-26T16:09:21.393292+00:00"
+            "x-reconciled-at": "2026-07-07T15:22:34.277720+00:00"
           },
           "tenant": {
             "type": "string",
@@ -8433,7 +8494,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-06-26T15:47:27.904272+00:00"
+                "validatedAt": "2026-07-07T15:00:29.205053+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8446,7 +8507,7 @@
             "x-field-mutability": "read-only",
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-06-26T16:09:21.393318+00:00"
+            "x-reconciled-at": "2026-07-07T15:22:34.277744+00:00"
           },
           "uid": {
             "type": "string",
@@ -8465,7 +8526,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-06-26T15:47:27.904304+00:00"
+                "validatedAt": "2026-07-07T15:00:29.205086+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8479,7 +8540,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-06-26T16:09:21.393343+00:00"
+            "x-reconciled-at": "2026-07-07T15:22:34.277769+00:00"
           }
         },
         "x-f5xc-description-short": "Type establishes a 'direct reference' from one object(the referrer) to another(the referred).",
@@ -8504,7 +8565,7 @@
             "allowed": [
               "system"
             ],
-            "enforced": true
+            "enforced": false
           },
           "recommendation": {
             "primary": "system",
@@ -8557,7 +8618,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-06-26T15:47:27.904358+00:00"
+                "validatedAt": "2026-07-07T15:00:29.205140+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8568,7 +8629,7 @@
             },
             "minLength": 27,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-06-26T16:09:21.393378+00:00"
+            "x-reconciled-at": "2026-07-07T15:22:34.277803+00:00"
           },
           "status": {
             "type": "string",
@@ -8586,7 +8647,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-06-26T15:47:27.904399+00:00"
+                "validatedAt": "2026-07-07T15:00:29.205182+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8597,7 +8658,7 @@
             },
             "minLength": 17,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-06-26T16:09:21.393404+00:00"
+            "x-reconciled-at": "2026-07-07T15:22:34.277826+00:00"
           }
         },
         "x-f5xc-description-short": "Status is a return value for calls that don't return other objects.",
@@ -8619,7 +8680,7 @@
             "allowed": [
               "system"
             ],
-            "enforced": true
+            "enforced": false
           },
           "recommendation": {
             "primary": "system",
@@ -8656,7 +8717,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-06-26T15:47:27.904451+00:00"
+                "validatedAt": "2026-07-07T15:00:29.205235+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8684,7 +8745,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-06-26T15:47:27.904499+00:00"
+                "validatedAt": "2026-07-07T15:00:29.205293+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8713,7 +8774,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-06-26T15:47:27.904548+00:00"
+                "validatedAt": "2026-07-07T15:00:29.205344+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8740,7 +8801,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-06-26T15:47:27.904594+00:00"
+                "validatedAt": "2026-07-07T15:00:29.205389+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8769,7 +8830,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-06-26T15:47:27.904644+00:00"
+                "validatedAt": "2026-07-07T15:00:29.205439+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8794,7 +8855,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-06-26T15:47:27.904693+00:00"
+                "validatedAt": "2026-07-07T15:00:29.205491+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8870,7 +8931,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-06-26T15:47:27.904771+00:00"
+                "validatedAt": "2026-07-07T15:00:29.205571+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8908,7 +8969,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-06-26T15:47:27.904829+00:00"
+                "validatedAt": "2026-07-07T15:00:29.205625+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8920,7 +8981,7 @@
             "maxLength": 6,
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-06-26T16:09:21.393524+00:00"
+            "x-reconciled-at": "2026-07-07T15:22:34.277939+00:00"
           },
           "object_index": {
             "type": "integer",
@@ -8952,7 +9013,16 @@
               "create": false,
               "update": false,
               "read": false
-            }
+            },
+            "x-f5xc-references": [
+              {
+                "resource_kind": null,
+                "field_path": "owner_view",
+                "gated_by": null,
+                "required": false,
+                "cardinality": "single"
+              }
+            ]
           },
           "revision": {
             "type": "string",
@@ -8971,7 +9041,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-06-26T15:47:27.904889+00:00"
+                "validatedAt": "2026-07-07T15:00:29.205689+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9015,7 +9085,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-06-26T15:47:27.904934+00:00"
+                "validatedAt": "2026-07-07T15:00:29.205733+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9028,7 +9098,7 @@
             "x-field-mutability": "read-only",
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-06-26T16:09:21.393588+00:00"
+            "x-reconciled-at": "2026-07-07T15:22:34.277998+00:00"
           },
           "trace_info": {
             "type": "string",
@@ -9047,7 +9117,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-06-26T15:47:27.904980+00:00"
+                "validatedAt": "2026-07-07T15:00:29.205779+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9074,7 +9144,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-06-26T15:47:27.905012+00:00"
+                "validatedAt": "2026-07-07T15:00:29.205811+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9088,7 +9158,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-06-26T16:09:21.393625+00:00"
+            "x-reconciled-at": "2026-07-07T15:22:34.278032+00:00"
           },
           "vtrp_id": {
             "type": "string",
@@ -9103,7 +9173,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-06-26T15:47:27.905053+00:00"
+                "validatedAt": "2026-07-07T15:00:29.205854+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9166,7 +9236,7 @@
             "allowed": [
               "system"
             ],
-            "enforced": true
+            "enforced": false
           },
           "recommendation": {
             "primary": "system",
@@ -9201,7 +9271,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-06-26T15:47:27.905104+00:00"
+                "validatedAt": "2026-07-07T15:00:29.205897+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9212,7 +9282,7 @@
             },
             "minLength": 12,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-06-26T16:09:21.393670+00:00"
+            "x-reconciled-at": "2026-07-07T15:22:34.278075+00:00"
           },
           "name": {
             "type": "string",
@@ -9245,7 +9315,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-06-26T15:47:27.905138+00:00"
+                "validatedAt": "2026-07-07T15:00:29.205931+00:00"
               },
               "deterministic": true
             },
@@ -9257,7 +9327,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-06-26T16:09:21.393695+00:00"
+            "x-reconciled-at": "2026-07-07T15:22:34.278099+00:00"
           },
           "namespace": {
             "type": "string",
@@ -9288,7 +9358,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-06-26T15:47:27.905175+00:00"
+                "validatedAt": "2026-07-07T15:00:29.205966+00:00"
               },
               "deterministic": true
             },
@@ -9300,7 +9370,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-06-26T16:09:21.393720+00:00"
+            "x-reconciled-at": "2026-07-07T15:22:34.278123+00:00"
           },
           "uid": {
             "type": "string",
@@ -9317,7 +9387,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-06-26T15:47:27.905207+00:00"
+                "validatedAt": "2026-07-07T15:00:29.205997+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9330,7 +9400,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-06-26T16:09:21.393747+00:00"
+            "x-reconciled-at": "2026-07-07T15:22:34.278147+00:00"
           }
         },
         "x-f5xc-description-short": "ViewRefType represents a reference to a view.",
@@ -9353,7 +9423,7 @@
             "allowed": [
               "system"
             ],
-            "enforced": true
+            "enforced": false
           },
           "recommendation": {
             "primary": "system",
