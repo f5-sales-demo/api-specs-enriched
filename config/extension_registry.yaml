@@ -157,10 +157,16 @@ schema_level:
     type: object
     purpose: Rich namespace constraint, recommendation, and classification profile
     consumers: [cli, mcp, ide, terraform]
+    notes: >-
+      constraint.enforced is verification-gated: it is true ONLY when the resource's
+      namespace constraint is verified (a live CRUD probe or a strong spec signal;
+      _verification.status == 'verified'). Assumed/restricted/unverified classifications
+      emit enforced=false so consumers (e.g. the Terraform provider) treat them as
+      advisory and do not over-restrict a namespace on an unverified guess.
     example:
       constraint:
         allowed: ["custom", "default", "shared"]
-        enforced: true
+        enforced: false
       recommendation:
         primary: "custom"
         alternatives: []

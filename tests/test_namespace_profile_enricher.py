@@ -137,7 +137,9 @@ class TestDeepMerge:
     def test_partial_override_merges_with_default(self, enricher: NamespaceProfileEnricher) -> None:
         profile = enricher.get_profile_for_resource("http_loadbalancer")
         assert profile["constraint"]["allowed"] == ["custom", "default", "shared"]
-        assert profile["constraint"]["enforced"] is True
+        # enforced now reflects verification status, not a hardcoded default:
+        # http_loadbalancer is not 'verified', so the constraint is advisory.
+        assert profile["constraint"]["enforced"] is False
         assert profile["classification"]["category"] == "networking"
         assert profile["recommendation"]["primary"] == "custom"
 
@@ -181,6 +183,36 @@ class TestProfileValidation:
 
 
 # -- Resource Type Extraction Tests --
+
+
+class TestVerificationGate:
+    """constraint.enforced must reflect verification: only 'verified' resources are
+    enforced; assumed/restricted/unverified/default-fallback are advisory."""
+
+    def test_verified_resource_is_enforced(self, enricher: NamespaceProfileEnricher) -> None:
+        # dns_load_balancer is _verification.status == 'verified' (live CRUD probe).
+        profile = enricher.get_profile_for_resource("dns_load_balancer")
+        assert profile["constraint"]["allowed"] == ["system"]
+        assert profile["constraint"]["enforced"] is True
+
+    def test_unverified_single_allowed_is_advisory(
+        self, enricher: NamespaceProfileEnricher
+    ) -> None:
+        # A single-allowed resource that is not 'verified' must be advisory, so the
+        # provider keeps namespace Required rather than over-restricting.
+        res = enricher.config["resources"]
+        target = next(
+            r
+            for r, p in res.items()
+            if len((p.get("constraint") or {}).get("allowed", [])) == 1
+            and (p.get("_verification") or {}).get("status") != "verified"
+        )
+        profile = enricher.get_profile_for_resource(target)
+        assert profile["constraint"]["enforced"] is False, target
+
+    def test_default_fallback_is_advisory(self, enricher: NamespaceProfileEnricher) -> None:
+        profile = enricher.get_profile_for_resource("some_unknown_resource_xyz")
+        assert profile["constraint"]["enforced"] is False
 
 
 class TestResourceTypeExtraction:
