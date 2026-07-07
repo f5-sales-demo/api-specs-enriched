@@ -94,6 +94,16 @@ class NamespaceProfileEnricher:
                 self.stats.default_fallback_resources.append(resource_type)
 
         profile = _deep_merge(default, override)
+
+        # Gate enforcement on verification. `constraint.enforced` means "downstream
+        # tooling should enforce this restriction" — we only assert that for
+        # constraints whose _verification.status is 'verified' (live CRUD probe or a
+        # strong spec signal). Assumed/restricted/unverified classifications are
+        # advisory (enforced=False) so consumers (e.g. the Terraform provider) don't
+        # over-restrict a namespace on a guess.
+        status = (override.get("_verification") or {}).get("status")
+        profile.setdefault("constraint", {})["enforced"] = status == "verified"
+
         profile.pop("_verification", None)
         return profile
 
