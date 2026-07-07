@@ -210,6 +210,21 @@ class TestResourceTypeExtraction:
         profile = enricher.get_profile_for_resource("views_aws_vpc_site")
         assert profile["constraint"]["allowed"] == ["system"]
 
+    def test_schema_prefix_stripped(self, enricher: NamespaceProfileEnricher) -> None:
+        # Some spec schema keys are 'schema'-prefixed (e.g.
+        # schemadns_load_balancerCreateSpecType). They must map back to their
+        # resource, not fall through to the domain default.
+        assert (
+            enricher._schema_name_to_resource_type("schemadns_load_balancerCreateSpecType")
+            == "dns_load_balancer"
+        )
+        assert (
+            enricher._match_schema_to_resource(
+                "schemadns_load_balancerCreateSpecType", enricher.config.get("resources", {})
+            )
+            == "dns_load_balancer"
+        )
+
 
 # -- Spec Enrichment Tests --
 
@@ -239,6 +254,28 @@ class TestSpecEnrichment:
         result = enricher.enrich_spec(shared_spec)
         profile = result["info"]["x-f5xc-namespace-profile"]
         assert profile["constraint"]["allowed"] == ["shared"]
+
+    def test_schema_prefixed_createspec_gets_resource_profile(
+        self, enricher: NamespaceProfileEnricher
+    ) -> None:
+        # A 'schema'-prefixed CreateSpecType must receive its resource's profile
+        # (system for dns_load_balancer), not the domain default — even when the
+        # domain-level detection falls back to the default.
+        spec: dict[str, Any] = {
+            "info": {"title": "DNS API"},
+            "paths": {},
+            "components": {
+                "schemas": {
+                    "schemadns_load_balancerCreateSpecType": {"type": "object"},
+                    "schemadns_load_balancerGetSpecType": {"type": "object"},
+                }
+            },
+        }
+        result = enricher.enrich_spec(spec)
+        schemas = result["components"]["schemas"]
+        for name in ("schemadns_load_balancerCreateSpecType", "schemadns_load_balancerGetSpecType"):
+            profile = schemas[name]["x-f5xc-namespace-profile"]
+            assert profile["constraint"]["allowed"] == ["system"], name
 
     def test_idempotent(self, enricher: NamespaceProfileEnricher, sample_spec: dict) -> None:
         result1 = enricher.enrich_spec(sample_spec)

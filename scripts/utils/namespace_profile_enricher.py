@@ -213,8 +213,10 @@ class NamespaceProfileEnricher:
                 name = name[: -len(suffix)]
                 break
 
-        # Strip common prefixes
-        for prefix in ("views",):
+        # Strip common prefixes. Some spec schema keys are 'schema'-prefixed
+        # (e.g. schemadns_load_balancerCreateSpecType); without stripping it the
+        # name would never match its resource and would inherit the domain default.
+        for prefix in ("views", "schema"):
             name = name.removeprefix(prefix)
 
         s1 = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
