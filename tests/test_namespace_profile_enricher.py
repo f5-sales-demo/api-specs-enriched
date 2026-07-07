@@ -214,6 +214,18 @@ class TestVerificationGate:
         profile = enricher.get_profile_for_resource("some_unknown_resource_xyz")
         assert profile["constraint"]["enforced"] is False
 
+    @pytest.mark.parametrize("resource_name", ["network_firewall", "virtual_network"])
+    def test_staging_crud_promoted_resources_are_enforced(
+        self, enricher: NamespaceProfileEnricher, resource_name: str
+    ) -> None:
+        # Promoted to verified by the 2026-07-07 staging CRUD pass (same live
+        # signature as fleet_config / rate_limit_threshold / k8s_cluster_role):
+        # created in system, rejected in tenant namespaces. Must be enforced and
+        # remain system-only.
+        profile = enricher.get_profile_for_resource(resource_name)
+        assert profile["constraint"]["allowed"] == ["system"], resource_name
+        assert profile["constraint"]["enforced"] is True, resource_name
+
 
 class TestResourceTypeExtraction:
     def test_from_title(self, enricher: NamespaceProfileEnricher) -> None:
