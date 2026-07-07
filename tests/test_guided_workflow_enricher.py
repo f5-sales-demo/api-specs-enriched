@@ -245,3 +245,66 @@ class TestWorkflowToDict:
             step = steps[0]
             assert "order" in step
             assert "action" in step
+
+
+@pytest.fixture
+def spec_with_authentication_domain():
+    """Create a spec classified under the authentication CLI domain."""
+    return {
+        "info": {
+            "title": "F5 XC Authentication API",
+            "description": "Authentication and API credential management",
+            "x-f5xc-cli-domain": "authentication",
+        },
+        "paths": {},
+    }
+
+
+class TestAuthenticationApiTokenWorkflow:
+    """The authentication domain must ship a create-and-use-API-token roadmap.
+
+    This encodes the deterministic roadmap the model follows: create an API
+    token via guided browser automation in the console, capture the one-time
+    revealed token, then call the F5 XC API with it via the XC-API tool.
+    """
+
+    WORKFLOW_ID = "create_and_use_api_token"
+
+    def test_authentication_is_a_configured_domain(self, enricher):
+        """authentication must be present as a guided-workflow domain."""
+        assert "authentication" in enricher.get_configured_domains()
+
+    def test_workflow_present_with_three_ordered_steps(self, enricher):
+        """The workflow exists and has the three expected ordered steps."""
+        workflow = enricher.get_workflow("authentication", self.WORKFLOW_ID)
+        assert workflow is not None, f"missing workflow {self.WORKFLOW_ID}"
+
+        actions = [step.action for step in workflow.steps]
+        assert actions == [
+            "create_api_token",
+            "capture_token",
+            "call_api_with_token",
+        ]
+        orders = [step.order for step in workflow.steps]
+        assert orders == sorted(orders), "steps must be ordered"
+
+    def test_step_dependencies_and_create_step_shape(self, enricher):
+        """Later steps depend on earlier ones; the create step targets api_credential."""
+        workflow = enricher.get_workflow("authentication", self.WORKFLOW_ID)
+        assert workflow is not None
+        by_action = {step.action: step for step in workflow.steps}
+
+        create = by_action["create_api_token"]
+        assert create.resource == "api_credential"
+        assert "credential_type" in create.required_fields
+
+        assert by_action["capture_token"].depends_on == [1]
+        assert by_action["call_api_with_token"].depends_on == [2]
+
+    def test_workflow_injected_into_authentication_spec(
+        self, enricher, spec_with_authentication_domain
+    ):
+        """The workflow is emitted under x-f5xc-guided-workflows for the domain."""
+        enriched = enricher.enrich_spec(spec_with_authentication_domain, domain="authentication")
+        workflows = enriched["info"]["x-f5xc-guided-workflows"]
+        assert any(w["id"] == self.WORKFLOW_ID for w in workflows)
