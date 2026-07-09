@@ -163,6 +163,20 @@ branding:
       replacement: "example-corp"
       case_sensitive: false
 
+    # Prose terminology fixes — genuine upstream typos flagged by the textlint
+    # terminology gate. ONLY true prose belongs here. API identifiers that look
+    # like terminology errors (the cloudfront / salesforce_commerce_connector
+    # connector enums, the literal /common.js path) are deliberately NOT listed —
+    # rewriting them would corrupt the API contract; those are allowlisted in the
+    # downstream provider's textlint config instead.
+    - pattern: "\\bJava Script\\b"
+      replacement: "JavaScript"
+      case_sensitive: true
+
+    - pattern: "\\bwebpages\\b"
+      replacement: "web pages"
+      case_sensitive: false
+
 # Grammar improvements
 grammar:
   # Capitalize first letter of sentences
