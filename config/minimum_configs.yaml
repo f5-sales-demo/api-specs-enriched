@@ -364,6 +364,10 @@ resources:
         required: true
         reason: "HTTP lb_type requires port_choice (400 when port omitted, unlike https_auto_cert)"
 
+      - field: "spec.client_side_defense"
+        requires: "resource:protected_domain (same namespace)"
+        reason: "Client-Side Defense requires a protected_domain (eTLD+1) registered in the load balancer's OWN namespace — F5 XC generates the per-namespace CSD JS configuration from it. Enabling client_side_defense without one fails with 500 'Failed to get CSD JS Configuration for <tenant>. Please ensure the domain to protect is configured in Client-Side Defense before proceeding'. Verified via live API 2026-07."
+
       - field: "spec.default_pool.use_tls.tls_config"
         required: true
         reason: "use_tls requires tls_config sub-field (400 without)"
