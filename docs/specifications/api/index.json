@@ -1,6 +1,6 @@
 {
-  "version": "2.1.171",
-  "timestamp": "2026-07-07T18:11:09.662434+00:00",
+  "version": "2.1.172",
+  "timestamp": "2026-07-09T17:52:28.379747+00:00",
   "specifications": [
     {
       "domain": "admin_console_and_ui",
@@ -4022,7 +4022,8 @@
           "Temporary service issue",
           "Bug in request handling",
           "Backend service failure",
-          "Resource constraint"
+          "Resource constraint",
+          "Client-Side Defense enabled on an http_loadbalancer without a protected_domain registered in the same namespace ('Failed to get CSD JS Configuration ... ensure the domain to protect is configured')"
         ],
         "diagnostic_steps": [
           {
@@ -4042,6 +4043,12 @@
           },
           {
             "step": 4,
+            "action": "Client-Side Defense: verify prerequisite",
+            "description": "If the error mentions 'CSD JS Configuration', register a protected_domain (eTLD+1) in the load balancer's OWN namespace before enabling client_side_defense (see the http_loadbalancer spec.client_side_defense x-f5xc-requires)",
+            "command": "GET /api/shape/csd/namespaces/{namespace}/js_configuration"
+          },
+          {
+            "step": 5,
             "action": "Contact support",
             "description": "If persistent, open support ticket with request ID"
           }
@@ -4049,7 +4056,8 @@
         "prevention": [
           "Implement retry logic",
           "Monitor service status pages",
-          "Use health check endpoints"
+          "Use health check endpoints",
+          "For Client-Side Defense: register a protected_domain (eTLD+1) in the load balancer's namespace before enabling client_side_defense"
         ],
         "related_errors": [
           502,
