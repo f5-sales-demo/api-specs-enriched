@@ -27,7 +27,9 @@ def test_java_script_normalized_to_javascript() -> None:
 
 
 def test_webpages_normalized_to_web_pages() -> None:
-    out = _t().transform_text("For Client-Side Defense to work on the webpages where you injected the JS.")
+    out = _t().transform_text(
+        "For Client-Side Defense to work on the webpages where you injected the JS."
+    )
     assert "web pages" in out
     assert "webpages" not in out
 
