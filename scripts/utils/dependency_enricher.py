@@ -25,6 +25,30 @@ from .extension_constants import X_F5XC_REQUIRES
 
 logger = logging.getLogger(__name__)
 
+# Matches a cross-resource requirement declared in config in the resource-and-scope
+# form (for example, a protected_domain in the same namespace). It is parsed into a
+# structured requires_resource descriptor so downstream tooling (the
+# terraform-provider-xcsh preflight codegen) can mechanically derive an apply-time
+# prerequisite check instead of string-parsing the opaque requires_field. Issue #967.
+_RESOURCE_REQUIREMENT_RE = re.compile(
+    r"^resource:\s*(?P<resource>[a-z0-9_]+)\s*\(\s*(?P<scope>[^)]+?)\s*\)\s*$"
+)
+
+
+def _parse_resource_requirement(requires: str) -> dict[str, str] | None:
+    """Parse a ``resource:<name> (<scope>)`` requirement into a structured form.
+
+    Returns ``{"resource": <name>, "scope": <normalized scope>}`` when the string
+    matches the cross-resource form, else ``None`` (e.g. a sibling-field reference
+    such as ``spec.enable_waf``). Scope text is normalized to snake_case
+    (``"same namespace"`` -> ``"same_namespace"``).
+    """
+    match = _RESOURCE_REQUIREMENT_RE.match(requires)
+    if not match:
+        return None
+    scope = "_".join(match.group("scope").lower().split())
+    return {"resource": match.group("resource"), "scope": scope}
+
 
 @dataclass
 class DependencyEnrichmentStats:
@@ -245,7 +269,14 @@ class DependencyEnricher:
             requires_entry["required"] = dep["required"]
         if "requires" in dep:
             # Alternative format: 'requires' references another top-level field
+            # (opaque string, preserved for existing consumers).
             requires_entry["requires_field"] = dep["requires"]
+            # Additionally, if it names a cross-resource requirement
+            # ("resource:<name> (<scope>)"), emit a structured descriptor so the
+            # provider can auto-derive an apply-time preflight. Issue #967.
+            resource_requirement = _parse_resource_requirement(str(dep["requires"]))
+            if resource_requirement is not None:
+                requires_entry["requires_resource"] = resource_requirement
         if "reason" in dep:
             requires_entry["reason"] = dep["reason"]
         if "min_items" in dep:
