@@ -246,17 +246,6 @@ jobs:
       - name: Lint specifications with Spectral
         run: python scripts/lint.py --input-dir docs/specifications/api --fail-on-error --fail-on-warning
 
-      - name: Validate curl examples (dry-run)
-        run: python scripts/validate_curl_examples.py --dry-run
-
-      - name: Validate curl examples (live API)
-        if: env.F5XC_API_TOKEN != ''
-        continue-on-error: true
-        env:
-          F5XC_API_TOKEN: ${{ secrets.F5XC_API_TOKEN }}
-          F5XC_API_URL: ${{ secrets.F5XC_API_URL }}
-        run: python scripts/validate_curl_examples.py
-
       - name: Validate specifications
         continue-on-error: true
         env:

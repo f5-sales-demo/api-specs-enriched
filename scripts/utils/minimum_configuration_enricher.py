@@ -48,7 +48,6 @@ class MinimumConfigurationStats:
     field_requirements_added: int = 0
     example_yamls_generated: int = 0
     example_jsons_generated: int = 0
-    example_curls_generated: int = 0
     cli_domains_added: int = 0
     cli_domains_preserved: int = 0
     errors: list[dict[str, Any]] = field(default_factory=list)
@@ -64,7 +63,6 @@ class MinimumConfigurationStats:
             "field_requirements_added": self.field_requirements_added,
             "example_yamls_generated": self.example_yamls_generated,
             "example_jsons_generated": self.example_jsons_generated,
-            "example_curls_generated": self.example_curls_generated,
             "cli_domains_added": self.cli_domains_added,
             "cli_domains_preserved": self.cli_domains_preserved,
             "error_count": len(self.errors),
@@ -217,7 +215,6 @@ class MinimumConfigurationEnricher:
             "mutually_exclusive_groups": resource_config.get("mutually_exclusive_groups", []),
             "example_yaml": resource_config.get("example_yaml", ""),
             "example_json": resource_config.get("example_json", ""),
-            "example_curl": resource_config.get("example_curl", ""),
         }
 
         schema[X_F5XC_MINIMUM_CONFIGURATION] = minimum_config
@@ -266,11 +263,9 @@ class MinimumConfigurationEnricher:
         required_fields = self._extract_required_fields_from_schema(schema)
         example_yaml = self._generate_example_yaml(schema_name, required_fields)
         example_json = self._generate_example_json(schema_name, required_fields)
-        example_curl = self._generate_example_curl(schema_name)
 
         self.stats.example_yamls_generated += 1
         self.stats.example_jsons_generated += 1
-        self.stats.example_curls_generated += 1
 
         return {
             "description": f"Minimum configuration for {schema_name}",
@@ -278,7 +273,6 @@ class MinimumConfigurationEnricher:
             "mutually_exclusive_groups": [],
             "example_yaml": example_yaml,
             "example_json": example_json,
-            "example_curl": example_curl,
         }
 
     def _extract_required_fields_from_schema(self, schema: dict[str, Any]) -> list[str]:
@@ -365,39 +359,6 @@ class MinimumConfigurationEnricher:
             example["spec"] = {}
 
         return json.dumps(example, indent=2)
-
-    def _generate_example_curl(self, schema_name: str) -> str:
-        """Generate example curl command for API interaction.
-
-        Args:
-            schema_name: Schema name
-
-        Returns:
-            Example curl command
-        """
-        # Infer resource type from schema name
-        resource_name = (
-            schema_name.split("Create", maxsplit=1)[0]
-            .split("Update", maxsplit=1)[0]
-            .split("Get", maxsplit=1)[0]
-            .split("Delete", maxsplit=1)[0]
-        )
-        resource_name = _CAMELCASE_TO_SNAKE_PATTERN.sub("_", resource_name).lower()
-
-        # Convert to plural form for API endpoint (simple heuristic)
-        if resource_name.endswith("y"):
-            resource_plural = resource_name[:-1] + "ies"
-        elif resource_name.endswith("s"):
-            resource_plural = resource_name + "es"
-        else:
-            resource_plural = resource_name + "s"
-
-        return (
-            f'curl -X POST "$F5XC_API_URL/api/config/namespaces/default/{resource_plural}" \\\n'
-            f'  -H "Authorization: APIToken $F5XC_API_TOKEN" \\\n'
-            f'  -H "Content-Type: application/json" \\\n'
-            f"  -d @example.json"
-        )
 
     def _add_auto_generated_field_requirements(self, schema: dict[str, Any]) -> None:
         """Add x-f5xc-required-for to schema properties based on multiple indicators.

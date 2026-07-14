@@ -12,7 +12,6 @@ from .constrained_fields_enricher import ConstrainedFieldsEnricher
 from .constraint_analyzer import ConstraintAnalyzer
 from .constraint_enricher import ConstraintEnricher
 from .constraint_reconciler import ConstraintReconciler
-from .curl_validator import CurlExampleValidator
 from .default_value_enricher import DefaultValueEnricher
 from .dependency_enricher import DependencyEnricher
 from .deprecated_tier_enricher import DeprecatedTierEnricher
@@ -62,7 +61,6 @@ __all__ = [
     "ConstraintAnalyzer",
     "ConstraintEnricher",
     "ConstraintReconciler",
-    "CurlExampleValidator",
     "DefaultValueEnricher",
     "DependencyEnricher",
     "DeprecatedTierEnricher",

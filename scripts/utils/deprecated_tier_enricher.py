@@ -26,8 +26,6 @@ from typing import Any, ClassVar
 
 import yaml
 
-from scripts.utils.extension_constants import X_F5XC_MINIMUM_CONFIGURATION
-
 # Precompiled regex patterns for performance (used in hot paths)
 _WHITESPACE_NORMALIZE_PATTERN = re.compile(r"\s+")
 _COMMA_PERIOD_PATTERN = re.compile(r",\s*\.")
@@ -53,7 +51,6 @@ class DeprecatedTierStats:
     schemas_transformed: int = 0
     values_transformed: int = 0
     descriptions_updated: int = 0
-    curl_examples_fixed: int = 0
     errors: list[dict[str, Any]] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
@@ -63,7 +60,6 @@ class DeprecatedTierStats:
             "schemas_transformed": self.schemas_transformed,
             "values_transformed": self.values_transformed,
             "descriptions_updated": self.descriptions_updated,
-            "curl_examples_fixed": self.curl_examples_fixed,
             "error_count": len(self.errors),
             "errors": self.errors,
         }
@@ -186,9 +182,6 @@ class DeprecatedTierEnricher:
             if self._matches_tier_pattern(schema_name):
                 self._clean_tier_schema(schema_name, schema_def)
 
-            # Also fix deprecated tier values in curl examples
-            self._fix_curl_examples(schema_def)
-
         return spec
 
     def _matches_tier_pattern(self, schema_name: str) -> bool:
@@ -272,30 +265,6 @@ class DeprecatedTierEnricher:
         if new_desc != original_desc:
             schema["description"] = new_desc
             self.stats.descriptions_updated += 1
-
-    def _fix_curl_examples(self, schema: dict[str, Any]) -> None:
-        """Fix deprecated tier values in API curl examples.
-
-        Args:
-            schema: Schema definition dictionary
-        """
-        min_config = schema.get(X_F5XC_MINIMUM_CONFIGURATION, {})
-        if not min_config:
-            return
-
-        example_cmd = min_config.get("example_curl", "")
-        if not example_cmd:
-            return
-
-        # Check if any deprecated tier values are in the curl example
-        new_cmd = example_cmd
-        for old_pattern, new_pattern in self.TIER_REPLACEMENTS.items():
-            if old_pattern in new_cmd:
-                new_cmd = new_cmd.replace(old_pattern, new_pattern)
-                self.stats.curl_examples_fixed += 1
-
-        if new_cmd != example_cmd:
-            min_config["example_curl"] = new_cmd
 
     def get_stats(self) -> dict[str, Any]:
         """Get enrichment statistics.
