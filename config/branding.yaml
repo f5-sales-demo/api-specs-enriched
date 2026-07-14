@@ -161,3 +161,43 @@ deprecations:
         volterraedge/volterra registry.
     canonical:
       url: "https://f5-sales-demo.github.io/terraform-provider-xcsh/"
+
+  cli:
+    deprecated:
+      command: "vesctl"
+      status: "abandoned"
+      note: >
+        Legacy Volterra CLI, abandoned years ago and unsupported. xcsh must never
+        propose, generate, or run vesctl. High risk of AI model recommendation due
+        to training-data prevalence.
+    canonical:
+      command: "xcsh"
+      note: >
+        xcsh is the modern, supported replacement for vesctl. For F5 XC API calls
+        use the xcsh_api tool (never curl); for console automation use the
+        catalog_workflow_runner tool.
+
+  api_documentation:
+    deprecated:
+      url: "https://docs.cloud.f5.com/docs-v2/api"
+      note: >
+        Legacy F5 XC API documentation set. Deprecated — never link or fetch it
+        for API references.
+    canonical:
+      url: "https://f5-sales-demo.github.io/api-specs-enriched/en/"
+      note: >
+        Enriched API specs are embedded in the xcsh binary — prefer
+        xcsh://api-catalog/ and xcsh://api-spec/ before fetching any URL.
+
+  product_brand:
+    deprecated:
+      name: "Volterra"
+      note: >
+        Volterra was the company F5 acquired; the brand is retired. Never use
+        "Volterra" as a product name in prose or recommend Volterra-labeled tooling.
+    canonical:
+      name: "F5 Distributed Cloud"
+      note: >
+        volterra_* API keys, *.volterra.io / *.volterra.us hostnames, and schema
+        identifiers are required functional identifiers — use them verbatim; only
+        the product/brand name is deprecated, not these identifiers.
