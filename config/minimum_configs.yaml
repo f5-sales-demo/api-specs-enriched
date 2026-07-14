@@ -227,13 +227,6 @@ resources:
     # 5. routes/redirect_route: HTTP redirect (requires proto_redirect from [incoming-proto, http, https])
     # NOTE: All five can coexist in the same LB. default_pool + default_route_pools + routes all composable.
 
-    # Example curl command (industry standard API interaction)
-    example_curl: |
-      curl -X POST "$F5XC_API_URL/api/config/namespaces/default/http_loadbalancers" \
-        -H "Authorization: APIToken $F5XC_API_TOKEN" \
-        -H "Content-Type: application/json" \
-        -d @http-lb.json
-
     # CLI metadata
     cli:
       domain: "virtual"
@@ -771,13 +764,6 @@ resources:
         }
       }
 
-    # Example curl command (industry standard API interaction)
-    example_curl: |
-      curl -X POST "$F5XC_API_URL/api/config/namespaces/default/origin_pools" \
-        -H "Authorization: APIToken $F5XC_API_TOKEN" \
-        -H "Content-Type: application/json" \
-        -d @origin-pool.json
-
     cli:
       domain: "virtual"
       resource_name: "origin_pool"
@@ -905,13 +891,6 @@ resources:
         }
       }
 
-    # Example curl command (industry standard API interaction)
-    example_curl: |
-      curl -X POST "$F5XC_API_URL/api/config/namespaces/default/tcp_loadbalancers" \
-        -H "Authorization: APIToken $F5XC_API_TOKEN" \
-        -H "Content-Type: application/json" \
-        -d @tcp-lb.json
-
     cli:
       domain: "virtual"
       resource_name: "tcp_loadbalancer"
@@ -969,13 +948,6 @@ resources:
         }
       }
 
-    # Example curl command (industry standard API interaction)
-    example_curl: |
-      curl -X POST "$F5XC_API_URL/api/config/namespaces/default/healthchecks" \
-        -H "Authorization: APIToken $F5XC_API_TOKEN" \
-        -H "Content-Type: application/json" \
-        -d @healthcheck.json
-
     cli:
       domain: "virtual"
       resource_name: "healthcheck"
@@ -1016,13 +988,6 @@ resources:
           "blocking": {}
         }
       }
-
-    # Example curl command (industry standard API interaction)
-    example_curl: |
-      curl -X POST "$F5XC_API_URL/api/config/namespaces/default/app_firewalls" \
-        -H "Authorization: APIToken $F5XC_API_TOKEN" \
-        -H "Content-Type: application/json" \
-        -d @waf-policy.json
 
     mutually_exclusive_groups:
       - name: "enforcement_mode_choice"
@@ -1118,13 +1083,6 @@ resources:
         }
       }
 
-    # Example curl command (industry standard API interaction)
-    example_curl: |
-      curl -X POST "$F5XC_API_URL/api/config/namespaces/default/service_policys" \
-        -H "Authorization: APIToken $F5XC_API_TOKEN" \
-        -H "Content-Type: application/json" \
-        -d @service-policy.json
-
     cli:
       domain: "network_security"
       resource_name: "service_policy"
@@ -1207,13 +1165,6 @@ resources:
         }
       }
 
-    # Example curl command (industry standard API interaction)
-    example_curl: |
-      curl -X POST "$F5XC_API_URL/api/config/namespaces/default/certificates" \
-        -H "Authorization: APIToken $F5XC_API_TOKEN" \
-        -H "Content-Type: application/json" \
-        -d @certificate.json
-
     mutually_exclusive_groups:
       - name: "private_key_type"
         fields: ["spec.private_key.clear_secret_info", "spec.private_key.blindfold_secret_info"]
@@ -1261,12 +1212,6 @@ resources:
         "spec": {}
       }
 
-    example_curl: |
-      curl -X POST "$F5XC_API_URL/api/config/namespaces/default/api_definitions" \
-        -H "Authorization: APIToken $F5XC_API_TOKEN" \
-        -H "Content-Type: application/json" \
-        -d @api-definition.json
-
     cli:
       domain: "api"
       resource_name: "api_definition"
@@ -1310,12 +1255,6 @@ resources:
           "user_defined_api_discovery_policy": {}
         }
       }
-
-    example_curl: |
-      curl -X POST "$F5XC_API_URL/api/config/namespaces/default/api_discoverys" \
-        -H "Authorization: APIToken $F5XC_API_TOKEN" \
-        -H "Content-Type: application/json" \
-        -d @api-discovery.json
 
     cli:
       domain: "api"
@@ -1396,12 +1335,6 @@ resources:
         }
       }
 
-    example_curl: |
-      curl -X POST "$F5XC_API_URL/api/config/namespaces/default/rate_limiter_policys" \
-        -H "Authorization: APIToken $F5XC_API_TOKEN" \
-        -H "Content-Type: application/json" \
-        -d @rate-limiter.json
-
     cli:
       domain: "rate_limiting"
       resource_name: "rate_limiter_policy"
@@ -1458,12 +1391,6 @@ resources:
         }
       }
 
-    example_curl: |
-      curl -X POST "$F5XC_API_URL/api/config/namespaces/default/waf_exclusion_policys" \
-        -H "Authorization: APIToken $F5XC_API_TOKEN" \
-        -H "Content-Type: application/json" \
-        -d @waf-exclusion.json
-
     cli:
       domain: "waf"
       resource_name: "waf_exclusion_policy"
@@ -1515,12 +1442,6 @@ resources:
         }
       }
 
-    example_curl: |
-      curl -X POST "$F5XC_API_URL/api/config/namespaces/default/user_identifications" \
-        -H "Authorization: APIToken $F5XC_API_TOKEN" \
-        -H "Content-Type: application/json" \
-        -d @user-identification.json
-
     cli:
       domain: "tenant_and_identity"
       resource_name: "user_identification"
@@ -1560,12 +1481,6 @@ resources:
         "spec": {}
       }
 
-    example_curl: |
-      curl -X POST "$F5XC_API_URL/api/config/namespaces/default/malicious_user_mitigations" \
-        -H "Authorization: APIToken $F5XC_API_TOKEN" \
-        -H "Content-Type: application/json" \
-        -d @malicious-user-mitigation.json
-
     cli:
       domain: "secops_and_incident_response"
       resource_name: "malicious_user_mitigation"
@@ -1603,12 +1518,6 @@ resources:
         },
         "spec": {}
       }
-
-    example_curl: |
-      curl -X POST "$F5XC_API_URL/api/config/namespaces/default/sensitive_data_policys" \
-        -H "Authorization: APIToken $F5XC_API_TOKEN" \
-        -H "Content-Type: application/json" \
-        -d @sensitive-data.json
 
     cli:
       domain: "data_and_privacy_security"
@@ -1664,12 +1573,6 @@ resources:
           }
         }
       }
-
-    example_curl: |
-      curl -X POST "$F5XC_API_URL/api/config/namespaces/default/protocol_inspections" \
-        -H "Authorization: APIToken $F5XC_API_TOKEN" \
-        -H "Content-Type: application/json" \
-        -d @protocol-inspection.json
 
     cli:
       domain: "network_security"
@@ -2183,12 +2086,6 @@ resources:
         }
       }
 
-    example_curl: |
-      curl -X POST "$F5XC_API_URL/api/config/namespaces/system/securemesh_site_v2s" \
-        -H "Authorization: APIToken $F5XC_API_TOKEN" \
-        -H "Content-Type: application/json" \
-        -d '{"metadata":{"name":"example-smsv2","namespace":"system"},"spec":{"azure":{"not_managed":{"node_list":[]}},"disable_ha":{},"no_network_policy":{},"no_forward_proxy":{},"logs_streaming_disabled":{},"block_all_services":{}}}'
-
     # -------------------------------------------------------------------------
     # CE Registration API — quirks required for deterministic automation
     # Discovered via live testing 2026-06-07. These are NOT in the OpenAPI spec.
@@ -2391,12 +2288,6 @@ resources:
         "spec": {}
       }
 
-    example_curl: |
-      curl -X POST "$F5XC_API_URL/api/web/namespaces" \
-        -H "Authorization: APIToken $F5XC_API_TOKEN" \
-        -H "Content-Type: application/json" \
-        -d '{"metadata": {"name": "example-ns"}, "spec": {}}'
-
     cli:
       domain: "tenant_and_identity"
       resource_name: "namespace"
@@ -2520,12 +2411,6 @@ resources:
         "spec": {}
       }
 
-    example_curl: |
-      curl -X POST "$F5XC_API_URL/api/config/namespaces/system/k8s_clusters" \
-        -H "Authorization: APIToken $F5XC_API_TOKEN" \
-        -H "Content-Type: application/json" \
-        -d @k8s-cluster.json
-
     cli:
       domain: "container_services"
       resource_name: "k8s_cluster"
@@ -2561,12 +2446,6 @@ resources:
         "spec": {}
       }
 
-    example_curl: |
-      curl -X POST "$F5XC_API_URL/api/config/namespaces/system/network_firewalls" \
-        -H "Authorization: APIToken $F5XC_API_TOKEN" \
-        -H "Content-Type: application/json" \
-        -d @network-firewall.json
-
     cli:
       domain: "network_security"
       resource_name: "network_firewall"
@@ -2600,12 +2479,6 @@ resources:
         },
         "spec": {}
       }
-
-    example_curl: |
-      curl -X POST "$F5XC_API_URL/api/config/namespaces/default/enhanced_firewall_policys" \
-        -H "Authorization: APIToken $F5XC_API_TOKEN" \
-        -H "Content-Type: application/json" \
-        -d @enhanced-firewall-policy.json
 
     cli:
       domain: "network_security"
@@ -2654,12 +2527,6 @@ resources:
           "re_acl": {}
         }
       }
-
-    example_curl: |
-      curl -X POST "$F5XC_API_URL/api/config/namespaces/system/fast_acls" \
-        -H "Authorization: APIToken $F5XC_API_TOKEN" \
-        -H "Content-Type: application/json" \
-        -d @fast-acl.json
 
     cli:
       domain: "network_security"

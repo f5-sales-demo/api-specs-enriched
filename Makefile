@@ -42,7 +42,7 @@
 #       ├── openapi.json    (master combined spec)
 #       └── index.json      (spec metadata)
 
-.PHONY: all build clean install download download-force pipeline enrich normalize merge lint validate validate-domains validate-curl validate-curl-dry validate-curl-cleanup serve help check-deps venv pre-commit-install pre-commit-run pre-commit-uninstall discover discover-namespace discover-dry-run discover-cli enrich-with-discovery constraint-report build-enriched pipeline-enriched push-discovery discover-and-push api-viewer catalog test
+.PHONY: all build clean install download download-force pipeline enrich normalize merge lint validate validate-domains serve help check-deps venv pre-commit-install pre-commit-run pre-commit-uninstall discover discover-namespace discover-dry-run discover-cli enrich-with-discovery constraint-report build-enriched pipeline-enriched push-discovery discover-and-push api-viewer catalog test
 
 # Virtual environment
 VENV := .venv
@@ -129,29 +129,6 @@ validate:
 # Validate domain categorization against natural identifiers in original specs
 validate-domains:
 	$(PYTHON) scripts/validate_domain_categorization.py
-
-# Validate curl examples with full CRUD lifecycle against live API
-validate-curl:
-	@if [ -z "$$F5XC_API_TOKEN" ]; then \
-		echo "F5XC_API_TOKEN not set. Set credentials first."; \
-		exit 1; \
-	fi
-	@echo "Validating curl examples against live API..."
-	$(PYTHON) scripts/validate_curl_examples.py
-	@echo ""
-	@echo "Reports: reports/curl-validation-report.json and reports/curl-validation-report.md"
-
-# Dry-run curl validation (parse and validate without API calls)
-validate-curl-dry:
-	$(PYTHON) scripts/validate_curl_examples.py --dry-run
-
-# Cleanup orphaned test resources from previous curl validation runs
-validate-curl-cleanup:
-	@if [ -z "$$F5XC_API_TOKEN" ]; then \
-		echo "F5XC_API_TOKEN not set. Set credentials first."; \
-		exit 1; \
-	fi
-	$(PYTHON) scripts/validate_curl_examples.py --cleanup-only
 
 # API Discovery - explore live API to find undocumented behavior
 discover:
@@ -312,11 +289,6 @@ help:
 	@echo "  test           Run the pytest suite"
 	@echo "  validate       Test with live API (needs credentials)"
 	@echo "  validate-domains  Validate domain patterns against natural identifiers"
-	@echo ""
-	@echo "curl Example CRUD Validation:"
-	@echo "  validate-curl         Full CRUD validation against live API (needs credentials)"
-	@echo "  validate-curl-dry     Parse and validate without API calls"
-	@echo "  validate-curl-cleanup Clean up orphaned test resources (curl-test-*)"
 	@echo ""
 	@echo "API Discovery (explore live API for undocumented behavior):"
 	@echo "  discover           Full API discovery (needs F5XC_API_TOKEN)"

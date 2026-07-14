@@ -31,7 +31,6 @@ class TestMinimumConfigurationStats:
         assert stats.field_requirements_added == 0
         assert stats.example_yamls_generated == 0
         assert stats.example_jsons_generated == 0
-        assert stats.example_curls_generated == 0
         assert stats.cli_domains_added == 0
         assert stats.errors == []
 
@@ -186,23 +185,6 @@ class TestExampleGeneration:
             assert "apiVersion" in example_yaml or "kind" in example_yaml, (
                 f"Invalid YAML structure for {resource}"
             )
-
-    def test_example_curl_generation(self):
-        """Test that example curl commands are configured for resources."""
-        enricher = MinimumConfigurationEnricher()
-        for resource in [
-            "http_loadbalancer",
-            "origin_pool",
-            "tcp_loadbalancer",
-            "healthcheck",
-            "app_firewall",
-        ]:
-            resource_config = enricher.resources.get(resource, {})
-            example_curl = resource_config.get("example_curl", "")
-            assert example_curl, f"No example_curl for {resource}"
-            assert "curl" in example_curl, f"Invalid curl command for {resource}"
-            assert "F5XC_API_URL" in example_curl, f"Missing API URL var for {resource}"
-            assert "F5XC_API_TOKEN" in example_curl, f"Missing token var for {resource}"
 
     def test_example_json_configured(self):
         """Test that example JSON is configured for resources."""
@@ -394,7 +376,6 @@ class TestAllFiveResources:
         assert "description" in min_config
         assert "example_yaml" in min_config
         assert "example_json" in min_config
-        assert "example_curl" in min_config
 
         # Verify CLI metadata was added
         assert X_F5XC_CLI_DOMAIN in schema
