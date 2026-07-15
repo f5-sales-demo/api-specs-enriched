@@ -19,6 +19,7 @@ import base64
 import contextlib
 import json
 import os
+import re
 import subprocess
 import tempfile
 import time
@@ -45,71 +46,121 @@ def get_api_client() -> tuple[str, dict[str, str]]:
     return url.rstrip("/"), headers
 
 
+_CREATE_OPID = re.compile(r"^ves\.io\.schema\.(?:views\.)?([a-z0-9_]+)\.API\.Create$")
+
+
+def build_create_path_index(specs_dir: Path) -> dict[str, dict[str, str]]:
+    """Map every resource to its canonical create path by scanning all domain specs.
+
+    A canonical create endpoint is a POST to ``.../namespaces/<ns>/<plural>`` (no
+    ``{name}`` segment) whose ``operationId`` is ``ves.io.schema.<resource>.API.Create``.
+    This is the deterministic resource identity — index.json's ``api_paths`` are
+    incomplete (many resources have an empty list), so we derive paths from the
+    full ``paths`` objects instead.
+
+    Returns ``{resource_name: {"create_path": <path with {namespace}>, "spec_file": <file>}}``.
+    """
+    index: dict[str, dict[str, str]] = {}
+    for spec_path in sorted(specs_dir.glob("*.json")):
+        if spec_path.name in {
+            "index.json",
+            "namespace_profiles.json",
+            "openapi.json",
+            "minimal-export-defaults.json",
+        }:
+            continue
+        try:
+            with spec_path.open() as f:
+                spec = json.load(f)
+        except (json.JSONDecodeError, OSError):
+            continue
+
+        for path, methods in spec.get("paths", {}).items():
+            post = methods.get("post") if isinstance(methods, dict) else None
+            if not isinstance(post, dict):
+                continue
+            if "{name}" in path or "{metadata.name}" in path:
+                continue
+            segs = path.rstrip("/").split("/")
+            if "namespaces" not in segs:
+                continue
+            ni = segs.index("namespaces")
+            # canonical create shape: .../namespaces/<ns>/<plural>
+            if len(segs) != ni + 3:
+                continue
+            m = _CREATE_OPID.match(post.get("operationId", ""))
+            if not m:
+                continue
+            resource = m.group(1)
+            # normalise the namespace segment to the {namespace} placeholder
+            segs[ni + 1] = "{namespace}"
+            normalized = "/".join(segs)
+            # prefer the shortest canonical path if a resource has several
+            if resource not in index or len(normalized) < len(index[resource]["create_path"]):
+                index[resource] = {"create_path": normalized, "spec_file": spec_path.name}
+    return index
+
+
+def _authoritative_resource_names(
+    specs_dir: Path, path_index: dict[str, dict[str, str]] | None = None
+) -> list[str]:
+    """Resource universe to test.
+
+    Union of: every resource with a canonical create path (the deterministic,
+    spec-derived universe), the namespace_profile config keys, and index primaries.
+    """
+    names: set[str] = set(path_index.keys()) if path_index else set()
+    profile_path = Path("config/namespace_profile.yaml")
+    if profile_path.exists():
+        with profile_path.open() as f:
+            cfg = yaml.safe_load(f) or {}
+        names.update((cfg.get("resources") or {}).keys())
+    index_path = specs_dir / "index.json"
+    if index_path.exists():
+        with index_path.open() as f:
+            index = json.load(f)
+        specs_list = index.get("specifications", [])
+        if isinstance(specs_list, dict):
+            specs_list = list(specs_list.values())
+        for domain_info in specs_list:
+            for primary in domain_info.get("x-f5xc-primary-resources", []):
+                if primary.get("name"):
+                    names.add(primary["name"])
+    return sorted(names)
+
+
 def load_resources_from_specs(
     specs_dir: Path,
     resource_filter: list[str] | None = None,
 ) -> list[dict[str, Any]]:
-    """Load resource types with their create paths and example payloads."""
-    index_path = specs_dir / "index.json"
-    with index_path.open() as f:
-        index = json.load(f)
+    """Load resource types with their create paths and example payloads.
 
-    resources = []
-    specs_list = index.get("specifications", [])
-    if isinstance(specs_list, dict):
-        specs_list = list(specs_list.values())
-
+    Driven by the authoritative resource universe (namespace_profile.yaml keys +
+    index primaries) and a deterministic create-path index built from the full
+    domain spec ``paths`` — not the incomplete ``api_paths`` in index.json.
+    """
+    path_index = build_create_path_index(specs_dir)
     spec_cache: dict[str, dict] = {}
+    resources = []
 
-    for domain_info in specs_list:
-        domain = domain_info.get("domain", "")
-        spec_file = domain_info.get("file", "")
-
-        for primary in domain_info.get("x-f5xc-primary-resources", []):
-            name = primary.get("name", "")
-            if resource_filter and name not in resource_filter:
-                continue
-
-            api_paths = primary.get("api_paths", [])
-            create_path = _find_create_path(api_paths)
-            if not create_path:
-                continue
-
-            example_payload = _get_example_payload(specs_dir, spec_file, name, spec_cache)
-
-            resources.append(
-                {
-                    "name": name,
-                    "domain": domain,
-                    "create_path": create_path,
-                    "example_payload": example_payload,
-                }
-            )
+    for name in _authoritative_resource_names(specs_dir, path_index):
+        if resource_filter and name not in resource_filter:
+            continue
+        entry = path_index.get(name)
+        if not entry:
+            continue
+        spec_file = entry["spec_file"]
+        example_payload = _get_example_payload(specs_dir, spec_file, name, spec_cache)
+        resources.append(
+            {
+                "name": name,
+                "domain": spec_file.replace(".json", ""),
+                "create_path": entry["create_path"],
+                "example_payload": example_payload,
+            }
+        )
 
     return resources
-
-
-def _find_create_path(api_paths: list[str]) -> str:
-    """Find the namespace-parameterized create (list) path."""
-    candidates = []
-    for p in api_paths:
-        if "{metadata.namespace}" in p:
-            continue
-        if "{name}" in p or "{metadata.name}" in p:
-            continue
-        if "/namespaces/{namespace}/" in p:
-            candidates.append(p)
-
-    if not candidates:
-        for p in api_paths:
-            if "/namespaces/" in p and "{name}" not in p and "{metadata.name}" not in p:
-                normalized = p.replace("{metadata.namespace}", "{namespace}")
-                candidates.append(normalized)
-
-    if candidates:
-        candidates.sort(key=len)
-        return candidates[0]
-    return ""
 
 
 def _get_example_payload(
@@ -156,7 +207,35 @@ NS_RESTRICTION_PATTERNS = [
     "restricted to",
     "invalid namespace",
     "namespace not allowed",
+    "allowed to be created only in",
 ]
+
+# The F5 XC API rejects a create in the wrong namespace with a message like
+# "ves.io.schema.X.Object allowed to be created only in shared or app, got demo".
+# Parse the allow-list out of that message. "app" is an internal alias for the
+# shared tenant scope, so it maps to "shared".
+_ONLY_IN_RE = re.compile(r"allowed to be created only in ([a-z ,or]+?),? got", re.IGNORECASE)
+_NS_ALIAS = {"app": "shared"}
+
+
+def restriction_allowed(error_msg: str) -> list[str]:
+    """Extract the allowed namespace set from an API namespace-restriction error.
+
+    Returns e.g. ["system"] or ["shared"]; empty if the message names none
+    explicitly (e.g. the generic DNS "outside system namespace not permitted",
+    which implies system).
+    """
+    m = _ONLY_IN_RE.search(error_msg)
+    if m:
+        tokens = re.split(r"[,\s]+or\s+|\s*,\s*|\s+or\s+", m.group(1).strip())
+        allowed = {_NS_ALIAS.get(t.strip(), t.strip()) for t in tokens if t.strip()}
+        allowed.discard("")
+        if allowed:
+            return sorted(allowed)
+    low = error_msg.lower()
+    if "outside system namespace" in low or "only system namespace" in low:
+        return ["system"]
+    return []
 
 
 def classify_response(status_code: int, error_msg: str) -> str:
@@ -213,6 +292,8 @@ def probe_create(
             "classification": result_class,
             "error": error_msg or None,
         }
+        if result_class == "ns_restricted":
+            result["restriction_allowed"] = restriction_allowed(error_msg)
 
         if result_class in ("created", "conflict"):
             _cleanup(
@@ -380,6 +461,7 @@ def discover_all(
         restricted_from: list[str] = []
         validation_errors: list[str] = []
         other_results: list[str] = []
+        restriction_allowed_set: list[str] = []
 
         for ns in namespaces_to_test:
             cleanup_paths = _setup_prereqs(base_url, headers, overrides, name, ns)
@@ -403,6 +485,9 @@ def discover_all(
                 print(f"+{ns}", end=" ", flush=True)
             elif c == "ns_restricted":
                 restricted_from.append(ns)
+                for a in probe.get("restriction_allowed", []):
+                    if a not in restriction_allowed_set:
+                        restriction_allowed_set.append(a)
                 print(f"!{ns}", end=" ", flush=True)
             elif c == "validation_error":
                 validation_errors.append(ns)
@@ -414,9 +499,18 @@ def discover_all(
             time.sleep(rate_limit_ms / 1000)
 
         if restricted_from:
-            entry["verdict"] = "system_only"
+            # The API named the allowed namespace(s) in its rejection. "shared" and
+            # "system" are NOT custom namespaces, so a shared-only/system-only
+            # resource must be scoped precisely, not lumped into the tenant bucket.
+            allowed = sorted(restriction_allowed_set) or ["system"]
+            if allowed == ["shared"]:
+                entry["verdict"] = "shared_only"
+            elif allowed == ["system"]:
+                entry["verdict"] = "system_only"
+            else:
+                entry["verdict"] = "restricted"
             entry["confidence"] = "high"
-            entry["discovered_allowed"] = ["system"]
+            entry["discovered_allowed"] = allowed
         elif created_in:
             non_system = [ns for ns in created_in if ns != "system"]
             if non_system:

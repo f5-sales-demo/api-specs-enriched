@@ -57,7 +57,11 @@ class NamespaceProfilesExporter:
             The artifact with ``default`` and per-resource merged profiles.
         """
         config = self.enricher.config
-        resource_keys = config.get("resources", {})
+        # Emit the union of hand-curated overrides and machine-owned verdicts so
+        # CRUD-verified and default-deny-filled resources (which may have no
+        # curated entry) are part of the authoritative export.
+        resource_keys = set(config.get("resources", {}).keys())
+        resource_keys |= set(getattr(self.enricher, "verdicts", {}).keys())
 
         resources: dict[str, Any] = {}
         verified_count = 0
@@ -91,6 +95,14 @@ class NamespaceProfilesExporter:
         default_profile = config["default_profile"]
         default_profile.pop("_verification", None)
 
+        # Worklist: resources hidden by default-deny that still need live CRUD
+        # verification to be either confirmed tenant-creatable or confirmed system.
+        worklist = sorted(
+            name
+            for name, e in resources.items()
+            if e.get("_meta", {}).get("method") == "default_deny"
+        )
+
         return {
             "version": version or "0.0.0",
             "generated_at": datetime.now(tz=timezone.utc).isoformat(),
@@ -102,6 +114,8 @@ class NamespaceProfilesExporter:
                 "verified": verified_count,
                 "assumed": assumed_count,
                 "unverified": unverified_count,
+                "default_deny_worklist_count": len(worklist),
+                "default_deny_worklist": worklist,
             },
         }
 
