@@ -224,3 +224,48 @@ contact:
 customer_support:
   metadata: {name: crud-probe}
   spec: {description: "namespace probe test", product: distributed_cloud}
+
+# --- Worklist round 3 (2026-07-15): schema-derived payloads for the 14
+# validation-blocked resources, to reach the namespace verdict. ---
+address_allocator:
+  metadata: {name: crud-probe}
+  spec: {mode: LOCAL, address_allocation_scheme: {sequential: {}}, address_pool: [{start_address: "10.0.0.2", end_address: "10.0.0.100"}]}
+authentication:
+  metadata: {name: crud-probe}
+  spec: {cookie_params: {}, oidc_auth: {issuer: "https://issuer.example.com", client_id: probe, client_secret: {clear_secret_info: {url: "string:///dGVzdA=="}}}}
+cminstance:
+  metadata: {name: crud-probe}
+  spec: {ip: "10.0.0.5", port: 443, username: probe, password: {clear_secret_info: {url: "string:///dGVzdA=="}}, api_token: {clear_secret_info: {url: "string:///dGVzdA=="}}}
+contact:
+  metadata: {name: crud-probe}
+  spec: {contact_type: MAILING, address1: "1 Test St", address2: "", city: TestCity, county: TestCounty, state: California, state_code: CA, country: "United States", zip_code: "94089", phone_number: "+15551234567"}
+external_connector:
+  metadata: {name: crud-probe}
+  spec: {ce_site_reference: {tenant: t, namespace: system, name: dummy}, ipsec: {remote_gateway: {ipv4: {addr: "203.0.113.9"}}}}
+fast_acl_rule:
+  metadata: {name: crud-probe}
+  spec: {action: {simple_action: DENY}, prefix: ["10.0.0.0/8"]}
+k8s_cluster_role_binding:
+  metadata: {name: crud-probe}
+  spec: {k8s_cluster_role: {name: dummy, namespace: system, tenant: t}, subjects: [{user: {name: probe}}]}
+nfv_service:
+  metadata: {name: crud-probe}
+  spec: {disable_https_management: {}, disable_ssh_access: {}, f5_big_ip_aws_service: {}}
+report_config:
+  metadata: {name: crud-probe}
+  spec: {report_recipients: [{email: "probe@example.com"}], waap: {}}
+tpm_api_key:
+  metadata: {name: crud-probe}
+  spec: {need_mtls: false, category_ref: [{name: dummy, namespace: shared, tenant: t}]}
+tpm_category:
+  metadata: {name: crud-probe}
+  spec: {tpm_allow_list: {}, tpm_manager_ref: [{name: dummy, namespace: shared, tenant: t}]}
+usb_policy:
+  metadata: {name: crud-probe}
+  spec: {allowed_devices: [{vendor_id: "0x1234", product_id: "0x5678"}]}
+proxy:
+  metadata: {name: crud-probe}
+  spec: {http_proxy: {}, do_not_advertise: {}, no_forward_proxy_policy: {}, no_interception: {}, site_local_network: {}, connection_timeout: 2000}
+customer_support:
+  metadata: {name: crud-probe}
+  spec: {description: "namespace probe test", subject: "probe", product_data: {product: distributed_cloud}, type: TYPE_QUESTION, ongoing: false, relates_to: "", comments: "", timeline: "", tp_id: ""}

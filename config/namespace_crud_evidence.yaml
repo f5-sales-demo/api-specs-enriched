@@ -1947,25 +1947,28 @@ protocol_policer:
       status: 200
   verdict: system_confirmed
 proxy:
-  confidence: low
+  confidence: high
   create_path: /api/config/namespaces/{namespace}/proxys
+  discovered_allowed:
+  - custom
+  - default
+  - shared
+  - system
   domain: virtual
-  note: "All namespaces returned validation errors \u2014 namespace check may happen\
-    \ after field validation"
   probes:
     default:
-      classification: validation_error
-      error: Field spec.proxy_choice should be not nil, got nil in request.
-      status: 400
+      classification: created
+      error: null
+      status: 200
     demo:
-      classification: validation_error
-      error: Field spec.proxy_choice should be not nil, got nil in request.
-      status: 400
+      classification: created
+      error: null
+      status: 200
     system:
-      classification: validation_error
-      error: Field spec.proxy_choice should be not nil, got nil in request.
-      status: 400
-  verdict: inconclusive
+      classification: created
+      error: null
+      status: 200
+  verdict: any_namespace
 quota:
   confidence: low
   create_path: /api/web/namespaces/{namespace}/quotas
