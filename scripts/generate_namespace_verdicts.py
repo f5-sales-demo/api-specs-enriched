@@ -25,6 +25,7 @@ from typing import Any
 import yaml
 
 from scripts.discover_namespace_crud import build_create_path_index
+from scripts.utils.yaml_writer import write_yaml
 
 TENANT_ALLOWED = ["custom", "default", "shared"]
 SYSTEM_ALLOWED = ["system"]
@@ -129,16 +130,9 @@ def main() -> None:
         "# Source evidence: config/namespace_crud_evidence.yaml\n"
         "#\n"
         "# Authoritative, live-CRUD-verified namespace constraints. The enricher\n"
-        "# layers these OVER config/namespace_profile.yaml (verdict wins).\n"
+        "# layers these OVER config/namespace_profile.yaml (verdict wins)."
     )
-    with args.output.open("w") as f:
-        f.write(header)
-        yaml.dump(
-            {"version": 1, "verdicts": verdicts},
-            f,
-            default_flow_style=False,
-            sort_keys=True,
-        )
+    write_yaml({"version": 1, "verdicts": verdicts}, args.output, header=header, sort_keys=True)
 
     tenant = sum(1 for v in verdicts.values() if v["constraint"]["allowed"] == TENANT_ALLOWED)
     system = sum(1 for v in verdicts.values() if v["constraint"]["allowed"] == SYSTEM_ALLOWED)
