@@ -167,3 +167,60 @@ ddos_protection:
   metadata: {name: crud-probe}
   spec:
     protected_entity: {}
+
+# --- Worklist payloads (2026-07-14): one required field each, from the API's
+# own 400 validation messages, to drive inconclusive resources to a verdict. ---
+address_allocator:
+  metadata: {name: crud-probe}
+  spec: {ipv4: {}, address_allocation_scheme: {sequential: {}}, address_pool: [{start_address: "10.0.0.1", end_address: "10.0.0.10"}]}
+authentication:
+  metadata: {name: crud-probe}
+  spec: {auth_type_choice: {}, cookie_params: {}}
+cminstance:
+  metadata: {name: crud-probe}
+  spec: {api_token: {clear_secret_info: {url: "string:///dGVzdA=="}}, ip: "10.0.0.1"}
+external_connector:
+  metadata: {name: crud-probe}
+  spec: {ce_site_reference: {tenant: t, namespace: system, name: dummy}, connection_type: {sli_to_global_dr: {}}}
+fast_acl_rule:
+  metadata: {name: crud-probe}
+  spec: {action: {simple_action: DENY}, source: {ip_prefixes: {ip_prefixes: ["1.2.3.4/32"]}}}
+k8s_cluster_role_binding:
+  metadata: {name: crud-probe}
+  spec: {k8s_cluster_role: {name: dummy, namespace: system, tenant: t}, subjects: [{user: {name: probe}}]}
+k8s_pod_security_admission:
+  metadata: {name: crud-probe}
+  spec: {pod_security_admission_specs: [{mode: enforce, level: privileged}]}
+nfv_service:
+  metadata: {name: crud-probe}
+  spec: {service_provider_choice: {}, f5_big_ip_aws_service: {}}
+proxy:
+  metadata: {name: crud-probe}
+  spec: {proxy_choice: {}, http_proxy: {}}
+report_config:
+  metadata: {name: crud-probe}
+  spec: {report_type: SECURITY, schedule_choice: {}}
+service_policy_rule:
+  metadata: {name: crud-probe}
+  spec: {waf_action: {none: {}}, action: DENY}
+srv6_network_slice:
+  metadata: {name: crud-probe}
+  spec: {sid_prefixes: ["fc00::/32"]}
+tpm_api_key:
+  metadata: {name: crud-probe}
+  spec: {category_ref: [{name: dummy, namespace: shared, tenant: t}]}
+tpm_category:
+  metadata: {name: crud-probe}
+  spec: {tpm_manager_ref: [{name: dummy, namespace: shared, tenant: t}]}
+usb_policy:
+  metadata: {name: crud-probe}
+  spec: {allowed_devices: {allowed_devices: [{vendor_id: "0x1234"}]}}
+workload_flavor:
+  metadata: {name: crud-probe}
+  spec: {vcpu: 2, memory: 4096}
+contact:
+  metadata: {name: crud-probe}
+  spec: {contact_choice: {}, email: {email: "probe@example.com"}}
+customer_support:
+  metadata: {name: crud-probe}
+  spec: {description: "namespace probe test", product: distributed_cloud}

@@ -1,6 +1,6 @@
 {
-  "version": "2.1.176",
-  "generated_at": "2026-07-14T23:05:08.041780+00:00",
+  "version": "0.0.0",
+  "generated_at": "2026-07-15T02:46:03.352252+00:00",
   "source": "api-specs-enriched/config/namespace_profile.yaml",
   "default": {
     "constraint": {
@@ -22,6 +22,28 @@
     }
   },
   "resources": {
+    "address_allocator": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "default_deny"
+      }
+    },
     "advertise_policy": {
       "constraint": {
         "allowed": [
@@ -117,7 +139,7 @@
           "default",
           "shared"
         ],
-        "enforced": false
+        "enforced": true
       },
       "recommendation": {
         "primary": "custom",
@@ -130,8 +152,8 @@
       },
       "_meta": {
         "explicit": true,
-        "verification": "unverified",
-        "method": ""
+        "verification": "verified",
+        "method": "crud"
       }
     },
     "alert_policy_set": {
@@ -159,9 +181,11 @@
     "alert_receiver": {
       "constraint": {
         "allowed": [
-          "system"
+          "custom",
+          "default",
+          "shared"
         ],
-        "enforced": false
+        "enforced": true
       },
       "recommendation": {
         "primary": "system",
@@ -174,8 +198,8 @@
       },
       "_meta": {
         "explicit": true,
-        "verification": "unverified",
-        "method": ""
+        "verification": "verified",
+        "method": "crud"
       }
     },
     "allowed_domain": {
@@ -295,7 +319,7 @@
           "default",
           "shared"
         ],
-        "enforced": false
+        "enforced": true
       },
       "recommendation": {
         "primary": "custom",
@@ -308,8 +332,8 @@
       },
       "_meta": {
         "explicit": true,
-        "verification": "unverified",
-        "method": ""
+        "verification": "verified",
+        "method": "crud"
       }
     },
     "api_discovery": {
@@ -422,6 +446,30 @@
         "method": "conservative_default"
       }
     },
+    "app_api_group": {
+      "constraint": {
+        "allowed": [
+          "custom",
+          "default",
+          "shared"
+        ],
+        "enforced": true
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "verified",
+        "method": "crud"
+      }
+    },
     "app_firewall": {
       "constraint": {
         "allowed": [
@@ -429,7 +477,7 @@
           "default",
           "shared"
         ],
-        "enforced": false
+        "enforced": true
       },
       "recommendation": {
         "primary": "shared",
@@ -447,8 +495,8 @@
       },
       "_meta": {
         "explicit": true,
-        "verification": "unverified",
-        "method": ""
+        "verification": "verified",
+        "method": "crud"
       }
     },
     "app_setting": {
@@ -517,6 +565,28 @@
         "method": "conservative_default"
       }
     },
+    "authentication": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "default_deny"
+      }
+    },
     "authentication_policy": {
       "constraint": {
         "allowed": [
@@ -537,6 +607,28 @@
         "explicit": true,
         "verification": "restricted",
         "method": "conservative_default"
+      }
+    },
+    "authorization_server": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "default_deny"
       }
     },
     "aws_tgw_site": {
@@ -588,7 +680,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": false
+        "enforced": true
       },
       "recommendation": {
         "primary": "system",
@@ -601,8 +693,8 @@
       },
       "_meta": {
         "explicit": true,
-        "verification": "unverified",
-        "method": ""
+        "verification": "verified",
+        "method": "crud"
       }
     },
     "bgp": {
@@ -691,6 +783,28 @@
         "explicit": true,
         "verification": "restricted",
         "method": "conservative_default"
+      }
+    },
+    "bigip_http_proxy": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "default_deny"
       }
     },
     "bigip_irule": {
@@ -961,6 +1075,30 @@
         "method": "crud"
       }
     },
+    "cdn_cache_rule": {
+      "constraint": {
+        "allowed": [
+          "custom",
+          "default",
+          "shared"
+        ],
+        "enforced": true
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "verified",
+        "method": "crud"
+      }
+    },
     "cdn_loadbalancer": {
       "constraint": {
         "allowed": [
@@ -1007,6 +1145,28 @@
         "method": "conservative_default"
       }
     },
+    "cdn_purge_command": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "default_deny"
+      }
+    },
     "certificate": {
       "constraint": {
         "allowed": [
@@ -1014,7 +1174,7 @@
           "default",
           "shared"
         ],
-        "enforced": false
+        "enforced": true
       },
       "recommendation": {
         "primary": "custom",
@@ -1027,8 +1187,8 @@
       },
       "_meta": {
         "explicit": true,
-        "verification": "unverified",
-        "method": ""
+        "verification": "verified",
+        "method": "crud"
       }
     },
     "certificate_chain": {
@@ -1038,7 +1198,7 @@
           "default",
           "shared"
         ],
-        "enforced": false
+        "enforced": true
       },
       "recommendation": {
         "primary": "custom",
@@ -1051,8 +1211,8 @@
       },
       "_meta": {
         "explicit": true,
-        "verification": "unverified",
-        "method": ""
+        "verification": "verified",
+        "method": "crud"
       }
     },
     "cloud_connect": {
@@ -1143,6 +1303,74 @@
         "method": ""
       }
     },
+    "cluster": {
+      "constraint": {
+        "allowed": [
+          "custom",
+          "default",
+          "shared"
+        ],
+        "enforced": true
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "verified",
+        "method": "crud"
+      }
+    },
+    "cminstance": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "default_deny"
+      }
+    },
+    "contact": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "default_deny"
+      }
+    },
     "container_registry": {
       "constraint": {
         "allowed": [
@@ -1189,6 +1417,28 @@
         "explicit": true,
         "verification": "unverified",
         "method": ""
+      }
+    },
+    "customer_support": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "default_deny"
       }
     },
     "dashboard": {
@@ -1310,7 +1560,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": false
+        "enforced": true
       },
       "recommendation": {
         "primary": "system",
@@ -1323,8 +1573,8 @@
       },
       "_meta": {
         "explicit": true,
-        "verification": "unverified",
-        "method": ""
+        "verification": "verified",
+        "method": "crud"
       }
     },
     "ddos_mitigation_rule": {
@@ -1413,6 +1663,30 @@
         "explicit": true,
         "verification": "unverified",
         "method": ""
+      }
+    },
+    "dns_compliance_checks": {
+      "constraint": {
+        "allowed": [
+          "custom",
+          "default",
+          "shared"
+        ],
+        "enforced": true
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "verified",
+        "method": "crud"
       }
     },
     "dns_domain": {
@@ -1574,9 +1848,11 @@
     "enhanced_firewall_policy": {
       "constraint": {
         "allowed": [
-          "system"
+          "custom",
+          "default",
+          "shared"
         ],
-        "enforced": false
+        "enforced": true
       },
       "recommendation": {
         "primary": "custom",
@@ -1589,8 +1865,30 @@
       },
       "_meta": {
         "explicit": true,
+        "verification": "verified",
+        "method": "crud"
+      }
+    },
+    "external_connector": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
         "verification": "restricted",
-        "method": "conservative_default"
+        "method": "default_deny"
       }
     },
     "fast_acl": {
@@ -1598,7 +1896,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": false
+        "enforced": true
       },
       "recommendation": {
         "primary": "system",
@@ -1611,8 +1909,30 @@
       },
       "_meta": {
         "explicit": true,
-        "verification": "unverified",
-        "method": ""
+        "verification": "verified",
+        "method": "crud"
+      }
+    },
+    "fast_acl_rule": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "default_deny"
       }
     },
     "filter_set": {
@@ -1712,7 +2032,7 @@
           "default",
           "shared"
         ],
-        "enforced": false
+        "enforced": true
       },
       "recommendation": {
         "primary": "shared",
@@ -1730,8 +2050,8 @@
       },
       "_meta": {
         "explicit": true,
-        "verification": "unverified",
-        "method": ""
+        "verification": "verified",
+        "method": "crud"
       }
     },
     "forwarding_class": {
@@ -1783,11 +2103,9 @@
     "geo_location_set": {
       "constraint": {
         "allowed": [
-          "custom",
-          "default",
-          "shared"
+          "system"
         ],
-        "enforced": false
+        "enforced": true
       },
       "recommendation": {
         "primary": "shared",
@@ -1800,16 +2118,18 @@
       },
       "_meta": {
         "explicit": true,
-        "verification": "unverified",
-        "method": ""
+        "verification": "verified",
+        "method": "crud"
       }
     },
     "global_log_receiver": {
       "constraint": {
         "allowed": [
-          "system"
+          "custom",
+          "default",
+          "shared"
         ],
-        "enforced": false
+        "enforced": true
       },
       "recommendation": {
         "primary": "system",
@@ -1822,8 +2142,8 @@
       },
       "_meta": {
         "explicit": true,
-        "verification": "unverified",
-        "method": ""
+        "verification": "verified",
+        "method": "crud"
       }
     },
     "global_network": {
@@ -1855,7 +2175,7 @@
           "default",
           "shared"
         ],
-        "enforced": false
+        "enforced": true
       },
       "recommendation": {
         "primary": "custom",
@@ -1868,8 +2188,8 @@
       },
       "_meta": {
         "explicit": true,
-        "verification": "unverified",
-        "method": ""
+        "verification": "verified",
+        "method": "crud"
       }
     },
     "http_loadbalancer": {
@@ -1879,7 +2199,7 @@
           "default",
           "shared"
         ],
-        "enforced": false
+        "enforced": true
       },
       "recommendation": {
         "primary": "custom",
@@ -1892,8 +2212,104 @@
       },
       "_meta": {
         "explicit": true,
-        "verification": "unverified",
-        "method": ""
+        "verification": "verified",
+        "method": "crud"
+      }
+    },
+    "ike1": {
+      "constraint": {
+        "allowed": [
+          "custom",
+          "default",
+          "shared"
+        ],
+        "enforced": true
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "verified",
+        "method": "crud"
+      }
+    },
+    "ike2": {
+      "constraint": {
+        "allowed": [
+          "custom",
+          "default",
+          "shared"
+        ],
+        "enforced": true
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "verified",
+        "method": "crud"
+      }
+    },
+    "ike_phase1_profile": {
+      "constraint": {
+        "allowed": [
+          "custom",
+          "default",
+          "shared"
+        ],
+        "enforced": true
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "verified",
+        "method": "crud"
+      }
+    },
+    "ike_phase2_profile": {
+      "constraint": {
+        "allowed": [
+          "custom",
+          "default",
+          "shared"
+        ],
+        "enforced": true
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "verified",
+        "method": "crud"
       }
     },
     "infraprotect_asn": {
@@ -1989,7 +2405,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": false
+        "enforced": true
       },
       "recommendation": {
         "primary": "custom",
@@ -2002,8 +2418,8 @@
       },
       "_meta": {
         "explicit": true,
-        "verification": "restricted",
-        "method": "conservative_default"
+        "verification": "verified",
+        "method": "crud"
       }
     },
     "infraprotect_firewall_ruleset": {
@@ -2150,7 +2566,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": false
+        "enforced": true
       },
       "recommendation": {
         "primary": "system",
@@ -2163,8 +2579,8 @@
       },
       "_meta": {
         "explicit": true,
-        "verification": "unverified",
-        "method": ""
+        "verification": "verified",
+        "method": "crud"
       }
     },
     "k8s_cluster_role": {
@@ -2187,6 +2603,72 @@
         "explicit": true,
         "verification": "verified",
         "method": "crud"
+      }
+    },
+    "k8s_cluster_role_binding": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "default_deny"
+      }
+    },
+    "k8s_pod_security_admission": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": true
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "verified",
+        "method": "crud"
+      }
+    },
+    "k8s_pod_security_policy": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "default_deny"
       }
     },
     "known_label": {
@@ -2350,7 +2832,7 @@
           "default",
           "shared"
         ],
-        "enforced": false
+        "enforced": true
       },
       "recommendation": {
         "primary": "shared",
@@ -2363,8 +2845,8 @@
       },
       "_meta": {
         "explicit": true,
-        "verification": "unverified",
-        "method": ""
+        "verification": "verified",
+        "method": "crud"
       }
     },
     "malicious_user_rule": {
@@ -2725,6 +3207,50 @@
         "method": ""
       }
     },
+    "network_policy_view": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": true
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "verified",
+        "method": "crud"
+      }
+    },
+    "nfv_service": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "default_deny"
+      }
+    },
     "nginx_config": {
       "constraint": {
         "allowed": [
@@ -2908,7 +3434,7 @@
           "default",
           "shared"
         ],
-        "enforced": false
+        "enforced": true
       },
       "recommendation": {
         "primary": "custom",
@@ -2921,8 +3447,8 @@
       },
       "_meta": {
         "explicit": true,
-        "verification": "unverified",
-        "method": ""
+        "verification": "verified",
+        "method": "crud"
       }
     },
     "otp_policy": {
@@ -2998,7 +3524,7 @@
           "default",
           "shared"
         ],
-        "enforced": false
+        "enforced": true
       },
       "recommendation": {
         "primary": "shared",
@@ -3011,8 +3537,8 @@
       },
       "_meta": {
         "explicit": true,
-        "verification": "unverified",
-        "method": ""
+        "verification": "verified",
+        "method": "crud"
       }
     },
     "policy_based_routing": {
@@ -3106,9 +3632,11 @@
     "protocol_inspection": {
       "constraint": {
         "allowed": [
-          "system"
+          "custom",
+          "default",
+          "shared"
         ],
-        "enforced": false
+        "enforced": true
       },
       "recommendation": {
         "primary": "system",
@@ -3121,18 +3649,16 @@
       },
       "_meta": {
         "explicit": true,
-        "verification": "unverified",
-        "method": ""
+        "verification": "verified",
+        "method": "crud"
       }
     },
     "protocol_policer": {
       "constraint": {
         "allowed": [
-          "custom",
-          "default",
-          "shared"
+          "system"
         ],
-        "enforced": false
+        "enforced": true
       },
       "recommendation": {
         "primary": "shared",
@@ -3145,8 +3671,30 @@
       },
       "_meta": {
         "explicit": true,
-        "verification": "unverified",
-        "method": ""
+        "verification": "verified",
+        "method": "crud"
+      }
+    },
+    "proxy": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "default_deny"
       }
     },
     "quota": {
@@ -3200,7 +3748,7 @@
           "default",
           "shared"
         ],
-        "enforced": false
+        "enforced": true
       },
       "recommendation": {
         "primary": "shared",
@@ -3218,8 +3766,8 @@
       },
       "_meta": {
         "explicit": true,
-        "verification": "unverified",
-        "method": ""
+        "verification": "verified",
+        "method": "crud"
       }
     },
     "rate_limiter_policy": {
@@ -3229,7 +3777,7 @@
           "default",
           "shared"
         ],
-        "enforced": false
+        "enforced": true
       },
       "recommendation": {
         "primary": "shared",
@@ -3242,8 +3790,8 @@
       },
       "_meta": {
         "explicit": true,
-        "verification": "unverified",
-        "method": ""
+        "verification": "verified",
+        "method": "crud"
       }
     },
     "registration": {
@@ -3290,12 +3838,36 @@
         "method": "crud"
       }
     },
-    "role": {
+    "report_config": {
       "constraint": {
         "allowed": [
           "system"
         ],
         "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "default_deny"
+      }
+    },
+    "role": {
+      "constraint": {
+        "allowed": [
+          "custom",
+          "default",
+          "shared"
+        ],
+        "enforced": true
       },
       "recommendation": {
         "primary": "system",
@@ -3308,8 +3880,8 @@
       },
       "_meta": {
         "explicit": true,
-        "verification": "unverified",
-        "method": ""
+        "verification": "verified",
+        "method": "crud"
       }
     },
     "route": {
@@ -3407,7 +3979,7 @@
           "default",
           "shared"
         ],
-        "enforced": false
+        "enforced": true
       },
       "recommendation": {
         "primary": "shared",
@@ -3420,8 +3992,8 @@
       },
       "_meta": {
         "explicit": true,
-        "verification": "unverified",
-        "method": ""
+        "verification": "verified",
+        "method": "crud"
       }
     },
     "secret_policy_rule": {
@@ -3473,7 +4045,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": false
+        "enforced": true
       },
       "recommendation": {
         "primary": "custom",
@@ -3486,8 +4058,30 @@
       },
       "_meta": {
         "explicit": true,
-        "verification": "restricted",
-        "method": "conservative_default"
+        "verification": "verified",
+        "method": "crud"
+      }
+    },
+    "segment": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": true
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "verified",
+        "method": "crud"
       }
     },
     "sensitive_data_policy": {
@@ -3497,7 +4091,7 @@
           "default",
           "shared"
         ],
-        "enforced": false
+        "enforced": true
       },
       "recommendation": {
         "primary": "shared",
@@ -3510,8 +4104,8 @@
       },
       "_meta": {
         "explicit": true,
-        "verification": "unverified",
-        "method": ""
+        "verification": "verified",
+        "method": "crud"
       }
     },
     "service_credential": {
@@ -3565,7 +4159,7 @@
           "default",
           "shared"
         ],
-        "enforced": false
+        "enforced": true
       },
       "recommendation": {
         "primary": "shared",
@@ -3583,8 +4177,32 @@
       },
       "_meta": {
         "explicit": true,
-        "verification": "unverified",
-        "method": ""
+        "verification": "verified",
+        "method": "crud"
+      }
+    },
+    "service_policy_rule": {
+      "constraint": {
+        "allowed": [
+          "custom",
+          "default",
+          "shared"
+        ],
+        "enforced": true
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "verified",
+        "method": "crud"
       }
     },
     "session": {
@@ -3785,6 +4403,28 @@
         "method": ""
       }
     },
+    "srv6_network_slice": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": true
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "verified",
+        "method": "crud"
+      }
+    },
     "static_asset": {
       "constraint": {
         "allowed": [
@@ -3880,7 +4520,7 @@
           "default",
           "shared"
         ],
-        "enforced": false
+        "enforced": true
       },
       "recommendation": {
         "primary": "custom",
@@ -3893,8 +4533,8 @@
       },
       "_meta": {
         "explicit": true,
-        "verification": "unverified",
-        "method": ""
+        "verification": "verified",
+        "method": "crud"
       }
     },
     "telemetry_receiver": {
@@ -4034,7 +4674,7 @@
         "allowed": [
           "system"
         ],
-        "enforced": false
+        "enforced": true
       },
       "recommendation": {
         "primary": "system",
@@ -4047,8 +4687,76 @@
       },
       "_meta": {
         "explicit": true,
-        "verification": "unverified",
-        "method": ""
+        "verification": "verified",
+        "method": "crud"
+      }
+    },
+    "tpm_api_key": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "default_deny"
+      }
+    },
+    "tpm_category": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "default_deny"
+      }
+    },
+    "tpm_manager": {
+      "constraint": {
+        "allowed": [
+          "custom",
+          "default",
+          "shared"
+        ],
+        "enforced": true
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "verified",
+        "method": "crud"
       }
     },
     "trusted_ca_list": {
@@ -4058,7 +4766,7 @@
           "default",
           "shared"
         ],
-        "enforced": false
+        "enforced": true
       },
       "recommendation": {
         "primary": "shared",
@@ -4071,8 +4779,8 @@
       },
       "_meta": {
         "explicit": true,
-        "verification": "unverified",
-        "method": ""
+        "verification": "verified",
+        "method": "crud"
       }
     },
     "tunnel": {
@@ -4185,6 +4893,28 @@
         "method": "crud"
       }
     },
+    "usb_policy": {
+      "constraint": {
+        "allowed": [
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "restricted",
+        "method": "default_deny"
+      }
+    },
     "user": {
       "constraint": {
         "allowed": [
@@ -4214,7 +4944,7 @@
           "default",
           "shared"
         ],
-        "enforced": false
+        "enforced": true
       },
       "recommendation": {
         "primary": "shared",
@@ -4227,8 +4957,8 @@
       },
       "_meta": {
         "explicit": true,
-        "verification": "unverified",
-        "method": ""
+        "verification": "verified",
+        "method": "crud"
       }
     },
     "user_profile": {
@@ -4502,7 +5232,7 @@
           "default",
           "shared"
         ],
-        "enforced": false
+        "enforced": true
       },
       "recommendation": {
         "primary": "custom",
@@ -4515,8 +5245,8 @@
       },
       "_meta": {
         "explicit": true,
-        "verification": "unverified",
-        "method": ""
+        "verification": "verified",
+        "method": "crud"
       }
     },
     "virtual_network": {
@@ -4548,7 +5278,7 @@
           "default",
           "shared"
         ],
-        "enforced": false
+        "enforced": true
       },
       "recommendation": {
         "primary": "custom",
@@ -4561,8 +5291,32 @@
       },
       "_meta": {
         "explicit": true,
-        "verification": "unverified",
-        "method": ""
+        "verification": "verified",
+        "method": "crud"
+      }
+    },
+    "voltshare_admin_policy": {
+      "constraint": {
+        "allowed": [
+          "custom",
+          "default",
+          "shared"
+        ],
+        "enforced": true
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "verified",
+        "method": "crud"
       }
     },
     "voltstack_site": {
@@ -4645,7 +5399,7 @@
           "default",
           "shared"
         ],
-        "enforced": false
+        "enforced": true
       },
       "recommendation": {
         "primary": "shared",
@@ -4663,8 +5417,8 @@
       },
       "_meta": {
         "explicit": true,
-        "verification": "unverified",
-        "method": ""
+        "verification": "verified",
+        "method": "crud"
       }
     },
     "workload": {
@@ -4690,15 +5444,55 @@
         "verification": "verified",
         "method": "crud"
       }
+    },
+    "workload_flavor": {
+      "constraint": {
+        "allowed": [
+          "shared"
+        ],
+        "enforced": true
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Standard tenant resource"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "verified",
+        "method": "crud"
+      }
     }
   },
   "_coverage": {
-    "total_explicit": 207,
-    "verified": 21,
+    "total_explicit": 241,
+    "verified": 73,
     "assumed": 10,
-    "unverified": 176
-  },
-  "info": {
-    "version": "2.1.177"
+    "unverified": 158,
+    "default_deny_worklist_count": 18,
+    "default_deny_worklist": [
+      "address_allocator",
+      "authentication",
+      "authorization_server",
+      "bigip_http_proxy",
+      "cdn_purge_command",
+      "cminstance",
+      "contact",
+      "customer_support",
+      "external_connector",
+      "fast_acl_rule",
+      "k8s_cluster_role_binding",
+      "k8s_pod_security_policy",
+      "nfv_service",
+      "proxy",
+      "report_config",
+      "tpm_api_key",
+      "tpm_category",
+      "usb_policy"
+    ]
   }
 }

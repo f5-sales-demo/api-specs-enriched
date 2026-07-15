@@ -137,9 +137,9 @@ class TestDeepMerge:
     def test_partial_override_merges_with_default(self, enricher: NamespaceProfileEnricher) -> None:
         profile = enricher.get_profile_for_resource("http_loadbalancer")
         assert profile["constraint"]["allowed"] == ["custom", "default", "shared"]
-        # enforced now reflects verification status, not a hardcoded default:
-        # http_loadbalancer is not 'verified', so the constraint is advisory.
-        assert profile["constraint"]["enforced"] is False
+        # http_loadbalancer is CRUD-verified tenant (namespace_verdicts.yaml), so the
+        # constraint is enforced.
+        assert profile["constraint"]["enforced"] is True
         assert profile["classification"]["category"] == "networking"
         assert profile["recommendation"]["primary"] == "custom"
 
@@ -376,13 +376,14 @@ class TestSpecEnrichment:
 # -- Parametrized Known Resource Tests --
 
 
+# NOTE: `role` is intentionally excluded — live CRUD probing (namespace_verdicts.yaml)
+# proved it is creatable in custom namespaces, correcting the earlier assumption.
 SYSTEM_RESOURCES = [
     "aws_vpc_site",
     "azure_vnet_site",
     "gcp_vpc_site",
     "fleet",
     "namespace",
-    "role",
     "user",
     "global_network",
     "virtual_network",
@@ -441,31 +442,26 @@ def test_tenant_resource_scope(enricher: NamespaceProfileEnricher, resource_name
 # -- Completeness Gate --
 
 
-def test_all_primary_resources_have_explicit_namespace_profile() -> None:
-    """Every primary resource in the spec index must have an explicit entry
-    in namespace_profile.yaml. Silent default inheritance is not acceptable
-    for primary resources — it leads to misclassified resources in the tree."""
-    import json
+def test_all_create_path_resources_have_explicit_namespace_profile() -> None:
+    """Every resource with a canonical create path must have an explicit
+    classification (curated override OR machine verdict). Silent inheritance of
+    the tenant default is not acceptable — under default-deny display it would
+    leak an unverified resource into user namespaces. Unknowns must be explicitly
+    default-denied (system, restricted) via namespace_verdicts.yaml."""
     from pathlib import Path
 
-    index_path = Path("docs/specifications/api/index.json")
-    if not index_path.exists():
-        pytest.skip("index.json not available")
+    from scripts.discover_namespace_crud import build_create_path_index
 
-    with index_path.open() as f:
-        index = json.load(f)
+    specs_dir = Path("docs/specifications/api")
+    if not (specs_dir / "index.json").exists():
+        pytest.skip("specs not available")
 
-    primary_names: set[str] = set()
-    specs = index.get("specifications", [])
-    if isinstance(specs, dict):
-        specs = list(specs.values())
-    for domain_info in specs:
-        for resource in domain_info.get("x-f5xc-primary-resources", []):
-            primary_names.add(resource["name"])
-
+    universe = set(build_create_path_index(specs_dir).keys())
     enricher = NamespaceProfileEnricher()
-    missing = sorted(name for name in primary_names if not enricher.is_resource_explicit(name))
+    missing = sorted(name for name in universe if not enricher.is_resource_explicit(name))
 
     assert missing == [], (
-        f"{len(missing)} primary resources lack explicit namespace profile entries: {missing}"
+        f"{len(missing)} create-path resources lack an explicit namespace "
+        f"classification (add to namespace_profile.yaml or regenerate "
+        f"namespace_verdicts.yaml): {missing}"
     )

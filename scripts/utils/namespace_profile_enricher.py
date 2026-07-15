@@ -61,6 +61,22 @@ class NamespaceProfileEnricher:
     def _load_config(self) -> None:
         with self.config_path.open() as f:
             self.config = yaml.safe_load(f)
+        # Layer machine-owned, live-CRUD-verified verdicts over the hand-curated
+        # profile. Verdicts always win (they are authoritative live-API facts).
+        self.verdicts: dict[str, Any] = {}
+        verdicts_path = self.config_path.parent / "namespace_verdicts.yaml"
+        if verdicts_path.exists():
+            with verdicts_path.open() as f:
+                data = yaml.safe_load(f) or {}
+            self.verdicts = data.get("verdicts", {})
+
+    def _resolved_override(self, lookup: str) -> dict[str, Any]:
+        """Curated override for a resource, with any CRUD verdict layered on top."""
+        override = self.config.get("resources", {}).get(lookup, {})
+        verdict = self.verdicts.get(lookup)
+        if verdict:
+            return _deep_merge(override, verdict)
+        return override
 
     def get_profile_for_resource(
         self, resource_type: str, *, track_stats: bool = False
@@ -75,7 +91,7 @@ class NamespaceProfileEnricher:
             if lookup_without_views in resources:
                 lookup = lookup_without_views
 
-        override = resources.get(lookup, {})
+        override = self._resolved_override(lookup)
         is_explicit = bool(override)
 
         if track_stats:
@@ -108,25 +124,24 @@ class NamespaceProfileEnricher:
         return profile
 
     def is_resource_explicit(self, resource_type: str) -> bool:
-        """Check whether a resource has an explicit entry in the config."""
+        """Check whether a resource has an explicit entry (curated override or verdict)."""
         resources = self.config.get("resources", {})
         lookup = resource_type
         if lookup.startswith("views_") and lookup not in resources:
             lookup_without_views = lookup[len("views_") :]
             if lookup_without_views in resources:
                 lookup = lookup_without_views
-        return lookup in resources
+        return lookup in resources or lookup in self.verdicts
 
     def get_verification_status(self, resource_type: str) -> dict[str, Any]:
-        """Get the verification metadata for a resource."""
+        """Get the verification metadata for a resource (verdict layered over override)."""
         resources = self.config.get("resources", {})
         lookup = resource_type
         if lookup.startswith("views_") and lookup not in resources:
             lookup_without_views = lookup[len("views_") :]
             if lookup_without_views in resources:
                 lookup = lookup_without_views
-        override = resources.get(lookup, {})
-        return override.get("_verification", {})
+        return self._resolved_override(lookup).get("_verification", {})
 
     def enrich_spec(self, spec: dict[str, Any]) -> dict[str, Any]:
         """Add x-f5xc-namespace-profile to a spec. Removes old x-f5xc-namespace-scope.

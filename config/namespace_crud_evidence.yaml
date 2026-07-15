@@ -1,0 +1,2824 @@
+address_allocator:
+  confidence: low
+  create_path: /api/config/namespaces/{namespace}/address_allocators
+  domain: network
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: Field spec.address_allocation_scheme should be not nil, got nil in request.
+      status: 400
+    demo:
+      classification: validation_error
+      error: Field spec.address_allocation_scheme should be not nil, got nil in request.
+      status: 400
+    system:
+      classification: validation_error
+      error: Field spec.address_allocation_scheme should be not nil, got nil in request.
+      status: 400
+  verdict: inconclusive
+advertise_policy:
+  confidence: low
+  create_path: /api/config/namespaces/{namespace}/advertise_policys
+  domain: network
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: Field spec.port_choice should be not nil, got nil in request.
+      status: 400
+    demo:
+      classification: validation_error
+      error: Field spec.port_choice should be not nil, got nil in request.
+      status: 400
+    system:
+      classification: validation_error
+      error: Field spec.port_choice should be not nil, got nil in request.
+      status: 400
+  verdict: inconclusive
+alert_policy:
+  confidence: high
+  create_path: /api/config/namespaces/{namespace}/alert_policys
+  discovered_allowed:
+  - custom
+  - default
+  - shared
+  - system
+  domain: statistics
+  probes:
+    default:
+      classification: created
+      error: null
+      status: 200
+    demo:
+      classification: created
+      error: null
+      status: 200
+    system:
+      classification: created
+      error: null
+      status: 200
+  verdict: any_namespace
+alert_receiver:
+  confidence: high
+  create_path: /api/config/namespaces/{namespace}/alert_receivers
+  discovered_allowed:
+  - custom
+  - default
+  - shared
+  - system
+  domain: statistics
+  probes:
+    default:
+      classification: created
+      error: null
+      status: 200
+    demo:
+      classification: created
+      error: null
+      status: 200
+    system:
+      classification: created
+      error: null
+      status: 200
+  verdict: any_namespace
+api_definition:
+  confidence: high
+  create_path: /api/config/namespaces/{namespace}/api_definitions
+  discovered_allowed:
+  - custom
+  - default
+  - shared
+  - system
+  domain: api
+  probes:
+    default:
+      classification: created
+      error: null
+      status: 200
+    demo:
+      classification: created
+      error: null
+      status: 200
+    system:
+      classification: validation_error
+      error: ves.io.schema.views.api_definition.Object allowed to be created only
+        in shared or app, got system in request
+      status: 400
+  verdict: any_namespace
+app_api_group:
+  confidence: high
+  create_path: /api/config/namespaces/{namespace}/app_api_groups
+  discovered_allowed:
+  - custom
+  - default
+  - shared
+  - system
+  domain: api
+  probes:
+    default:
+      classification: created
+      error: null
+      status: 200
+    demo:
+      classification: created
+      error: null
+      status: 200
+    system:
+      classification: validation_error
+      error: ves.io.schema.views.app_api_group.Object allowed to be created only in
+        shared or app, got system in request
+      status: 400
+  verdict: any_namespace
+app_firewall:
+  confidence: high
+  create_path: /api/config/namespaces/{namespace}/app_firewalls
+  discovered_allowed:
+  - custom
+  - default
+  - shared
+  - system
+  domain: virtual
+  probes:
+    default:
+      classification: created
+      error: null
+      status: 200
+    demo:
+      classification: created
+      error: null
+      status: 200
+    system:
+      classification: created
+      error: null
+      status: 200
+  verdict: any_namespace
+app_setting:
+  confidence: low
+  create_path: /api/config/namespaces/{namespace}/app_settings
+  domain: service_mesh
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: Field spec.app_type_settings should have minimum items of 1, got 0 in
+        request.
+      status: 400
+    demo:
+      classification: validation_error
+      error: Field spec.app_type_settings should have minimum items of 1, got 0 in
+        request.
+      status: 400
+    system:
+      classification: validation_error
+      error: Field spec.app_type_settings should have minimum items of 1, got 0 in
+        request.
+      status: 400
+  verdict: inconclusive
+app_type:
+  confidence: low
+  create_path: /api/config/namespaces/{namespace}/app_types
+  domain: service_mesh
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: App Type can be created only in shared namespace
+      status: 400
+    demo:
+      classification: validation_error
+      error: App Type can be created only in shared namespace
+      status: 400
+    system:
+      classification: validation_error
+      error: App Type can be created only in shared namespace
+      status: 400
+  verdict: inconclusive
+authentication:
+  confidence: low
+  create_path: /api/config/namespaces/{namespace}/authentications
+  domain: tenant_and_identity
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: Field spec.auth_type_choice should be not nil, got nil in request.
+      status: 400
+    demo:
+      classification: validation_error
+      error: Field spec.auth_type_choice should be not nil, got nil in request.
+      status: 400
+    system:
+      classification: validation_error
+      error: Field spec.auth_type_choice should be not nil, got nil in request.
+      status: 400
+  verdict: inconclusive
+authorization_server:
+  confidence: low
+  create_path: /api/config/namespaces/{namespace}/authorization_servers
+  domain: tenant_and_identity
+  probes:
+    default:
+      classification: server_error
+      error: There was a server error in processing request
+      status: 500
+    demo:
+      classification: server_error
+      error: There was a server error in processing request
+      status: 500
+    system:
+      classification: server_error
+      error: There was a server error in processing request
+      status: 500
+  verdict: inconclusive
+aws_tgw_site:
+  confidence: low
+  create_path: /api/config/namespaces/{namespace}/aws_tgw_sites
+  domain: sites
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: Field spec.aws_parameters should be not nil, got nil in request.
+      status: 400
+    demo:
+      classification: validation_error
+      error: Field spec.aws_parameters should be not nil, got nil in request.
+      status: 400
+    system:
+      classification: validation_error
+      error: Field spec.aws_parameters should be not nil, got nil in request.
+      status: 400
+  verdict: inconclusive
+aws_vpc_site:
+  confidence: low
+  create_path: /api/config/namespaces/{namespace}/aws_vpc_sites
+  domain: sites
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: Field spec.deployment should be not nil, got nil in request.
+      status: 400
+    demo:
+      classification: validation_error
+      error: Field spec.deployment should be not nil, got nil in request.
+      status: 400
+    system:
+      classification: validation_error
+      error: Field spec.deployment should be not nil, got nil in request.
+      status: 400
+  verdict: inconclusive
+azure_vnet_site:
+  confidence: medium
+  create_path: /api/config/namespaces/{namespace}/azure_vnet_sites
+  discovered_allowed:
+  - system
+  domain: sites
+  probes:
+    default:
+      classification: validation_error
+      error: ves.io.schema.views.azure_vnet_site.Object allowed to be created only
+        in system, got default in request
+      status: 400
+    demo:
+      classification: validation_error
+      error: ves.io.schema.views.azure_vnet_site.Object allowed to be created only
+        in system, got demo in request
+      status: 400
+    system:
+      classification: created
+      error: null
+      status: 200
+  verdict: system_confirmed
+bgp:
+  confidence: low
+  create_path: /api/config/namespaces/{namespace}/bgps
+  domain: network
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: Field spec.bgp_parameters should be not nil, got nil in request.
+      status: 400
+    demo:
+      classification: validation_error
+      error: Field spec.bgp_parameters should be not nil, got nil in request.
+      status: 400
+    system:
+      classification: validation_error
+      error: Field spec.bgp_parameters should be not nil, got nil in request.
+      status: 400
+  verdict: inconclusive
+bgp_asn_set:
+  confidence: low
+  create_path: /api/config/namespaces/{namespace}/bgp_asn_sets
+  domain: network
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: Field spec.as_numbers should have minimum items of 1, got 0 in request.
+      status: 400
+    demo:
+      classification: validation_error
+      error: Field spec.as_numbers should have minimum items of 1, got 0 in request.
+      status: 400
+    system:
+      classification: validation_error
+      error: Field spec.as_numbers should have minimum items of 1, got 0 in request.
+      status: 400
+  verdict: inconclusive
+bgp_routing_policy:
+  confidence: low
+  create_path: /api/config/namespaces/{namespace}/bgp_routing_policys
+  domain: network
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: Field spec.rules should have minimum items of 1, got 0 in request.
+      status: 400
+    demo:
+      classification: validation_error
+      error: Field spec.rules should have minimum items of 1, got 0 in request.
+      status: 400
+    system:
+      classification: validation_error
+      error: Field spec.rules should have minimum items of 1, got 0 in request.
+      status: 400
+  verdict: inconclusive
+bigip_http_proxy:
+  confidence: low
+  create_path: /api/config/namespaces/{namespace}/bigip_http_proxys
+  domain: bigip
+  probes:
+    default:
+      classification: server_error
+      error: Not Implemented
+      status: 501
+    demo:
+      classification: server_error
+      error: Not Implemented
+      status: 501
+    system:
+      classification: server_error
+      error: Not Implemented
+      status: 501
+  verdict: inconclusive
+bigip_irule:
+  confidence: low
+  create_path: /api/bigipconnector/namespaces/{namespace}/bigip_irules
+  domain: bigip
+  probes:
+    default:
+      classification: forbidden
+      error: null
+      status: 403
+    demo:
+      classification: forbidden
+      error: null
+      status: 403
+    system:
+      classification: forbidden
+      error: null
+      status: 403
+  verdict: inconclusive
+bot_defense_app_infrastructure:
+  confidence: low
+  create_path: /api/config/namespaces/{namespace}/bot_defense_app_infrastructures
+  domain: bot_and_threat_defense
+  probes:
+    default:
+      classification: forbidden
+      error: null
+      status: 403
+    demo:
+      classification: forbidden
+      error: null
+      status: 403
+    system:
+      classification: forbidden
+      error: null
+      status: 403
+  verdict: inconclusive
+cdn_cache_rule:
+  confidence: high
+  create_path: /api/config/namespaces/{namespace}/cdn_cache_rules
+  discovered_allowed:
+  - custom
+  - default
+  - shared
+  - system
+  domain: cdn
+  probes:
+    default:
+      classification: created
+      error: null
+      status: 200
+    demo:
+      classification: created
+      error: null
+      status: 200
+    system:
+      classification: created
+      error: null
+      status: 200
+  verdict: any_namespace
+cdn_loadbalancer:
+  confidence: high
+  create_path: /api/config/namespaces/{namespace}/cdn_loadbalancers
+  discovered_allowed:
+  - custom
+  - default
+  - shared
+  - system
+  domain: cdn
+  probes:
+    default:
+      classification: created
+      error: null
+      status: 200
+    demo:
+      classification: created
+      error: null
+      status: 200
+    system:
+      classification: created
+      error: null
+      status: 200
+  verdict: any_namespace
+cdn_purge_command:
+  confidence: low
+  create_path: /api/config/namespaces/{namespace}/cdn_purge_commands
+  domain: cdn
+  probes:
+    default:
+      classification: server_error
+      error: There was a server error in processing request
+      status: 500
+    demo:
+      classification: server_error
+      error: There was a server error in processing request
+      status: 500
+    system:
+      classification: server_error
+      error: There was a server error in processing request
+      status: 500
+  verdict: inconclusive
+certificate:
+  confidence: high
+  create_path: /api/config/namespaces/{namespace}/certificates
+  discovered_allowed:
+  - custom
+  - default
+  - shared
+  - system
+  domain: certificates
+  probes:
+    default:
+      classification: created
+      error: null
+      status: 200
+    demo:
+      classification: created
+      error: null
+      status: 200
+    system:
+      classification: created
+      error: null
+      status: 200
+  verdict: any_namespace
+certificate_chain:
+  confidence: high
+  create_path: /api/config/namespaces/{namespace}/certificate_chains
+  discovered_allowed:
+  - custom
+  - default
+  - shared
+  - system
+  domain: certificates
+  probes:
+    default:
+      classification: created
+      error: null
+      status: 200
+    demo:
+      classification: created
+      error: null
+      status: 200
+    system:
+      classification: created
+      error: null
+      status: 200
+  verdict: any_namespace
+cloud_connect:
+  confidence: low
+  create_path: /api/config/namespaces/{namespace}/cloud_connects
+  domain: cloud_infrastructure
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: Field spec.cloud should be not nil, got nil in request.
+      status: 400
+    demo:
+      classification: validation_error
+      error: Field spec.cloud should be not nil, got nil in request.
+      status: 400
+    system:
+      classification: validation_error
+      error: Field spec.cloud should be not nil, got nil in request.
+      status: 400
+  verdict: inconclusive
+cloud_credentials:
+  confidence: low
+  create_path: /api/config/namespaces/{namespace}/cloud_credentialss
+  domain: cloud_infrastructure
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: ves.io.schema.cloud_credentials.Object allowed to be created only in
+        system, got default in request
+      status: 400
+    demo:
+      classification: validation_error
+      error: ves.io.schema.cloud_credentials.Object allowed to be created only in
+        system, got demo in request
+      status: 400
+    system:
+      classification: server_error
+      error: There was a server error in processing request
+      status: 500
+  verdict: inconclusive
+cloud_elastic_ip:
+  confidence: low
+  create_path: /api/config/namespaces/{namespace}/cloud_elastic_ips
+  domain: cloud_infrastructure
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: Field spec.count should be greater than or equal to 1, got 0 in request.
+      status: 400
+    demo:
+      classification: validation_error
+      error: Field spec.count should be greater than or equal to 1, got 0 in request.
+      status: 400
+    system:
+      classification: validation_error
+      error: Field spec.count should be greater than or equal to 1, got 0 in request.
+      status: 400
+  verdict: inconclusive
+cloud_link:
+  confidence: low
+  create_path: /api/config/namespaces/{namespace}/cloud_links
+  domain: cloud_infrastructure
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: Field spec.cloud_provider should be not nil, got nil in request.
+      status: 400
+    demo:
+      classification: validation_error
+      error: Field spec.cloud_provider should be not nil, got nil in request.
+      status: 400
+    system:
+      classification: validation_error
+      error: Field spec.cloud_provider should be not nil, got nil in request.
+      status: 400
+  verdict: inconclusive
+cluster:
+  confidence: high
+  create_path: /api/config/namespaces/{namespace}/clusters
+  discovered_allowed:
+  - custom
+  - default
+  - shared
+  - system
+  domain: virtual
+  probes:
+    default:
+      classification: created
+      error: null
+      status: 200
+    demo:
+      classification: created
+      error: null
+      status: 200
+    system:
+      classification: created
+      error: null
+      status: 200
+  verdict: any_namespace
+cminstance:
+  confidence: low
+  create_path: /api/config/namespaces/{namespace}/cminstances
+  domain: marketplace
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: Field spec.api_token should be not nil, got nil in request.
+      status: 400
+    demo:
+      classification: validation_error
+      error: Field spec.api_token should be not nil, got nil in request.
+      status: 400
+    system:
+      classification: validation_error
+      error: Field spec.api_token should be not nil, got nil in request.
+      status: 400
+  verdict: inconclusive
+contact:
+  confidence: low
+  create_path: /api/web/namespaces/{namespace}/contacts
+  domain: tenant_and_identity
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: Address is not valid
+      status: 400
+    demo:
+      classification: validation_error
+      error: Address is not valid
+      status: 400
+    system:
+      classification: validation_error
+      error: Address is not valid
+      status: 400
+  verdict: inconclusive
+container_registry:
+  confidence: high
+  create_path: /api/config/namespaces/{namespace}/container_registrys
+  discovered_allowed:
+  - custom
+  - default
+  - shared
+  - system
+  domain: managed_kubernetes
+  probes:
+    default:
+      classification: created
+      error: null
+      status: 200
+    demo:
+      classification: created
+      error: null
+      status: 200
+    system:
+      classification: validation_error
+      error: ves.io.schema.container_registry.Object allowed to be created only in
+        shared or app, got system in request
+      status: 400
+  verdict: any_namespace
+crl:
+  confidence: low
+  create_path: /api/config/namespaces/{namespace}/crls
+  domain: certificates
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: Field spec.refresh_interval should be greater than or equal to 6, got
+        0 in request.
+      status: 400
+    demo:
+      classification: validation_error
+      error: Field spec.refresh_interval should be greater than or equal to 6, got
+        0 in request.
+      status: 400
+    system:
+      classification: validation_error
+      error: Field spec.refresh_interval should be greater than or equal to 6, got
+        0 in request.
+      status: 400
+  verdict: inconclusive
+customer_support:
+  confidence: low
+  create_path: /api/web/namespaces/{namespace}/customer_supports
+  domain: support
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: 'validate customer_support request: both description and product data
+        are empty'
+      status: 400
+    demo:
+      classification: validation_error
+      error: 'validate customer_support request: both description and product data
+        are empty'
+      status: 400
+    system:
+      classification: validation_error
+      error: 'validate customer_support request: both description and product data
+        are empty'
+      status: 400
+  verdict: inconclusive
+data_type:
+  confidence: low
+  create_path: /api/config/namespaces/{namespace}/data_types
+  domain: data_and_privacy_security
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: Field spec.rules should have minimum items of 1, got 0 in request.
+      status: 400
+    demo:
+      classification: validation_error
+      error: Field spec.rules should have minimum items of 1, got 0 in request.
+      status: 400
+    system:
+      classification: validation_error
+      error: Field spec.rules should have minimum items of 1, got 0 in request.
+      status: 400
+  verdict: inconclusive
+dc_cluster_group:
+  confidence: medium
+  create_path: /api/config/namespaces/{namespace}/dc_cluster_groups
+  discovered_allowed:
+  - system
+  domain: network
+  probes:
+    default:
+      classification: validation_error
+      error: ves.io.schema.dc_cluster_group.Object allowed to be created only in system,
+        got default in request
+      status: 400
+    demo:
+      classification: validation_error
+      error: ves.io.schema.dc_cluster_group.Object allowed to be created only in system,
+        got demo in request
+      status: 400
+    system:
+      classification: created
+      error: null
+      status: 200
+  verdict: system_confirmed
+discovery:
+  confidence: low
+  create_path: /api/config/namespaces/{namespace}/discoverys
+  domain: api
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: Field spec.discovery_choice should be not nil, got nil in request.
+      status: 400
+    demo:
+      classification: validation_error
+      error: Field spec.discovery_choice should be not nil, got nil in request.
+      status: 400
+    system:
+      classification: validation_error
+      error: Field spec.discovery_choice should be not nil, got nil in request.
+      status: 400
+  verdict: inconclusive
+dns_compliance_checks:
+  confidence: high
+  create_path: /api/config/namespaces/{namespace}/dns_compliance_checkss
+  discovered_allowed:
+  - custom
+  - default
+  - shared
+  - system
+  domain: dns
+  probes:
+    default:
+      classification: created
+      error: null
+      status: 200
+    demo:
+      classification: created
+      error: null
+      status: 200
+    system:
+      classification: created
+      error: null
+      status: 200
+  verdict: any_namespace
+dns_domain:
+  confidence: low
+  create_path: /api/config/namespaces/{namespace}/dns_domains
+  domain: dns
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: Name of the DNS Domain object must be a valid fully qualified domain
+        name
+      status: 400
+    demo:
+      classification: validation_error
+      error: Name of the DNS Domain object must be a valid fully qualified domain
+        name
+      status: 400
+    system:
+      classification: validation_error
+      error: Name of the DNS Domain object must be a valid fully qualified domain
+        name
+      status: 400
+  verdict: inconclusive
+dns_lb_health_check:
+  confidence: low
+  create_path: /api/config/dns/namespaces/{namespace}/dns_lb_health_checks
+  domain: dns
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: Field spec.health_check should be not nil, got nil in request.
+      status: 400
+    demo:
+      classification: validation_error
+      error: Field spec.health_check should be not nil, got nil in request.
+      status: 400
+    system:
+      classification: validation_error
+      error: Field spec.health_check should be not nil, got nil in request.
+      status: 400
+  verdict: inconclusive
+dns_lb_pool:
+  confidence: low
+  create_path: /api/config/dns/namespaces/{namespace}/dns_lb_pools
+  domain: dns
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: Field spec.pool_type_choice should be not nil, got nil in request.
+      status: 400
+    demo:
+      classification: validation_error
+      error: Field spec.pool_type_choice should be not nil, got nil in request.
+      status: 400
+    system:
+      classification: validation_error
+      error: Field spec.pool_type_choice should be not nil, got nil in request.
+      status: 400
+  verdict: inconclusive
+dns_load_balancer:
+  confidence: high
+  create_path: /api/config/dns/namespaces/{namespace}/dns_load_balancers
+  discovered_allowed:
+  - system
+  domain: dns
+  probes:
+    default:
+      classification: ns_restricted
+      error: 'Creation of DNS objects outside system namespace not permitted. Provided
+        namespace: default'
+      status: 400
+    demo:
+      classification: ns_restricted
+      error: 'Creation of DNS objects outside system namespace not permitted. Provided
+        namespace: demo'
+      status: 400
+    system:
+      classification: validation_error
+      error: Empty tenant or namespace
+      status: 400
+  verdict: system_only
+dns_proxy:
+  confidence: low
+  create_path: /api/config/namespaces/{namespace}/dns_proxys
+  domain: dns
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: Field spec.cache_profile should be not nil, got nil in request.
+      status: 400
+    demo:
+      classification: validation_error
+      error: Field spec.cache_profile should be not nil, got nil in request.
+      status: 400
+    system:
+      classification: validation_error
+      error: Field spec.cache_profile should be not nil, got nil in request.
+      status: 400
+  verdict: inconclusive
+dns_zone:
+  confidence: low
+  create_path: /api/config/dns/namespaces/{namespace}/dns_zones
+  domain: dns
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: Name of the dns_zone object must be a valid fully qualified domain name
+      status: 400
+    demo:
+      classification: validation_error
+      error: Name of the dns_zone object must be a valid fully qualified domain name
+      status: 400
+    system:
+      classification: validation_error
+      error: Name of the dns_zone object must be a valid fully qualified domain name
+      status: 400
+  verdict: inconclusive
+endpoint:
+  confidence: high
+  create_path: /api/config/namespaces/{namespace}/endpoints
+  discovered_allowed:
+  - custom
+  - default
+  - shared
+  - system
+  domain: service_mesh
+  probes:
+    default:
+      classification: created
+      error: null
+      status: 200
+    demo:
+      classification: created
+      error: null
+      status: 200
+    system:
+      classification: created
+      error: null
+      status: 200
+  verdict: any_namespace
+enhanced_firewall_policy:
+  confidence: high
+  create_path: /api/config/namespaces/{namespace}/enhanced_firewall_policys
+  discovered_allowed:
+  - custom
+  - default
+  - shared
+  - system
+  domain: virtual
+  probes:
+    default:
+      classification: created
+      error: null
+      status: 200
+    demo:
+      classification: created
+      error: null
+      status: 200
+    system:
+      classification: created
+      error: null
+      status: 200
+  verdict: any_namespace
+external_connector:
+  confidence: low
+  create_path: /api/config/namespaces/{namespace}/external_connectors
+  domain: marketplace
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: Field spec.ce_site_reference should be not nil, got nil in request.
+      status: 400
+    demo:
+      classification: validation_error
+      error: Field spec.ce_site_reference should be not nil, got nil in request.
+      status: 400
+    system:
+      classification: validation_error
+      error: Field spec.ce_site_reference should be not nil, got nil in request.
+      status: 400
+  verdict: inconclusive
+fast_acl:
+  confidence: medium
+  create_path: /api/config/namespaces/{namespace}/fast_acls
+  discovered_allowed:
+  - system
+  domain: network_security
+  probes:
+    default:
+      classification: validation_error
+      error: ves.io.schema.fast_acl.Object allowed to be created only in system, got
+        default in request
+      status: 400
+    demo:
+      classification: validation_error
+      error: ves.io.schema.fast_acl.Object allowed to be created only in system, got
+        demo in request
+      status: 400
+    system:
+      classification: created
+      error: null
+      status: 200
+  verdict: system_confirmed
+fast_acl_rule:
+  confidence: low
+  create_path: /api/config/namespaces/{namespace}/fast_acl_rules
+  domain: network_security
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: Field spec.action should be not nil, got nil in request.
+      status: 400
+    demo:
+      classification: validation_error
+      error: Field spec.action should be not nil, got nil in request.
+      status: 400
+    system:
+      classification: validation_error
+      error: Field spec.action should be not nil, got nil in request.
+      status: 400
+  verdict: inconclusive
+filter_set:
+  confidence: low
+  create_path: /api/config/namespaces/{namespace}/filter_sets
+  domain: network_security
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: Field spec.filter_fields should have minimum items of 1, got 0 in request.
+      status: 400
+    demo:
+      classification: validation_error
+      error: Field spec.filter_fields should have minimum items of 1, got 0 in request.
+      status: 400
+    system:
+      classification: validation_error
+      error: Field spec.filter_fields should have minimum items of 1, got 0 in request.
+      status: 400
+  verdict: inconclusive
+fleet:
+  confidence: low
+  create_path: /api/config/namespaces/{namespace}/fleets
+  domain: ce_management
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: ves.io.schema.fleet.Object allowed to be created only in system, got
+        default in request
+      status: 400
+    demo:
+      classification: validation_error
+      error: ves.io.schema.fleet.Object allowed to be created only in system, got
+        demo in request
+      status: 400
+    system:
+      classification: validation_error
+      error: 'Does not satisfy DNS-1035 label requirements: a DNS-1035 label must
+        consist of lower case alphanumeric characters or ''-'', start with an alphabetic
+        character, and end with an alphanumeric character'
+      status: 400
+  verdict: inconclusive
+forward_proxy_policy:
+  confidence: high
+  create_path: /api/config/namespaces/{namespace}/forward_proxy_policys
+  discovered_allowed:
+  - custom
+  - default
+  - shared
+  - system
+  domain: network_security
+  probes:
+    default:
+      classification: created
+      error: null
+      status: 200
+    demo:
+      classification: created
+      error: null
+      status: 200
+    system:
+      classification: validation_error
+      error: forward_proxy_policy object with DrpHttpConnect enabled cannot be in
+        system namespace
+      status: 400
+  verdict: any_namespace
+forwarding_class:
+  confidence: low
+  create_path: /api/config/namespaces/{namespace}/forwarding_classs
+  domain: network
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: Field spec.queueing_choice should be not nil, got nil in request.
+      status: 400
+    demo:
+      classification: validation_error
+      error: Field spec.queueing_choice should be not nil, got nil in request.
+      status: 400
+    system:
+      classification: validation_error
+      error: Field spec.queueing_choice should be not nil, got nil in request.
+      status: 400
+  verdict: inconclusive
+gcp_vpc_site:
+  confidence: low
+  create_path: /api/config/namespaces/{namespace}/gcp_vpc_sites
+  domain: sites
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: Field spec.deployment should be not nil, got nil in request.
+      status: 400
+    demo:
+      classification: validation_error
+      error: Field spec.deployment should be not nil, got nil in request.
+      status: 400
+    system:
+      classification: validation_error
+      error: Field spec.deployment should be not nil, got nil in request.
+      status: 400
+  verdict: inconclusive
+geo_location_set:
+  confidence: high
+  create_path: /api/config/dns/namespaces/{namespace}/geo_location_sets
+  discovered_allowed:
+  - system
+  domain: virtual
+  probes:
+    default:
+      classification: ns_restricted
+      error: 'Creation of DNS objects outside system namespace not permitted. Provided
+        namespace: default'
+      status: 400
+    demo:
+      classification: ns_restricted
+      error: 'Creation of DNS objects outside system namespace not permitted. Provided
+        namespace: demo'
+      status: 400
+    system:
+      classification: created
+      error: null
+      status: 200
+  verdict: system_only
+global_log_receiver:
+  confidence: high
+  create_path: /api/config/namespaces/{namespace}/global_log_receivers
+  discovered_allowed:
+  - custom
+  - default
+  - shared
+  - system
+  domain: statistics
+  probes:
+    default:
+      classification: created
+      error: null
+      status: 200
+    demo:
+      classification: created
+      error: null
+      status: 200
+    system:
+      classification: created
+      error: null
+      status: 200
+  verdict: any_namespace
+healthcheck:
+  confidence: high
+  create_path: /api/config/namespaces/{namespace}/healthchecks
+  discovered_allowed:
+  - custom
+  - default
+  - shared
+  - system
+  domain: virtual
+  probes:
+    default:
+      classification: created
+      error: null
+      status: 200
+    demo:
+      classification: created
+      error: null
+      status: 200
+    system:
+      classification: created
+      error: null
+      status: 200
+  verdict: any_namespace
+http_loadbalancer:
+  confidence: high
+  create_path: /api/config/namespaces/{namespace}/http_loadbalancers
+  discovered_allowed:
+  - custom
+  - default
+  - shared
+  - system
+  domain: virtual
+  probes:
+    default:
+      classification: created
+      error: null
+      status: 200
+    demo:
+      classification: created
+      error: null
+      status: 200
+    system:
+      classification: created
+      error: null
+      status: 200
+  verdict: any_namespace
+ike1:
+  confidence: high
+  create_path: /api/config/namespaces/{namespace}/ike1s
+  discovered_allowed:
+  - custom
+  - default
+  - shared
+  - system
+  domain: network
+  probes:
+    default:
+      classification: created
+      error: null
+      status: 200
+    demo:
+      classification: created
+      error: null
+      status: 200
+    system:
+      classification: created
+      error: null
+      status: 200
+  verdict: any_namespace
+ike2:
+  confidence: high
+  create_path: /api/config/namespaces/{namespace}/ike2s
+  discovered_allowed:
+  - custom
+  - default
+  - shared
+  - system
+  domain: network
+  probes:
+    default:
+      classification: created
+      error: null
+      status: 200
+    demo:
+      classification: created
+      error: null
+      status: 200
+    system:
+      classification: created
+      error: null
+      status: 200
+  verdict: any_namespace
+ike_phase1_profile:
+  confidence: high
+  create_path: /api/config/namespaces/{namespace}/ike_phase1_profiles
+  discovered_allowed:
+  - custom
+  - default
+  - shared
+  - system
+  domain: network
+  probes:
+    default:
+      classification: created
+      error: null
+      status: 200
+    demo:
+      classification: created
+      error: null
+      status: 200
+    system:
+      classification: created
+      error: null
+      status: 200
+  verdict: any_namespace
+ike_phase2_profile:
+  confidence: high
+  create_path: /api/config/namespaces/{namespace}/ike_phase2_profiles
+  discovered_allowed:
+  - custom
+  - default
+  - shared
+  - system
+  domain: network
+  probes:
+    default:
+      classification: created
+      error: null
+      status: 200
+    demo:
+      classification: created
+      error: null
+      status: 200
+    system:
+      classification: created
+      error: null
+      status: 200
+  verdict: any_namespace
+infraprotect_asn:
+  confidence: low
+  create_path: /api/infraprotect/namespaces/{namespace}/infraprotect_asns
+  domain: ddos
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: Field spec.asn should be greater than or equal to 1, got 0 in request.
+      status: 400
+    demo:
+      classification: validation_error
+      error: Field spec.asn should be greater than or equal to 1, got 0 in request.
+      status: 400
+    system:
+      classification: validation_error
+      error: Field spec.asn should be greater than or equal to 1, got 0 in request.
+      status: 400
+  verdict: inconclusive
+infraprotect_asn_prefix:
+  confidence: low
+  create_path: /api/infraprotect/namespaces/{namespace}/infraprotect_asn_prefixs
+  domain: ddos
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: Field spec.asn should be not nil, got nil in request.
+      status: 400
+    demo:
+      classification: validation_error
+      error: Field spec.asn should be not nil, got nil in request.
+      status: 400
+    system:
+      classification: validation_error
+      error: Field spec.asn should be not nil, got nil in request.
+      status: 400
+  verdict: inconclusive
+infraprotect_deny_list_rule:
+  confidence: low
+  create_path: /api/infraprotect/namespaces/{namespace}/infraprotect_deny_list_rules
+  domain: ddos
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: ves.io.schema.infraprotect_deny_list_rule.Object allowed to be created
+        only in system, got default in request
+      status: 400
+    demo:
+      classification: validation_error
+      error: ves.io.schema.infraprotect_deny_list_rule.Object allowed to be created
+        only in system, got demo in request
+      status: 400
+    system:
+      classification: validation_error
+      error: Invalid IP Prefix Provided
+      status: 400
+  verdict: inconclusive
+infraprotect_firewall_rule:
+  confidence: low
+  create_path: /api/infraprotect/namespaces/{namespace}/infraprotect_firewall_rules
+  domain: ddos
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: Field spec.destination_prefix should be not nil, got nil in request.
+      status: 400
+    demo:
+      classification: validation_error
+      error: Field spec.destination_prefix should be not nil, got nil in request.
+      status: 400
+    system:
+      classification: validation_error
+      error: Field spec.destination_prefix should be not nil, got nil in request.
+      status: 400
+  verdict: inconclusive
+infraprotect_firewall_rule_group:
+  confidence: medium
+  create_path: /api/infraprotect/namespaces/{namespace}/infraprotect_firewall_rule_groups
+  discovered_allowed:
+  - system
+  domain: ddos
+  probes:
+    default:
+      classification: validation_error
+      error: ves.io.schema.infraprotect_firewall_rule_group.Object allowed to be created
+        only in system, got default in request
+      status: 400
+    demo:
+      classification: validation_error
+      error: ves.io.schema.infraprotect_firewall_rule_group.Object allowed to be created
+        only in system, got demo in request
+      status: 400
+    system:
+      classification: created
+      error: null
+      status: 200
+  verdict: system_confirmed
+infraprotect_internet_prefix_advertisement:
+  confidence: low
+  create_path: /api/infraprotect/namespaces/{namespace}/infraprotect_internet_prefix_advertisements
+  domain: ddos
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: ves.io.schema.infraprotect_internet_prefix_advertisement.Object allowed
+        to be created only in system, got default in request
+      status: 400
+    demo:
+      classification: validation_error
+      error: ves.io.schema.infraprotect_internet_prefix_advertisement.Object allowed
+        to be created only in system, got demo in request
+      status: 400
+    system:
+      classification: validation_error
+      error: prefix is required
+      status: 400
+  verdict: inconclusive
+infraprotect_tunnel:
+  confidence: low
+  create_path: /api/infraprotect/namespaces/{namespace}/infraprotect_tunnels
+  domain: ddos
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: Field spec.bgp_information should be not nil, got nil in request.
+      status: 400
+    demo:
+      classification: validation_error
+      error: Field spec.bgp_information should be not nil, got nil in request.
+      status: 400
+    system:
+      classification: validation_error
+      error: Field spec.bgp_information should be not nil, got nil in request.
+      status: 400
+  verdict: inconclusive
+ip_prefix_set:
+  confidence: low
+  create_path: /api/config/namespaces/{namespace}/ip_prefix_sets
+  domain: network
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: IP Prefix Set must contain at least one IP prefix
+      status: 400
+    demo:
+      classification: validation_error
+      error: IP Prefix Set must contain at least one IP prefix
+      status: 400
+    system:
+      classification: validation_error
+      error: IP Prefix Set must contain at least one IP prefix
+      status: 400
+  verdict: inconclusive
+k8s_cluster:
+  confidence: medium
+  create_path: /api/config/namespaces/{namespace}/k8s_clusters
+  discovered_allowed:
+  - system
+  domain: sites
+  probes:
+    default:
+      classification: validation_error
+      error: ves.io.schema.k8s_cluster.Object allowed to be created only in system,
+        got default in request
+      status: 400
+    demo:
+      classification: validation_error
+      error: ves.io.schema.k8s_cluster.Object allowed to be created only in system,
+        got demo in request
+      status: 400
+    system:
+      classification: created
+      error: null
+      status: 200
+  verdict: system_confirmed
+k8s_cluster_role:
+  confidence: medium
+  create_path: /api/config/namespaces/{namespace}/k8s_cluster_roles
+  discovered_allowed:
+  - system
+  domain: managed_kubernetes
+  probes:
+    default:
+      classification: validation_error
+      error: ves.io.schema.k8s_cluster_role.Object allowed to be created only in system,
+        got default in request
+      status: 400
+    demo:
+      classification: validation_error
+      error: ves.io.schema.k8s_cluster_role.Object allowed to be created only in system,
+        got demo in request
+      status: 400
+    system:
+      classification: created
+      error: null
+      status: 200
+  verdict: system_confirmed
+k8s_cluster_role_binding:
+  confidence: low
+  create_path: /api/config/namespaces/{namespace}/k8s_cluster_role_bindings
+  domain: managed_kubernetes
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: Field spec.k8s_cluster_role should be not nil, got nil in request.
+      status: 400
+    demo:
+      classification: validation_error
+      error: Field spec.k8s_cluster_role should be not nil, got nil in request.
+      status: 400
+    system:
+      classification: validation_error
+      error: Field spec.k8s_cluster_role should be not nil, got nil in request.
+      status: 400
+  verdict: inconclusive
+k8s_pod_security_admission:
+  confidence: high
+  create_path: /api/config/namespaces/{namespace}/k8s_pod_security_admissions
+  discovered_allowed:
+  - system
+  domain: managed_kubernetes
+  probes:
+    default:
+      classification: ns_restricted
+      error: ves.io.schema.k8s_pod_security_admission.Object allowed to be created
+        only in system, got default in request
+      restriction_allowed:
+      - system
+      status: 400
+    demo:
+      classification: ns_restricted
+      error: ves.io.schema.k8s_pod_security_admission.Object allowed to be created
+        only in system, got demo in request
+      restriction_allowed:
+      - system
+      status: 400
+    system:
+      classification: created
+      error: null
+      status: 200
+  verdict: system_only
+k8s_pod_security_policy:
+  confidence: low
+  create_path: /api/config/namespaces/{namespace}/k8s_pod_security_policys
+  domain: managed_kubernetes
+  probes:
+    default:
+      classification: server_error
+      error: Not Implemented
+      status: 501
+    demo:
+      classification: server_error
+      error: Not Implemented
+      status: 501
+    system:
+      classification: server_error
+      error: Not Implemented
+      status: 501
+  verdict: inconclusive
+log_receiver:
+  confidence: low
+  create_path: /api/config/namespaces/{namespace}/log_receivers
+  domain: statistics
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: Field spec.log_receiver_choice should be not nil, got nil in request.
+      status: 400
+    demo:
+      classification: validation_error
+      error: Field spec.log_receiver_choice should be not nil, got nil in request.
+      status: 400
+    system:
+      classification: validation_error
+      error: Field spec.log_receiver_choice should be not nil, got nil in request.
+      status: 400
+  verdict: inconclusive
+malicious_user_mitigation:
+  confidence: high
+  create_path: /api/config/namespaces/{namespace}/malicious_user_mitigations
+  discovered_allowed:
+  - custom
+  - default
+  - shared
+  - system
+  domain: secops_and_incident_response
+  probes:
+    default:
+      classification: created
+      error: null
+      status: 200
+    demo:
+      classification: created
+      error: null
+      status: 200
+    system:
+      classification: created
+      error: null
+      status: 200
+  verdict: any_namespace
+nat_policy:
+  confidence: low
+  create_path: /api/config/namespaces/{namespace}/nat_policys
+  domain: network_security
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: Field spec.applies_to_choice should be not nil, got nil in request.
+      status: 400
+    demo:
+      classification: validation_error
+      error: Field spec.applies_to_choice should be not nil, got nil in request.
+      status: 400
+    system:
+      classification: validation_error
+      error: Field spec.applies_to_choice should be not nil, got nil in request.
+      status: 400
+  verdict: inconclusive
+network_connector:
+  confidence: low
+  create_path: /api/config/namespaces/{namespace}/network_connectors
+  domain: network
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: Field spec.connector_choice should be not nil, got nil in request.
+      status: 400
+    demo:
+      classification: validation_error
+      error: Field spec.connector_choice should be not nil, got nil in request.
+      status: 400
+    system:
+      classification: validation_error
+      error: Field spec.connector_choice should be not nil, got nil in request.
+      status: 400
+  verdict: inconclusive
+network_firewall:
+  confidence: medium
+  create_path: /api/config/namespaces/{namespace}/network_firewalls
+  discovered_allowed:
+  - system
+  domain: network_security
+  probes:
+    default:
+      classification: validation_error
+      error: Network Firewall can be created only in system namespace
+      status: 400
+    demo:
+      classification: validation_error
+      error: Network Firewall can be created only in system namespace
+      status: 400
+    system:
+      classification: created
+      error: null
+      status: 200
+  verdict: system_confirmed
+network_interface:
+  confidence: low
+  create_path: /api/config/namespaces/{namespace}/network_interfaces
+  domain: ce_management
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: Field spec.interface_choice should be not nil, got nil in request.
+      status: 400
+    demo:
+      classification: validation_error
+      error: Field spec.interface_choice should be not nil, got nil in request.
+      status: 400
+    system:
+      classification: validation_error
+      error: Field spec.interface_choice should be not nil, got nil in request.
+      status: 400
+  verdict: inconclusive
+network_policy:
+  confidence: high
+  create_path: /api/config/namespaces/{namespace}/network_policys
+  discovered_allowed:
+  - custom
+  - default
+  - shared
+  - system
+  domain: network_security
+  probes:
+    default:
+      classification: created
+      error: null
+      status: 200
+    demo:
+      classification: created
+      error: null
+      status: 200
+    system:
+      classification: validation_error
+      error: ves.io.schema.network_policy.Object allowed to be created only in shared
+        or app, got system in request
+      status: 400
+  verdict: any_namespace
+network_policy_rule:
+  confidence: low
+  create_path: /api/config/namespaces/{namespace}/network_policy_rules
+  domain: network_security
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: Field spec.protocol should be within set "["ALL","TCP","UDP","ICMP"]",
+        got "" in request.
+      status: 400
+    demo:
+      classification: validation_error
+      error: Field spec.protocol should be within set "["ALL","TCP","UDP","ICMP"]",
+        got "" in request.
+      status: 400
+    system:
+      classification: validation_error
+      error: Field spec.protocol should be within set "["ALL","TCP","UDP","ICMP"]",
+        got "" in request.
+      status: 400
+  verdict: inconclusive
+network_policy_view:
+  confidence: medium
+  create_path: /api/config/namespaces/{namespace}/network_policy_views
+  discovered_allowed:
+  - system
+  domain: network_security
+  probes:
+    default:
+      classification: validation_error
+      error: ves.io.schema.views.network_policy_view.Object allowed to be created
+        only in system, got default in request
+      status: 400
+    demo:
+      classification: validation_error
+      error: ves.io.schema.views.network_policy_view.Object allowed to be created
+        only in system, got demo in request
+      status: 400
+    system:
+      classification: created
+      error: null
+      status: 200
+  verdict: system_confirmed
+nfv_service:
+  confidence: low
+  create_path: /api/config/namespaces/{namespace}/nfv_services
+  domain: service_mesh
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: Field spec.service_provider_choice should be not nil, got nil in request.
+      status: 400
+    demo:
+      classification: validation_error
+      error: Field spec.service_provider_choice should be not nil, got nil in request.
+      status: 400
+    system:
+      classification: validation_error
+      error: Field spec.service_provider_choice should be not nil, got nil in request.
+      status: 400
+  verdict: inconclusive
+origin_pool:
+  confidence: high
+  create_path: /api/config/namespaces/{namespace}/origin_pools
+  discovered_allowed:
+  - custom
+  - default
+  - shared
+  - system
+  domain: virtual
+  probes:
+    default:
+      classification: created
+      error: null
+      status: 200
+    demo:
+      classification: created
+      error: null
+      status: 200
+    system:
+      classification: created
+      error: null
+      status: 200
+  verdict: any_namespace
+policer:
+  confidence: high
+  create_path: /api/config/namespaces/{namespace}/policers
+  discovered_allowed:
+  - custom
+  - default
+  - shared
+  - system
+  domain: rate_limiting
+  probes:
+    default:
+      classification: created
+      error: null
+      status: 200
+    demo:
+      classification: created
+      error: null
+      status: 200
+    system:
+      classification: created
+      error: null
+      status: 200
+  verdict: any_namespace
+policy_based_routing:
+  confidence: low
+  create_path: /api/config/namespaces/{namespace}/policy_based_routings
+  domain: network_security
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: Field spec.forwarding_class_list should have minimum items of 1, got
+        0 in request.
+      status: 400
+    demo:
+      classification: validation_error
+      error: Field spec.forwarding_class_list should have minimum items of 1, got
+        0 in request.
+      status: 400
+    system:
+      classification: validation_error
+      error: Field spec.forwarding_class_list should have minimum items of 1, got
+        0 in request.
+      status: 400
+  verdict: inconclusive
+protocol_inspection:
+  confidence: high
+  create_path: /api/config/namespaces/{namespace}/protocol_inspections
+  discovered_allowed:
+  - custom
+  - default
+  - shared
+  - system
+  domain: virtual
+  probes:
+    default:
+      classification: created
+      error: null
+      status: 200
+    demo:
+      classification: created
+      error: null
+      status: 200
+    system:
+      classification: created
+      error: null
+      status: 200
+  verdict: any_namespace
+protocol_policer:
+  confidence: medium
+  create_path: /api/config/namespaces/{namespace}/protocol_policers
+  discovered_allowed:
+  - system
+  domain: rate_limiting
+  probes:
+    default:
+      classification: validation_error
+      error: ves.io.schema.protocol_policer.Object allowed to be created only in system,
+        got default in request
+      status: 400
+    demo:
+      classification: validation_error
+      error: ves.io.schema.protocol_policer.Object allowed to be created only in system,
+        got demo in request
+      status: 400
+    system:
+      classification: created
+      error: null
+      status: 200
+  verdict: system_confirmed
+proxy:
+  confidence: low
+  create_path: /api/config/namespaces/{namespace}/proxys
+  domain: virtual
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: Field spec.proxy_choice should be not nil, got nil in request.
+      status: 400
+    demo:
+      classification: validation_error
+      error: Field spec.proxy_choice should be not nil, got nil in request.
+      status: 400
+    system:
+      classification: validation_error
+      error: Field spec.proxy_choice should be not nil, got nil in request.
+      status: 400
+  verdict: inconclusive
+quota:
+  confidence: low
+  create_path: /api/web/namespaces/{namespace}/quotas
+  domain: billing_and_usage
+  probes:
+    default:
+      classification: forbidden
+      error: null
+      status: 403
+    demo:
+      classification: forbidden
+      error: null
+      status: 403
+    system:
+      classification: forbidden
+      error: null
+      status: 403
+  verdict: inconclusive
+rate_limiter:
+  confidence: high
+  create_path: /api/config/namespaces/{namespace}/rate_limiters
+  discovered_allowed:
+  - custom
+  - default
+  - shared
+  - system
+  domain: rate_limiting
+  probes:
+    default:
+      classification: created
+      error: null
+      status: 200
+    demo:
+      classification: created
+      error: null
+      status: 200
+    system:
+      classification: created
+      error: null
+      status: 200
+  verdict: any_namespace
+rate_limiter_policy:
+  confidence: high
+  create_path: /api/config/namespaces/{namespace}/rate_limiter_policys
+  discovered_allowed:
+  - custom
+  - default
+  - shared
+  - system
+  domain: virtual
+  probes:
+    default:
+      classification: created
+      error: null
+      status: 200
+    demo:
+      classification: created
+      error: null
+      status: 200
+    system:
+      classification: validation_error
+      error: ves.io.schema.views.rate_limiter_policy.Object allowed to be created
+        only in shared or app, got system in request
+      status: 400
+  verdict: any_namespace
+registration:
+  confidence: low
+  create_path: /api/register/namespaces/{namespace}/registrations
+  domain: ce_management
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: Field spec.infra should be not nil, got nil in request.
+      status: 400
+    demo:
+      classification: validation_error
+      error: Field spec.infra should be not nil, got nil in request.
+      status: 400
+    system:
+      classification: validation_error
+      error: Field spec.infra should be not nil, got nil in request.
+      status: 400
+  verdict: inconclusive
+report_config:
+  confidence: low
+  create_path: /api/report/namespaces/{namespace}/report_configs
+  domain: statistics
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: Field spec.report_type should be not nil, got nil in request.
+      status: 400
+    demo:
+      classification: validation_error
+      error: Field spec.report_type should be not nil, got nil in request.
+      status: 400
+    system:
+      classification: validation_error
+      error: Field spec.report_type should be not nil, got nil in request.
+      status: 400
+  verdict: inconclusive
+role:
+  confidence: high
+  create_path: /api/web/namespaces/{namespace}/roles
+  discovered_allowed:
+  - custom
+  - default
+  - shared
+  - system
+  domain: tenant_and_identity
+  probes:
+    default:
+      classification: created
+      error: null
+      status: 200
+    demo:
+      classification: created
+      error: null
+      status: 200
+    system:
+      classification: created
+      error: null
+      status: 200
+  verdict: any_namespace
+route:
+  confidence: low
+  create_path: /api/config/namespaces/{namespace}/routes
+  domain: network
+  probes:
+    default:
+      classification: server_error
+      error: There was a server error in processing request
+      status: 500
+    demo:
+      classification: server_error
+      error: There was a server error in processing request
+      status: 500
+    system:
+      classification: server_error
+      error: There was a server error in processing request
+      status: 500
+  verdict: inconclusive
+secret_management_access:
+  confidence: low
+  create_path: /api/config/namespaces/{namespace}/secret_management_accesss
+  domain: blindfold
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: Field spec.access_info should be not nil, got nil in request.
+      status: 400
+    demo:
+      classification: validation_error
+      error: Field spec.access_info should be not nil, got nil in request.
+      status: 400
+    system:
+      classification: validation_error
+      error: Field spec.access_info should be not nil, got nil in request.
+      status: 400
+  verdict: inconclusive
+secret_policy:
+  confidence: high
+  create_path: /api/secret_management/namespaces/{namespace}/secret_policys
+  discovered_allowed:
+  - custom
+  - default
+  - shared
+  - system
+  domain: blindfold
+  probes:
+    default:
+      classification: created
+      error: null
+      status: 200
+    demo:
+      classification: created
+      error: null
+      status: 200
+    system:
+      classification: created
+      error: null
+      status: 200
+  verdict: any_namespace
+secret_policy_rule:
+  confidence: low
+  create_path: /api/secret_management/namespaces/{namespace}/secret_policy_rules
+  domain: blindfold
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: Field spec.client_choice should be not nil, got nil in request.
+      status: 400
+    demo:
+      classification: validation_error
+      error: Field spec.client_choice should be not nil, got nil in request.
+      status: 400
+    system:
+      classification: validation_error
+      error: Field spec.client_choice should be not nil, got nil in request.
+      status: 400
+  verdict: inconclusive
+securemesh_site:
+  confidence: low
+  create_path: /api/config/namespaces/{namespace}/securemesh_sites
+  domain: sites
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: Field spec.master_node_configuration should be one of 1 or 3, got 0 in
+        request.
+      status: 400
+    demo:
+      classification: validation_error
+      error: Field spec.master_node_configuration should be one of 1 or 3, got 0 in
+        request.
+      status: 400
+    system:
+      classification: validation_error
+      error: Field spec.master_node_configuration should be one of 1 or 3, got 0 in
+        request.
+      status: 400
+  verdict: inconclusive
+securemesh_site_v2:
+  confidence: medium
+  create_path: /api/config/namespaces/{namespace}/securemesh_site_v2s
+  discovered_allowed:
+  - system
+  domain: sites
+  probes:
+    default:
+      classification: validation_error
+      error: ves.io.schema.views.securemesh_site_v2.Object allowed to be created only
+        in system, got default in request
+      status: 400
+    demo:
+      classification: validation_error
+      error: ves.io.schema.views.securemesh_site_v2.Object allowed to be created only
+        in system, got demo in request
+      status: 400
+    system:
+      classification: created
+      error: null
+      status: 200
+  verdict: system_confirmed
+segment:
+  confidence: medium
+  create_path: /api/config/namespaces/{namespace}/segments
+  discovered_allowed:
+  - system
+  domain: network_security
+  probes:
+    default:
+      classification: validation_error
+      error: ves.io.schema.segment.Object allowed to be created only in system, got
+        default in request
+      status: 400
+    demo:
+      classification: validation_error
+      error: ves.io.schema.segment.Object allowed to be created only in system, got
+        demo in request
+      status: 400
+    system:
+      classification: created
+      error: null
+      status: 200
+  verdict: system_confirmed
+sensitive_data_policy:
+  confidence: high
+  create_path: /api/config/namespaces/{namespace}/sensitive_data_policys
+  discovered_allowed:
+  - custom
+  - default
+  - shared
+  - system
+  domain: data_and_privacy_security
+  probes:
+    default:
+      classification: created
+      error: null
+      status: 200
+    demo:
+      classification: created
+      error: null
+      status: 200
+    system:
+      classification: created
+      error: null
+      status: 200
+  verdict: any_namespace
+service_policy:
+  confidence: high
+  create_path: /api/config/namespaces/{namespace}/service_policys
+  discovered_allowed:
+  - custom
+  - default
+  - shared
+  - system
+  domain: network_security
+  probes:
+    default:
+      classification: created
+      error: null
+      status: 200
+    demo:
+      classification: created
+      error: null
+      status: 200
+    system:
+      classification: created
+      error: null
+      status: 200
+  verdict: any_namespace
+service_policy_rule:
+  confidence: high
+  create_path: /api/config/namespaces/{namespace}/service_policy_rules
+  discovered_allowed:
+  - custom
+  - default
+  - shared
+  - system
+  domain: virtual
+  probes:
+    default:
+      classification: created
+      error: null
+      status: 200
+    demo:
+      classification: created
+      error: null
+      status: 200
+    system:
+      classification: created
+      error: null
+      status: 200
+  verdict: any_namespace
+site_mesh_group:
+  confidence: low
+  create_path: /api/config/namespaces/{namespace}/site_mesh_groups
+  domain: service_mesh
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: Field spec.bfd_choice should be not nil, got nil in request.
+      status: 400
+    demo:
+      classification: validation_error
+      error: Field spec.bfd_choice should be not nil, got nil in request.
+      status: 400
+    system:
+      classification: validation_error
+      error: Field spec.bfd_choice should be not nil, got nil in request.
+      status: 400
+  verdict: inconclusive
+srv6_network_slice:
+  confidence: high
+  create_path: /api/config/namespaces/{namespace}/srv6_network_slices
+  discovered_allowed:
+  - system
+  domain: network
+  probes:
+    default:
+      classification: ns_restricted
+      error: ves.io.schema.srv6_network_slice.Object allowed to be created only in
+        system, got default in request
+      restriction_allowed:
+      - system
+      status: 400
+    demo:
+      classification: ns_restricted
+      error: ves.io.schema.srv6_network_slice.Object allowed to be created only in
+        system, got demo in request
+      restriction_allowed:
+      - system
+      status: 400
+    system:
+      classification: created
+      error: null
+      status: 200
+  verdict: system_only
+subnet:
+  confidence: low
+  create_path: /api/config/namespaces/{namespace}/subnets
+  domain: network
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: Field spec.site_subnet_params should have minimum items of 1, got 0 in
+        request.
+      status: 400
+    demo:
+      classification: validation_error
+      error: Field spec.site_subnet_params should have minimum items of 1, got 0 in
+        request.
+      status: 400
+    system:
+      classification: validation_error
+      error: Field spec.site_subnet_params should have minimum items of 1, got 0 in
+        request.
+      status: 400
+  verdict: inconclusive
+tcp_loadbalancer:
+  confidence: high
+  create_path: /api/config/namespaces/{namespace}/tcp_loadbalancers
+  discovered_allowed:
+  - custom
+  - default
+  - shared
+  - system
+  domain: virtual
+  probes:
+    default:
+      classification: created
+      error: null
+      status: 200
+    demo:
+      classification: created
+      error: null
+      status: 200
+    system:
+      classification: created
+      error: null
+      status: 200
+  verdict: any_namespace
+tenant_configuration:
+  confidence: low
+  create_path: /api/config/namespaces/{namespace}/tenant_configurations
+  domain: tenant_and_identity
+  probes:
+    default:
+      classification: server_error
+      error: Not Implemented
+      status: 501
+    demo:
+      classification: server_error
+      error: Not Implemented
+      status: 501
+    system:
+      classification: server_error
+      error: Not Implemented
+      status: 501
+  verdict: inconclusive
+token:
+  confidence: medium
+  create_path: /api/register/namespaces/{namespace}/tokens
+  discovered_allowed:
+  - system
+  domain: users
+  probes:
+    default:
+      classification: validation_error
+      error: ves.io.schema.token.Object allowed to be created only in system, got
+        default in request
+      status: 400
+    demo:
+      classification: validation_error
+      error: ves.io.schema.token.Object allowed to be created only in system, got
+        demo in request
+      status: 400
+    system:
+      classification: created
+      error: null
+      status: 200
+  verdict: system_confirmed
+tpm_api_key:
+  confidence: low
+  create_path: /api/tpm/namespaces/{namespace}/tpm_api_keys
+  domain: bot_and_threat_defense
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: Field spec.category_ref should have minimum items of 1, got 0 in request.
+      status: 400
+    demo:
+      classification: validation_error
+      error: Field spec.category_ref should have minimum items of 1, got 0 in request.
+      status: 400
+    system:
+      classification: validation_error
+      error: Field spec.category_ref should have minimum items of 1, got 0 in request.
+      status: 400
+  verdict: inconclusive
+tpm_category:
+  confidence: low
+  create_path: /api/tpm/namespaces/{namespace}/tpm_categorys
+  domain: bot_and_threat_defense
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: Field spec.tpm_manager_ref should have minimum items of 1, got 0 in request.
+      status: 400
+    demo:
+      classification: validation_error
+      error: Field spec.tpm_manager_ref should have minimum items of 1, got 0 in request.
+      status: 400
+    system:
+      classification: validation_error
+      error: Field spec.tpm_manager_ref should have minimum items of 1, got 0 in request.
+      status: 400
+  verdict: inconclusive
+tpm_manager:
+  confidence: high
+  create_path: /api/tpm/namespaces/{namespace}/tpm_managers
+  discovered_allowed:
+  - custom
+  - default
+  - shared
+  - system
+  domain: bot_and_threat_defense
+  probes:
+    default:
+      classification: created
+      error: null
+      status: 200
+    demo:
+      classification: created
+      error: null
+      status: 200
+    system:
+      classification: created
+      error: null
+      status: 200
+  verdict: any_namespace
+trusted_ca_list:
+  confidence: high
+  create_path: /api/config/namespaces/{namespace}/trusted_ca_lists
+  discovered_allowed:
+  - custom
+  - default
+  - shared
+  - system
+  domain: certificates
+  probes:
+    default:
+      classification: created
+      error: null
+      status: 200
+    demo:
+      classification: created
+      error: null
+      status: 200
+    system:
+      classification: created
+      error: null
+      status: 200
+  verdict: any_namespace
+tunnel:
+  confidence: low
+  create_path: /api/config/namespaces/{namespace}/tunnels
+  domain: network
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: Field spec.local_ip should be not nil, got nil in request.
+      status: 400
+    demo:
+      classification: validation_error
+      error: Field spec.local_ip should be not nil, got nil in request.
+      status: 400
+    system:
+      classification: validation_error
+      error: Field spec.local_ip should be not nil, got nil in request.
+      status: 400
+  verdict: inconclusive
+udp_loadbalancer:
+  confidence: low
+  create_path: /api/config/namespaces/{namespace}/udp_loadbalancers
+  domain: virtual
+  probes:
+    default:
+      classification: forbidden
+      error: null
+      status: 403
+    demo:
+      classification: forbidden
+      error: null
+      status: 403
+    system:
+      classification: forbidden
+      error: null
+      status: 403
+  verdict: inconclusive
+usb_policy:
+  confidence: low
+  create_path: /api/config/namespaces/{namespace}/usb_policys
+  domain: ce_management
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: Field spec.allowed_devices should have minimum items of 1, got 0 in request.
+      status: 400
+    demo:
+      classification: validation_error
+      error: Field spec.allowed_devices should have minimum items of 1, got 0 in request.
+      status: 400
+    system:
+      classification: validation_error
+      error: Field spec.allowed_devices should have minimum items of 1, got 0 in request.
+      status: 400
+  verdict: inconclusive
+user_identification:
+  confidence: high
+  create_path: /api/config/namespaces/{namespace}/user_identifications
+  discovered_allowed:
+  - custom
+  - default
+  - shared
+  - system
+  domain: tenant_and_identity
+  probes:
+    default:
+      classification: created
+      error: null
+      status: 200
+    demo:
+      classification: created
+      error: null
+      status: 200
+    system:
+      classification: created
+      error: null
+      status: 200
+  verdict: any_namespace
+virtual_host:
+  confidence: low
+  create_path: /api/config/namespaces/{namespace}/virtual_hosts
+  domain: virtual
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: Field spec.proxy should be within set [SMA_PROXY UDP_PROXY], got 0 in
+        request.
+      status: 400
+    demo:
+      classification: validation_error
+      error: Field spec.proxy should be within set [SMA_PROXY UDP_PROXY], got 0 in
+        request.
+      status: 400
+    system:
+      classification: validation_error
+      error: Field spec.proxy should be within set [SMA_PROXY UDP_PROXY], got 0 in
+        request.
+      status: 400
+  verdict: inconclusive
+virtual_k8s:
+  confidence: high
+  create_path: /api/config/namespaces/{namespace}/virtual_k8ss
+  discovered_allowed:
+  - custom
+  - default
+  - shared
+  - system
+  domain: container_services
+  probes:
+    default:
+      classification: created
+      error: null
+      status: 200
+    demo:
+      classification: created
+      error: null
+      status: 200
+    system:
+      classification: created
+      error: null
+      status: 200
+  verdict: any_namespace
+virtual_network:
+  confidence: medium
+  create_path: /api/config/namespaces/{namespace}/virtual_networks
+  discovered_allowed:
+  - system
+  domain: network
+  probes:
+    default:
+      classification: validation_error
+      error: ves.io.schema.virtual_network.Object allowed to be created only in system,
+        got default in request
+      status: 400
+    demo:
+      classification: validation_error
+      error: ves.io.schema.virtual_network.Object allowed to be created only in system,
+        got demo in request
+      status: 400
+    system:
+      classification: created
+      error: null
+      status: 200
+  verdict: system_confirmed
+virtual_site:
+  confidence: high
+  create_path: /api/config/namespaces/{namespace}/virtual_sites
+  discovered_allowed:
+  - custom
+  - default
+  - shared
+  - system
+  domain: sites
+  probes:
+    default:
+      classification: created
+      error: null
+      status: 200
+    demo:
+      classification: created
+      error: null
+      status: 200
+    system:
+      classification: created
+      error: null
+      status: 200
+  verdict: any_namespace
+voltshare_admin_policy:
+  confidence: high
+  create_path: /api/secret_management/namespaces/{namespace}/voltshare_admin_policys
+  discovered_allowed:
+  - custom
+  - default
+  - shared
+  - system
+  domain: blindfold
+  probes:
+    default:
+      classification: created
+      error: null
+      status: 200
+    demo:
+      classification: created
+      error: null
+      status: 200
+    system:
+      classification: created
+      error: null
+      status: 200
+  verdict: any_namespace
+voltstack_site:
+  confidence: low
+  create_path: /api/config/namespaces/{namespace}/voltstack_sites
+  domain: sites
+  note: "All namespaces returned validation errors \u2014 namespace check may happen\
+    \ after field validation"
+  probes:
+    default:
+      classification: validation_error
+      error: 'Field spec.volterra_certified_hw should have minimum length of 1, got
+        0 (value: "") in request.'
+      status: 400
+    demo:
+      classification: validation_error
+      error: 'Field spec.volterra_certified_hw should have minimum length of 1, got
+        0 (value: "") in request.'
+      status: 400
+    system:
+      classification: validation_error
+      error: 'Field spec.volterra_certified_hw should have minimum length of 1, got
+        0 (value: "") in request.'
+      status: 400
+  verdict: inconclusive
+waf_exclusion_policy:
+  confidence: high
+  create_path: /api/config/namespaces/{namespace}/waf_exclusion_policys
+  discovered_allowed:
+  - custom
+  - default
+  - shared
+  - system
+  domain: virtual
+  probes:
+    default:
+      classification: created
+      error: null
+      status: 200
+    demo:
+      classification: created
+      error: null
+      status: 200
+    system:
+      classification: created
+      error: null
+      status: 200
+  verdict: any_namespace
+workload:
+  confidence: high
+  create_path: /api/config/namespaces/{namespace}/workloads
+  discovered_allowed:
+  - custom
+  - default
+  - shared
+  - system
+  domain: container_services
+  probes:
+    default:
+      classification: created
+      error: null
+      status: 200
+    demo:
+      classification: created
+      error: null
+      status: 200
+    system:
+      classification: created
+      error: null
+      status: 200
+  verdict: any_namespace
+workload_flavor:
+  confidence: high
+  create_path: /api/config/namespaces/{namespace}/workload_flavors
+  discovered_allowed:
+  - shared
+  domain: container_services
+  probes:
+    default:
+      classification: ns_restricted
+      error: ves.io.schema.workload_flavor.Object allowed to be created only in shared,
+        got default in request
+      restriction_allowed:
+      - shared
+      status: 400
+    demo:
+      classification: ns_restricted
+      error: ves.io.schema.workload_flavor.Object allowed to be created only in shared,
+        got demo in request
+      restriction_allowed:
+      - shared
+      status: 400
+    system:
+      classification: ns_restricted
+      error: ves.io.schema.workload_flavor.Object allowed to be created only in shared,
+        got system in request
+      restriction_allowed:
+      - shared
+      status: 400
+  verdict: shared_only
