@@ -1,226 +1,374 @@
-# Payload overrides for CRUD namespace probing.
-# These provide valid-enough payloads to get past field validation
-# so the namespace constraint check can fire.
-
-cdn_loadbalancer:
-  metadata: {name: crud-probe}
+---
+# CRUD probe payloads (machine-tuned). Used by discover_namespace_crud.py
+# to reach namespace verdicts past field validation.
+address_allocator:
+  metadata:
+    name: crud-probe
   spec:
-    domains: ["crud-probe.example.com"]
-    https_auto_cert: {http_redirect: true, add_hsts: false, tls_config: {default_security: {}}}
-    origin_pool:
-      origin_servers: [{public_ip: {ip: "203.0.113.1"}}]
-      port: 443
-      use_tls: {use_host_header_as_sni: {}, tls_config: {default_security: {}}, skip_server_cert_verification: {}}
-      loadbalancer_algorithm: ROUND_ROBIN
-      endpoint_selection: LOCAL_PREFERRED
-      same_as_endpoint_port: {}
-    disable_waf: {}
-    no_challenge: {}
-    disable_rate_limit: {}
-    no_service_policies: {}
+    address_allocation_scheme:
+      sequential: {}
+    address_pool:
+      - end_address: 10.0.0.100
+        start_address: 10.0.0.2
+    mode: LOCAL
+authentication:
+  metadata:
+    name: crud-probe
+  spec:
+    cookie_params: {}
+    oidc_auth:
+      client_id: probe
+      client_secret:
+        clear_secret_info:
+          url: string:///dGVzdA==
+      issuer: https://issuer.example.com
+cdn_loadbalancer:
+  metadata:
+    name: crud-probe
+  spec:
+    default_cache_action: {}
     disable_api_definition: {}
     disable_api_discovery: {}
+    disable_client_side_defense: {}
     disable_ip_reputation: {}
     disable_malicious_user_detection: {}
-    disable_client_side_defense: {}
+    disable_rate_limit: {}
     disable_threat_mesh: {}
-    user_id_client_ip: {}
+    disable_waf: {}
+    domains:
+      - crud-probe.example.com
+    https_auto_cert:
+      add_hsts: false
+      http_redirect: true
+      tls_config:
+        default_security: {}
     l7_ddos_action_default: {}
-    default_cache_action: {}
+    no_challenge: {}
+    no_service_policies: {}
+    origin_pool:
+      endpoint_selection: LOCAL_PREFERRED
+      loadbalancer_algorithm: ROUND_ROBIN
+      origin_servers:
+        - public_ip:
+            ip: 203.0.113.1
+      port: 443
+      same_as_endpoint_port: {}
+      use_tls:
+        skip_server_cert_verification: {}
+        tls_config:
+          default_security: {}
+        use_host_header_as_sni: {}
     system_default_timeouts: {}
-
-tcp_loadbalancer:
-  metadata: {name: crud-probe}
-  spec:
-    listen_port: 9443
-    do_not_advertise: {}
-    origin_pools_weights:
-      - pool: {namespace: "{namespace}", name: "crud-probe-pool"}
-        weight: 1
-  _prereqs:
-    - type: origin_pool
-      path: "/api/config/namespaces/{namespace}/origin_pools"
-      payload:
-        metadata: {name: crud-probe-pool}
-        spec:
-          origin_servers: [{public_ip: {ip: "203.0.113.1"}}]
-          port: 443
-          use_tls: {use_host_header_as_sni: {}, tls_config: {default_security: {}}, skip_server_cert_verification: {}}
-          loadbalancer_algorithm: ROUND_ROBIN
-          endpoint_selection: LOCAL_PREFERRED
-
+    user_id_client_ip: {}
 certificate:
-  metadata: {name: crud-probe}
+  metadata:
+    name: crud-probe
   spec:
-    certificate_url: "string:///{CERT_B64}"
+    certificate_url: string:///{CERT_B64}
     private_key:
       clear_secret_info:
-        url: "string:///{KEY_B64}"
-
+        url: string:///{KEY_B64}
 certificate_chain:
-  metadata: {name: crud-probe}
+  metadata:
+    name: crud-probe
   spec:
-    certificate_url: "string:///{CERT_B64}"
-
+    certificate_url: string:///{CERT_B64}
 cloud_credentials:
-  metadata: {name: crud-probe}
+  metadata:
+    name: crud-probe
   spec:
     aws_secret_key:
-      access_key: "AKIAIOSFODNN7EXAMPLE"
+      access_key: AKIAIOSFODNN7EXAMPLE
       secret_key:
         blindfold_secret_info:
-          location: "string:///dGVzdA=="
-
-container_registry:
-  metadata: {name: crud-probe}
+          location: string:///dGVzdA==
+cminstance:
+  metadata:
+    name: crud-probe
   spec:
-    server_address: "registry.example.com"
-    user_name: "testuser"
+    api_token:
+      clear_secret_info:
+        url: string:///dGVzdA==
+    ip: 10.0.0.5
     password:
       clear_secret_info:
-        url: "string:///dGVzdHBhc3M="
-
+        url: string:///dGVzdA==
+    port: 443
+    username: probe
+contact:
+  metadata:
+    name: crud-probe
+  spec:
+    address1: 1 Test St
+    address2: ''
+    city: TestCity
+    contact_type: MAILING
+    country: United States
+    county: TestCounty
+    phone_number: '+15551234567'
+    state: California
+    state_code: CA
+    zip_code: '94089'
+container_registry:
+  metadata:
+    name: crud-probe
+  spec:
+    password:
+      clear_secret_info:
+        url: string:///dGVzdHBhc3M=
+    server_address: registry.example.com
+    user_name: testuser
+customer_support:
+  metadata:
+    name: crud-probe
+  spec:
+    comments: ''
+    description: namespace probe test
+    ongoing: false
+    product_data:
+      product: distributed_cloud
+    relates_to: ''
+    subject: probe
+    timeline: ''
+    tp_id: ''
+    type: TYPE_QUESTION
 data_classification:
-  metadata: {name: crud-probe}
+  metadata:
+    name: crud-probe
   spec:
     rules:
-      - data_type_ref: {name: test, namespace: shared}
-
+      - data_type_ref:
+          name: test
+          namespace: shared
 ddos_mitigation_rule:
-  metadata: {name: crud-probe}
+  metadata:
+    name: crud-probe
   spec:
-    mitigation_type: {ip_blocklist: {}}
-    destination_prefix: {ipv4: {prefix: "10.0.0.0", plen: 8}}
-
+    destination_prefix:
+      ipv4:
+        plen: 8
+        prefix: 10.0.0.0
+    mitigation_type:
+      ip_blocklist: {}
+ddos_protection:
+  metadata:
+    name: crud-probe
+  spec:
+    protected_entity: {}
 dns_domain:
-  metadata: {name: crud-probe-test.example.com}
+  metadata:
+    name: crud-probe-test.example.com
   spec:
     volterra_managed: {}
-
 dns_zone:
-  metadata: {name: crud-probe-zone.example.com}
+  metadata:
+    name: crud-probe-zone.example.com
   spec:
     primary: {}
-
 endpoint:
-  metadata: {name: crud-probe}
+  metadata:
+    name: crud-probe
   spec:
-    protocol: TCP
     port: 80
-    where: {site: {name: test, network_type: VIRTUAL_NETWORK_SITE_LOCAL}}
-
+    protocol: TCP
+    where:
+      site:
+        name: test
+        network_type: VIRTUAL_NETWORK_SITE_LOCAL
+external_connector:
+  metadata:
+    name: crud-probe
+  spec:
+    ce_site_reference:
+      name: dummy
+      namespace: system
+      tenant: t
+    ipsec:
+      remote_gateway:
+        ipv4:
+          addr: 203.0.113.9
+fast_acl_rule:
+  metadata:
+    name: crud-probe
+  spec:
+    action:
+      simple_action: DENY
+    prefix:
+      - 10.0.0.0/8
+fleet_config:
+  metadata:
+    name: crud-probe
+  spec:
+    fleet_label: test
 k8s_cluster_role:
-  metadata: {name: crud-probe}
+  metadata:
+    name: crud-probe
   spec:
     policy_rule_list:
       policy_rule:
         - resource_list:
-            resource_types: ["pods"]
-            api_groups: [""]
-            verbs: ["get"]
-
+            api_groups:
+              - ''
+            resource_types:
+              - pods
+            verbs:
+              - get
+k8s_cluster_role_binding:
+  metadata:
+    name: crud-probe
+  spec:
+    k8s_cluster_role:
+      name: dummy
+      namespace: system
+      tenant: t
+    subjects:
+      - user:
+          name: probe
+k8s_pod_security_admission:
+  metadata:
+    name: crud-probe
+  spec:
+    pod_security_admission_specs:
+      - level: privileged
+        mode: enforce
+nfv_service:
+  metadata:
+    name: crud-probe
+  spec:
+    disable_https_management: {}
+    disable_ssh_access: {}
+    f5_big_ip_aws_service: {}
+proxy:
+  metadata:
+    name: crud-probe
+  spec:
+    connection_timeout: 2000
+    do_not_advertise: {}
+    http_proxy: {}
+    no_forward_proxy_policy: {}
+    no_interception: {}
+    site_local_network: {}
 rate_limiter_policy:
-  metadata: {name: crud-probe}
+  metadata:
+    name: crud-probe
   spec:
     burst_size: 10
     total_number: 100
     unit: SECOND
-
 registration_token:
-  metadata: {name: crud-probe}
+  metadata:
+    name: crud-probe
   spec:
-    infra: {volterra: {}}
-    passport: {cluster_size: 1}
-
+    infra:
+      volterra: {}
+    passport:
+      cluster_size: 1
+report_config:
+  metadata:
+    name: crud-probe
+  spec:
+    report_recipients:
+      - email: probe@example.com
+    waap: {}
+service_policy_rule:
+  metadata:
+    name: crud-probe
+  spec:
+    action: DENY
+    waf_action:
+      none: {}
+srv6_network_slice:
+  metadata:
+    name: crud-probe
+  spec:
+    sid_prefixes:
+      - fc00::/32
 support_case:
-  metadata: {name: crud-probe}
+  metadata:
+    name: crud-probe
   spec:
-    description: "Automated namespace CRUD probe - safe to ignore"
-
+    description: Automated namespace CRUD probe - safe to ignore
+tcp_loadbalancer:
+  _prereqs:
+    - path: /api/config/namespaces/{namespace}/origin_pools
+      payload:
+        metadata:
+          name: crud-probe-pool
+        spec:
+          endpoint_selection: LOCAL_PREFERRED
+          loadbalancer_algorithm: ROUND_ROBIN
+          origin_servers:
+            - public_ip:
+                ip: 203.0.113.1
+          port: 443
+          use_tls:
+            skip_server_cert_verification: {}
+            tls_config:
+              default_security: {}
+            use_host_header_as_sni: {}
+      type: origin_pool
+  metadata:
+    name: crud-probe
+  spec:
+    do_not_advertise: {}
+    listen_port: 9443
+    origin_pools_weights:
+      - pool:
+          name: crud-probe-pool
+          namespace: '{namespace}'
+        weight: 1
 threat_category:
-  metadata: {name: crud-probe}
+  metadata:
+    name: crud-probe
   spec:
     tpm_manager_ref:
-      - {name: test, namespace: shared}
-
+      - name: test
+        namespace: shared
+tpm_api_key:
+  metadata:
+    name: crud-probe
+  spec:
+    category_ref:
+      - name: dummy
+        namespace: shared
+        tenant: t
+    need_mtls: false
+tpm_category:
+  metadata:
+    name: crud-probe
+  spec:
+    tpm_allow_list: {}
+    tpm_manager_ref:
+      - name: dummy
+        namespace: shared
+        tenant: t
+usage_report:
+  metadata:
+    name: crud-probe
+  spec: {}
+usb_policy:
+  metadata:
+    name: crud-probe
+  spec:
+    allowed_devices:
+      - product_id: '0x5678'
+        vendor_id: '0x1234'
 workload:
-  metadata: {name: crud-probe}
+  metadata:
+    name: crud-probe
   spec:
     simple_service:
       container:
+        image:
+          name: docker.io/library/nginx:latest
+          public: {}
         name: main
-        image: {name: "docker.io/library/nginx:latest", public: {}}
       do_not_advertise: {}
       no_replicas: {}
       no_volume: {}
-
-fleet_config:
-  metadata: {name: crud-probe}
-  spec:
-    fleet_label: test
-
-usage_report:
-  metadata: {name: crud-probe}
-  spec: {}
-
-ddos_protection:
-  metadata: {name: crud-probe}
-  spec:
-    protected_entity: {}
-
-# --- Worklist payloads (2026-07-14): one required field each, from the API's
-# own 400 validation messages, to drive inconclusive resources to a verdict. ---
-address_allocator:
-  metadata: {name: crud-probe}
-  spec: {ipv4: {}, address_allocation_scheme: {sequential: {}}, address_pool: [{start_address: "10.0.0.1", end_address: "10.0.0.10"}]}
-authentication:
-  metadata: {name: crud-probe}
-  spec: {auth_type_choice: {}, cookie_params: {}}
-cminstance:
-  metadata: {name: crud-probe}
-  spec: {api_token: {clear_secret_info: {url: "string:///dGVzdA=="}}, ip: "10.0.0.1"}
-external_connector:
-  metadata: {name: crud-probe}
-  spec: {ce_site_reference: {tenant: t, namespace: system, name: dummy}, connection_type: {sli_to_global_dr: {}}}
-fast_acl_rule:
-  metadata: {name: crud-probe}
-  spec: {action: {simple_action: DENY}, source: {ip_prefixes: {ip_prefixes: ["1.2.3.4/32"]}}}
-k8s_cluster_role_binding:
-  metadata: {name: crud-probe}
-  spec: {k8s_cluster_role: {name: dummy, namespace: system, tenant: t}, subjects: [{user: {name: probe}}]}
-k8s_pod_security_admission:
-  metadata: {name: crud-probe}
-  spec: {pod_security_admission_specs: [{mode: enforce, level: privileged}]}
-nfv_service:
-  metadata: {name: crud-probe}
-  spec: {service_provider_choice: {}, f5_big_ip_aws_service: {}}
-proxy:
-  metadata: {name: crud-probe}
-  spec: {proxy_choice: {}, http_proxy: {}}
-report_config:
-  metadata: {name: crud-probe}
-  spec: {report_type: SECURITY, schedule_choice: {}}
-service_policy_rule:
-  metadata: {name: crud-probe}
-  spec: {waf_action: {none: {}}, action: DENY}
-srv6_network_slice:
-  metadata: {name: crud-probe}
-  spec: {sid_prefixes: ["fc00::/32"]}
-tpm_api_key:
-  metadata: {name: crud-probe}
-  spec: {category_ref: [{name: dummy, namespace: shared, tenant: t}]}
-tpm_category:
-  metadata: {name: crud-probe}
-  spec: {tpm_manager_ref: [{name: dummy, namespace: shared, tenant: t}]}
-usb_policy:
-  metadata: {name: crud-probe}
-  spec: {allowed_devices: {allowed_devices: [{vendor_id: "0x1234"}]}}
 workload_flavor:
-  metadata: {name: crud-probe}
-  spec: {vcpu: 2, memory: 4096}
-contact:
-  metadata: {name: crud-probe}
-  spec: {contact_choice: {}, email: {email: "probe@example.com"}}
-customer_support:
-  metadata: {name: crud-probe}
-  spec: {description: "namespace probe test", product: distributed_cloud}
+  metadata:
+    name: crud-probe
+  spec:
+    memory: 4096
+    vcpu: 2

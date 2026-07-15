@@ -29,6 +29,8 @@ from typing import Any
 import requests
 import yaml
 
+from scripts.utils.yaml_writer import write_yaml
+
 
 def get_api_client() -> tuple[str, dict[str, str]]:
     """Return (base_url, headers) for the F5 XC API."""
@@ -650,8 +652,7 @@ def main() -> None:
         payload_overrides_path=payload_overrides_path,
     )
 
-    with Path(args.output).open("w") as f:
-        yaml.dump(results, f, default_flow_style=False, sort_keys=True)
+    write_yaml(results, Path(args.output), sort_keys=True)
     print(f"\nReport written to {args.output}")
 
     diffs = None
@@ -662,8 +663,7 @@ def main() -> None:
 
     if diffs:
         drift_path = Path(args.output).with_suffix(".drift.yaml")
-        with drift_path.open("w") as f:
-            yaml.dump(diffs, f, default_flow_style=False, sort_keys=True)
+        write_yaml(diffs, drift_path, sort_keys=True)
         print(f"Drift details written to {drift_path}")
 
 
