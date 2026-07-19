@@ -228,8 +228,8 @@ sidebar:
 
 ## Links
 
-- [Interactive API Reference](./{domain}/)
-- [OpenAPI Specification JSON](../specifications/api/{domain}.json)
+- [Interactive API Reference](../{domain}/)
+- [OpenAPI Specification JSON](../../../specifications/api/{domain}.json)
 """
 
 
