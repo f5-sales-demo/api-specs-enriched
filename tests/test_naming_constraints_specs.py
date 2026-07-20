@@ -49,14 +49,16 @@ def test_create_meta_name_is_dns1035_everywhere():
     assert entries, "expected schemaObjectCreateMetaType in generated specs"
     for filename, name in entries:
         # Standard JSON-Schema keys (projected — pullable by any consumer).
+        # `format` is intentionally NOT projected (dns-label is a custom vendor
+        # format, kept only in x-f5xc-constraints); `pattern` carries the rule.
         assert name.get("pattern") == DNS_1035, f"{filename}: standard pattern"
         assert name.get("minLength") == 1, f"{filename}: standard minLength"
         assert name.get("maxLength") == 63, f"{filename}: standard maxLength (API enforces 63)"
-        assert name.get("format") == "dns-label", f"{filename}: standard format"
-        # Vendor extension agrees.
+        # Vendor extension carries the full constraint incl. the custom format.
         c = name.get("x-f5xc-constraints", {})
         assert c.get("pattern") == DNS_1035, f"{filename}: constraint pattern"
         assert c.get("maxLength") == 63, f"{filename}: constraint maxLength"
+        assert c.get("format") == "dns-label", f"{filename}: constraint format"
 
 
 def test_no_native_name_claims_1024_maxlength():

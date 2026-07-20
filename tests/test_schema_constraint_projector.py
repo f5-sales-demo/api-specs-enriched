@@ -51,7 +51,10 @@ def test_projects_naming_constraint_to_standard_keys():
     assert name["pattern"] == DNS_1035
     assert name["minLength"] == 1
     assert name["maxLength"] == 63
-    assert name["format"] == "dns-label"
+    # Custom vendor format stays in the extension, NOT the standard schema
+    # (dns-label is not a registered OpenAPI format).
+    assert "format" not in name
+    assert name["x-f5xc-constraints"]["format"] == "dns-label"
 
 
 def test_overwrites_stale_standard_values():

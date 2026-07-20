@@ -6,8 +6,10 @@ A downstream consumer using a standard OpenAPI/JSON-Schema validator or code
 generator does not read vendor extensions, so it cannot pull those rules
 deterministically. This projector runs dead-last in the pipeline (after all
 enrichers and the constraint reconciler) and mirrors the naming constraint's
-``pattern``/``minLength``/``maxLength``/``format`` up to the standard property
-level, overwriting any stale generic value a prior stage may have left there.
+``pattern``/``minLength``/``maxLength`` up to the standard property level,
+overwriting any stale generic value a prior stage may have left there. The
+custom ``format`` (``dns-label``/``fqdn``) is deliberately NOT mirrored — it is
+not a registered OpenAPI format and stays in ``x-f5xc-constraints``.
 
 Scope: only ``category == "naming"`` constraints are projected, keeping this a
 targeted change that serves the resource-naming use case without altering the
@@ -26,7 +28,13 @@ from typing import Any
 logger = logging.getLogger(__name__)
 
 # Standard JSON-Schema keywords that are safe and meaningful to mirror.
-_MIRRORED_KEYS = ("pattern", "minLength", "maxLength", "format")
+# NOTE: `format` is intentionally excluded. The naming formats (`dns-label`,
+# `fqdn`) are custom vendor semantics, not registered OpenAPI formats, so
+# writing them to the standard `format` keyword would break the API contract
+# (contract-diff gate: only registered formats are additive) and mislead
+# standard tooling. The custom format stays in `x-f5xc-constraints`; the
+# mirrored `pattern` already encodes the real rule.
+_MIRRORED_KEYS = ("pattern", "minLength", "maxLength")
 _CONSTRAINT_KEY = "x-f5xc-constraints"
 _NAMING_CATEGORY = "naming"
 # Naming/identifier formats that must be projected regardless of the constraint's
