@@ -98,6 +98,7 @@ from scripts.utils import (
     ReadOnlyEnricher,
     ReferencesEnricher,
     ResourceExamplesEnricher,
+    SchemaConstraintProjector,
     SchemaFixer,
     SchemaOverrideEnricher,
     ValidationEnricher,
@@ -190,6 +191,7 @@ class PipelineStats:
     discovery_enriched: int = 0
     constraints_reconciled: int = 0
     constraints_preserved: int = 0
+    naming_constraints_projected: int = 0
     best_practices_enriched: int = 0
     guided_workflows_added: int = 0
     error_resolutions_added: int = 0
@@ -1801,6 +1803,16 @@ def run_pipeline(
             # Clean up cache files after merge
             batch_processor.cleanup_cache()
             console.print("[dim]Cache cleanup complete[/dim]")
+
+            # Project naming constraints onto standard JSON-Schema keywords as the
+            # final, authoritative step (after discovery + reconciliation), so
+            # downstream consumers can pull them without parsing x-f5xc-constraints.
+            schema_projector = SchemaConstraintProjector()
+            for spec in domain_specs.values():
+                schema_projector.enrich_spec(spec)
+            stats.naming_constraints_projected = schema_projector.get_stats()[
+                "properties_projected"
+            ]
 
             # Save domain specs
             for domain, spec in domain_specs.items():

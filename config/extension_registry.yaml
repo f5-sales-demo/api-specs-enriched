@@ -343,7 +343,7 @@ property_level:
     example:
       - resource_kind: app_firewall
         field_path: app_firewall
-        gated_by: { choice: waf_choice }
+        gated_by: {choice: waf_choice}
         required: false
         cardinality: single
     added_in: "3.5.0"
@@ -403,17 +403,17 @@ property_level:
       category: "naming"
       minLength: 1
       maxLength: 63
-      pattern: "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$"
+      pattern: "^[a-z]([-a-z0-9]*[a-z0-9])?$"
       characterSet:
         allowed: "[a-z0-9-]"
         restricted: "[^a-z0-9-]"
         required: "[a-z0-9]"
-        description: "Lowercase alphanumeric with hyphens, not at start/end"
+        description: "Lowercase letter start, alphanumeric with hyphens, alphanumeric end"
       format: "dns-label"
-      formatDescription: "RFC 1123 DNS label: lowercase, alphanumeric, hyphens allowed but not at start/end"
+      formatDescription: "DNS-1035 label: must start with a lowercase letter, may contain lowercase alphanumeric and hyphens, must end with alphanumeric"
       validation:
-        rfc: "RFC 1123"
-        standard: "Kubernetes resource naming"
+        rfc: "RFC 1035"
+        standard: "DNS-1035 label (alpha-first)"
       metadata:
         source: "inferred"
         confidence: 0.95

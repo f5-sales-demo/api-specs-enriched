@@ -35,6 +35,7 @@ from .property_description_short_enricher import PropertyDescriptionShortEnriche
 from .readonly_enricher import ReadOnlyEnricher
 from .references_enricher import ReferencesEnricher
 from .resource_examples_enricher import ResourceExamplesEnricher
+from .schema_constraint_projector import SchemaConstraintProjector
 from .schema_fixer import SchemaFixer
 from .schema_override_enricher import SchemaOverrideEnricher
 from .uniqueness_enricher import UniquenessEnricher
@@ -84,6 +85,7 @@ __all__ = [
     "ReadOnlyEnricher",
     "ReferencesEnricher",
     "ResourceExamplesEnricher",
+    "SchemaConstraintProjector",
     "SchemaFixer",
     "SchemaOverrideEnricher",
     "UniquenessEnricher",

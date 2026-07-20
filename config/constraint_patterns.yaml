@@ -18,8 +18,13 @@ metadata:
 string_patterns:
 
   # Identity and Naming (DNS-1035, F5 XC API enforcement)
+  # authoritative: true — these RFC-based naming bounds override any generic
+  # scalar value a prior enricher may have stamped (e.g. the 1024 string default),
+  # because F5 XC enforces DNS-1035 label length 1-63 (live-verified 2026-07-20:
+  # 64-char name -> HTTP 400 "Exceeds max length of DNS-1035 label(63)").
   - pattern: '\bname$'
     description: "DNS-1035 label format resource name"
+    authoritative: true
     constraints:
       minLength: 1
       maxLength: 63
@@ -41,13 +46,16 @@ string_patterns:
 
   - pattern: '\bnamespace$'
     description: "Kubernetes namespace identifier"
+    authoritative: true
     constraints:
       minLength: 1
       maxLength: 63
       pattern: '^[a-z]([-a-z0-9]*[a-z0-9])?$'
       characterSet:
         allowed: '[a-z0-9-]'
-        description: "DNS-1035 label format (alpha-first)"
+        restricted: '[^a-z0-9-]'
+        required: '[a-z0-9]'
+        description: "Lowercase letter start, alphanumeric with hyphens, alphanumeric end"
       format: "dns-label"
       formatDescription: "DNS-1035 label: must start with a lowercase letter"
       validation:
@@ -813,16 +821,43 @@ discovery_mapping:
       constraint_field: "pattern"
       description: "Regex pattern from API validation (alias)"
 
+    # Format constraints - object names (authoritative F5 XC rule)
+    # ves_object_name is the canonical F5 XC resource-name rule (208 occurrences
+    # in upstream specs). It is a CHARACTER/FORMAT rule (DNS-1035 charset,
+    # alpha-first), NOT a length rule: fields carry their own explicit max_len
+    # (e.g. domain=17, role=256), so we must NOT impose a length here or we would
+    # clobber those tighter, field-specific bounds. Length comes from the
+    # separate max_len/min_len rules mapped above; the DNS-1035 label default of
+    # 1-63 is supplied by the inferred \bname$/\bnamespace$ patterns for the
+    # bare metadata.name/namespace fields (which carry no ves_object_name rule).
+    - ves_rule: "ves.io.schema.rules.string.ves_object_name"
+      constraint_field: "format"
+      constraint_value: "dns-label"
+      description: "F5 XC object name (DNS-1035 label charset)"
+
+    - ves_rule: "ves.io.schema.rules.string.ves_object_name"
+      constraint_field: "pattern"
+      constraint_value: '^[a-z]([-a-z0-9]*[a-z0-9])?$'
+      description: "F5 XC object name DNS-1035 pattern (alpha-first)"
+
     # Format constraints - DNS
     - ves_rule: "ves.io.schema.rules.string.dns_name"
       constraint_field: "format"
       constraint_value: "dns-label"
       description: "DNS name format validation"
 
+    # DNS-1123 label (alnum-first, leading digit allowed) — used by workload
+    # volume names. Emit the alnum-first pattern so it is NOT normalized to the
+    # stricter alpha-first DNS-1035 form applied to native object names.
     - ves_rule: "ves.io.schema.rules.string.dns_1123_label"
       constraint_field: "format"
       constraint_value: "dns-label"
       description: "DNS RFC 1123 label validation"
+
+    - ves_rule: "ves.io.schema.rules.string.dns_1123_label"
+      constraint_field: "pattern"
+      constraint_value: '^[a-z0-9]([-a-z0-9]*[a-z0-9])?$'
+      description: "DNS-1123 label pattern (alnum-first, allows leading digit)"
 
     - ves_rule: "ves.io.schema.rules.string.hostname"
       constraint_field: "format"

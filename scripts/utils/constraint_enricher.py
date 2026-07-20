@@ -116,11 +116,16 @@ class StringConstraintExtractor:
         if "format" in schema:
             constraints["format"] = schema["format"]
 
-        # Apply pattern constraints if no existing value
+        # Apply pattern constraints. An "authoritative" pattern (e.g. the DNS-1035
+        # naming rule) OVERRIDES any pre-existing scalar value, because a prior
+        # enricher may have stamped a generic default (e.g. the 1024 string
+        # maxLength) that contradicts the API-enforced bound. Non-authoritative
+        # patterns only fill gaps, preserving genuine spec-level constraints.
         if pattern_match:
+            authoritative = pattern_match.get("authoritative", False)
             pattern_constraints = pattern_match.get("constraints", {})
             for key, value in pattern_constraints.items():
-                if key not in constraints:
+                if authoritative or key not in constraints:
                     constraints[key] = value
 
         return constraints or None
