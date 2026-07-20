@@ -6045,7 +6045,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:31:11.331845+00:00"
+                "validatedAt": "2026-07-20T12:39:29.389829+00:00"
               },
               "deterministic": true
             },
@@ -6096,7 +6096,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:31:11.331981+00:00"
+                "validatedAt": "2026-07-20T12:39:29.389859+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6104,7 +6104,8 @@
               "create": true,
               "update": false,
               "read": false
-            }
+            },
+            "format": "hostname"
           },
           "user_name": {
             "type": "string",
@@ -6131,7 +6132,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:31:11.332067+00:00"
+                "validatedAt": "2026-07-20T12:39:29.389887+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6209,11 +6210,11 @@
             "x-displayname": "Name",
             "x-ves-example": "Name",
             "x-f5xc-example": "name",
-            "maxLength": 1024,
+            "maxLength": 63,
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "naming",
-              "maxLength": 1024,
+              "maxLength": 63,
               "minLength": 1,
               "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
               "characterSet": {
@@ -6231,7 +6232,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:31:11.332117+00:00"
+                "validatedAt": "2026-07-20T12:39:29.389905+00:00"
               },
               "deterministic": true
             },
@@ -6241,9 +6242,11 @@
               "update": false,
               "read": false
             },
-            "minLength": 6,
+            "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:44.296473+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:56.108516+00:00",
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+            "format": "dns-label"
           },
           "namespace": {
             "type": "string",
@@ -6253,16 +6256,18 @@
             "x-ves-example": "Ns1",
             "x-f5xc-example": "ns1",
             "x-f5xc-description-short": "Namespace in which the configuration object is present.",
-            "maxLength": 1024,
+            "maxLength": 63,
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "naming",
-              "maxLength": 1024,
+              "maxLength": 63,
               "minLength": 1,
               "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
               "characterSet": {
                 "allowed": "[a-z0-9-]",
-                "description": "DNS-1035 label format (alpha-first)"
+                "restricted": "[^a-z0-9-]",
+                "required": "[a-z0-9]",
+                "description": "Lowercase letter start, alphanumeric with hyphens, alphanumeric end"
               },
               "format": "dns-label",
               "formatDescription": "DNS-1035 label: must start with a lowercase letter",
@@ -6273,7 +6278,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:31:11.332162+00:00"
+                "validatedAt": "2026-07-20T12:39:29.389919+00:00"
               },
               "deterministic": true
             },
@@ -6283,9 +6288,11 @@
               "update": false,
               "read": false
             },
-            "minLength": 6,
+            "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:44.296504+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:56.108527+00:00",
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+            "format": "dns-label"
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -6450,7 +6457,7 @@
             "maxLength": 17,
             "minLength": 17,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:44.296606+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:56.108563+00:00"
           },
           "system_metadata": {
             "allOf": [
@@ -6541,7 +6548,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:31:11.332333+00:00"
+                "validatedAt": "2026-07-20T12:39:29.389974+00:00"
               },
               "deterministic": true
             },
@@ -6592,7 +6599,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:31:11.332411+00:00"
+                "validatedAt": "2026-07-20T12:39:29.389999+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6600,7 +6607,8 @@
               "create": true,
               "update": false,
               "read": false
-            }
+            },
+            "format": "hostname"
           },
           "user_name": {
             "type": "string",
@@ -6627,7 +6635,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:31:11.332491+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390025+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6713,7 +6721,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.7,
-                "validatedAt": "2026-07-15T10:31:11.332549+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390044+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6794,7 +6802,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.8,
-                "validatedAt": "2026-07-15T10:31:11.332621+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390068+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6805,7 +6813,7 @@
             },
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:44.296719+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:56.108603+00:00"
           },
           "disabled": {
             "type": "boolean",
@@ -6870,11 +6878,11 @@
             "x-displayname": "Name",
             "x-ves-example": "Name",
             "x-f5xc-example": "name",
-            "maxLength": 1024,
+            "maxLength": 63,
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "naming",
-              "maxLength": 1024,
+              "maxLength": 63,
               "minLength": 1,
               "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
               "characterSet": {
@@ -6892,7 +6900,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:31:11.332676+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390086+00:00"
               },
               "deterministic": true
             },
@@ -6902,9 +6910,11 @@
               "update": false,
               "read": false
             },
-            "minLength": 6,
+            "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:44.296786+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:56.108628+00:00",
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+            "format": "dns-label"
           },
           "namespace": {
             "type": "string",
@@ -6913,16 +6923,18 @@
             "x-displayname": "Namespace",
             "x-ves-example": "Ns1",
             "x-f5xc-example": "ns1",
-            "maxLength": 1024,
+            "maxLength": 63,
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "naming",
-              "maxLength": 1024,
+              "maxLength": 63,
               "minLength": 1,
               "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
               "characterSet": {
                 "allowed": "[a-z0-9-]",
-                "description": "DNS-1035 label format (alpha-first)"
+                "restricted": "[^a-z0-9-]",
+                "required": "[a-z0-9]",
+                "description": "Lowercase letter start, alphanumeric with hyphens, alphanumeric end"
               },
               "format": "dns-label",
               "formatDescription": "DNS-1035 label: must start with a lowercase letter",
@@ -6933,7 +6945,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:31:11.332713+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390098+00:00"
               },
               "deterministic": true
             },
@@ -6943,9 +6955,11 @@
               "update": false,
               "read": false
             },
-            "minLength": 6,
+            "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:44.296813+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:56.108639+00:00",
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+            "format": "dns-label"
           },
           "owner_view": {
             "allOf": [
@@ -7014,7 +7028,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-15T10:31:11.332782+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390117+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7026,7 +7040,7 @@
             "x-field-mutability": "read-only",
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:44.296867+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:56.108659+00:00"
           },
           "uid": {
             "type": "string",
@@ -7044,7 +7058,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-15T10:31:11.332816+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390127+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7057,7 +7071,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:44.296896+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:56.108671+00:00"
           }
         },
         "x-f5xc-description-short": "By default a summary of container_registry is returned in 'List'. By setting 'report_fields' in the ListRequest more details of each item can be got.",
@@ -7238,7 +7252,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:31:11.332903+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390156+00:00"
               },
               "deterministic": true
             },
@@ -7289,7 +7303,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:31:11.333000+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390182+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7297,7 +7311,8 @@
               "create": true,
               "update": false,
               "read": false
-            }
+            },
+            "format": "hostname"
           },
           "user_name": {
             "type": "string",
@@ -7324,7 +7339,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:31:11.333084+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390208+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7470,7 +7485,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-15T10:31:11.333173+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390235+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7493,7 +7508,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-15T10:31:11.333216+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390248+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7504,7 +7519,7 @@
             },
             "minLength": 3,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:44.297042+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:56.108718+00:00"
           }
         },
         "x-f5xc-description-short": "Contains an arbitrary serialized protocol buffer message along with a URL that describes the type of the serialized message.",
@@ -7565,7 +7580,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-15T10:31:11.333273+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390265+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7606,7 +7621,7 @@
                 "confidence": 1.0,
                 "category": "content",
                 "note": "Blindfold envelope encryption (AES-256-GCM + RSA-OAEP) of an RSA-2048 TLS private key produces ~3700 char string:/// URL. 128KB max secret size = ~175KB base64. Discovery reported 1024 which is incorrect.",
-                "validatedAt": "2026-07-15T10:31:11.333325+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390284+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7617,7 +7632,7 @@
             },
             "minLength": 4,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:44.297083+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:56.108736+00:00"
           },
           "store_provider": {
             "type": "string",
@@ -7636,7 +7651,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-15T10:31:11.333383+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390301+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7703,7 +7718,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-15T10:31:11.333430+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390315+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7714,7 +7729,7 @@
             },
             "minLength": 3,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:44.297122+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:56.108752+00:00"
           },
           "url": {
             "type": "string",
@@ -7752,7 +7767,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:31:11.333506+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390342+00:00"
               },
               "deterministic": true,
               "byteLength": {
@@ -7827,7 +7842,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.95,
-                "validatedAt": "2026-07-15T10:31:11.333547+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390356+00:00"
               },
               "deterministic": true
             },
@@ -7836,7 +7851,10 @@
               "create": false,
               "update": false,
               "read": false
-            }
+            },
+            "pattern": "^([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\\.)*[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$",
+            "minLength": 1,
+            "format": "fqdn"
           },
           "last_update_time": {
             "type": "string",
@@ -7853,7 +7871,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-15T10:31:11.333602+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390372+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7880,7 +7898,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-15T10:31:11.333645+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390385+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7891,7 +7909,7 @@
             },
             "minLength": 27,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:44.297180+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:56.108776+00:00"
           },
           "service_name": {
             "type": "string",
@@ -7908,7 +7926,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-15T10:31:11.333694+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390399+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7941,7 +7959,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-15T10:31:11.333741+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390413+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7952,7 +7970,7 @@
             },
             "minLength": 17,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:44.297216+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:56.108791+00:00"
           },
           "type": {
             "type": "string",
@@ -7977,7 +7995,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-15T10:31:11.333782+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390426+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8121,7 +8139,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-15T10:31:11.333835+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390441+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8179,11 +8197,11 @@
             "x-displayname": "Name",
             "x-f5xc-example": "example-resource",
             "x-f5xc-description-short": "Name of the service that is responsible for initializing this object.",
-            "maxLength": 1024,
+            "maxLength": 63,
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "naming",
-              "maxLength": 1024,
+              "maxLength": 63,
               "minLength": 1,
               "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
               "characterSet": {
@@ -8201,7 +8219,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:31:11.333873+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390454+00:00"
               },
               "deterministic": true
             },
@@ -8211,9 +8229,11 @@
               "update": false,
               "read": false
             },
-            "minLength": 6,
+            "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:44.297287+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:56.108822+00:00",
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+            "format": "dns-label"
           }
         },
         "x-f5xc-description-short": "Initializer is information about an initializer that has not yet completed.",
@@ -8377,7 +8397,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:31:11.334009+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390493+00:00"
               },
               "byteLength": {
                 "max": 1200
@@ -8392,7 +8412,7 @@
             },
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:44.297348+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:56.108847+00:00"
           },
           "disable": {
             "type": "boolean",
@@ -8440,11 +8460,11 @@
             },
             "x-f5xc-description-short": "Name of configuration object. It has to be unique within the namespace.",
             "x-f5xc-description-medium": "Name of configuration object. It has to be unique within the namespace. It can only be specified during create API and cannot be changed during replace API.",
-            "maxLength": 1024,
+            "maxLength": 63,
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "naming",
-              "maxLength": 1024,
+              "maxLength": 63,
               "minLength": 1,
               "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
               "characterSet": {
@@ -8462,7 +8482,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:31:11.334064+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390509+00:00"
               },
               "deterministic": true
             },
@@ -8472,9 +8492,11 @@
               "update": false,
               "read": false
             },
-            "minLength": 6,
+            "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:44.297395+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:56.108868+00:00",
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+            "format": "dns-label"
           },
           "namespace": {
             "type": "string",
@@ -8485,16 +8507,18 @@
             "x-f5xc-example": "staging",
             "x-f5xc-description-short": "Defines the workspace within which each the configuration object is to be created.",
             "x-f5xc-description-medium": "Defines the workspace within which each the configuration object is to be created. Must be a DNS_LABEL format. For a namespace object itself, namespace value will be \"\".",
-            "maxLength": 1024,
+            "maxLength": 63,
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "naming",
-              "maxLength": 1024,
+              "maxLength": 63,
               "minLength": 1,
               "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
               "characterSet": {
                 "allowed": "[a-z0-9-]",
-                "description": "DNS-1035 label format (alpha-first)"
+                "restricted": "[^a-z0-9-]",
+                "required": "[a-z0-9]",
+                "description": "Lowercase letter start, alphanumeric with hyphens, alphanumeric end"
               },
               "format": "dns-label",
               "formatDescription": "DNS-1035 label: must start with a lowercase letter",
@@ -8505,7 +8529,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:31:11.334101+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390521+00:00"
               },
               "deterministic": true
             },
@@ -8515,9 +8539,11 @@
               "update": false,
               "read": false
             },
-            "minLength": 6,
+            "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:44.297422+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:56.108882+00:00",
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+            "format": "dns-label"
           }
         },
         "x-f5xc-description-short": "ObjectCreateMetaType is metadata that can be specified in Create request of an object.",
@@ -8617,7 +8643,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:31:11.334199+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390553+00:00"
               },
               "byteLength": {
                 "max": 1200
@@ -8632,7 +8658,7 @@
             },
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:44.297462+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:56.108902+00:00"
           },
           "disable": {
             "type": "boolean",
@@ -8682,11 +8708,11 @@
             },
             "x-f5xc-description-short": "Name of configuration object. It has to be unique within the namespace.",
             "x-f5xc-description-medium": "Name of configuration object. It has to be unique within the namespace. It can only be specified during create API and cannot be changed during replace API.",
-            "maxLength": 1024,
+            "maxLength": 63,
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "naming",
-              "maxLength": 1024,
+              "maxLength": 63,
               "minLength": 1,
               "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
               "characterSet": {
@@ -8704,7 +8730,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:31:11.334248+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390569+00:00"
               },
               "deterministic": true
             },
@@ -8714,9 +8740,11 @@
               "update": false,
               "read": false
             },
-            "minLength": 6,
+            "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:44.297509+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:56.108920+00:00",
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+            "format": "dns-label"
           },
           "namespace": {
             "type": "string",
@@ -8727,16 +8755,18 @@
             "x-f5xc-example": "staging",
             "x-f5xc-description-short": "Defines the workspace within which each the configuration object is to be created.",
             "x-f5xc-description-medium": "Defines the workspace within which each the configuration object is to be created. Must be a DNS_LABEL format. For a namespace object itself, namespace value will be \"\".",
-            "maxLength": 1024,
+            "maxLength": 63,
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "naming",
-              "maxLength": 1024,
+              "maxLength": 63,
               "minLength": 1,
               "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
               "characterSet": {
                 "allowed": "[a-z0-9-]",
-                "description": "DNS-1035 label format (alpha-first)"
+                "restricted": "[^a-z0-9-]",
+                "required": "[a-z0-9]",
+                "description": "Lowercase letter start, alphanumeric with hyphens, alphanumeric end"
               },
               "format": "dns-label",
               "formatDescription": "DNS-1035 label: must start with a lowercase letter",
@@ -8747,7 +8777,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:31:11.334286+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390580+00:00"
               },
               "deterministic": true
             },
@@ -8757,9 +8787,11 @@
               "update": false,
               "read": false
             },
-            "minLength": 6,
+            "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:44.297535+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:56.108931+00:00",
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+            "format": "dns-label"
           }
         },
         "x-f5xc-description-short": "ObjectGetMetaType is metadata that can be specified in GET/Create response of an object.",
@@ -8822,7 +8854,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-15T10:31:11.334326+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390592+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8834,7 +8866,7 @@
             "readOnly": true,
             "minLength": 12,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:44.297564+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:56.108942+00:00"
           },
           "name": {
             "type": "string",
@@ -8845,11 +8877,11 @@
             "x-f5xc-example": "contactus-route",
             "x-f5xc-description-short": "When a configuration object(e.g. Virtual_host) refers to another(e.g route) then name will hold the referred object's(e.g.",
             "x-f5xc-description-medium": "When a configuration object(e.g. Virtual_host) refers to another(e.g route) then name will hold the referred object's(e.g. Route's) name.",
-            "maxLength": 1024,
+            "maxLength": 63,
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "naming",
-              "maxLength": 1024,
+              "maxLength": 63,
               "minLength": 1,
               "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
               "characterSet": {
@@ -8867,7 +8899,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:31:11.334362+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390604+00:00"
               },
               "deterministic": true
             },
@@ -8877,9 +8909,11 @@
               "update": false,
               "read": false
             },
-            "minLength": 6,
+            "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:44.297591+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:56.108952+00:00",
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+            "format": "dns-label"
           },
           "namespace": {
             "type": "string",
@@ -8890,16 +8924,18 @@
             "x-f5xc-example": "ns1",
             "x-f5xc-description-short": "When a configuration object(e.g. Virtual_host) refers to another(e.g route) then namespace will hold the referred object's(e.g.",
             "x-f5xc-description-medium": "When a configuration object(e.g. Virtual_host) refers to another(e.g route) then namespace will hold the referred object's(e.g. Route's) namespace.",
-            "maxLength": 1024,
+            "maxLength": 63,
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "naming",
-              "maxLength": 1024,
+              "maxLength": 63,
               "minLength": 1,
               "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
               "characterSet": {
                 "allowed": "[a-z0-9-]",
-                "description": "DNS-1035 label format (alpha-first)"
+                "restricted": "[^a-z0-9-]",
+                "required": "[a-z0-9]",
+                "description": "Lowercase letter start, alphanumeric with hyphens, alphanumeric end"
               },
               "format": "dns-label",
               "formatDescription": "DNS-1035 label: must start with a lowercase letter",
@@ -8910,7 +8946,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:31:11.334398+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390616+00:00"
               },
               "deterministic": true
             },
@@ -8920,9 +8956,11 @@
               "update": false,
               "read": false
             },
-            "minLength": 6,
+            "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:44.297617+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:56.108963+00:00",
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+            "format": "dns-label"
           },
           "tenant": {
             "type": "string",
@@ -8941,7 +8979,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-15T10:31:11.334442+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390629+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8954,7 +8992,7 @@
             "x-field-mutability": "read-only",
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:44.297644+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:56.108973+00:00"
           },
           "uid": {
             "type": "string",
@@ -8973,7 +9011,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-15T10:31:11.334474+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390639+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8987,7 +9025,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:44.297672+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:56.108984+00:00"
           }
         },
         "x-f5xc-description-short": "Type establishes a 'direct reference' from one object(the referrer) to another(the referred).",
@@ -9087,7 +9125,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:31:11.334575+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390673+00:00"
               },
               "byteLength": {
                 "max": 1200
@@ -9102,7 +9140,7 @@
             },
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:44.297712+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:56.108999+00:00"
           },
           "disable": {
             "type": "boolean",
@@ -9150,11 +9188,11 @@
             },
             "x-f5xc-description-short": "Name of configuration object. It has to be unique within the namespace.",
             "x-f5xc-description-medium": "Name of configuration object. It has to be unique within the namespace. It can only be specified during create API and cannot be changed during replace API.",
-            "maxLength": 1024,
+            "maxLength": 63,
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "naming",
-              "maxLength": 1024,
+              "maxLength": 63,
               "minLength": 1,
               "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
               "characterSet": {
@@ -9172,7 +9210,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:31:11.334625+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390689+00:00"
               },
               "deterministic": true
             },
@@ -9182,9 +9220,11 @@
               "update": false,
               "read": false
             },
-            "minLength": 6,
+            "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:44.297759+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:56.109017+00:00",
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+            "format": "dns-label"
           },
           "namespace": {
             "type": "string",
@@ -9195,16 +9235,18 @@
             "x-f5xc-example": "staging",
             "x-f5xc-description-short": "Defines the workspace within which each the configuration object is to be created.",
             "x-f5xc-description-medium": "Defines the workspace within which each the configuration object is to be created. Must be a DNS_LABEL format. For a namespace object itself, namespace value will be \"\".",
-            "maxLength": 1024,
+            "maxLength": 63,
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "naming",
-              "maxLength": 1024,
+              "maxLength": 63,
               "minLength": 1,
               "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
               "characterSet": {
                 "allowed": "[a-z0-9-]",
-                "description": "DNS-1035 label format (alpha-first)"
+                "restricted": "[^a-z0-9-]",
+                "required": "[a-z0-9]",
+                "description": "Lowercase letter start, alphanumeric with hyphens, alphanumeric end"
               },
               "format": "dns-label",
               "formatDescription": "DNS-1035 label: must start with a lowercase letter",
@@ -9215,7 +9257,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:31:11.334660+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390701+00:00"
               },
               "deterministic": true
             },
@@ -9225,9 +9267,11 @@
               "update": false,
               "read": false
             },
-            "minLength": 6,
+            "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:44.297786+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:56.109027+00:00",
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+            "format": "dns-label"
           }
         },
         "x-f5xc-description-short": "ObjectReplaceMetaType is metadata that can be specified in Replace request of an object.",
@@ -9398,7 +9442,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-15T10:31:11.334724+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390720+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9426,7 +9470,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-15T10:31:11.334775+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390735+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9454,7 +9498,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-15T10:31:11.334823+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390759+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9493,7 +9537,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-15T10:31:11.334872+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390773+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9520,7 +9564,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-15T10:31:11.334905+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390783+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9533,7 +9577,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:44.297883+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:56.109063+00:00"
           },
           "vtrp_id": {
             "type": "string",
@@ -9549,7 +9593,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-15T10:31:11.334961+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390796+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9694,7 +9738,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-15T10:31:11.335025+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390815+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9705,7 +9749,7 @@
             },
             "minLength": 27,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:44.297952+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:56.109084+00:00"
           },
           "status": {
             "type": "string",
@@ -9723,7 +9767,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-15T10:31:11.335070+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390828+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9734,7 +9778,7 @@
             },
             "minLength": 17,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:44.297981+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:56.109095+00:00"
           }
         },
         "x-f5xc-description-short": "Status is a return value for calls that don't return other objects.",
@@ -9794,7 +9838,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-15T10:31:11.335124+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390844+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9821,7 +9865,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-15T10:31:11.335175+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390859+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9848,7 +9892,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-15T10:31:11.335222+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390872+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9876,7 +9920,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-15T10:31:11.335275+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390887+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9952,7 +9996,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-15T10:31:11.335356+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390910+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -10020,7 +10064,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-15T10:31:11.335419+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390929+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -10032,7 +10076,7 @@
             "x-field-mutability": "read-only",
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:44.298105+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:56.109139+00:00"
           },
           "uid": {
             "type": "string",
@@ -10051,7 +10095,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-15T10:31:11.335451+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390938+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -10064,7 +10108,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:44.298133+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:56.109150+00:00"
           }
         },
         "x-f5xc-description-short": "SystemObjectGetMetaType is metadata generated or populated by the system for all persisted objects and cannot be updated directly by users.",
@@ -10132,7 +10176,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-15T10:31:11.335491+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390950+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -10143,7 +10187,7 @@
             },
             "minLength": 12,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:44.298162+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:56.109161+00:00"
           },
           "name": {
             "type": "string",
@@ -10154,11 +10198,11 @@
             "x-f5xc-example": "contactus-route",
             "x-f5xc-description-short": "When a configuration object(e.g. Virtual_host) refers to another(e.g route) then name will hold the referred object's(e.g.",
             "x-f5xc-description-medium": "When a configuration object(e.g. Virtual_host) refers to another(e.g route) then name will hold the referred object's(e.g. Route's) name.",
-            "maxLength": 1024,
+            "maxLength": 63,
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "naming",
-              "maxLength": 1024,
+              "maxLength": 63,
               "minLength": 1,
               "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
               "characterSet": {
@@ -10176,7 +10220,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:31:11.335526+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390961+00:00"
               },
               "deterministic": true
             },
@@ -10186,9 +10230,11 @@
               "update": false,
               "read": false
             },
-            "minLength": 6,
+            "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:44.298189+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:56.109172+00:00",
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+            "format": "dns-label"
           },
           "namespace": {
             "type": "string",
@@ -10199,16 +10245,18 @@
             "x-f5xc-example": "ns1",
             "x-f5xc-description-short": "When a configuration object(e.g. Virtual_host) refers to another(e.g route) then namespace will hold the referred object's(e.g.",
             "x-f5xc-description-medium": "When a configuration object(e.g. Virtual_host) refers to another(e.g route) then namespace will hold the referred object's(e.g. Route's) namespace.",
-            "maxLength": 1024,
+            "maxLength": 63,
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "naming",
-              "maxLength": 1024,
+              "maxLength": 63,
               "minLength": 1,
               "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
               "characterSet": {
                 "allowed": "[a-z0-9-]",
-                "description": "DNS-1035 label format (alpha-first)"
+                "restricted": "[^a-z0-9-]",
+                "required": "[a-z0-9]",
+                "description": "Lowercase letter start, alphanumeric with hyphens, alphanumeric end"
               },
               "format": "dns-label",
               "formatDescription": "DNS-1035 label: must start with a lowercase letter",
@@ -10219,7 +10267,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:31:11.335562+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390973+00:00"
               },
               "deterministic": true
             },
@@ -10229,9 +10277,11 @@
               "update": false,
               "read": false
             },
-            "minLength": 6,
+            "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:44.298216+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:56.109182+00:00",
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+            "format": "dns-label"
           },
           "uid": {
             "type": "string",
@@ -10248,7 +10298,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-15T10:31:11.335594+00:00"
+                "validatedAt": "2026-07-20T12:39:29.390983+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -10261,7 +10311,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:44.298243+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:56.109193+00:00"
           }
         },
         "x-f5xc-description-short": "ViewRefType represents a reference to a view.",
@@ -10510,7 +10560,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:34.425979+00:00"
+                "validatedAt": "2026-07-20T12:40:52.548738+00:00"
               },
               "deterministic": true,
               "format": "uri"
@@ -10586,11 +10636,11 @@
             "x-displayname": "Name",
             "x-ves-example": "Name",
             "x-f5xc-example": "name",
-            "maxLength": 1024,
+            "maxLength": 63,
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "naming",
-              "maxLength": 1024,
+              "maxLength": 63,
               "minLength": 1,
               "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
               "characterSet": {
@@ -10608,7 +10658,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:34.426065+00:00"
+                "validatedAt": "2026-07-20T12:40:52.548757+00:00"
               },
               "deterministic": true
             },
@@ -10618,9 +10668,11 @@
               "update": false,
               "read": false
             },
-            "minLength": 6,
+            "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:49.631487+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:58.190229+00:00",
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+            "format": "dns-label"
           },
           "namespace": {
             "type": "string",
@@ -10630,16 +10682,18 @@
             "x-ves-example": "Ns1",
             "x-f5xc-example": "ns1",
             "x-f5xc-description-short": "Namespace in which the configuration object is present.",
-            "maxLength": 1024,
+            "maxLength": 63,
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "naming",
-              "maxLength": 1024,
+              "maxLength": 63,
               "minLength": 1,
               "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
               "characterSet": {
                 "allowed": "[a-z0-9-]",
-                "description": "DNS-1035 label format (alpha-first)"
+                "restricted": "[^a-z0-9-]",
+                "required": "[a-z0-9]",
+                "description": "Lowercase letter start, alphanumeric with hyphens, alphanumeric end"
               },
               "format": "dns-label",
               "formatDescription": "DNS-1035 label: must start with a lowercase letter",
@@ -10650,7 +10704,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:34.426130+00:00"
+                "validatedAt": "2026-07-20T12:40:52.548770+00:00"
               },
               "deterministic": true
             },
@@ -10660,9 +10714,11 @@
               "update": false,
               "read": false
             },
-            "minLength": 6,
+            "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:49.631517+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:58.190240+00:00",
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+            "format": "dns-label"
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -10825,7 +10881,7 @@
             "maxLength": 17,
             "minLength": 17,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:49.631613+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:58.190274+00:00"
           },
           "system_metadata": {
             "allOf": [
@@ -10948,7 +11004,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:34.426340+00:00"
+                "validatedAt": "2026-07-20T12:40:52.548830+00:00"
               },
               "deterministic": true,
               "format": "uri"
@@ -11037,7 +11093,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.7,
-                "validatedAt": "2026-07-15T10:36:34.426396+00:00"
+                "validatedAt": "2026-07-20T12:40:52.548848+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11116,7 +11172,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.8,
-                "validatedAt": "2026-07-15T10:36:34.426469+00:00"
+                "validatedAt": "2026-07-20T12:40:52.548871+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11127,7 +11183,7 @@
             },
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:49.631716+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:58.190310+00:00"
           },
           "disabled": {
             "type": "boolean",
@@ -11192,11 +11248,11 @@
             "x-displayname": "Name",
             "x-ves-example": "Name",
             "x-f5xc-example": "name",
-            "maxLength": 1024,
+            "maxLength": 63,
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "naming",
-              "maxLength": 1024,
+              "maxLength": 63,
               "minLength": 1,
               "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
               "characterSet": {
@@ -11214,7 +11270,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:34.426523+00:00"
+                "validatedAt": "2026-07-20T12:40:52.548888+00:00"
               },
               "deterministic": true
             },
@@ -11224,9 +11280,11 @@
               "update": false,
               "read": false
             },
-            "minLength": 6,
+            "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:49.631782+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:58.190334+00:00",
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+            "format": "dns-label"
           },
           "namespace": {
             "type": "string",
@@ -11235,16 +11293,18 @@
             "x-displayname": "Namespace",
             "x-ves-example": "Ns1",
             "x-f5xc-example": "ns1",
-            "maxLength": 1024,
+            "maxLength": 63,
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "naming",
-              "maxLength": 1024,
+              "maxLength": 63,
               "minLength": 1,
               "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
               "characterSet": {
                 "allowed": "[a-z0-9-]",
-                "description": "DNS-1035 label format (alpha-first)"
+                "restricted": "[^a-z0-9-]",
+                "required": "[a-z0-9]",
+                "description": "Lowercase letter start, alphanumeric with hyphens, alphanumeric end"
               },
               "format": "dns-label",
               "formatDescription": "DNS-1035 label: must start with a lowercase letter",
@@ -11255,7 +11315,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:34.426560+00:00"
+                "validatedAt": "2026-07-20T12:40:52.548901+00:00"
               },
               "deterministic": true
             },
@@ -11265,9 +11325,11 @@
               "update": false,
               "read": false
             },
-            "minLength": 6,
+            "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:49.631809+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:58.190345+00:00",
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+            "format": "dns-label"
           },
           "owner_view": {
             "allOf": [
@@ -11336,7 +11398,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-15T10:36:34.426630+00:00"
+                "validatedAt": "2026-07-20T12:40:52.548920+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11348,7 +11410,7 @@
             "x-field-mutability": "read-only",
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:49.631863+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:58.190365+00:00"
           },
           "uid": {
             "type": "string",
@@ -11366,7 +11428,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-15T10:36:34.426667+00:00"
+                "validatedAt": "2026-07-20T12:40:52.548931+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11379,7 +11441,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:49.631891+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:58.190376+00:00"
           }
         },
         "x-f5xc-description-short": "By default a summary of k8s_cluster_role is returned in 'List'. By setting 'report_fields' in the ListRequest more details of each item can be got.",
@@ -11470,7 +11532,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:34.426734+00:00"
+                "validatedAt": "2026-07-20T12:40:52.548954+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11519,7 +11581,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:34.426795+00:00"
+                "validatedAt": "2026-07-20T12:40:52.548974+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11602,7 +11664,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:34.426859+00:00"
+                "validatedAt": "2026-07-20T12:40:52.548995+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11875,7 +11937,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:34.426994+00:00"
+                "validatedAt": "2026-07-20T12:40:52.549032+00:00"
               },
               "deterministic": true,
               "format": "uri"
@@ -11970,7 +12032,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:34.427059+00:00"
+                "validatedAt": "2026-07-20T12:40:52.549052+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -12012,7 +12074,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:34.427120+00:00"
+                "validatedAt": "2026-07-20T12:40:52.549073+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -12061,7 +12123,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:34.427185+00:00"
+                "validatedAt": "2026-07-20T12:40:52.549094+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -12110,7 +12172,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:34.427245+00:00"
+                "validatedAt": "2026-07-20T12:40:52.549114+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -12280,7 +12342,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:34.427832+00:00"
+                "validatedAt": "2026-07-20T12:40:52.549289+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -12345,7 +12407,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-15T10:36:39.680502+00:00"
+                "validatedAt": "2026-07-20T12:40:53.846945+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -12357,7 +12419,7 @@
             "readOnly": true,
             "minLength": 12,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:49.726118+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:58.233866+00:00"
           },
           "name": {
             "type": "string",
@@ -12368,11 +12430,11 @@
             "x-f5xc-example": "contactus-route",
             "x-f5xc-description-short": "When a configuration object(e.g. Virtual_host) refers to another(e.g route) then name will hold the referred object's(e.g.",
             "x-f5xc-description-medium": "When a configuration object(e.g. Virtual_host) refers to another(e.g route) then name will hold the referred object's(e.g. Route's) name.",
-            "maxLength": 1024,
+            "maxLength": 63,
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "naming",
-              "maxLength": 1024,
+              "maxLength": 63,
               "minLength": 1,
               "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
               "characterSet": {
@@ -12390,7 +12452,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:39.680565+00:00"
+                "validatedAt": "2026-07-20T12:40:53.846970+00:00"
               },
               "deterministic": true
             },
@@ -12400,9 +12462,11 @@
               "update": false,
               "read": false
             },
-            "minLength": 6,
+            "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:49.726149+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:58.233876+00:00",
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+            "format": "dns-label"
           },
           "namespace": {
             "type": "string",
@@ -12413,16 +12477,18 @@
             "x-f5xc-example": "ns1",
             "x-f5xc-description-short": "When a configuration object(e.g. Virtual_host) refers to another(e.g route) then namespace will hold the referred object's(e.g.",
             "x-f5xc-description-medium": "When a configuration object(e.g. Virtual_host) refers to another(e.g route) then namespace will hold the referred object's(e.g. Route's) namespace.",
-            "maxLength": 1024,
+            "maxLength": 63,
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "naming",
-              "maxLength": 1024,
+              "maxLength": 63,
               "minLength": 1,
               "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
               "characterSet": {
                 "allowed": "[a-z0-9-]",
-                "description": "DNS-1035 label format (alpha-first)"
+                "restricted": "[^a-z0-9-]",
+                "required": "[a-z0-9]",
+                "description": "Lowercase letter start, alphanumeric with hyphens, alphanumeric end"
               },
               "format": "dns-label",
               "formatDescription": "DNS-1035 label: must start with a lowercase letter",
@@ -12433,7 +12499,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:39.680606+00:00"
+                "validatedAt": "2026-07-20T12:40:53.846984+00:00"
               },
               "deterministic": true
             },
@@ -12443,9 +12509,11 @@
               "update": false,
               "read": false
             },
-            "minLength": 6,
+            "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:49.726177+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:58.233887+00:00",
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+            "format": "dns-label"
           },
           "tenant": {
             "type": "string",
@@ -12464,7 +12532,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-15T10:36:39.680650+00:00"
+                "validatedAt": "2026-07-20T12:40:53.846997+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -12477,7 +12545,7 @@
             "x-field-mutability": "read-only",
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:49.726204+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:58.233898+00:00"
           },
           "uid": {
             "type": "string",
@@ -12496,7 +12564,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-15T10:36:39.680684+00:00"
+                "validatedAt": "2026-07-20T12:40:53.847007+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -12510,7 +12578,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:49.726233+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:58.233909+00:00"
           }
         },
         "x-f5xc-description-short": "Type establishes a 'direct reference' from one object(the referrer) to another(the referred).",
@@ -12754,7 +12822,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:39.680789+00:00"
+                "validatedAt": "2026-07-20T12:40:53.847043+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -12824,11 +12892,11 @@
             "x-displayname": "Name",
             "x-ves-example": "Name",
             "x-f5xc-example": "name",
-            "maxLength": 1024,
+            "maxLength": 63,
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "naming",
-              "maxLength": 1024,
+              "maxLength": 63,
               "minLength": 1,
               "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
               "characterSet": {
@@ -12846,7 +12914,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:39.680837+00:00"
+                "validatedAt": "2026-07-20T12:40:53.847060+00:00"
               },
               "deterministic": true
             },
@@ -12856,9 +12924,11 @@
               "update": false,
               "read": false
             },
-            "minLength": 6,
+            "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:49.726349+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:58.233950+00:00",
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+            "format": "dns-label"
           },
           "namespace": {
             "type": "string",
@@ -12868,16 +12938,18 @@
             "x-ves-example": "Ns1",
             "x-f5xc-example": "ns1",
             "x-f5xc-description-short": "Namespace in which the configuration object is present.",
-            "maxLength": 1024,
+            "maxLength": 63,
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "naming",
-              "maxLength": 1024,
+              "maxLength": 63,
               "minLength": 1,
               "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
               "characterSet": {
                 "allowed": "[a-z0-9-]",
-                "description": "DNS-1035 label format (alpha-first)"
+                "restricted": "[^a-z0-9-]",
+                "required": "[a-z0-9]",
+                "description": "Lowercase letter start, alphanumeric with hyphens, alphanumeric end"
               },
               "format": "dns-label",
               "formatDescription": "DNS-1035 label: must start with a lowercase letter",
@@ -12888,7 +12960,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:39.680873+00:00"
+                "validatedAt": "2026-07-20T12:40:53.847072+00:00"
               },
               "deterministic": true
             },
@@ -12898,9 +12970,11 @@
               "update": false,
               "read": false
             },
-            "minLength": 6,
+            "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:49.726377+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:58.233960+00:00",
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+            "format": "dns-label"
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -13063,7 +13137,7 @@
             "maxLength": 17,
             "minLength": 17,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:49.726473+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:58.233996+00:00"
           },
           "system_metadata": {
             "allOf": [
@@ -13179,7 +13253,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:39.681052+00:00"
+                "validatedAt": "2026-07-20T12:40:53.847121+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -13263,7 +13337,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.7,
-                "validatedAt": "2026-07-15T10:36:39.681112+00:00"
+                "validatedAt": "2026-07-20T12:40:53.847141+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -13342,7 +13416,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.8,
-                "validatedAt": "2026-07-15T10:36:39.681180+00:00"
+                "validatedAt": "2026-07-20T12:40:53.847163+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -13353,7 +13427,7 @@
             },
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:49.726567+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:58.234030+00:00"
           },
           "disabled": {
             "type": "boolean",
@@ -13419,11 +13493,11 @@
             "x-ves-example": "Name",
             "x-f5xc-example": "name",
             "x-f5xc-description-short": "The name of this k8s_cluster_role_binding.",
-            "maxLength": 1024,
+            "maxLength": 63,
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "naming",
-              "maxLength": 1024,
+              "maxLength": 63,
               "minLength": 1,
               "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
               "characterSet": {
@@ -13441,7 +13515,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:39.681237+00:00"
+                "validatedAt": "2026-07-20T12:40:53.847180+00:00"
               },
               "deterministic": true
             },
@@ -13451,9 +13525,11 @@
               "update": false,
               "read": false
             },
-            "minLength": 6,
+            "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:49.726633+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:58.234055+00:00",
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+            "format": "dns-label"
           },
           "namespace": {
             "type": "string",
@@ -13462,16 +13538,18 @@
             "x-displayname": "Namespace",
             "x-ves-example": "Ns1",
             "x-f5xc-example": "ns1",
-            "maxLength": 1024,
+            "maxLength": 63,
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "naming",
-              "maxLength": 1024,
+              "maxLength": 63,
               "minLength": 1,
               "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
               "characterSet": {
                 "allowed": "[a-z0-9-]",
-                "description": "DNS-1035 label format (alpha-first)"
+                "restricted": "[^a-z0-9-]",
+                "required": "[a-z0-9]",
+                "description": "Lowercase letter start, alphanumeric with hyphens, alphanumeric end"
               },
               "format": "dns-label",
               "formatDescription": "DNS-1035 label: must start with a lowercase letter",
@@ -13482,7 +13560,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:39.681274+00:00"
+                "validatedAt": "2026-07-20T12:40:53.847192+00:00"
               },
               "deterministic": true
             },
@@ -13492,9 +13570,11 @@
               "update": false,
               "read": false
             },
-            "minLength": 6,
+            "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:49.726660+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:58.234065+00:00",
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+            "format": "dns-label"
           },
           "owner_view": {
             "allOf": [
@@ -13563,7 +13643,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-15T10:36:39.681342+00:00"
+                "validatedAt": "2026-07-20T12:40:53.847212+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -13575,7 +13655,7 @@
             "x-field-mutability": "read-only",
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:49.726714+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:58.234086+00:00"
           },
           "uid": {
             "type": "string",
@@ -13593,7 +13673,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-15T10:36:39.681375+00:00"
+                "validatedAt": "2026-07-20T12:40:53.847222+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -13606,7 +13686,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:49.726742+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:58.234097+00:00"
           }
         },
         "x-f5xc-description-short": "By default a summary of k8s_cluster_role_binding is returned in 'List'.",
@@ -13808,7 +13888,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:39.681458+00:00"
+                "validatedAt": "2026-07-20T12:40:53.847248+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -13898,7 +13978,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:39.681535+00:00"
+                "validatedAt": "2026-07-20T12:40:53.847275+00:00"
               },
               "deterministic": true
             },
@@ -13907,7 +13987,9 @@
               "create": true,
               "update": false,
               "read": false
-            }
+            },
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+            "format": "dns-label"
           },
           "namespace": {
             "type": "string",
@@ -13938,7 +14020,9 @@
               "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
               "characterSet": {
                 "allowed": "[a-z0-9-]",
-                "description": "DNS-1035 label format (alpha-first)"
+                "restricted": "[^a-z0-9-]",
+                "required": "[a-z0-9]",
+                "description": "Lowercase letter start, alphanumeric with hyphens, alphanumeric end"
               },
               "format": "dns-label",
               "formatDescription": "DNS-1035 label: must start with a lowercase letter",
@@ -13949,7 +14033,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:39.681605+00:00"
+                "validatedAt": "2026-07-20T12:40:53.847300+00:00"
               },
               "deterministic": true
             },
@@ -13958,7 +14042,9 @@
               "create": true,
               "update": false,
               "read": false
-            }
+            },
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+            "format": "dns-label"
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -14108,7 +14194,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:39.681717+00:00"
+                "validatedAt": "2026-07-20T12:40:53.847334+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -14170,7 +14256,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:39.681788+00:00"
+                "validatedAt": "2026-07-20T12:40:53.847360+00:00"
               },
               "deterministic": true
             },
@@ -14228,7 +14314,7 @@
             "description": "When a configuration object(e.g. Virtual_host) refers to another(e.g route)\nthen name will hold the referred object's(e.g. Route's) name.\nRequired: YES.",
             "title": "name",
             "minLength": 1,
-            "maxLength": 128,
+            "maxLength": 63,
             "x-displayname": "Name",
             "x-ves-example": "Contacts-route.",
             "x-ves-required": "true",
@@ -14249,7 +14335,7 @@
               "constraintType": "string",
               "category": "discovery",
               "minLength": 1,
-              "maxLength": 128,
+              "maxLength": 63,
               "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
               "characterSet": {
                 "allowed": "[a-z0-9-]",
@@ -14266,7 +14352,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:39.683807+00:00"
+                "validatedAt": "2026-07-20T12:40:53.847985+00:00"
               },
               "deterministic": true,
               "byteLength": {
@@ -14279,13 +14365,15 @@
               "create": true,
               "update": false,
               "read": false
-            }
+            },
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+            "format": "dns-label"
           },
           "namespace": {
             "type": "string",
             "description": "When a configuration object(e.g. Virtual_host) refers to another(e.g route)\nthen namespace will hold the referred object's(e.g. Route's) namespace.",
             "title": "namespace",
-            "maxLength": 64,
+            "maxLength": 63,
             "x-displayname": "Namespace",
             "x-ves-example": "Ns1",
             "x-ves-validation-rules": {
@@ -14300,12 +14388,14 @@
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "discovery",
-              "maxLength": 64,
+              "maxLength": 63,
               "minLength": 1,
               "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
               "characterSet": {
                 "allowed": "[a-z0-9-]",
-                "description": "DNS-1035 label format (alpha-first)"
+                "restricted": "[^a-z0-9-]",
+                "required": "[a-z0-9]",
+                "description": "Lowercase letter start, alphanumeric with hyphens, alphanumeric end"
               },
               "format": "dns-label",
               "formatDescription": "DNS-1035 label: must start with a lowercase letter",
@@ -14316,7 +14406,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:39.683872+00:00"
+                "validatedAt": "2026-07-20T12:40:53.848007+00:00"
               },
               "deterministic": true,
               "byteLength": {
@@ -14329,9 +14419,11 @@
               "update": false,
               "read": false
             },
-            "minLength": 6,
+            "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:49.727905+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:58.234524+00:00",
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+            "format": "dns-label"
           },
           "tenant": {
             "type": "string",
@@ -14360,7 +14452,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:39.683955+00:00"
+                "validatedAt": "2026-07-20T12:40:53.848030+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -14373,7 +14465,7 @@
             "x-field-mutability": "read-only",
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:49.727932+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:58.234535+00:00"
           }
         },
         "x-f5xc-description-short": "Type establishes a direct reference from one object(the referrer) to another(the referred).",
@@ -14629,7 +14721,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:44.809959+00:00"
+                "validatedAt": "2026-07-20T12:40:55.089483+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -14702,11 +14794,11 @@
             "x-displayname": "Name",
             "x-ves-example": "Name",
             "x-f5xc-example": "name",
-            "maxLength": 1024,
+            "maxLength": 63,
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "naming",
-              "maxLength": 1024,
+              "maxLength": 63,
               "minLength": 1,
               "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
               "characterSet": {
@@ -14724,7 +14816,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:44.810018+00:00"
+                "validatedAt": "2026-07-20T12:40:55.089498+00:00"
               },
               "deterministic": true
             },
@@ -14734,9 +14826,11 @@
               "update": false,
               "read": false
             },
-            "minLength": 6,
+            "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:49.791847+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:58.259234+00:00",
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+            "format": "dns-label"
           },
           "namespace": {
             "type": "string",
@@ -14746,16 +14840,18 @@
             "x-ves-example": "Ns1",
             "x-f5xc-example": "ns1",
             "x-f5xc-description-short": "Namespace in which the configuration object is present.",
-            "maxLength": 1024,
+            "maxLength": 63,
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "naming",
-              "maxLength": 1024,
+              "maxLength": 63,
               "minLength": 1,
               "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
               "characterSet": {
                 "allowed": "[a-z0-9-]",
-                "description": "DNS-1035 label format (alpha-first)"
+                "restricted": "[^a-z0-9-]",
+                "required": "[a-z0-9]",
+                "description": "Lowercase letter start, alphanumeric with hyphens, alphanumeric end"
               },
               "format": "dns-label",
               "formatDescription": "DNS-1035 label: must start with a lowercase letter",
@@ -14766,7 +14862,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:44.810058+00:00"
+                "validatedAt": "2026-07-20T12:40:55.089511+00:00"
               },
               "deterministic": true
             },
@@ -14776,9 +14872,11 @@
               "update": false,
               "read": false
             },
-            "minLength": 6,
+            "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:49.791874+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:58.259245+00:00",
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+            "format": "dns-label"
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -14943,7 +15041,7 @@
             "maxLength": 17,
             "minLength": 17,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:49.791983+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:58.259281+00:00"
           },
           "system_metadata": {
             "allOf": [
@@ -15037,7 +15135,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:44.810220+00:00"
+                "validatedAt": "2026-07-20T12:40:55.089562+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -15121,7 +15219,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.7,
-                "validatedAt": "2026-07-15T10:36:44.810280+00:00"
+                "validatedAt": "2026-07-20T12:40:55.089582+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -15202,7 +15300,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.8,
-                "validatedAt": "2026-07-15T10:36:44.810351+00:00"
+                "validatedAt": "2026-07-20T12:40:55.089604+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -15213,7 +15311,7 @@
             },
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:49.792067+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:58.259313+00:00"
           },
           "disabled": {
             "type": "boolean",
@@ -15279,11 +15377,11 @@
             "x-ves-example": "Name",
             "x-f5xc-example": "name",
             "x-f5xc-description-short": "The name of this k8s_pod_security_admission.",
-            "maxLength": 1024,
+            "maxLength": 63,
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "naming",
-              "maxLength": 1024,
+              "maxLength": 63,
               "minLength": 1,
               "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
               "characterSet": {
@@ -15301,7 +15399,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:44.810405+00:00"
+                "validatedAt": "2026-07-20T12:40:55.089621+00:00"
               },
               "deterministic": true
             },
@@ -15311,9 +15409,11 @@
               "update": false,
               "read": false
             },
-            "minLength": 6,
+            "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:49.792133+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:58.259338+00:00",
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+            "format": "dns-label"
           },
           "namespace": {
             "type": "string",
@@ -15322,16 +15422,18 @@
             "x-displayname": "Namespace",
             "x-ves-example": "Ns1",
             "x-f5xc-example": "ns1",
-            "maxLength": 1024,
+            "maxLength": 63,
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "naming",
-              "maxLength": 1024,
+              "maxLength": 63,
               "minLength": 1,
               "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
               "characterSet": {
                 "allowed": "[a-z0-9-]",
-                "description": "DNS-1035 label format (alpha-first)"
+                "restricted": "[^a-z0-9-]",
+                "required": "[a-z0-9]",
+                "description": "Lowercase letter start, alphanumeric with hyphens, alphanumeric end"
               },
               "format": "dns-label",
               "formatDescription": "DNS-1035 label: must start with a lowercase letter",
@@ -15342,7 +15444,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:44.810442+00:00"
+                "validatedAt": "2026-07-20T12:40:55.089633+00:00"
               },
               "deterministic": true
             },
@@ -15352,9 +15454,11 @@
               "update": false,
               "read": false
             },
-            "minLength": 6,
+            "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:49.792160+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:58.259349+00:00",
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+            "format": "dns-label"
           },
           "owner_view": {
             "allOf": [
@@ -15423,7 +15527,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-15T10:36:44.810510+00:00"
+                "validatedAt": "2026-07-20T12:40:55.089653+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -15435,7 +15539,7 @@
             "x-field-mutability": "read-only",
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:49.792214+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:58.259370+00:00"
           },
           "uid": {
             "type": "string",
@@ -15453,7 +15557,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-15T10:36:44.810543+00:00"
+                "validatedAt": "2026-07-20T12:40:55.089663+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -15466,7 +15570,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:49.792241+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:58.259381+00:00"
           }
         },
         "x-f5xc-description-short": "By default a summary of k8s_pod_security_admission is returned in 'List'.",
@@ -15798,7 +15902,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:44.810648+00:00"
+                "validatedAt": "2026-07-20T12:40:55.089696+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -15969,7 +16073,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:50.261830+00:00"
+                "validatedAt": "2026-07-20T12:40:56.438096+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -16207,7 +16311,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:50.262071+00:00"
+                "validatedAt": "2026-07-20T12:40:56.438143+00:00"
               },
               "deterministic": true,
               "format": "uri"
@@ -16288,11 +16392,11 @@
             "x-displayname": "Name",
             "x-ves-example": "Name",
             "x-f5xc-example": "name",
-            "maxLength": 1024,
+            "maxLength": 63,
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "naming",
-              "maxLength": 1024,
+              "maxLength": 63,
               "minLength": 1,
               "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
               "characterSet": {
@@ -16310,7 +16414,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:50.262150+00:00"
+                "validatedAt": "2026-07-20T12:40:56.438159+00:00"
               },
               "deterministic": true
             },
@@ -16320,9 +16424,11 @@
               "update": false,
               "read": false
             },
-            "minLength": 6,
+            "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:49.874561+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:58.292008+00:00",
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+            "format": "dns-label"
           },
           "namespace": {
             "type": "string",
@@ -16332,16 +16438,18 @@
             "x-ves-example": "Ns1",
             "x-f5xc-example": "ns1",
             "x-f5xc-description-short": "Namespace in which the configuration object is present.",
-            "maxLength": 1024,
+            "maxLength": 63,
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "naming",
-              "maxLength": 1024,
+              "maxLength": 63,
               "minLength": 1,
               "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
               "characterSet": {
                 "allowed": "[a-z0-9-]",
-                "description": "DNS-1035 label format (alpha-first)"
+                "restricted": "[^a-z0-9-]",
+                "required": "[a-z0-9]",
+                "description": "Lowercase letter start, alphanumeric with hyphens, alphanumeric end"
               },
               "format": "dns-label",
               "formatDescription": "DNS-1035 label: must start with a lowercase letter",
@@ -16352,7 +16460,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:50.262201+00:00"
+                "validatedAt": "2026-07-20T12:40:56.438172+00:00"
               },
               "deterministic": true
             },
@@ -16362,9 +16470,11 @@
               "update": false,
               "read": false
             },
-            "minLength": 6,
+            "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:49.874591+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:58.292020+00:00",
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+            "format": "dns-label"
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -16529,7 +16639,7 @@
             "maxLength": 17,
             "minLength": 17,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:49.874689+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:58.292056+00:00"
           },
           "system_metadata": {
             "allOf": [
@@ -16634,7 +16744,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:50.262386+00:00"
+                "validatedAt": "2026-07-20T12:40:56.438231+00:00"
               },
               "deterministic": true,
               "format": "uri"
@@ -16721,7 +16831,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:50.262473+00:00"
+                "validatedAt": "2026-07-20T12:40:56.438259+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -16902,7 +17012,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:50.262583+00:00"
+                "validatedAt": "2026-07-20T12:40:56.438292+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -16943,7 +17053,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:50.262656+00:00"
+                "validatedAt": "2026-07-20T12:40:56.438317+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -17027,7 +17137,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.7,
-                "validatedAt": "2026-07-15T10:36:50.262711+00:00"
+                "validatedAt": "2026-07-20T12:40:56.438336+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -17108,7 +17218,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.8,
-                "validatedAt": "2026-07-15T10:36:50.262782+00:00"
+                "validatedAt": "2026-07-20T12:40:56.438358+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -17119,7 +17229,7 @@
             },
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:49.874844+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:58.292114+00:00"
           },
           "disabled": {
             "type": "boolean",
@@ -17185,11 +17295,11 @@
             "x-ves-example": "Name",
             "x-f5xc-example": "name",
             "x-f5xc-description-short": "The name of this k8s_pod_security_policy.",
-            "maxLength": 1024,
+            "maxLength": 63,
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "naming",
-              "maxLength": 1024,
+              "maxLength": 63,
               "minLength": 1,
               "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
               "characterSet": {
@@ -17207,7 +17317,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:50.262836+00:00"
+                "validatedAt": "2026-07-20T12:40:56.438376+00:00"
               },
               "deterministic": true
             },
@@ -17217,9 +17327,11 @@
               "update": false,
               "read": false
             },
-            "minLength": 6,
+            "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:49.874909+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:58.292139+00:00",
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+            "format": "dns-label"
           },
           "namespace": {
             "type": "string",
@@ -17228,16 +17340,18 @@
             "x-displayname": "Namespace",
             "x-ves-example": "Ns1",
             "x-f5xc-example": "ns1",
-            "maxLength": 1024,
+            "maxLength": 63,
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "naming",
-              "maxLength": 1024,
+              "maxLength": 63,
               "minLength": 1,
               "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
               "characterSet": {
                 "allowed": "[a-z0-9-]",
-                "description": "DNS-1035 label format (alpha-first)"
+                "restricted": "[^a-z0-9-]",
+                "required": "[a-z0-9]",
+                "description": "Lowercase letter start, alphanumeric with hyphens, alphanumeric end"
               },
               "format": "dns-label",
               "formatDescription": "DNS-1035 label: must start with a lowercase letter",
@@ -17248,7 +17362,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:50.262874+00:00"
+                "validatedAt": "2026-07-20T12:40:56.438388+00:00"
               },
               "deterministic": true
             },
@@ -17258,9 +17372,11 @@
               "update": false,
               "read": false
             },
-            "minLength": 6,
+            "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:49.874936+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:58.292149+00:00",
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+            "format": "dns-label"
           },
           "owner_view": {
             "allOf": [
@@ -17329,7 +17445,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-15T10:36:50.262960+00:00"
+                "validatedAt": "2026-07-20T12:40:56.438407+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -17341,7 +17457,7 @@
             "x-field-mutability": "read-only",
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:49.875006+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:58.292170+00:00"
           },
           "uid": {
             "type": "string",
@@ -17359,7 +17475,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-15T10:36:50.262998+00:00"
+                "validatedAt": "2026-07-20T12:40:56.438417+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -17372,7 +17488,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-15T10:48:49.875035+00:00"
+            "x-reconciled-at": "2026-07-20T12:43:58.292181+00:00"
           }
         },
         "x-f5xc-description-short": "By default a summary of k8s_pod_security_policy is returned in 'List'.",
@@ -17501,7 +17617,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:50.263077+00:00"
+                "validatedAt": "2026-07-20T12:40:56.438442+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -17546,7 +17662,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:50.263140+00:00"
+                "validatedAt": "2026-07-20T12:40:56.438462+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -17583,7 +17699,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:50.263205+00:00"
+                "validatedAt": "2026-07-20T12:40:56.438482+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -17622,7 +17738,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:50.263267+00:00"
+                "validatedAt": "2026-07-20T12:40:56.438504+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -17661,7 +17777,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:50.263328+00:00"
+                "validatedAt": "2026-07-20T12:40:56.438524+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -17748,7 +17864,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:50.263402+00:00"
+                "validatedAt": "2026-07-20T12:40:56.438548+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -17839,7 +17955,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-15T10:36:50.263476+00:00"
+                "validatedAt": "2026-07-20T12:40:56.438570+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -18110,7 +18226,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:50.263595+00:00"
+                "validatedAt": "2026-07-20T12:40:56.438606+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -18329,7 +18445,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-15T10:36:50.263700+00:00"
+                "validatedAt": "2026-07-20T12:40:56.438639+00:00"
               },
               "deterministic": true,
               "format": "uri"

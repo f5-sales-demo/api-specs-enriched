@@ -170,18 +170,37 @@ class TestStringConstraintExtractor:
         assert result["maxLength"] == 63
         assert "pattern" in result
 
-    def test_extract_schema_overrides_pattern(self, pattern_matcher):
-        """Test that existing schema values take precedence"""
+    def test_extract_schema_preserved_for_non_authoritative_pattern(self, pattern_matcher):
+        """Non-authoritative patterns only fill gaps; existing schema values win."""
         schema = {
             "type": "string",
-            "minLength": 10,  # Different from pattern
-            "maxLength": 50,  # Different from pattern
+            "minLength": 10,  # Different from the email pattern's defaults
+            "maxLength": 50,
         }
-        pattern_match = pattern_matcher.match_string_pattern("name")
-        result = StringConstraintExtractor.extract("name", schema, pattern_match)
+        pattern_match = pattern_matcher.match_string_pattern("email")
+        assert not pattern_match.get("authoritative")
+        result = StringConstraintExtractor.extract("email", schema, pattern_match)
         assert result is not None
         assert result["minLength"] == 10  # Schema value preserved
         assert result["maxLength"] == 50  # Schema value preserved
+
+    def test_extract_authoritative_naming_pattern_overrides_schema(self, pattern_matcher):
+        """Authoritative naming patterns override generic/incorrect schema values.
+
+        F5 XC enforces DNS-1035 length 1-63 (live-verified); a stale generic bound
+        (e.g. the 1024 string default) must not survive on a name field.
+        """
+        schema = {
+            "type": "string",
+            "minLength": 6,  # Incorrect values a prior enricher may have stamped
+            "maxLength": 1024,
+        }
+        pattern_match = pattern_matcher.match_string_pattern("name")
+        assert pattern_match.get("authoritative") is True
+        result = StringConstraintExtractor.extract("name", schema, pattern_match)
+        assert result is not None
+        assert result["minLength"] == 1  # DNS-1035 authoritative bound
+        assert result["maxLength"] == 63
 
     def test_extract_no_constraints(self):
         """Test extraction when no constraints available"""
