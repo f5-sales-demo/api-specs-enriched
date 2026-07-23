@@ -888,6 +888,122 @@ class TestResourceConstraintOverrides:
         assert "400" in note
 
 
+class TestObjectRefNameExclusion:
+    """The DNS-1035 self-name bound must NOT apply to object-REFERENCE wrappers.
+
+    schemaObjectRefType / ioschemaObjectRefType / schemaviewsObjectRefType have a
+    `name` field that POINTS AT another object. That target can be server-generated
+    and exceed 63 chars (e.g. the 71-char SMSv2 auto interface name), so the
+    authoritative DNS-1035 length/pattern bound wrongly rejects valid references.
+    """
+
+    @pytest.fixture
+    def config_path(self):
+        return Path(__file__).parent.parent / "config" / "constraint_patterns.yaml"
+
+    @pytest.fixture
+    def enricher(self, config_path):
+        return ConstraintEnricher(config_path=config_path)
+
+    @pytest.mark.parametrize(
+        "schema_name",
+        ["schemaObjectRefType", "ioschemaObjectRefType", "schemaviewsObjectRefType"],
+    )
+    def test_objectref_name_gets_no_dns1035_bound(self, enricher, schema_name):
+        """A bare `name` in an ObjectRefType wrapper gets no maxLength:63 / DNS-1035 pattern."""
+        spec = {
+            "components": {
+                "schemas": {
+                    schema_name: {
+                        "type": "object",
+                        "properties": {
+                            "name": {"type": "string"},
+                        },
+                    },
+                },
+            },
+        }
+        result = enricher.enrich_spec(spec)
+        name_prop = result["components"]["schemas"][schema_name]["properties"]["name"]
+        constraints = name_prop.get("x-f5xc-constraints", {})
+        assert constraints.get("maxLength") != 63
+        assert constraints.get("pattern") != "^[a-z]([-a-z0-9]*[a-z0-9])?$"
+        assert constraints.get("format") != "dns-label"
+
+    def test_objectref_name_preserves_genuine_inline_bound(self, enricher):
+        """schemaviewsObjectRefType carries a real inline maxLength (128) in the source.
+
+        Skipping the authoritative naming PATTERN must still preserve the genuine
+        spec-level inline bound; it must not be clobbered to 63 nor stamped DNS-1035.
+        """
+        spec = {
+            "components": {
+                "schemas": {
+                    "schemaviewsObjectRefType": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 128,
+                            },
+                        },
+                    },
+                },
+            },
+        }
+        result = enricher.enrich_spec(spec)
+        name_prop = result["components"]["schemas"]["schemaviewsObjectRefType"]["properties"][
+            "name"
+        ]
+        constraints = name_prop["x-f5xc-constraints"]
+        assert constraints["maxLength"] == 128
+        assert constraints.get("pattern") != "^[a-z]([-a-z0-9]*[a-z0-9])?$"
+
+    def test_objectref_namespace_still_gets_naming_bound(self, enricher):
+        """Scope guard: only `name` is excluded; `namespace` in a ref wrapper is unchanged."""
+        spec = {
+            "components": {
+                "schemas": {
+                    "schemaObjectRefType": {
+                        "type": "object",
+                        "properties": {
+                            "namespace": {"type": "string"},
+                        },
+                    },
+                },
+            },
+        }
+        result = enricher.enrich_spec(spec)
+        ns_prop = result["components"]["schemas"]["schemaObjectRefType"]["properties"]["namespace"]
+        constraints = ns_prop["x-f5xc-constraints"]
+        assert constraints["maxLength"] == 63
+        assert constraints["pattern"] == "^[a-z]([-a-z0-9]*[a-z0-9])?$"
+
+    def test_metadata_name_still_gets_dns1035_bound(self, enricher):
+        """The object's OWN name (create/replace meta schemas) MUST keep the DNS-1035 bound."""
+        spec = {
+            "components": {
+                "schemas": {
+                    "schemaObjectCreateMetaType": {
+                        "type": "object",
+                        "properties": {
+                            "name": {"type": "string"},
+                        },
+                    },
+                },
+            },
+        }
+        result = enricher.enrich_spec(spec)
+        name_prop = result["components"]["schemas"]["schemaObjectCreateMetaType"]["properties"][
+            "name"
+        ]
+        constraints = name_prop["x-f5xc-constraints"]
+        assert constraints["minLength"] == 1
+        assert constraints["maxLength"] == 63
+        assert constraints["pattern"] == "^[a-z]([-a-z0-9]*[a-z0-9])?$"
+
+
 if __name__ == "__main__":
     pytest.main(
         [__file__, "-v", "--cov=scripts.utils.constraint_enricher", "--cov-report=term-missing"],

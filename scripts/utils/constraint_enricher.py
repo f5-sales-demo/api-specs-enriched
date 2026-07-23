@@ -353,6 +353,19 @@ class ConstraintEnricher:
                 logger.warning("Invalid resource override pattern '%s': %s", pattern, e)
         return compiled
 
+    @staticmethod
+    def _is_object_ref_schema(schema_name: str) -> bool:
+        """Return True for object-REFERENCE wrapper schemas.
+
+        e.g. schemaObjectRefType, ioschemaObjectRefType, schemaviewsObjectRefType —
+        the ``{namespace,name,tenant,uid}`` refs. Their ``name`` field points at
+        ANOTHER object, which may be server-generated and exceed the DNS-1035 label
+        length (e.g. the 71-char SMSv2 auto interface name). The authoritative
+        DNS-1035 self-name bound describes an object's OWN name and must NOT be
+        applied to these reference pointers.
+        """
+        return "ObjectRefType" in schema_name
+
     def _get_resource_override(self, schema_name: str, field_name: str) -> dict | None:
         """Check if a field has a resource-specific constraint override."""
         for override in self.resource_overrides:
@@ -564,6 +577,14 @@ class ConstraintEnricher:
 
         if field_type == "string":
             pattern_match = self.pattern_matcher.match_string_pattern(field_name)
+            # The authoritative DNS-1035 `\bname$` naming bound describes an
+            # object's OWN name. In object-reference wrappers the `name` field is a
+            # POINTER to another (possibly server-generated, >63-char) object, so
+            # the naming constraint must not be applied. Drop only the pattern —
+            # any genuine inline bound (e.g. schemaviewsObjectRefType's maxLength
+            # 128) is still read straight from the schema and preserved.
+            if pattern_match and field_name == "name" and self._is_object_ref_schema(schema_name):
+                pattern_match = None
             if pattern_match:
                 self.stats["pattern_matches"] += 1
             inferred = self._extract_string_constraints(field_name, schema, pattern_match)
