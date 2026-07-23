@@ -44,3 +44,23 @@ def test_connector_enum_values_preserved() -> None:
     # API enum values / schema identifiers — must survive untouched.
     text = 'Enum: ["cloudflare","cloudfront","custom_connector","f5_big_ip","salesforce_commerce_connector"]'
     assert _t().transform_text(text) == text
+
+
+def test_wifi_normalized_to_wi_fi() -> None:
+    # Upstream siteLinkType descriptions use "WiFi"; textlint terminology
+    # requires "Wi-Fi". Normalize at the enrichment source.
+    out = _t().transform_text("WiFi link of type 802.11ac WiFi link of type 802.11bgn WiFi link")
+    assert "Wi-Fi" in out
+    assert "WiFi" not in out
+
+
+def test_wifi_transform_spec_description() -> None:
+    # Verified via the pipeline-invoked transform_spec on a schema description.
+    spec = {"components": {"schemas": {"SiteLinkType": {"description": "WiFi link"}}}}
+    out = _t().transform_spec(spec, ["description"])
+    assert out["components"]["schemas"]["SiteLinkType"]["description"] == "Wi-Fi link"
+
+
+def test_already_correct_wi_fi_unchanged() -> None:
+    text = "Wi-Fi link of type 802.11ac."
+    assert _t().transform_text(text) == text
