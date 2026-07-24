@@ -992,9 +992,7 @@ class ConstraintEnricher:
 
 
 if __name__ == "__main__":
-    # Test the enricher
-    import json
-
+    # Test the enricher (json imported at module top)
     # Load a test spec
     test_spec_path = Path("specs/enriched/dns.json")
     if test_spec_path.exists():
