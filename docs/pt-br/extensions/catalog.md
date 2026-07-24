@@ -4,7 +4,7 @@ description: >-
   Fonte de referência para cada extensão x-* nas especificações OpenAPI
   enriquecidas
 i18n:
-  sourceHash: 3ed334783ced
+  sourceHash: d286a6006907
   translator: machine
 ---
 
@@ -286,6 +286,18 @@ desde que o cabeçalho `### x-nome` exista e o sinalizador
 - **Injected by:** scripts/utils/console_ui_enricher.py
 - **Driven by config:** config/console_ui.yaml
 - **Example:** `"x-f5xc-console": {"workspace": "web-app-and-api-protection", "menu_path": ["Manage", "Load Balancers", "HTTP Load Balancers"]}`
+- **Pass-through from upstream:** no
+
+### x-f5xc-action
+
+- **Applied at:** schema
+- **Purpose:** Marca um esquema cuja operação é um recurso de estilo de ação, por exemplo `approve`, para que o codegen gere um recurso de ação em vez de CRUD.
+- **Consumers:** Terraform
+- **Value type:** string
+- **Value schema:** `{"type": "string"}`
+- **Injected by:** scripts/utils/schema_override_enricher.py
+- **Driven by config:** config/schema_overrides.yaml
+- **Example:** `"x-f5xc-action": "approve"`
 - **Pass-through from upstream:** no
 
 ## Injetadas — nível de propriedade

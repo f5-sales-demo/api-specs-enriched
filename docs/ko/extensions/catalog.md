@@ -2,7 +2,7 @@
 title: 강화 확장 카탈로그
 description: 강화된 OpenAPI 사양의 모든 x-* 확장에 대한 단일 진실 공급원
 i18n:
-  sourceHash: 3ed334783ced
+  sourceHash: d286a6006907
   translator: machine
 ---
 
@@ -273,6 +273,18 @@ i18n:
 - **Injected by:** scripts/utils/console_ui_enricher.py
 - **Driven by config:** config/console_ui.yaml
 - **Example:** `"x-f5xc-console": {"workspace": "web-app-and-api-protection", "menu_path": ["Manage", "Load Balancers", "HTTP Load Balancers"]}`
+- **Pass-through from upstream:** no
+
+### x-f5xc-action
+
+- **Applied at:** schema
+- **Purpose:** 작업이 액션 스타일 리소스(예: `approve`)인 스키마를 표시하여 codegen이 CRUD 대신 액션 리소스를 생성하도록 합니다.
+- **Consumers:** Terraform
+- **Value type:** string
+- **Value schema:** `{"type": "string"}`
+- **Injected by:** scripts/utils/schema_override_enricher.py
+- **Driven by config:** config/schema_overrides.yaml
+- **Example:** `"x-f5xc-action": "approve"`
 - **Pass-through from upstream:** no
 
 ## 주입됨 — 속성 수준

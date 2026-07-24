@@ -4,7 +4,7 @@ description: >-
   Maßgebliche Referenz für jede x-* Erweiterung in den erweiterten
   OpenAPI-Spezifikationen
 i18n:
-  sourceHash: 3ed334783ced
+  sourceHash: d286a6006907
   translator: machine
 ---
 
@@ -287,6 +287,18 @@ solange der `### x-name`-Header vorhanden ist und das
 - **Injected by:** scripts/utils/console_ui_enricher.py
 - **Driven by config:** config/console_ui.yaml
 - **Example:** `"x-f5xc-console": {"workspace": "web-app-and-api-protection", "menu_path": ["Manage", "Load Balancers", "HTTP Load Balancers"]}`
+- **Pass-through from upstream:** no
+
+### x-f5xc-action
+
+- **Applied at:** schema
+- **Purpose:** Kennzeichnet ein Schema, dessen Operation eine Ressource im Aktionsstil ist, z. B. `approve`, sodass codegen eine Aktionsressource statt CRUD generiert.
+- **Consumers:** Terraform
+- **Value type:** string
+- **Value schema:** `{"type": "string"}`
+- **Injected by:** scripts/utils/schema_override_enricher.py
+- **Driven by config:** config/schema_overrides.yaml
+- **Example:** `"x-f5xc-action": "approve"`
 - **Pass-through from upstream:** no
 
 ## Eingefügt — Eigenschaftsebene
