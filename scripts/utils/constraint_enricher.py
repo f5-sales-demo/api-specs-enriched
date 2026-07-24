@@ -276,8 +276,11 @@ class ConstraintReconciler:
 
         # Determine source and confidence
         if discovery:
-            source = "discovery"
-            confidence = 0.99
+            # Honour a discovery constraint's own authoritative source label
+            # (e.g. uint32/uint64 bounds are "api-probed"); default to "discovery".
+            discovery_meta = discovery.get("metadata") or {}
+            source = discovery_meta.get("source", "discovery")
+            confidence = discovery_meta.get("confidence", 0.99)
         elif inferred:
             source = "inferred"
             metadata = inferred.get("metadata", {})
@@ -426,6 +429,9 @@ class ConstraintEnricher:
         mapping = self.config.get("discovery_mapping", {})
 
         constraints = {}
+        # A discovery rule may declare its own authoritative source
+        # (e.g. uint32/uint64 bounds are "api-probed"). Defaults to "discovery".
+        source_override: str | None = None
 
         # Map string rules
         if field_type == "string":
@@ -495,6 +501,9 @@ class ConstraintEnricher:
                         if rule_def.get("exclusive"):
                             exclusive_field = f"exclusive{constraint_field.capitalize()}"
                             constraints[exclusive_field] = True
+
+                        if rule_def.get("source"):
+                            source_override = rule_def["source"]
                     except ValueError:
                         pass
 
@@ -511,7 +520,7 @@ class ConstraintEnricher:
 
         # Add metadata
         result["metadata"] = {
-            "source": "discovery",
+            "source": source_override or "discovery",
             "confidence": 0.99,
             "validatedAt": datetime.now(timezone.utc).isoformat(),
         }

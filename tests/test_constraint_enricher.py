@@ -487,6 +487,34 @@ class TestConstraintEnricher:
         assert constraints["minimum"] == 1
         assert constraints["maximum"] == 65535
 
+    def test_enrich_uint32_discovery_bounds(self, enricher):
+        """uint32.gte/lte validation rules must yield numeric min/max bounds."""
+        spec = {
+            "components": {
+                "schemas": {
+                    "IfSpec": {
+                        "type": "object",
+                        "properties": {
+                            "priority": {
+                                "type": "integer",
+                                "x-ves-validation-rules": {
+                                    "ves.io.schema.rules.uint32.gte": "0",
+                                    "ves.io.schema.rules.uint32.lte": "255",
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        }
+        enriched = enricher.enrich_spec(spec)
+        c = enriched["components"]["schemas"]["IfSpec"]["properties"]["priority"][
+            "x-f5xc-constraints"
+        ]
+        assert c["minimum"] == 0
+        assert c["maximum"] == 255
+        assert c["metadata"]["source"] == "api-probed"
+
     def test_skip_existing_constraints(self, enricher):
         """Test that existing x-f5xc-constraints are preserved"""
         spec = {
