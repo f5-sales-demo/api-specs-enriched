@@ -515,6 +515,39 @@ class TestConstraintEnricher:
         assert c["maximum"] == 255
         assert c["metadata"]["source"] == "api-probed"
 
+    def test_enrich_int32_bounds_stay_discovery(self, enricher):
+        """int32.gte/lte bounds must stay source="discovery", NOT "api-probed".
+
+        Locks the source-split boundary: only uint32/uint64 rules carry the
+        authoritative api-probed label; signed int32 bounds remain discovery.
+        """
+        spec = {
+            "components": {
+                "schemas": {
+                    "IfSpec": {
+                        "type": "object",
+                        "properties": {
+                            "offset": {
+                                "type": "integer",
+                                "x-ves-validation-rules": {
+                                    "ves.io.schema.rules.int32.gte": "0",
+                                    "ves.io.schema.rules.int32.lte": "255",
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        }
+        enriched = enricher.enrich_spec(spec)
+        c = enriched["components"]["schemas"]["IfSpec"]["properties"]["offset"][
+            "x-f5xc-constraints"
+        ]
+        assert c["minimum"] == 0
+        assert c["maximum"] == 255
+        assert c["metadata"]["source"] == "discovery"
+        assert c["metadata"]["source"] != "api-probed"
+
     def test_enrich_uint32_ranges_discontinuous(self, enricher):
         """A discontinuous uint32.ranges yields maximum only (no single minimum)."""
         spec = {

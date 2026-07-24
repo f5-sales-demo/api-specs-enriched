@@ -140,7 +140,7 @@ class TestPatternValidation:
         assert "minimum" in prop
         assert "maximum" in prop
         assert prop["minimum"] == 1
-        assert prop["maximum"] == 4094
+        assert prop["maximum"] == 4095  # authoritative ves.io.schema.rules.uint32.lte=4095
 
     def test_uuid_gets_format(self, enricher):
         """Test that UUID field gets format."""
