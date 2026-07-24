@@ -515,6 +515,56 @@ class TestConstraintEnricher:
         assert c["maximum"] == 255
         assert c["metadata"]["source"] == "api-probed"
 
+    def test_enrich_uint32_ranges_discontinuous(self, enricher):
+        """A discontinuous uint32.ranges yields maximum only (no single minimum)."""
+        spec = {
+            "components": {
+                "schemas": {
+                    "IfSpec": {
+                        "type": "object",
+                        "properties": {
+                            "mtu": {
+                                "type": "integer",
+                                "x-ves-validation-rules": {
+                                    "ves.io.schema.rules.uint32.ranges": "0,512-16384",
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        }
+        c = enricher.enrich_spec(spec)["components"]["schemas"]["IfSpec"]["properties"]["mtu"][
+            "x-f5xc-constraints"
+        ]
+        assert c["maximum"] == 16384
+        assert "minimum" not in c  # discontinuous → no single lower bound
+
+    def test_enrich_uint32_ranges_contiguous(self, enricher):
+        """A single contiguous uint32.ranges yields both minimum and maximum."""
+        spec = {
+            "components": {
+                "schemas": {
+                    "IfSpec": {
+                        "type": "object",
+                        "properties": {
+                            "n": {
+                                "type": "integer",
+                                "x-ves-validation-rules": {
+                                    "ves.io.schema.rules.uint32.ranges": "10-20",
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        }
+        c = enricher.enrich_spec(spec)["components"]["schemas"]["IfSpec"]["properties"]["n"][
+            "x-f5xc-constraints"
+        ]
+        assert c["minimum"] == 10
+        assert c["maximum"] == 20
+
     def test_skip_existing_constraints(self, enricher):
         """Test that existing x-f5xc-constraints are preserved"""
         spec = {

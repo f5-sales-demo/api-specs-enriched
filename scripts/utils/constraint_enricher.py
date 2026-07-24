@@ -408,6 +408,45 @@ class ConstraintEnricher:
         for prop_name, prop_schema in schema["properties"].items():
             self._enrich_property(prop_name, prop_schema, schema_name=schema_name)
 
+    def _parse_ranges(self, raw: str) -> dict:
+        """Parse a uint32/uint64 ``ranges`` string into numeric bounds.
+
+        The ``ranges`` form is a comma-separated list of tokens, each either a
+        ``lo-hi`` span or a single integer (e.g. ``"0,512-16384"``). The maximum
+        is the highest upper bound across all tokens. A minimum is only emitted
+        when the value space is a single contiguous span (one token) — a
+        discontinuous set (e.g. ``{0} ∪ [512, 16384]``) has no single lower
+        bound expressible as ``minimum``.
+
+        Args:
+            raw: The raw ranges string from the validation rule.
+
+        Returns:
+            Dict with ``maximum`` (always, if parseable) and optionally
+            ``minimum``; empty when nothing parses.
+        """
+        tuples: list[tuple[int, int]] = []
+        for tok in raw.split(","):
+            tok = tok.strip()
+            if "-" in tok:
+                lo, hi = tok.split("-", 1)
+                try:
+                    tuples.append((int(lo), int(hi)))
+                except ValueError:
+                    continue
+            elif tok:
+                try:
+                    v = int(tok)
+                    tuples.append((v, v))
+                except ValueError:
+                    continue
+        if not tuples:
+            return {}
+        out: dict[str, int] = {"maximum": max(h for _, h in tuples)}
+        if len(tuples) == 1:
+            out["minimum"] = tuples[0][0]
+        return out
+
     def _extract_discovery_constraints(self, schema: dict) -> dict | None:
         """Extract constraints from x-ves-validation-rules.
 
@@ -506,6 +545,18 @@ class ConstraintEnricher:
                             source_override = rule_def["source"]
                     except ValueError:
                         pass
+
+            # Handle the ranges form (e.g. uint32.ranges "0,512-16384").
+            # These are authoritative API bounds (api-probed).
+            for ranges_rule in (
+                "ves.io.schema.rules.uint32.ranges",
+                "ves.io.schema.rules.uint64.ranges",
+            ):
+                if ranges_rule in ves_rules:
+                    parsed = self._parse_ranges(ves_rules[ranges_rule])
+                    if parsed:
+                        constraints.update(parsed)
+                        source_override = "api-probed"
 
         if not constraints:
             return None
