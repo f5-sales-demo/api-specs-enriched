@@ -415,8 +415,8 @@ class ConstraintEnricher:
         ``lo-hi`` span or a single integer (e.g. ``"0,512-16384"``). The maximum
         is the highest upper bound across all tokens. A minimum is only emitted
         when the value space is a single contiguous span (one token) — a
-        discontinuous set (e.g. ``{0} ∪ [512, 16384]``) has no single lower
-        bound expressible as ``minimum``.
+        discontinuous set (e.g. ``{0}`` together with ``[512, 16384]``) has no
+        single lower bound expressible as ``minimum``.
 
         Args:
             raw: The raw ranges string from the validation rule.
@@ -426,8 +426,8 @@ class ConstraintEnricher:
             ``minimum``; empty when nothing parses.
         """
         tuples: list[tuple[int, int]] = []
-        for tok in raw.split(","):
-            tok = tok.strip()
+        for raw_tok in raw.split(","):
+            tok = raw_tok.strip()
             if "-" in tok:
                 lo, hi = tok.split("-", 1)
                 try:
