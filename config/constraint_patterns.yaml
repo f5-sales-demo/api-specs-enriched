@@ -962,6 +962,29 @@ discovery_mapping:
       constraint_field: "maximum"
       description: "Maximum value for int64"
 
+    # Unsigned integer bounds. These carry the authoritative API contract
+    # (source: api-probed) — the upstream x-ves-validation-rules are generated
+    # straight from the F5 XC protobuf field validators.
+    - ves_rule: "ves.io.schema.rules.uint32.gte"
+      constraint_field: "minimum"
+      source: "api-probed"
+      description: "Minimum value for uint32 (greater than or equal)"
+
+    - ves_rule: "ves.io.schema.rules.uint32.lte"
+      constraint_field: "maximum"
+      source: "api-probed"
+      description: "Maximum value for uint32 (less than or equal)"
+
+    - ves_rule: "ves.io.schema.rules.uint64.gte"
+      constraint_field: "minimum"
+      source: "api-probed"
+      description: "Minimum value for uint64 (greater than or equal)"
+
+    - ves_rule: "ves.io.schema.rules.uint64.lte"
+      constraint_field: "maximum"
+      source: "api-probed"
+      description: "Maximum value for uint64 (less than or equal)"
+
 # Reconciliation Rules
 # Priority: EXISTING > DISCOVERY > INFERRED
 reconciliation:

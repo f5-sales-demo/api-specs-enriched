@@ -487,6 +487,137 @@ class TestConstraintEnricher:
         assert constraints["minimum"] == 1
         assert constraints["maximum"] == 65535
 
+    def test_enrich_uint32_discovery_bounds(self, enricher):
+        """uint32.gte/lte validation rules must yield numeric min/max bounds."""
+        spec = {
+            "components": {
+                "schemas": {
+                    "IfSpec": {
+                        "type": "object",
+                        "properties": {
+                            "priority": {
+                                "type": "integer",
+                                "x-ves-validation-rules": {
+                                    "ves.io.schema.rules.uint32.gte": "0",
+                                    "ves.io.schema.rules.uint32.lte": "255",
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        }
+        enriched = enricher.enrich_spec(spec)
+        c = enriched["components"]["schemas"]["IfSpec"]["properties"]["priority"][
+            "x-f5xc-constraints"
+        ]
+        assert c["minimum"] == 0
+        assert c["maximum"] == 255
+        assert c["metadata"]["source"] == "api-probed"
+
+    def test_enrich_int32_bounds_stay_discovery(self, enricher):
+        """int32.gte/lte bounds must stay source="discovery", NOT "api-probed".
+
+        Locks the source-split boundary: only uint32/uint64 rules carry the
+        authoritative api-probed label; signed int32 bounds remain discovery.
+        """
+        spec = {
+            "components": {
+                "schemas": {
+                    "IfSpec": {
+                        "type": "object",
+                        "properties": {
+                            "offset": {
+                                "type": "integer",
+                                "x-ves-validation-rules": {
+                                    "ves.io.schema.rules.int32.gte": "0",
+                                    "ves.io.schema.rules.int32.lte": "255",
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        }
+        enriched = enricher.enrich_spec(spec)
+        c = enriched["components"]["schemas"]["IfSpec"]["properties"]["offset"][
+            "x-f5xc-constraints"
+        ]
+        assert c["minimum"] == 0
+        assert c["maximum"] == 255
+        assert c["metadata"]["source"] == "discovery"
+        assert c["metadata"]["source"] != "api-probed"
+
+    def test_enrich_uint32_ranges_discontinuous(self, enricher):
+        """A discontinuous uint32.ranges yields maximum only (no single minimum)."""
+        spec = {
+            "components": {
+                "schemas": {
+                    "IfSpec": {
+                        "type": "object",
+                        "properties": {
+                            "mtu": {
+                                "type": "integer",
+                                "x-ves-validation-rules": {
+                                    "ves.io.schema.rules.uint32.ranges": "0,512-16384",
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        }
+        c = enricher.enrich_spec(spec)["components"]["schemas"]["IfSpec"]["properties"]["mtu"][
+            "x-f5xc-constraints"
+        ]
+        assert c["maximum"] == 16384
+        assert "minimum" not in c  # discontinuous → no single lower bound
+
+    def test_enrich_uint32_ranges_contiguous(self, enricher):
+        """A single contiguous uint32.ranges yields both minimum and maximum."""
+        spec = {
+            "components": {
+                "schemas": {
+                    "IfSpec": {
+                        "type": "object",
+                        "properties": {
+                            "n": {
+                                "type": "integer",
+                                "x-ves-validation-rules": {
+                                    "ves.io.schema.rules.uint32.ranges": "10-20",
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        }
+        c = enricher.enrich_spec(spec)["components"]["schemas"]["IfSpec"]["properties"]["n"][
+            "x-f5xc-constraints"
+        ]
+        assert c["minimum"] == 10
+        assert c["maximum"] == 20
+
+    def test_name_inference_skips_non_numeric(self, enricher):
+        """A string field named ``id`` must NOT receive numeric bounds."""
+        spec = {
+            "components": {
+                "schemas": {
+                    "S": {
+                        "type": "object",
+                        "properties": {
+                            "id": {"type": "string", "description": "Subnet ID"},
+                        },
+                    },
+                },
+            },
+        }
+        p = enricher.enrich_spec(spec)["components"]["schemas"]["S"]["properties"]["id"]
+        c = p.get("x-f5xc-constraints", {})
+        assert "minimum" not in p
+        assert "maximum" not in p
+        assert c.get("constraintType") != "number"
+
     def test_skip_existing_constraints(self, enricher):
         """Test that existing x-f5xc-constraints are preserved"""
         spec = {
