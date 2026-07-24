@@ -618,6 +618,103 @@ class TestConstraintEnricher:
         assert "maximum" not in p
         assert c.get("constraintType") != "number"
 
+    def test_string_in_becomes_native_enum(self, enricher):
+        """A ``string.in`` rule maps to a native JSON-Schema ``enum``.
+
+        The provider reads the native ``enum`` (not ``x-f5xc-constraints``) to
+        generate a ``OneOf`` validator, so the allowed values must land on the
+        property's ``enum`` key.
+        """
+        spec = {
+            "components": {
+                "schemas": {
+                    "Node": {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "x-ves-validation-rules": {
+                                    "ves.io.schema.rules.string.in": '["Control","Worker"]',
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        }
+        p = enricher.enrich_spec(spec)["components"]["schemas"]["Node"]["properties"]["type"]
+        assert p.get("enum") == ["Control", "Worker"]
+
+    def test_string_in_accepts_python_list(self, enricher):
+        """A ``string.in`` rule already given as a Python list is honored."""
+        spec = {
+            "components": {
+                "schemas": {
+                    "Node": {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "x-ves-validation-rules": {
+                                    "ves.io.schema.rules.string.in": ["Control", "Worker"],
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        }
+        p = enricher.enrich_spec(spec)["components"]["schemas"]["Node"]["properties"]["type"]
+        assert p.get("enum") == ["Control", "Worker"]
+
+    def test_string_in_accepts_escaped_quotes(self, enricher):
+        """The upstream escaped-quote form (`[\\"Control\\",...]`) still maps.
+
+        The SMSv2 specs serialize `string.in` with the inner quotes escaped, so
+        the enricher must unescape before parsing.
+        """
+        spec = {
+            "components": {
+                "schemas": {
+                    "Node": {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "x-ves-validation-rules": {
+                                    "ves.io.schema.rules.string.in": '[\\"Control\\",\\"Worker\\"]',
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        }
+        p = enricher.enrich_spec(spec)["components"]["schemas"]["Node"]["properties"]["type"]
+        assert p.get("enum") == ["Control", "Worker"]
+
+    def test_string_in_skips_malformed_value(self, enricher):
+        """A malformed ``string.in`` value is skipped, not fatal."""
+        spec = {
+            "components": {
+                "schemas": {
+                    "Node": {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "x-ves-validation-rules": {
+                                    "ves.io.schema.rules.string.in": "not-json[",
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        }
+        p = enricher.enrich_spec(spec)["components"]["schemas"]["Node"]["properties"]["type"]
+        assert "enum" not in p
+
     def test_skip_existing_constraints(self, enricher):
         """Test that existing x-f5xc-constraints are preserved"""
         spec = {
