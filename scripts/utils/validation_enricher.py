@@ -299,6 +299,9 @@ class ValidationEnricher:
             prop: Property definition to update
             prop_name: Name of the property
         """
+        prop_type = prop.get("type")
+        is_numeric = prop_type in ("integer", "number")
+
         for compiled_pattern, rule_config in self._compiled_patterns:
             if not compiled_pattern.search(prop_name):
                 continue
@@ -306,6 +309,12 @@ class ValidationEnricher:
             # Apply each constraint from the rule
             for constraint_key in ["format", "minimum", "maximum", "regex_pattern"]:
                 if constraint_key not in rule_config:
+                    continue
+
+                # Numeric bounds are meaningless on non-numeric fields. A
+                # name-pattern like `\b(vlan)?_?id$` matches a bare string `id`
+                # too — never stamp minimum/maximum unless the field is numeric.
+                if constraint_key in ("minimum", "maximum") and not is_numeric:
                     continue
 
                 # Map regex_pattern to OpenAPI pattern constraint

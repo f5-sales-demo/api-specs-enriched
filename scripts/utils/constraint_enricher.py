@@ -765,6 +765,12 @@ class ConstraintEnricher:
         pattern_match: dict | None,
     ) -> dict | None:
         """Extract numeric constraints and build x-f5xc-constraints structure."""
+        # Type guard: numeric name-inference (number_patterns) must only apply to
+        # numeric-typed fields. A pattern like `\bid$` otherwise stamps numeric
+        # bounds onto a string field named `id`.
+        if schema.get("type") not in ("integer", "number"):
+            return None
+
         numeric_constraints = NumericConstraintExtractor.extract(field_name, schema, pattern_match)
         if not numeric_constraints:
             return None

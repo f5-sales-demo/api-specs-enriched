@@ -196,6 +196,19 @@ class TestPatternValidation:
         # No pattern should match "value"
         assert prop == original
 
+    def test_numeric_pattern_skips_non_numeric_field(self, enricher):
+        """A string field must never receive numeric min/max bounds.
+
+        The ``\\b(vlan)?_?id$`` pattern matches a bare ``id`` field, but numeric
+        bounds are meaningless on a string. Only integer/number fields may get
+        minimum/maximum; string constraints (format) still apply.
+        """
+        prop = {"type": "string", "description": "Subnet ID"}
+        enricher._apply_pattern_rules(prop, "id")
+
+        assert "minimum" not in prop
+        assert "maximum" not in prop
+
 
 class TestPropertyEnrichment:
     """Test property-level enrichment."""

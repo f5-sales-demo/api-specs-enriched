@@ -565,6 +565,26 @@ class TestConstraintEnricher:
         assert c["minimum"] == 10
         assert c["maximum"] == 20
 
+    def test_name_inference_skips_non_numeric(self, enricher):
+        """A string field named ``id`` must NOT receive numeric bounds."""
+        spec = {
+            "components": {
+                "schemas": {
+                    "S": {
+                        "type": "object",
+                        "properties": {
+                            "id": {"type": "string", "description": "Subnet ID"},
+                        },
+                    },
+                },
+            },
+        }
+        p = enricher.enrich_spec(spec)["components"]["schemas"]["S"]["properties"]["id"]
+        c = p.get("x-f5xc-constraints", {})
+        assert "minimum" not in p
+        assert "maximum" not in p
+        assert c.get("constraintType") != "number"
+
     def test_skip_existing_constraints(self, enricher):
         """Test that existing x-f5xc-constraints are preserved"""
         spec = {
