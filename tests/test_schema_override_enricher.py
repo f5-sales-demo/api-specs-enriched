@@ -238,3 +238,32 @@ class TestConfigLoading:
             assert "complete_variants" in schema_entry
             assert "inject_properties" in schema_entry
             re.compile(schema_entry["pattern"])
+
+
+def test_oneof_free_injection_with_extension():
+    """Override without oneof_group injects a plain property + schema extension,
+    and must NOT create any x-ves-oneof-field-* array."""
+    enricher = SchemaOverrideEnricher.__new__(SchemaOverrideEnricher)
+    enricher.overrides = {
+        "reg": {
+            "schemas": [
+                {
+                    "pattern": "^fooReq$",
+                    "inject_properties": {"state": {"$ref": "#/components/schemas/barState"}},
+                    "inject_extensions": {"x-f5xc-action": "approve"},
+                }
+            ]
+        }
+    }
+    enricher._compiled = enricher._compile_overrides()
+    enricher._stats = enricher._empty_stats()
+    spec = {
+        "components": {
+            "schemas": {"fooReq": {"type": "object", "properties": {"name": {"type": "string"}}}}
+        }
+    }
+    out = enricher.enrich_spec(spec)
+    schema = out["components"]["schemas"]["fooReq"]
+    assert schema["properties"]["state"] == {"$ref": "#/components/schemas/barState"}
+    assert schema["x-f5xc-action"] == "approve"
+    assert not any(k.startswith("x-ves-oneof-field-") for k in schema)
