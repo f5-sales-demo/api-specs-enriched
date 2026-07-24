@@ -219,12 +219,20 @@ class TestConfigLoading:
         enricher = SchemaOverrideEnricher(config_path=config_path)
         assert enricher.overrides is not None
 
-    def test_empty_overrides_config(self, config_path):
-        """Real config should have empty overrides dict."""
+    def test_registration_approval_override(self, config_path):
+        """Real config carries the registration_approval override that injects a
+        top-level `state` ($ref registrationObjectState) and the schema-level
+        x-f5xc-action marker onto registrationApprovalReq (S6-A, #1206)."""
         with config_path.open() as f:
             config = yaml.safe_load(f)
         assert "overrides" in config
-        assert config["overrides"] == {} or config["overrides"] is None
+        entry = config["overrides"]["registration_approval"]
+        schema_entry = entry["schemas"][0]
+        assert schema_entry["pattern"] == "^registrationApprovalReq$"
+        assert schema_entry["inject_properties"]["state"] == {
+            "$ref": "#/components/schemas/registrationObjectState",
+        }
+        assert schema_entry["inject_extensions"]["x-f5xc-action"] == "approve"
 
     def test_synthetic_config_structure(self, synthetic_config):
         with synthetic_config.open() as f:

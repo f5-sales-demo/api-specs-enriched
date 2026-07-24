@@ -284,6 +284,18 @@ stubby as long as the `### x-name` header exists and the
 - **Example:** `"x-f5xc-console": {"workspace": "web-app-and-api-protection", "menu_path": ["Manage", "Load Balancers", "HTTP Load Balancers"]}`
 - **Pass-through from upstream:** no
 
+### x-f5xc-action
+
+- **Applied at:** schema
+- **Purpose:** Marks a schema whose operation is an action-style resource, e.g. `approve`, so codegen emits an action resource rather than CRUD.
+- **Consumers:** Terraform
+- **Value type:** string
+- **Value schema:** `{"type": "string"}`
+- **Injected by:** scripts/utils/schema_override_enricher.py
+- **Driven by config:** config/schema_overrides.yaml
+- **Example:** `"x-f5xc-action": "approve"`
+- **Pass-through from upstream:** no
+
 ## Injected — property-level
 
 ### x-f5xc-description
@@ -891,4 +903,3 @@ stubby as long as the `### x-name` header exists and the
 - **Driven by config:** upstream
 - **Example:** See F5 upstream docs.
 - **Pass-through from upstream:** yes
-
