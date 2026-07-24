@@ -219,12 +219,20 @@ class TestConfigLoading:
         enricher = SchemaOverrideEnricher(config_path=config_path)
         assert enricher.overrides is not None
 
-    def test_empty_overrides_config(self, config_path):
-        """Real config should have empty overrides dict."""
+    def test_registration_approval_override(self, config_path):
+        """Real config carries the registration_approval override that injects a
+        top-level `state` ($ref registrationObjectState) and the schema-level
+        x-f5xc-action marker onto registrationApprovalReq (S6-A, #1206)."""
         with config_path.open() as f:
             config = yaml.safe_load(f)
         assert "overrides" in config
-        assert config["overrides"] == {} or config["overrides"] is None
+        entry = config["overrides"]["registration_approval"]
+        schema_entry = entry["schemas"][0]
+        assert schema_entry["pattern"] == "^registrationApprovalReq$"
+        assert schema_entry["inject_properties"]["state"] == {
+            "$ref": "#/components/schemas/registrationObjectState",
+        }
+        assert schema_entry["inject_extensions"]["x-f5xc-action"] == "approve"
 
     def test_synthetic_config_structure(self, synthetic_config):
         with synthetic_config.open() as f:
@@ -238,3 +246,32 @@ class TestConfigLoading:
             assert "complete_variants" in schema_entry
             assert "inject_properties" in schema_entry
             re.compile(schema_entry["pattern"])
+
+
+def test_oneof_free_injection_with_extension():
+    """Override without oneof_group injects a plain property + schema extension,
+    and must NOT create any x-ves-oneof-field-* array."""
+    enricher = SchemaOverrideEnricher.__new__(SchemaOverrideEnricher)
+    enricher.overrides = {
+        "reg": {
+            "schemas": [
+                {
+                    "pattern": "^fooReq$",
+                    "inject_properties": {"state": {"$ref": "#/components/schemas/barState"}},
+                    "inject_extensions": {"x-f5xc-action": "approve"},
+                }
+            ]
+        }
+    }
+    enricher._compiled = enricher._compile_overrides()
+    enricher._stats = enricher._empty_stats()
+    spec = {
+        "components": {
+            "schemas": {"fooReq": {"type": "object", "properties": {"name": {"type": "string"}}}}
+        }
+    }
+    out = enricher.enrich_spec(spec)
+    schema = out["components"]["schemas"]["fooReq"]
+    assert schema["properties"]["state"] == {"$ref": "#/components/schemas/barState"}
+    assert schema["x-f5xc-action"] == "approve"
+    assert not any(k.startswith("x-ves-oneof-field-") for k in schema)

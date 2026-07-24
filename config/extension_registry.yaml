@@ -218,6 +218,15 @@ schema_level:
       menu_path: ["Manage", "Load Balancers", "HTTP Load Balancers"]
       route_pattern: "/namespaces/{namespace}/manage/load_balancers/http_loadbalancers"
 
+  x-f5xc-action:
+    type: string
+    purpose: >-
+      Marks a request schema whose operation is an action-style resource so
+      downstream codegen emits an action resource (Create=action POST,
+      Read=object Get, Delete=no-op) instead of CRUD.
+    consumers: [terraform]
+    example: "approve"
+
 # =============================================================================
 # PROPERTY-LEVEL EXTENSIONS (schema properties)
 # =============================================================================

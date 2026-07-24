@@ -2,7 +2,7 @@
 title: 擴充功能擴充目錄
 description: 豐富化 OpenAPI 規格中每個 x-* 擴充功能的真實來源
 i18n:
-  sourceHash: 3ed334783ced
+  sourceHash: d286a6006907
   translator: machine
 ---
 
@@ -278,6 +278,18 @@ i18n:
 - **Injected by:** scripts/utils/console_ui_enricher.py
 - **Driven by config:** config/console_ui.yaml
 - **Example:** `"x-f5xc-console": {"workspace": "web-app-and-api-protection", "menu_path": ["Manage", "Load Balancers", "HTTP Load Balancers"]}`
+- **Pass-through from upstream:** no
+
+### x-f5xc-action
+
+- **Applied at:** schema
+- **Purpose:** 標記其操作為動作型（action-style）資源的 schema，例如 `approve`，以便 codegen 產生動作資源而非 CRUD。
+- **Consumers:** Terraform
+- **Value type:** string
+- **Value schema:** `{"type": "string"}`
+- **Injected by:** scripts/utils/schema_override_enricher.py
+- **Driven by config:** config/schema_overrides.yaml
+- **Example:** `"x-f5xc-action": "approve"`
 - **Pass-through from upstream:** no
 
 ## 注入 — 屬性層級

@@ -2,7 +2,7 @@
 title: संवर्धन एक्सटेंशन कैटलॉग
 description: संवर्धित OpenAPI विनिर्देशों में प्रत्येक x-* एक्सटेंशन का सत्य का स्रोत
 i18n:
-  sourceHash: 3ed334783ced
+  sourceHash: d286a6006907
   translator: machine
 ---
 
@@ -273,6 +273,18 @@ i18n:
 - **Injected by:** scripts/utils/console_ui_enricher.py
 - **Driven by config:** config/console_ui.yaml
 - **Example:** `"x-f5xc-console": {"workspace": "web-app-and-api-protection", "menu_path": ["Manage", "Load Balancers", "HTTP Load Balancers"]}`
+- **Pass-through from upstream:** no
+
+### x-f5xc-action
+
+- **Applied at:** schema
+- **Purpose:** ऐसे स्कीमा को चिह्नित करता है जिसका ऑपरेशन एक्शन-शैली का संसाधन है, जैसे `approve`, ताकि codegen CRUD के बजाय एक्शन संसाधन उत्पन्न करे।
+- **Consumers:** Terraform
+- **Value type:** string
+- **Value schema:** `{"type": "string"}`
+- **Injected by:** scripts/utils/schema_override_enricher.py
+- **Driven by config:** config/schema_overrides.yaml
+- **Example:** `"x-f5xc-action": "approve"`
 - **Pass-through from upstream:** no
 
 ## इंजेक्ट किए गए — प्रॉपर्टी-स्तर

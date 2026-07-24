@@ -50,9 +50,10 @@ class SchemaOverrideEnricher:
         try:
             return {
                 "regex": re.compile(schema_entry["pattern"]),
-                "oneof_group": schema_entry["oneof_group"],
-                "complete_variants": schema_entry["complete_variants"],
+                "oneof_group": schema_entry.get("oneof_group"),
+                "complete_variants": schema_entry.get("complete_variants", []),
                 "inject_properties": schema_entry.get("inject_properties", {}),
+                "inject_extensions": schema_entry.get("inject_extensions", {}),
             }
         except re.error as e:
             logger.warning("Invalid override pattern '%s': %s", schema_entry.get("pattern"), e)
@@ -86,29 +87,32 @@ class SchemaOverrideEnricher:
                 continue
             self._stats["schemas_matched"] += 1
 
-            group = override["oneof_group"]
-            ext_key = f"x-ves-oneof-field-{group}"
-
-            raw_existing = schema.get(ext_key, [])
-            was_string = isinstance(raw_existing, str)
-            existing_variants = yaml.safe_load(raw_existing) if was_string else raw_existing
-            existing_set = set(existing_variants)
-
             props = schema.get("properties", {})
             for prop_name, prop_def in override["inject_properties"].items():
                 if prop_name not in props:
                     props[prop_name] = dict(prop_def)
                     self._stats["properties_injected"] += 1
-
             if "properties" not in schema and override["inject_properties"]:
                 schema["properties"] = props
 
+            for ext_key, ext_val in override["inject_extensions"].items():
+                if ext_key not in schema:
+                    schema[ext_key] = ext_val
+
+            if not override["oneof_group"]:
+                continue
+
+            group = override["oneof_group"]
+            ext_key = f"x-ves-oneof-field-{group}"
+            raw_existing = schema.get(ext_key, [])
+            was_string = isinstance(raw_existing, str)
+            existing_variants = yaml.safe_load(raw_existing) if was_string else raw_existing
+            existing_set = set(existing_variants)
             new_variants = []
             for v in override["complete_variants"]:
                 if v not in existing_set:
                     new_variants.append(v)
                     existing_set.add(v)
-
             if new_variants:
                 updated = sorted(existing_set)
                 schema[ext_key] = json.dumps(updated) if was_string else updated

@@ -10,10 +10,22 @@ description: >
   for oneOf groups that the upstream spec incompletely declares.
   Overrides are temporary — remove each entry when the upstream fix ships.
 
-# No active overrides.
 # The healthcheck entry was removed after investigation revealed that the
 # 4 DNS variants (dns_health_check, dns_proxy_icmp_health_check, etc.)
 # belong to separate resource types (dns_lb_health_check and dns_proxy),
 # not to the general /healthchecks endpoint used by HTTP load balancers.
 # See issue #294 for context.
-overrides: {}
+overrides:
+  registration_approval:
+    upstream_issue: "f5-sales-demo/terraform-provider-xcsh#1206"
+    description: >-
+      registrationApprovalReq lacks a top-level `state` in the upstream swagger,
+      and needs an x-f5xc-action marker so downstream codegen emits an
+      action-style resource (approve) rather than CRUD.
+    schemas:
+      - pattern: "^registrationApprovalReq$"
+        inject_properties:
+          state:
+            $ref: "#/components/schemas/registrationObjectState"
+        inject_extensions:
+          x-f5xc-action: "approve"
