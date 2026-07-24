@@ -16,6 +16,7 @@ Usage:
     stats = enricher.get_stats()
 """
 
+import json
 import logging
 import re
 from datetime import datetime, timezone
@@ -474,6 +475,11 @@ class ConstraintEnricher:
 
         # Map string rules
         if field_type == "string":
+            # The `string.in` rule enumerates the allowed literal values. Map it
+            # to the property's *native* JSON-Schema `enum` (not x-f5xc-constraints)
+            # so the provider's convert.go enum path emits a `OneOf` validator.
+            self._apply_string_in_enum(schema, ves_rules)
+
             string_rules = mapping.get("string_rules", [])
             for rule_def in string_rules:
                 ves_rule = rule_def.get("ves_rule")
@@ -578,6 +584,40 @@ class ConstraintEnricher:
         result["deterministic"] = True
 
         return result
+
+    @staticmethod
+    def _apply_string_in_enum(schema: dict, ves_rules: dict) -> None:
+        """Map a `ves.io.schema.rules.string.in` rule to a native `enum`.
+
+        The rule value enumerates the allowed literal values. The provider reads
+        the property's native JSON-Schema `enum` (not `x-f5xc-constraints`) to
+        generate a `OneOf` validator, so the values are written straight onto
+        `schema["enum"]`. Malformed values are skipped rather than raised.
+
+        Args:
+            schema: Property schema to mutate in place.
+            ves_rules: The property's `x-ves-validation-rules` mapping.
+        """
+        for rule_key, rule_value in ves_rules.items():
+            if not rule_key.endswith(".string.in"):
+                continue
+
+            values = rule_value
+            if isinstance(values, str):
+                # Upstream serializes the array either as clean JSON
+                # (`["Control","Worker"]`) or with the inner quotes escaped
+                # (`[\"Control\",\"Worker\"]`); try clean first, then unescape.
+                try:
+                    values = json.loads(values)
+                except (json.JSONDecodeError, ValueError):
+                    try:
+                        values = json.loads(values.replace('\\"', '"'))
+                    except (json.JSONDecodeError, ValueError):
+                        continue
+
+            if isinstance(values, list) and values:
+                schema["enum"] = list(values)
+            return
 
     def _enrich_property(self, field_name: str, schema: dict, *, schema_name: str = "") -> None:
         """Enrich a single property with constraints.
@@ -952,9 +992,7 @@ class ConstraintEnricher:
 
 
 if __name__ == "__main__":
-    # Test the enricher
-    import json
-
+    # Test the enricher (json imported at module top)
     # Load a test spec
     test_spec_path = Path("specs/enriched/dns.json")
     if test_spec_path.exists():
