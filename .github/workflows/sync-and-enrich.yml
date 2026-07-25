@@ -15,13 +15,16 @@ on:
       - 'docs/**/*.html'
   workflow_dispatch:
 
+# Read-only default; each job declares what it consumes. Traced per write:
+#   sync-and-enrich  contents: write   `gh release create` runs as GITHUB_TOKEN
+#   deploy-docs      pages + id-token  actions/deploy-pages
+#   monitor-failures issues: write     opens/updates the failure issue as GITHUB_TOKEN
+# Two of the previous workflow-wide scopes had no GITHUB_TOKEN consumer at all and
+# are gone rather than pushed down: `pull-requests: write`, because every `gh pr`
+# call authenticates with VERSION_BUMP_PAT (as do the pushes, via an explicit
+# remote URL), and `actions: read`, because nothing reads the Actions API.
 permissions:
-  contents: write
-  pages: write
-  id-token: write
-  issues: write
-  actions: read
-  pull-requests: write
+  contents: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -94,6 +97,11 @@ jobs:
     needs: check-updates
     if: needs.check-updates.outputs.has_updates == 'true'
     runs-on: ubuntu-latest
+    # `gh release create` runs as GITHUB_TOKEN and needs contents: write. The
+    # branch pushes, PR create/merge/close and tag push all authenticate with
+    # VERSION_BUMP_PAT instead, so no pull-requests scope is required here.
+    permissions:
+      contents: write
     outputs:
       version: ${{ steps.version.outputs.new_version }}
       has_changes: ${{ steps.version.outputs.has_changes }}
@@ -369,8 +377,9 @@ jobs:
 
       - name: Update version in specs
         if: steps.version.outputs.has_changes == 'true'
+        env:
+          VERSION: ${{ steps.version.outputs.new_version }}
         run: |
-          VERSION="${{ steps.version.outputs.new_version }}"
           echo "Updating specs to version: $VERSION"
 
           # Update index.json
@@ -389,8 +398,9 @@ jobs:
 
       - name: Verify version consistency
         if: steps.version.outputs.has_changes == 'true'
+        env:
+          EXPECTED_VERSION: ${{ steps.version.outputs.new_version }}
         run: |
-          EXPECTED_VERSION="${{ steps.version.outputs.new_version }}"
           INDEX_VERSION=$(jq -r '.version' docs/specifications/api/index.json)
 
           if [ "$EXPECTED_VERSION" != "$INDEX_VERSION" ]; then
@@ -402,8 +412,9 @@ jobs:
 
       - name: Align catalog version with release
         if: steps.version.outputs.has_changes == 'true'
+        env:
+          VERSION: ${{ steps.version.outputs.new_version }}
         run: |
-          VERSION="${{ steps.version.outputs.new_version }}"
           if [ -f release/api-catalog.json ]; then
             jq --arg v "$VERSION" '.version = $v' release/api-catalog.json > /tmp/catalog.json
             mv /tmp/catalog.json release/api-catalog.json
@@ -428,22 +439,23 @@ jobs:
 
       - name: Generate changelog
         if: steps.version.outputs.has_changes == 'true'
+        env:
+          VERSION: ${{ steps.version.outputs.new_version }}
+          BUMP_TYPE: ${{ steps.version.outputs.bump_type }}
+          HAS_DISCOVERY: ${{ steps.check-discovery.outputs.has_discovery }}
+          DISCOVERY_ENDPOINTS: ${{ steps.discovery-summary.outputs.endpoints_total }}
+          DISCOVERY_SUCCESS: ${{ steps.discovery-summary.outputs.endpoints_success }}
+          DISCOVERY_TIMESTAMP: ${{ steps.discovery-summary.outputs.discovery_timestamp }}
         run: |
-          VERSION="${{ steps.version.outputs.new_version }}"
-          BUMP_TYPE="${{ steps.version.outputs.bump_type }}"
           DATE=$(date -u +"%Y-%m-%d")
 
           # Extract upstream info from index.json
           UPSTREAM_TS=$(jq -r '."x-upstream-timestamp" // "unknown"' docs/specifications/api/index.json)
           UPSTREAM_ETAG=$(jq -r '."x-upstream-etag" // "unknown"' docs/specifications/api/index.json)
-          ENRICHED_VER=$(jq -r '."x-enriched-version" // "'$VERSION'"' docs/specifications/api/index.json)
+          ENRICHED_VER=$(jq -r '."x-enriched-version" // "'"$VERSION"'"' docs/specifications/api/index.json)
           FULL_VERSION=$(jq -r '.version' docs/specifications/api/index.json)
 
-          # Discovery info (if available)
-          HAS_DISCOVERY="${{ steps.check-discovery.outputs.has_discovery }}"
-          DISCOVERY_ENDPOINTS="${{ steps.discovery-summary.outputs.endpoints_total }}"
-          DISCOVERY_SUCCESS="${{ steps.discovery-summary.outputs.endpoints_success }}"
-          DISCOVERY_TIMESTAMP="${{ steps.discovery-summary.outputs.discovery_timestamp }}"
+          # Discovery info (if available) arrives via env — see the step's env block.
 
           # Preserve existing changelog entries (prepend-only strategy to avoid merge conflicts)
           EXISTING_ENTRIES=""
@@ -636,14 +648,15 @@ jobs:
 
       - name: Create release package
         if: steps.version.outputs.has_changes == 'true'
+        env:
+          VERSION: ${{ steps.version.outputs.new_version }}
         run: |
-          VERSION="${{ steps.version.outputs.new_version }}"
           RELEASE_DIR="release-package"
           DATE=$(date -u +"%Y-%m-%d")
 
           # Extract upstream info from index.json
           UPSTREAM_TS=$(jq -r '."x-upstream-timestamp" // "unknown"' docs/specifications/api/index.json)
-          ENRICHED_VER=$(jq -r '."x-enriched-version" // "'$VERSION'"' docs/specifications/api/index.json)
+          ENRICHED_VER=$(jq -r '."x-enriched-version" // "'"$VERSION"'"' docs/specifications/api/index.json)
 
           # Create ZIP filename
           ZIP_NAME="f5xc-api-specs-v${VERSION}.zip"
@@ -707,9 +720,8 @@ jobs:
         if: steps.version.outputs.has_changes == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ steps.version.outputs.new_version }}
         run: |
-          VERSION="${{ steps.version.outputs.new_version }}"
-
           # Check if release already exists
           if gh release view "v$VERSION" >/dev/null 2>&1; then
             echo "Release v$VERSION already exists, skipping"
@@ -733,6 +745,11 @@ jobs:
     needs: sync-and-enrich
     if: needs.sync-and-enrich.outputs.has_changes == 'true'
     runs-on: ubuntu-latest
+    # actions/deploy-pages needs both of these; id-token is for its OIDC exchange.
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -839,6 +856,11 @@ jobs:
     runs-on: ubuntu-latest
     needs: [check-updates, sync-and-enrich, deploy-docs, build-downstream-matrix, notify-downstream]
     if: always()
+    # Ensures the monitoring labels exist and opens or updates the failure issue,
+    # both as GITHUB_TOKEN.
+    permissions:
+      contents: read
+      issues: write
     steps:
       - name: Check for failures
         id: check_failure

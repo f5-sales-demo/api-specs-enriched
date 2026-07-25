@@ -10,6 +10,10 @@ on:
     branches:
       - 'version-bump/**'
 
+# Read-only: the single job just echoes and exits.
+permissions:
+  contents: read
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
