@@ -2,7 +2,7 @@
 title: 擴充功能擴充目錄
 description: 豐富化 OpenAPI 規格中每個 x-* 擴充功能的真實來源
 i18n:
-  sourceHash: d286a6006907
+  sourceHash: 5d455612b759
   translator: machine
 ---
 
@@ -898,4 +898,16 @@ i18n:
 - **Injected by:** upstream
 - **Driven by config:** upstream
 - **Example:** 請參閱 F5 上游文件。
+- **Pass-through from upstream:** yes
+
+### x-f5xc-wire-name
+
+- **Applied at:** schema property
+- **Purpose:** 必須在請求中使用的上游原始屬性索引鍵。緩衝區會重新命名 F5 拼字錯誤的屬性名稱，並在此記錄原始索引鍵，因為 F5 伺服器僅接受原始拼字。
+- **Consumers:** Terraform
+- **Value type:** string
+- **Value schema:** `{"type": "string"}`
+- **Injected by:** upstream (f5-sales-demo/api-specs)
+- **Driven by config:** upstream
+- **Example:** `"blocked_service": {"x-f5xc-wire-name": "blocked_sevice"}`
 - **Pass-through from upstream:** yes

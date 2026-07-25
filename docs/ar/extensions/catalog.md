@@ -2,7 +2,7 @@
 title: كتالوج امتدادات الإثراء
 description: المرجع المعتمد لكل امتداد x-* في مواصفات OpenAPI المحسّنة
 i18n:
-  sourceHash: d286a6006907
+  sourceHash: 5d455612b759
   translator: machine
 ---
 
@@ -904,4 +904,16 @@ i18n:
 - **Injected by:** upstream
 - **Driven by config:** upstream
 - **Example:** راجع وثائق F5 الأصلية.
+- **Pass-through from upstream:** yes
+
+### x-f5xc-wire-name
+
+- **Applied at:** schema property
+- **Purpose:** مفتاح الخاصية الأصلي من المصدر الذي يجب إرساله في الطلب. تعيد المنطقة الوسيطة تسمية أسماء الخصائص المكتوبة بشكل خاطئ في F5 وتسجل المفتاح الأصلي هنا، لأن خادم F5 لا يقبل سوى التهجئة الأصلية.
+- **Consumers:** Terraform
+- **Value type:** string
+- **Value schema:** `{"type": "string"}`
+- **Injected by:** upstream (f5-sales-demo/api-specs)
+- **Driven by config:** upstream
+- **Example:** `"blocked_service": {"x-f5xc-wire-name": "blocked_sevice"}`
 - **Pass-through from upstream:** yes

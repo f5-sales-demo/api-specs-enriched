@@ -291,6 +291,10 @@ _ENRICHMENT_KEYS = frozenset(
         "x-f5xc-conflicts-with",
         "x-f5xc-requires",
         "x-f5xc-description",
+        # Upstream pass-through (api-specs#686): the original misspelled key that
+        # F5 accepts on the wire. Request builders need it, so it must survive
+        # this projection — see terraform-provider-xcsh#1257.
+        "x-f5xc-wire-name",
     }
 )
 
@@ -372,6 +376,10 @@ def _extract_field_metadata(
             requires = prop_resolved.get("x-f5xc-requires")
             if requires:
                 entry["requires"] = requires
+
+            wire_name = prop_resolved.get("x-f5xc-wire-name")
+            if wire_name:
+                entry["wireName"] = wire_name
 
             result[field_path] = entry
 

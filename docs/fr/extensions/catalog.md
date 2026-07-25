@@ -4,7 +4,7 @@ description: >-
   Source de vérité pour chaque extension x-* dans les spécifications OpenAPI
   enrichies
 i18n:
-  sourceHash: d286a6006907
+  sourceHash: 5d455612b759
   translator: machine
 ---
 
@@ -906,4 +906,16 @@ Chaque entrée ci-dessous possède exactement cette forme. Le test de parité da
 - **Injected by:** upstream
 - **Driven by config:** upstream
 - **Example:** Voir la documentation F5 en amont.
+- **Pass-through from upstream:** yes
+
+### x-f5xc-wire-name
+
+- **Applied at:** schema property
+- **Purpose:** Clé de propriété d'origine en amont qui doit apparaître sur le réseau. La zone tampon renomme les noms de propriétés mal orthographiés de F5 et enregistre ici la clé d'origine, car le serveur F5 n'accepte que l'orthographe d'origine.
+- **Consumers:** Terraform
+- **Value type:** string
+- **Value schema:** `{"type": "string"}`
+- **Injected by:** upstream (f5-sales-demo/api-specs)
+- **Driven by config:** upstream
+- **Example:** `"blocked_service": {"x-f5xc-wire-name": "blocked_sevice"}`
 - **Pass-through from upstream:** yes

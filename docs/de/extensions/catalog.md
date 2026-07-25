@@ -4,7 +4,7 @@ description: >-
   Maßgebliche Referenz für jede x-* Erweiterung in den erweiterten
   OpenAPI-Spezifikationen
 i18n:
-  sourceHash: d286a6006907
+  sourceHash: 5d455612b759
   translator: machine
 ---
 
@@ -907,4 +907,16 @@ solange der `### x-name`-Header vorhanden ist und das
 - **Injected by:** upstream
 - **Driven by config:** upstream
 - **Example:** Siehe F5-Upstream-Dokumentation.
+- **Pass-through from upstream:** yes
+
+### x-f5xc-wire-name
+
+- **Applied at:** schema property
+- **Purpose:** Ursprünglicher vorgelagerter Eigenschaftsschlüssel, der auf dem Übertragungsweg verwendet werden muss. Die Pufferzone benennt die falsch geschriebenen Eigenschaftsnamen von F5 um und hinterlegt hier den ursprünglichen Schlüssel, da der F5-Server nur die ursprüngliche Schreibweise akzeptiert.
+- **Consumers:** Terraform
+- **Value type:** string
+- **Value schema:** `{"type": "string"}`
+- **Injected by:** upstream (f5-sales-demo/api-specs)
+- **Driven by config:** upstream
+- **Example:** `"blocked_service": {"x-f5xc-wire-name": "blocked_sevice"}`
 - **Pass-through from upstream:** yes

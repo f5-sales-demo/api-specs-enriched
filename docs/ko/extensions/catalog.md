@@ -2,7 +2,7 @@
 title: 강화 확장 카탈로그
 description: 강화된 OpenAPI 사양의 모든 x-* 확장에 대한 단일 진실 공급원
 i18n:
-  sourceHash: d286a6006907
+  sourceHash: 5d455612b759
   translator: machine
 ---
 
@@ -893,4 +893,16 @@ i18n:
 - **Injected by:** upstream
 - **Driven by config:** upstream
 - **Example:** F5 업스트림 문서를 참조하십시오.
+- **Pass-through from upstream:** yes
+
+### x-f5xc-wire-name
+
+- **Applied at:** schema property
+- **Purpose:** 전송 시 사용해야 하는 업스트림 원본 속성 키입니다. 버퍼 영역은 F5의 잘못 표기된 속성 이름을 변경하고 원본 키를 여기에 기록합니다. F5 서버는 원본 표기만 허용하기 때문입니다.
+- **Consumers:** Terraform
+- **Value type:** string
+- **Value schema:** `{"type": "string"}`
+- **Injected by:** upstream (f5-sales-demo/api-specs)
+- **Driven by config:** upstream
+- **Example:** `"blocked_service": {"x-f5xc-wire-name": "blocked_sevice"}`
 - **Pass-through from upstream:** yes

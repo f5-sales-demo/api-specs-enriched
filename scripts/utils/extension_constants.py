@@ -82,6 +82,10 @@ X_F5XC_REFERENCES = "x-f5xc-references"
 X_F5XC_FIELD_EXAMPLES = "x-f5xc-field-examples"
 X_F5XC_UNIQUENESS = "x-f5xc-uniqueness"
 
+# Original (misspelled) upstream property key, preserved when the buffer zone
+# renames the presented property name (api-specs #686)
+X_F5XC_WIRE_NAME = "x-f5xc-wire-name"
+
 # Console UI field enrichment (Issue #679)
 X_F5XC_CONSOLE_FIELD = "x-f5xc-console-field"
 
@@ -195,6 +199,7 @@ VALID_X_F5XC_EXTENSIONS = frozenset(
         X_F5XC_REFERENCES,
         X_F5XC_FIELD_EXAMPLES,
         X_F5XC_UNIQUENESS,
+        X_F5XC_WIRE_NAME,
         # Operation-level
         X_F5XC_REQUIRED_FIELDS,
         X_F5XC_DANGER_LEVEL,
