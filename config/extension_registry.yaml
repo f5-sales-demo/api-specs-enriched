@@ -428,6 +428,21 @@ property_level:
         confidence: 0.95
         validatedAt: "2026-01-19T00:00:00Z"
 
+  x-f5xc-wire-name:
+    type: string
+    purpose: >-
+      Original upstream property key that must be used on the wire. The buffer
+      zone (api-specs) renames F5's misspelled property names and records the
+      original key here; the F5 server accepts only the original spelling.
+    consumers: [terraform]
+    source: "upstream pass-through from f5-sales-demo/api-specs (never injected here)"
+    example: "blocked_sevice"
+    issue: "api-specs#686"
+    note: >-
+      Code generators that build API requests must send this key, not the
+      presented property name. Emitting the corrected name makes F5 silently
+      discard the field (terraform-provider-xcsh#1257).
+
   x-f5xc-console-field:
     type: object
     purpose: Console form widget metadata for this API property

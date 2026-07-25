@@ -903,3 +903,15 @@ stubby as long as the `### x-name` header exists and the
 - **Driven by config:** upstream
 - **Example:** See F5 upstream docs.
 - **Pass-through from upstream:** yes
+
+### x-f5xc-wire-name
+
+- **Applied at:** schema property
+- **Purpose:** Original upstream property key that must appear on the wire. The buffer zone renames F5's misspelled property names and records the original key here, because the F5 server accepts only the original spelling.
+- **Consumers:** Terraform
+- **Value type:** string
+- **Value schema:** `{"type": "string"}`
+- **Injected by:** upstream (f5-sales-demo/api-specs)
+- **Driven by config:** upstream
+- **Example:** `"blocked_service": {"x-f5xc-wire-name": "blocked_sevice"}`
+- **Pass-through from upstream:** yes

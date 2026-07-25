@@ -2,7 +2,7 @@
 title: संवर्धन एक्सटेंशन कैटलॉग
 description: संवर्धित OpenAPI विनिर्देशों में प्रत्येक x-* एक्सटेंशन का सत्य का स्रोत
 i18n:
-  sourceHash: d286a6006907
+  sourceHash: 5d455612b759
   translator: machine
 ---
 
@@ -893,4 +893,16 @@ i18n:
 - **Injected by:** upstream
 - **Driven by config:** upstream
 - **Example:** F5 अपस्ट्रीम दस्तावेज़ देखें।
+- **Pass-through from upstream:** yes
+
+### x-f5xc-wire-name
+
+- **Applied at:** schema property
+- **Purpose:** मूल अपस्ट्रीम प्रॉपर्टी कुंजी जिसे अनुरोध में भेजा जाना चाहिए। बफर ज़ोन F5 के गलत लिखे गए प्रॉपर्टी नामों को बदलता है और मूल कुंजी यहाँ दर्ज करता है, क्योंकि F5 सर्वर केवल मूल स्पेलिंग स्वीकार करता है।
+- **Consumers:** Terraform
+- **Value type:** string
+- **Value schema:** `{"type": "string"}`
+- **Injected by:** upstream (f5-sales-demo/api-specs)
+- **Driven by config:** upstream
+- **Example:** `"blocked_service": {"x-f5xc-wire-name": "blocked_sevice"}`
 - **Pass-through from upstream:** yes

@@ -2,7 +2,7 @@
 title: エンリッチメント拡張機能カタログ
 description: エンリッチされた OpenAPI 仕様に含まれるすべての x-* 拡張機能の信頼できる情報源
 i18n:
-  sourceHash: d286a6006907
+  sourceHash: 5d455612b759
   translator: machine
 ---
 
@@ -895,4 +895,16 @@ i18n:
 - **Injected by:** upstream
 - **Driven by config:** upstream
 - **Example:** F5 アップストリームドキュメントを参照してください。
+- **Pass-through from upstream:** yes
+
+### x-f5xc-wire-name
+
+- **Applied at:** schema property
+- **Purpose:** 通信時に使用する必要があるアップストリームの元のプロパティキー。バッファゾーンは F5 のスペルミスのあるプロパティ名を変更し、元のキーをここに記録します。F5 サーバーは元のスペルのみを受け付けるためです。
+- **Consumers:** Terraform
+- **Value type:** string
+- **Value schema:** `{"type": "string"}`
+- **Injected by:** upstream (f5-sales-demo/api-specs)
+- **Driven by config:** upstream
+- **Example:** `"blocked_service": {"x-f5xc-wire-name": "blocked_sevice"}`
 - **Pass-through from upstream:** yes

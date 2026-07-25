@@ -4,7 +4,7 @@ description: >-
   แหล่งข้อมูลหลักสำหรับส่วนขยาย x-* ทุกรายการในข้อกำหนด OpenAPI
   ที่เพิ่มประสิทธิภาพแล้ว
 i18n:
-  sourceHash: d286a6006907
+  sourceHash: 5d455612b759
   translator: machine
 ---
 
@@ -906,4 +906,16 @@ i18n:
 - **Injected by:** upstream
 - **Driven by config:** upstream
 - **Example:** ดูเอกสาร F5 upstream
+- **Pass-through from upstream:** yes
+
+### x-f5xc-wire-name
+
+- **Applied at:** schema property
+- **Purpose:** คีย์ property ต้นทางดั้งเดิมที่ต้องส่งไปในคำขอ buffer zone จะเปลี่ยนชื่อ property ที่ F5 สะกดผิด และบันทึกคีย์ดั้งเดิมไว้ที่นี่ เนื่องจากเซิร์ฟเวอร์ F5 ยอมรับเฉพาะการสะกดดั้งเดิมเท่านั้น
+- **Consumers:** Terraform
+- **Value type:** string
+- **Value schema:** `{"type": "string"}`
+- **Injected by:** upstream (f5-sales-demo/api-specs)
+- **Driven by config:** upstream
+- **Example:** `"blocked_service": {"x-f5xc-wire-name": "blocked_sevice"}`
 - **Pass-through from upstream:** yes

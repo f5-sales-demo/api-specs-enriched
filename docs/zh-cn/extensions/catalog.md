@@ -2,7 +2,7 @@
 title: 扩展目录（Enrichment Extension Catalog）
 description: enriched OpenAPI 规范中所有 x-* 扩展的权威参考来源
 i18n:
-  sourceHash: d286a6006907
+  sourceHash: 5d455612b759
   translator: machine
 ---
 
@@ -900,4 +900,16 @@ i18n:
 - **Injected by:** upstream
 - **Driven by config:** upstream
 - **Example:** 请参阅 F5 上游文档。
+- **Pass-through from upstream:** yes
+
+### x-f5xc-wire-name
+
+- **Applied at:** schema property
+- **Purpose:** 必须在请求中使用的上游原始属性键。缓冲区会重命名 F5 拼写错误的属性名，并在此记录原始键，因为 F5 服务器仅接受原始拼写。
+- **Consumers:** Terraform
+- **Value type:** string
+- **Value schema:** `{"type": "string"}`
+- **Injected by:** upstream (f5-sales-demo/api-specs)
+- **Driven by config:** upstream
+- **Example:** `"blocked_service": {"x-f5xc-wire-name": "blocked_sevice"}`
 - **Pass-through from upstream:** yes

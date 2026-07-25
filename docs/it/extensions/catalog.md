@@ -4,7 +4,7 @@ description: >-
   Fonte di riferimento autorevole per ogni estensione x-* nelle specifiche
   OpenAPI arricchite
 i18n:
-  sourceHash: d286a6006907
+  sourceHash: 5d455612b759
   translator: machine
 ---
 
@@ -906,4 +906,16 @@ ridotto purché l'intestazione `### x-name` esista e il flag
 - **Injected by:** upstream
 - **Driven by config:** upstream
 - **Example:** Consultare la documentazione upstream F5.
+- **Pass-through from upstream:** yes
+
+### x-f5xc-wire-name
+
+- **Applied at:** schema property
+- **Purpose:** Chiave di proprietà upstream originale che deve essere inviata nella richiesta. La zona di buffer rinomina i nomi di proprietà scritti in modo errato da F5 e registra qui la chiave originale, poiché il server F5 accetta solo la grafia originale.
+- **Consumers:** Terraform
+- **Value type:** string
+- **Value schema:** `{"type": "string"}`
+- **Injected by:** upstream (f5-sales-demo/api-specs)
+- **Driven by config:** upstream
+- **Example:** `"blocked_service": {"x-f5xc-wire-name": "blocked_sevice"}`
 - **Pass-through from upstream:** yes

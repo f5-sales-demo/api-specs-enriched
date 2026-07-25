@@ -4,7 +4,7 @@ description: >-
   Fuente de verdad para cada extensión x-* en las especificaciones OpenAPI
   enriquecidas
 i18n:
-  sourceHash: d286a6006907
+  sourceHash: 5d455612b759
   translator: machine
 ---
 
@@ -906,4 +906,16 @@ escueto, siempre que exista el encabezado `### x-name` y el indicador
 - **Injected by:** upstream
 - **Driven by config:** upstream
 - **Example:** Consulte la documentación upstream de F5.
+- **Pass-through from upstream:** yes
+
+### x-f5xc-wire-name
+
+- **Applied at:** schema property
+- **Purpose:** Clave de propiedad upstream original que debe enviarse por la red. La zona de amortiguación renombra los nombres de propiedad mal escritos de F5 y registra aquí la clave original, porque el servidor de F5 solo acepta la ortografía original.
+- **Consumers:** Terraform
+- **Value type:** string
+- **Value schema:** `{"type": "string"}`
+- **Injected by:** upstream (f5-sales-demo/api-specs)
+- **Driven by config:** upstream
+- **Example:** `"blocked_service": {"x-f5xc-wire-name": "blocked_sevice"}`
 - **Pass-through from upstream:** yes

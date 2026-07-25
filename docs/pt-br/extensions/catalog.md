@@ -4,7 +4,7 @@ description: >-
   Fonte de referência para cada extensão x-* nas especificações OpenAPI
   enriquecidas
 i18n:
-  sourceHash: d286a6006907
+  sourceHash: 5d455612b759
   translator: machine
 ---
 
@@ -906,4 +906,16 @@ desde que o cabeçalho `### x-nome` exista e o sinalizador
 - **Injected by:** upstream
 - **Driven by config:** upstream
 - **Example:** Consulte a documentação upstream do F5.
+- **Pass-through from upstream:** yes
+
+### x-f5xc-wire-name
+
+- **Applied at:** schema property
+- **Purpose:** Chave de propriedade upstream original que deve ser enviada na requisição. A zona de amortecimento renomeia os nomes de propriedade escritos incorretamente pelo F5 e registra aqui a chave original, porque o servidor do F5 aceita apenas a grafia original.
+- **Consumers:** Terraform
+- **Value type:** string
+- **Value schema:** `{"type": "string"}`
+- **Injected by:** upstream (f5-sales-demo/api-specs)
+- **Driven by config:** upstream
+- **Example:** `"blocked_service": {"x-f5xc-wire-name": "blocked_sevice"}`
 - **Pass-through from upstream:** yes
