@@ -196,7 +196,7 @@ class TestSurvivesPipeline:
 
     def test_survives_normalize_and_enrich(self, pipeline_config: dict) -> None:
         spec = _spec_with_wire_name()
-        expected = {}
+        expected: dict[str, str] = {}
         _collect_wire_names(copy.deepcopy(spec), expected)
         assert len(expected) == 2, "fixture must carry two annotations"
 
