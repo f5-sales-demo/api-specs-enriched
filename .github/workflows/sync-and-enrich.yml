@@ -1,8 +1,15 @@
 name: Sync and Enrich API Specs
 
 on:
+  # Primary path: f5-sales-demo/api-specs sends this the moment a spec release
+  # publishes, so a correction is consumed in minutes instead of waiting for the
+  # cron below. See f5-sales-demo/api-specs#693.
+  repository_dispatch:
+    types: [upstream-specs-released]
   schedule:
-    # Run daily at 6 AM UTC
+    # Safety net, not the primary path: catches an upstream release whose
+    # dispatch never arrived (token expiry, an api-specs run that died after
+    # publishing, a hand-cut release).
     - cron: '0 6 * * *'
   push:
     branches:
@@ -59,16 +66,35 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      - name: Log upstream release trigger
+        if: github.event_name == 'repository_dispatch'
+        env:
+          # client_payload is attacker-influenceable in principle, so it is read
+          # through the environment and never interpolated into this run: body.
+          # It is logged only -- nothing downstream branches on it.
+          UPSTREAM_TAG: ${{ github.event.client_payload.release_tag }}
+          UPSTREAM_SOURCE: ${{ github.event.client_payload.trigger_source }}
+        run: |
+          echo "::notice::Triggered by upstream release ${UPSTREAM_TAG:-unknown} from ${UPSTREAM_SOURCE:-unknown}"
+
       - name: Check for GitHub Release updates
         id: check
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EVENT_NAME: ${{ github.event_name }}
         run: |
-          # Force download on push/dispatch events, check-only on schedule
-          if [ "${{ github.event_name }}" = "push" ] || \
-            [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          # Force download on push, manual dispatch and upstream release
+          # dispatch; check-only on schedule.
+          #
+          # repository_dispatch must force: it only ever arrives because
+          # api-specs just published a release, and taking the --check-only
+          # ETag short-circuit here would let the trigger fire and change
+          # nothing -- automation that looks wired up and is not.
+          if [ "$EVENT_NAME" = "push" ] || \
+            [ "$EVENT_NAME" = "workflow_dispatch" ] || \
+            [ "$EVENT_NAME" = "repository_dispatch" ]; then
             echo "updated=true" >> "$GITHUB_OUTPUT"
-            echo "Push/dispatch event - forcing download"
+            echo "Event '$EVENT_NAME' - forcing download"
           else
             # Run check-only and capture exit code
             # Exit code 1 = updates available (success for our purposes)
