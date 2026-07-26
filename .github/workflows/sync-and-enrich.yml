@@ -130,7 +130,7 @@ jobs:
       contents: write
     outputs:
       version: ${{ steps.version.outputs.new_version }}
-      has_changes: ${{ steps.version.outputs.has_changes }}
+      has_changes: ${{ steps.detect.outputs.has_changes }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -287,64 +287,22 @@ jobs:
           F5XC_API_URL: ${{ secrets.F5XC_API_URL }}
         run: python -m scripts.validate --dry-run
 
-      - name: Early exit for docs-only changes
-        id: docs_check
-        run: |
-          echo "Checking for documentation-only changes..."
-
-          # Check if ALL changes are docs-only using git pathspec exclusion
-          if git diff --quiet HEAD~1 HEAD -- . ':!CLAUDE.md' ':!README.md' ':!docs/**/*.md' ':!LICENSE'; then
-            echo "📝 Documentation-only changes detected - skipping pipeline"
-            echo "has_changes=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          else
-            echo "✅ Non-documentation changes detected - proceeding with pipeline"
-          fi
-
-      - name: Detect changes and bump version
-        id: version
+      - name: Detect release-worthy changes
+        id: detect
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # Output-driven gate: compares the generated, tracked output in the
+        # working tree against HEAD. Lives in a script so it can be unit
+        # tested (tests/shell/test_detect_release_changes.py) — the inline
+        # block it replaces was untestable, which is how #1094 survived.
+        run: bash scripts/release/detect-release-changes.sh
+
+      - name: Bump version
+        id: version
+        if: steps.detect.outputs.has_changes == 'true'
+        env:
+          CHANGE_TYPE: ${{ steps.detect.outputs.change_type }}
         run: |
-          # Check if enriched specs exist (pipeline generated them)
-          if [ ! -f docs/specifications/api/index.json ]; then
-            echo "has_changes=false" >> "$GITHUB_OUTPUT"
-            echo "No enriched specs generated"
-            exit 0
-          fi
-
-          # Force release if no GitHub releases exist yet (fresh repo / migration)
-          RELEASE_COUNT=$(gh release list --limit 1 2>/dev/null | wc -l)
-          if [ "${RELEASE_COUNT:-0}" -eq 0 ]; then
-            echo "has_changes=true" >> "$GITHUB_OUTPUT"
-            CHANGE_TYPE="source"
-            echo "No releases found - forcing initial release"
-          else
-            # Compare with previous release or mark as changed for new runs
-            # Check for changes in source specs, pipeline config, or dependencies
-            if git diff --quiet HEAD~1 HEAD -- \
-              specs/original/ .github_release scripts/ config/ requirements.txt \
-              .github/workflows/sync-and-enrich.yml; then
-              echo "has_changes=false" >> "$GITHUB_OUTPUT"
-              echo "No changes in: specs, pipeline scripts, configs, or workflow"
-              exit 0
-            fi
-
-            echo "has_changes=true" >> "$GITHUB_OUTPUT"
-
-            # Determine change type for semantic versioning (as bash variable for use in this script)
-            if git diff --quiet HEAD~1 HEAD -- specs/original/ .github_release; then
-              CHANGE_TYPE="pipeline"
-              echo "Pipeline/config/workflow changes detected"
-            else
-              CHANGE_TYPE="source"
-              echo "Source spec changes detected"
-            fi
-          fi
-
-          # Output change type for downstream steps
-          echo "change_type=$CHANGE_TYPE" >> "$GITHUB_OUTPUT"
-
           # Get current version from git tags (eliminates race conditions from file-based versioning)
           CURRENT_VERSION=$(git describe --tags --abbrev=0 2>/dev/null | sed 's/^v//' || echo "0.0.0")
 
@@ -402,7 +360,7 @@ jobs:
           echo "::notice::Version: $CURRENT_VERSION -> $NEW_VERSION ($BUMP_TYPE)"
 
       - name: Update version in specs
-        if: steps.version.outputs.has_changes == 'true'
+        if: steps.detect.outputs.has_changes == 'true'
         env:
           VERSION: ${{ steps.version.outputs.new_version }}
         run: |
@@ -423,7 +381,7 @@ jobs:
           echo "Updated all specs to version $VERSION"
 
       - name: Verify version consistency
-        if: steps.version.outputs.has_changes == 'true'
+        if: steps.detect.outputs.has_changes == 'true'
         env:
           EXPECTED_VERSION: ${{ steps.version.outputs.new_version }}
         run: |
@@ -437,7 +395,7 @@ jobs:
           echo "Version consistent: $INDEX_VERSION"
 
       - name: Align catalog version with release
-        if: steps.version.outputs.has_changes == 'true'
+        if: steps.detect.outputs.has_changes == 'true'
         env:
           VERSION: ${{ steps.version.outputs.new_version }}
         run: |
@@ -464,7 +422,7 @@ jobs:
           fi
 
       - name: Generate changelog
-        if: steps.version.outputs.has_changes == 'true'
+        if: steps.detect.outputs.has_changes == 'true'
         env:
           VERSION: ${{ steps.version.outputs.new_version }}
           BUMP_TYPE: ${{ steps.version.outputs.bump_type }}
@@ -564,7 +522,7 @@ jobs:
           } > CHANGELOG.md
 
       - name: Upload docs artifact for deployment
-        if: steps.version.outputs.has_changes == 'true'
+        if: steps.detect.outputs.has_changes == 'true'
         uses: actions/upload-artifact@v7
         with:
           name: docs-site
@@ -572,7 +530,7 @@ jobs:
           retention-days: 1
 
       - name: Biome-format generated JSON for release PR
-        if: steps.version.outputs.has_changes == 'true'
+        if: steps.detect.outputs.has_changes == 'true'
         run: |
           # Re-run biome format on all generated output as a single batch.
           # json_writer.py already formats per-file during the pipeline, but
@@ -585,7 +543,7 @@ jobs:
           biome format --write docs/specifications/api/ docs/api-reference/ || true
 
       - name: Commit and tag release
-        if: steps.version.outputs.has_changes == 'true'
+        if: steps.detect.outputs.has_changes == 'true'
         env:
           GH_TOKEN: ${{ secrets.VERSION_BUMP_PAT }}
           VERSION: ${{ steps.version.outputs.new_version }}
@@ -673,7 +631,7 @@ jobs:
           fi
 
       - name: Create release package
-        if: steps.version.outputs.has_changes == 'true'
+        if: steps.detect.outputs.has_changes == 'true'
         env:
           VERSION: ${{ steps.version.outputs.new_version }}
         run: |
@@ -743,7 +701,7 @@ jobs:
           echo "::notice::Package created: ${ZIP_NAME}"
 
       - name: Create release
-        if: steps.version.outputs.has_changes == 'true'
+        if: steps.detect.outputs.has_changes == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VERSION: ${{ steps.version.outputs.new_version }}
