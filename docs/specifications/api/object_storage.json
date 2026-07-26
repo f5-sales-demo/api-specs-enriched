@@ -3,7 +3,7 @@
   "info": {
     "title": "Object Storage",
     "description": "Blob management for application component delivery across namespaces. Time-limited download links with cryptographic signing protect asset retrieval. Version-controlled packages organized by operating system type support artifact discovery. Query filtering by name, type, and release number enables programmatic access to integrator libraries and protection modules for mobile deployments.",
-    "version": "2.1.193",
+    "version": "2.1.194",
     "contact": {
       "name": "F5 Distributed Cloud",
       "url": "https://docs.cloud.f5.com"
@@ -1092,6 +1092,481 @@
       "x-ves-proto-service": "ves.io.schema.stored_object.MobileIntegratorCustomAPI",
       "x-ves-proto-service-type": "CUSTOM_PUBLIC"
     },
+    "/api/object_store/namespaces/{namespace}/stored_objects/mobile-sdk-self-serve": {
+      "get": {
+        "summary": "GET List Of Mobile SDKs self serve.",
+        "description": "ListMobileSDKs is an API to list all mobile SDKs available for download Bot advanced Self serve.",
+        "operationId": "ves.io.schema.stored_object.MobileSdkSelfServeCustomAPI.ListMobileSDKSelfServe",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/stored_objectListObjectsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Returned when operation is not authorized.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Returned when there is no permission to access resource.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Returned when resource is not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Returned when operation on resource is conflicting with current value.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Returned when operation has been rejected as it is happening too frequently.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Returned when server encountered an error in processing API.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Returned when service is unavailable temporarily.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Returned when server timed out processing request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "description": "Namespace\nx-required\nNamespace of the stored_object.",
+            "in": "path",
+            "required": true,
+            "x-displayname": "Namespace",
+            "schema": {
+              "type": "string"
+            },
+            "x-f5xc-example": "system"
+          },
+          {
+            "name": "object_type",
+            "description": "Optional query parameter. Type of the stored_object.",
+            "in": "query",
+            "required": false,
+            "x-displayname": "Object Type.",
+            "schema": {
+              "type": "string"
+            },
+            "x-f5xc-example": "swagger"
+          },
+          {
+            "name": "name",
+            "description": "Optional query parameter. Name of the stored_object.",
+            "in": "query",
+            "required": false,
+            "x-displayname": "Name",
+            "schema": {
+              "type": "string"
+            },
+            "x-f5xc-example": "example-file, shared/example-file, example-ns/example-file"
+          },
+          {
+            "name": "query_type",
+            "description": "Optional query parameter. The type of search query needs to be performed. Could be EXACT_MATCH or PREFIX_MATCH.\nEXACT_MATCH returns the objects with exact match on the name filed, while PREFIX_MATCH returns the list of object matching the 'name' prefix. Default is EXACT_MATCH.\n\n- EXACT_MATCH: EXACT_MATCH\n\nReturns list of objects with exact match on the name filed.\n- PREFIX_MATCH: PREFIX_MATCH\n\nReturns the list of object matching the 'name' prefix.",
+            "in": "query",
+            "required": false,
+            "x-displayname": "PREFIX MATCH.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "EXACT_MATCH",
+                "PREFIX_MATCH"
+              ],
+              "default": "EXACT_MATCH"
+            }
+          },
+          {
+            "name": "latest_version_only",
+            "description": "Optional query parameter. If passed, returns only latest version of the objects.",
+            "in": "query",
+            "required": false,
+            "x-displayname": "Latest Versions Only.",
+            "schema": {
+              "type": "boolean",
+              "format": "boolean"
+            }
+          }
+        ],
+        "externalDocs": {
+          "description": "Examples of this operation.",
+          "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/object_storage/"
+        },
+        "x-ves-proto-rpc": "ves.io.schema.stored_object.MobileSdkSelfServeCustomAPI.ListMobileSDKSelfServe",
+        "tags": [
+          "object_store"
+        ],
+        "x-f5xc-operation-metadata": {
+          "purpose": "Resource retrieval operation",
+          "required_fields": [
+            "path.namespace"
+          ],
+          "optional_fields": [],
+          "field_docs": {},
+          "conditions": {
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": []
+          },
+          "side_effects": {},
+          "danger_level": "low",
+          "confirmation_required": false,
+          "common_errors": [
+            {
+              "code": 401,
+              "message": "Authentication required",
+              "solution": "Provide valid API credentials"
+            },
+            {
+              "code": 403,
+              "message": "Permission denied",
+              "solution": "Check access permissions for this operation"
+            },
+            {
+              "code": 404,
+              "message": "Resource not found",
+              "solution": "Verify resource name, namespace, and path"
+            },
+            {
+              "code": 409,
+              "message": "Resource already exists",
+              "solution": "Use different name or update existing resource"
+            },
+            {
+              "code": 429,
+              "message": "Rate limit exceeded",
+              "solution": "Wait before retrying the operation"
+            },
+            {
+              "code": 500,
+              "message": "Server error",
+              "solution": "Retry operation or contact support"
+            }
+          ],
+          "performance_impact": {
+            "latency": "moderate",
+            "resource_usage": "moderate"
+          }
+        },
+        "x-f5xc-required-fields": [
+          "path.namespace"
+        ],
+        "x-f5xc-danger-level": "low",
+        "x-f5xc-discovered-response-time": {
+          "p50_ms": 200,
+          "p95_ms": 800,
+          "p99_ms": 2000,
+          "sample_count": 0,
+          "source": "estimate"
+        }
+      },
+      "x-displayname": "Stored Object.",
+      "x-ves-proto-service": "ves.io.schema.stored_object.MobileSdkSelfServeCustomAPI",
+      "x-ves-proto-service-type": "CUSTOM_PUBLIC"
+    },
+    "/api/object_store/namespaces/{namespace}/stored_objects/mobile-sdk-self-serve/{name}/{version}": {
+      "get": {
+        "summary": "GET Mobile SDK Self serve.",
+        "description": "GetMobileSDK is an API to download particular version of SDK for Bot advanced Self serve.",
+        "operationId": "ves.io.schema.stored_object.MobileSdkSelfServeCustomAPI.GetMobileSDKSelfServe",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/stored_objectGetObjectResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Returned when operation is not authorized.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Returned when there is no permission to access resource.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Returned when resource is not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Returned when operation on resource is conflicting with current value.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Returned when operation has been rejected as it is happening too frequently.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Returned when server encountered an error in processing API.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Returned when service is unavailable temporarily.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Returned when server timed out processing request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "description": "Namespace\nx-required\nNamespace of the stored_object.",
+            "in": "path",
+            "required": true,
+            "x-displayname": "Namespace",
+            "schema": {
+              "type": "string"
+            },
+            "x-f5xc-example": "system"
+          },
+          {
+            "name": "name",
+            "description": "Name\nx-required\nName of the stored_object.",
+            "in": "path",
+            "required": true,
+            "x-displayname": "Name",
+            "schema": {
+              "type": "string"
+            },
+            "x-f5xc-example": "volt-api-specs"
+          },
+          {
+            "name": "version",
+            "description": "Version\nVersion of the stored_object in \"v{n}-{YY}-{MM}-{DD}\" formatted string, where n is version number and YY/MM/DD is year, month and date.",
+            "in": "path",
+            "required": true,
+            "x-displayname": "Version",
+            "schema": {
+              "type": "string"
+            },
+            "x-f5xc-example": "v0-21-09-13"
+          },
+          {
+            "name": "object_type",
+            "description": "X-required\nType of the stored_object.",
+            "in": "query",
+            "required": false,
+            "x-displayname": "Object Type.",
+            "schema": {
+              "type": "string"
+            },
+            "x-f5xc-example": "swagger"
+          }
+        ],
+        "externalDocs": {
+          "description": "Examples of this operation.",
+          "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/object_storage/"
+        },
+        "x-ves-proto-rpc": "ves.io.schema.stored_object.MobileSdkSelfServeCustomAPI.GetMobileSDKSelfServe",
+        "tags": [
+          "object_store"
+        ],
+        "x-f5xc-operation-metadata": {
+          "purpose": "Resource retrieval operation",
+          "required_fields": [
+            "path.name",
+            "path.namespace",
+            "path.version"
+          ],
+          "optional_fields": [],
+          "field_docs": {},
+          "conditions": {
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": []
+          },
+          "side_effects": {},
+          "danger_level": "low",
+          "confirmation_required": false,
+          "common_errors": [
+            {
+              "code": 401,
+              "message": "Authentication required",
+              "solution": "Provide valid API credentials"
+            },
+            {
+              "code": 403,
+              "message": "Permission denied",
+              "solution": "Check access permissions for this operation"
+            },
+            {
+              "code": 404,
+              "message": "Resource not found",
+              "solution": "Verify resource name, namespace, and path"
+            },
+            {
+              "code": 409,
+              "message": "Resource already exists",
+              "solution": "Use different name or update existing resource"
+            },
+            {
+              "code": 429,
+              "message": "Rate limit exceeded",
+              "solution": "Wait before retrying the operation"
+            },
+            {
+              "code": 500,
+              "message": "Server error",
+              "solution": "Retry operation or contact support"
+            }
+          ],
+          "performance_impact": {
+            "latency": "low",
+            "resource_usage": "low"
+          }
+        },
+        "x-f5xc-required-fields": [
+          "path.name",
+          "path.namespace",
+          "path.version"
+        ],
+        "x-f5xc-danger-level": "low",
+        "x-f5xc-discovered-response-time": {
+          "p50_ms": 200,
+          "p95_ms": 800,
+          "p99_ms": 2000,
+          "sample_count": 0,
+          "source": "estimate"
+        }
+      },
+      "x-displayname": "Stored Object.",
+      "x-ves-proto-service": "ves.io.schema.stored_object.MobileSdkSelfServeCustomAPI",
+      "x-ves-proto-service-type": "CUSTOM_PUBLIC"
+    },
     "/api/object_store/namespaces/{namespace}/stored_objects/{object_type}": {
       "get": {
         "summary": "GET List Of Stored Objects.",
@@ -1341,7 +1816,7 @@
       "delete": {
         "summary": "DELETE Stored Object(s)",
         "description": "DeleteObjects is an API to DELETE object(s) in object store.",
-        "operationId": "ves.io.schema.stored_object.CustomAPI.DeleteObject",
+        "operationId": "ves.io.schema.stored_object.CustomAPI.DeleteObject_delete",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -2066,7 +2541,7 @@
       "delete": {
         "summary": "DELETE Stored Object(s)",
         "description": "DeleteObjects is an API to DELETE object(s) in object store.",
-        "operationId": "ves.io.schema.stored_object.CustomAPI.DeleteObject_delete_delete_delete",
+        "operationId": "ves.io.schema.stored_object.CustomAPI.DeleteObject_delete_1",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -2322,481 +2797,6 @@
       "x-displayname": "Stored Object.",
       "x-ves-proto-service": "ves.io.schema.stored_object.CustomAPI",
       "x-ves-proto-service-type": "CUSTOM_PUBLIC"
-    },
-    "/api/object_store/namespaces/{namespace}/stored_objects/mobile-sdk-self-serve": {
-      "get": {
-        "summary": "GET List Of Mobile SDKs self serve.",
-        "description": "ListMobileSDKs is an API to list all mobile SDKs available for download Bot advanced Self serve.",
-        "operationId": "ves.io.schema.stored_object.MobileSdkSelfServeCustomAPI.ListMobileSDKSelfServe",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/stored_objectListObjectsResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Returned when operation is not authorized.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string",
-                  "format": "string"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Returned when there is no permission to access resource.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string",
-                  "format": "string"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Returned when resource is not found.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string",
-                  "format": "string"
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "Returned when operation on resource is conflicting with current value.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string",
-                  "format": "string"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Returned when operation has been rejected as it is happening too frequently.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string",
-                  "format": "string"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Returned when server encountered an error in processing API.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string",
-                  "format": "string"
-                }
-              }
-            }
-          },
-          "503": {
-            "description": "Returned when service is unavailable temporarily.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string",
-                  "format": "string"
-                }
-              }
-            }
-          },
-          "504": {
-            "description": "Returned when server timed out processing request.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string",
-                  "format": "string"
-                }
-              }
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "namespace",
-            "description": "Namespace\nx-required\nNamespace of the stored_object.",
-            "in": "path",
-            "required": true,
-            "x-displayname": "Namespace",
-            "schema": {
-              "type": "string"
-            },
-            "x-f5xc-example": "system"
-          },
-          {
-            "name": "object_type",
-            "description": "Optional query parameter. Type of the stored_object.",
-            "in": "query",
-            "required": false,
-            "x-displayname": "Object Type.",
-            "schema": {
-              "type": "string"
-            },
-            "x-f5xc-example": "swagger"
-          },
-          {
-            "name": "name",
-            "description": "Optional query parameter. Name of the stored_object.",
-            "in": "query",
-            "required": false,
-            "x-displayname": "Name",
-            "schema": {
-              "type": "string"
-            },
-            "x-f5xc-example": "example-file, shared/example-file, example-ns/example-file"
-          },
-          {
-            "name": "query_type",
-            "description": "Optional query parameter. The type of search query needs to be performed. Could be EXACT_MATCH or PREFIX_MATCH.\nEXACT_MATCH returns the objects with exact match on the name filed, while PREFIX_MATCH returns the list of object matching the 'name' prefix. Default is EXACT_MATCH.\n\n- EXACT_MATCH: EXACT_MATCH\n\nReturns list of objects with exact match on the name filed.\n- PREFIX_MATCH: PREFIX_MATCH\n\nReturns the list of object matching the 'name' prefix.",
-            "in": "query",
-            "required": false,
-            "x-displayname": "PREFIX MATCH.",
-            "schema": {
-              "type": "string",
-              "enum": [
-                "EXACT_MATCH",
-                "PREFIX_MATCH"
-              ],
-              "default": "EXACT_MATCH"
-            }
-          },
-          {
-            "name": "latest_version_only",
-            "description": "Optional query parameter. If passed, returns only latest version of the objects.",
-            "in": "query",
-            "required": false,
-            "x-displayname": "Latest Versions Only.",
-            "schema": {
-              "type": "boolean",
-              "format": "boolean"
-            }
-          }
-        ],
-        "externalDocs": {
-          "description": "Examples of this operation.",
-          "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/object_storage/"
-        },
-        "x-ves-proto-rpc": "ves.io.schema.stored_object.MobileSdkSelfServeCustomAPI.ListMobileSDKSelfServe",
-        "tags": [
-          "object_store"
-        ],
-        "x-f5xc-operation-metadata": {
-          "purpose": "Resource retrieval operation",
-          "required_fields": [
-            "path.namespace"
-          ],
-          "optional_fields": [],
-          "field_docs": {},
-          "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": []
-          },
-          "side_effects": {},
-          "danger_level": "low",
-          "confirmation_required": false,
-          "common_errors": [
-            {
-              "code": 401,
-              "message": "Authentication required",
-              "solution": "Provide valid API credentials"
-            },
-            {
-              "code": 403,
-              "message": "Permission denied",
-              "solution": "Check access permissions for this operation"
-            },
-            {
-              "code": 404,
-              "message": "Resource not found",
-              "solution": "Verify resource name, namespace, and path"
-            },
-            {
-              "code": 409,
-              "message": "Resource already exists",
-              "solution": "Use different name or update existing resource"
-            },
-            {
-              "code": 429,
-              "message": "Rate limit exceeded",
-              "solution": "Wait before retrying the operation"
-            },
-            {
-              "code": 500,
-              "message": "Server error",
-              "solution": "Retry operation or contact support"
-            }
-          ],
-          "performance_impact": {
-            "latency": "moderate",
-            "resource_usage": "moderate"
-          }
-        },
-        "x-f5xc-required-fields": [
-          "path.namespace"
-        ],
-        "x-f5xc-danger-level": "low",
-        "x-f5xc-discovered-response-time": {
-          "p50_ms": 200,
-          "p95_ms": 800,
-          "p99_ms": 2000,
-          "sample_count": 0,
-          "source": "estimate"
-        }
-      },
-      "x-displayname": "Stored Object.",
-      "x-ves-proto-service": "ves.io.schema.stored_object.MobileSdkSelfServeCustomAPI",
-      "x-ves-proto-service-type": "CUSTOM_PUBLIC"
-    },
-    "/api/object_store/namespaces/{namespace}/stored_objects/mobile-sdk-self-serve/{name}/{version}": {
-      "get": {
-        "summary": "GET Mobile SDK Self serve.",
-        "description": "GetMobileSDK is an API to download particular version of SDK for Bot advanced Self serve.",
-        "operationId": "ves.io.schema.stored_object.MobileSdkSelfServeCustomAPI.GetMobileSDKSelfServe",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/stored_objectGetObjectResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Returned when operation is not authorized.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string",
-                  "format": "string"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Returned when there is no permission to access resource.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string",
-                  "format": "string"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Returned when resource is not found.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string",
-                  "format": "string"
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "Returned when operation on resource is conflicting with current value.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string",
-                  "format": "string"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Returned when operation has been rejected as it is happening too frequently.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string",
-                  "format": "string"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Returned when server encountered an error in processing API.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string",
-                  "format": "string"
-                }
-              }
-            }
-          },
-          "503": {
-            "description": "Returned when service is unavailable temporarily.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string",
-                  "format": "string"
-                }
-              }
-            }
-          },
-          "504": {
-            "description": "Returned when server timed out processing request.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string",
-                  "format": "string"
-                }
-              }
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "namespace",
-            "description": "Namespace\nx-required\nNamespace of the stored_object.",
-            "in": "path",
-            "required": true,
-            "x-displayname": "Namespace",
-            "schema": {
-              "type": "string"
-            },
-            "x-f5xc-example": "system"
-          },
-          {
-            "name": "name",
-            "description": "Name\nx-required\nName of the stored_object.",
-            "in": "path",
-            "required": true,
-            "x-displayname": "Name",
-            "schema": {
-              "type": "string"
-            },
-            "x-f5xc-example": "volt-api-specs"
-          },
-          {
-            "name": "version",
-            "description": "Version\nVersion of the stored_object in \"v{n}-{YY}-{MM}-{DD}\" formatted string, where n is version number and YY/MM/DD is year, month and date.",
-            "in": "path",
-            "required": true,
-            "x-displayname": "Version",
-            "schema": {
-              "type": "string"
-            },
-            "x-f5xc-example": "v0-21-09-13"
-          },
-          {
-            "name": "object_type",
-            "description": "X-required\nType of the stored_object.",
-            "in": "query",
-            "required": false,
-            "x-displayname": "Object Type.",
-            "schema": {
-              "type": "string"
-            },
-            "x-f5xc-example": "swagger"
-          }
-        ],
-        "externalDocs": {
-          "description": "Examples of this operation.",
-          "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/object_storage/"
-        },
-        "x-ves-proto-rpc": "ves.io.schema.stored_object.MobileSdkSelfServeCustomAPI.GetMobileSDKSelfServe",
-        "tags": [
-          "object_store"
-        ],
-        "x-f5xc-operation-metadata": {
-          "purpose": "Resource retrieval operation",
-          "required_fields": [
-            "path.name",
-            "path.namespace",
-            "path.version"
-          ],
-          "optional_fields": [],
-          "field_docs": {},
-          "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": []
-          },
-          "side_effects": {},
-          "danger_level": "low",
-          "confirmation_required": false,
-          "common_errors": [
-            {
-              "code": 401,
-              "message": "Authentication required",
-              "solution": "Provide valid API credentials"
-            },
-            {
-              "code": 403,
-              "message": "Permission denied",
-              "solution": "Check access permissions for this operation"
-            },
-            {
-              "code": 404,
-              "message": "Resource not found",
-              "solution": "Verify resource name, namespace, and path"
-            },
-            {
-              "code": 409,
-              "message": "Resource already exists",
-              "solution": "Use different name or update existing resource"
-            },
-            {
-              "code": 429,
-              "message": "Rate limit exceeded",
-              "solution": "Wait before retrying the operation"
-            },
-            {
-              "code": 500,
-              "message": "Server error",
-              "solution": "Retry operation or contact support"
-            }
-          ],
-          "performance_impact": {
-            "latency": "low",
-            "resource_usage": "low"
-          }
-        },
-        "x-f5xc-required-fields": [
-          "path.name",
-          "path.namespace",
-          "path.version"
-        ],
-        "x-f5xc-danger-level": "low",
-        "x-f5xc-discovered-response-time": {
-          "p50_ms": 200,
-          "p95_ms": 800,
-          "p99_ms": 2000,
-          "sample_count": 0,
-          "source": "estimate"
-        }
-      },
-      "x-displayname": "Stored Object.",
-      "x-ves-proto-service": "ves.io.schema.stored_object.MobileSdkSelfServeCustomAPI",
-      "x-ves-proto-service-type": "CUSTOM_PUBLIC"
     }
   },
   "components": {
@@ -2904,7 +2904,7 @@
         "title": "CreateObjectRequest",
         "x-displayname": "Create Object Request.",
         "x-ves-oneof-field-contents": "[\"bytes_value\",\"string_value\"]",
-        "x-ves-oneof-field-object_attributes": "[\"mobile_app_shield\",\"mobile_integrator\",\"mobile_sdk\",\"no_attributes\"]",
+        "x-ves-oneof-field-object_attributes": "[\"mobile_app_shield\",\"mobile_integrator\",\"mobile_sdk\",\"mobile_sdk_self_serve\",\"no_attributes\"]",
         "x-ves-proto-message": "ves.io.schema.stored_object.CreateObjectRequest",
         "properties": {
           "bytes_value": {
@@ -2930,7 +2930,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:03:54.911571+00:00"
+                "validatedAt": "2026-07-26T03:15:07.218456+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -2972,7 +2972,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:03:54.911713+00:00"
+                "validatedAt": "2026-07-26T03:15:07.218693+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -3008,7 +3008,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-25T22:03:54.911817+00:00"
+                "validatedAt": "2026-07-26T03:15:07.218858+00:00"
               },
               "deterministic": true
             },
@@ -3020,7 +3020,7 @@
             },
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:30.123340+00:00"
+            "x-reconciled-at": "2026-07-26T03:17:38.774657+00:00"
           },
           "mobile_app_shield": {
             "allOf": [
@@ -3038,6 +3038,7 @@
             "x-f5xc-conflicts-with": [
               "mobile_integrator",
               "mobile_sdk",
+              "mobile_sdk_self_serve",
               "no_attributes"
             ]
           },
@@ -3057,6 +3058,7 @@
             "x-f5xc-conflicts-with": [
               "mobile_app_shield",
               "mobile_sdk",
+              "mobile_sdk_self_serve",
               "no_attributes"
             ]
           },
@@ -3076,6 +3078,27 @@
             "x-f5xc-conflicts-with": [
               "mobile_app_shield",
               "mobile_integrator",
+              "mobile_sdk_self_serve",
+              "no_attributes"
+            ]
+          },
+          "mobile_sdk_self_serve": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/stored_objectMobileSDKAttributes"
+              }
+            ],
+            "x-f5xc-example": "{\"key\": \"value\"}",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "mobile_app_shield",
+              "mobile_integrator",
+              "mobile_sdk",
               "no_attributes"
             ]
           },
@@ -3123,7 +3146,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-25T22:03:54.911912+00:00"
+                "validatedAt": "2026-07-26T03:15:07.218974+00:00"
               },
               "deterministic": true
             },
@@ -3172,7 +3195,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-25T22:03:54.911957+00:00"
+                "validatedAt": "2026-07-26T03:15:07.219046+00:00"
               },
               "deterministic": true
             },
@@ -3184,7 +3207,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:30.123414+00:00",
+            "x-reconciled-at": "2026-07-26T03:17:38.774739+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "no_attributes": {
@@ -3203,7 +3226,8 @@
             "x-f5xc-conflicts-with": [
               "mobile_app_shield",
               "mobile_integrator",
-              "mobile_sdk"
+              "mobile_sdk",
+              "mobile_sdk_self_serve"
             ]
           },
           "object_type": {
@@ -3215,12 +3239,12 @@
             "x-ves-required": "true",
             "x-ves-validation-rules": {
               "ves.io.schema.rules.message.required": "true",
-              "ves.io.schema.rules.string.in": "[\\\"swagger\\\", \\\"generic\\\", \\\"big-object\\\", \\\"mobile-sdk\\\", \\\"mobile-integrator\\\", \\\"mobile-app-shield\\\"]"
+              "ves.io.schema.rules.string.in": "[\\\"swagger\\\", \\\"generic\\\", \\\"big-object\\\", \\\"mobile-sdk\\\", \\\"mobile-integrator\\\", \\\"mobile-app-shield\\\", \\\"mobile-sdk-self-serve\\\"]"
             },
             "x-f5xc-example": "swagger",
             "x-validation-rules": {
               "ves.io.schema.rules.message.required": "true",
-              "ves.io.schema.rules.string.in": "[\\\"swagger\\\", \\\"generic\\\", \\\"big-object\\\", \\\"mobile-sdk\\\", \\\"mobile-integrator\\\", \\\"mobile-app-shield\\\"]"
+              "ves.io.schema.rules.string.in": "[\\\"swagger\\\", \\\"generic\\\", \\\"big-object\\\", \\\"mobile-sdk\\\", \\\"mobile-integrator\\\", \\\"mobile-app-shield\\\", \\\"mobile-sdk-self-serve\\\"]"
             },
             "x-f5xc-description-short": "Type of the stored_object Required: YES.",
             "maxLength": 1024,
@@ -3240,7 +3264,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:03:54.912052+00:00"
+                "validatedAt": "2026-07-26T03:15:07.219166+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -3271,7 +3295,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-25T22:03:54.912130+00:00"
+                "validatedAt": "2026-07-26T03:15:07.219258+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -3283,20 +3307,6 @@
             "x-f5xc-conflicts-with": [
               "bytes_value"
             ]
-          },
-          "mobile_sdk_self_serve": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/stored_objectMobileSDKAttributes"
-              }
-            ],
-            "x-f5xc-example": "{\"key\": \"value\"}",
-            "x-f5xc-required-for": {
-              "minimum_config": false,
-              "create": false,
-              "update": false,
-              "read": false
-            }
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -3308,6 +3318,7 @@
             "mobile_app_shield",
             "mobile_integrator",
             "mobile_sdk",
+            "mobile_sdk_self_serve",
             "name",
             "namespace",
             "no_attributes",
@@ -3410,7 +3421,7 @@
             "maxLength": 17,
             "minLength": 17,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:30.123496+00:00"
+            "x-reconciled-at": "2026-07-26T03:17:38.774830+00:00"
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -3534,7 +3545,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:03:54.912221+00:00"
+                "validatedAt": "2026-07-26T03:15:07.219358+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -3564,7 +3575,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:03:54.912271+00:00"
+                "validatedAt": "2026-07-26T03:15:07.219413+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -3627,7 +3638,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-25T22:03:54.912362+00:00"
+                "validatedAt": "2026-07-26T03:15:07.219512+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -3681,7 +3692,7 @@
         "description": "A descriptor for list response item.",
         "title": "ListItemDescriptor",
         "x-displayname": "List Item Descriptor.",
-        "x-ves-oneof-field-object_attributes": "[\"mobile_app_shield\",\"mobile_integrator\",\"mobile_sdk\",\"no_attributes\"]",
+        "x-ves-oneof-field-object_attributes": "[\"mobile_app_shield\",\"mobile_integrator\",\"mobile_sdk\",\"mobile_sdk_self_serve\",\"no_attributes\"]",
         "x-ves-proto-message": "ves.io.schema.stored_object.ListItemDescriptor",
         "properties": {
           "mobile_app_shield": {
@@ -3700,6 +3711,7 @@
             "x-f5xc-conflicts-with": [
               "mobile_integrator",
               "mobile_sdk",
+              "mobile_sdk_self_serve",
               "no_attributes"
             ]
           },
@@ -3719,6 +3731,7 @@
             "x-f5xc-conflicts-with": [
               "mobile_app_shield",
               "mobile_sdk",
+              "mobile_sdk_self_serve",
               "no_attributes"
             ]
           },
@@ -3738,6 +3751,27 @@
             "x-f5xc-conflicts-with": [
               "mobile_app_shield",
               "mobile_integrator",
+              "mobile_sdk_self_serve",
+              "no_attributes"
+            ]
+          },
+          "mobile_sdk_self_serve": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/stored_objectMobileSDKAttributes"
+              }
+            ],
+            "x-f5xc-example": "{\"key\": \"value\"}",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "mobile_app_shield",
+              "mobile_integrator",
+              "mobile_sdk",
               "no_attributes"
             ]
           },
@@ -3769,7 +3803,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-25T22:03:54.912439+00:00"
+                "validatedAt": "2026-07-26T03:15:07.219572+00:00"
               },
               "deterministic": true
             },
@@ -3781,7 +3815,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:30.123603+00:00",
+            "x-reconciled-at": "2026-07-26T03:17:38.774962+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "no_attributes": {
@@ -3800,7 +3834,8 @@
             "x-f5xc-conflicts-with": [
               "mobile_app_shield",
               "mobile_integrator",
-              "mobile_sdk"
+              "mobile_sdk",
+              "mobile_sdk_self_serve"
             ]
           },
           "tenant": {
@@ -3818,7 +3853,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:03:54.912487+00:00"
+                "validatedAt": "2026-07-26T03:15:07.219622+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -3830,7 +3865,7 @@
             "x-field-mutability": "read-only",
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:30.123637+00:00"
+            "x-reconciled-at": "2026-07-26T03:17:38.775019+00:00"
           },
           "versions": {
             "type": "array",
@@ -3847,20 +3882,6 @@
               "update": false,
               "read": false
             }
-          },
-          "mobile_sdk_self_serve": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/stored_objectMobileSDKAttributes"
-              }
-            ],
-            "x-f5xc-example": "{\"key\": \"value\"}",
-            "x-f5xc-required-for": {
-              "minimum_config": false,
-              "create": false,
-              "update": false,
-              "read": false
-            }
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -3869,14 +3890,15 @@
             "mobile_app_shield",
             "mobile_integrator",
             "mobile_sdk",
+            "mobile_sdk_self_serve",
             "name",
             "no_attributes",
             "tenant",
             "versions"
           ],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for stored_objectListItemDescriptor\nmetadata:\n  name: example\n  namespace: default\nspec:\n  mobile_app_shield: value\n  mobile_integrator: value\n  mobile_sdk: value\n  name: value\n  no_attributes: value",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"mobile_app_shield\": \"value\",\n    \"mobile_integrator\": \"value\",\n    \"mobile_sdk\": \"value\",\n    \"name\": \"value\",\n    \"no_attributes\": \"value\"\n  }\n}"
+          "example_yaml": "# Minimal example for stored_objectListItemDescriptor\nmetadata:\n  name: example\n  namespace: default\nspec:\n  mobile_app_shield: value\n  mobile_integrator: value\n  mobile_sdk: value\n  mobile_sdk_self_serve: value\n  name: value",
+          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"mobile_app_shield\": \"value\",\n    \"mobile_integrator\": \"value\",\n    \"mobile_sdk\": \"value\",\n    \"mobile_sdk_self_serve\": \"value\",\n    \"name\": \"value\"\n  }\n}"
         },
         "x-f5xc-cli-domain": "object_storage",
         "x-f5xc-namespace-profile": {
@@ -3925,7 +3947,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.7,
-                "validatedAt": "2026-07-25T22:03:54.912545+00:00"
+                "validatedAt": "2026-07-26T03:15:07.219688+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4010,7 +4032,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-25T22:03:54.912638+00:00"
+                "validatedAt": "2026-07-26T03:15:07.219788+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4097,7 +4119,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-25T22:03:54.912726+00:00"
+                "validatedAt": "2026-07-26T03:15:07.219883+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4175,7 +4197,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:03:54.912782+00:00"
+                "validatedAt": "2026-07-26T03:15:07.219943+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4355,7 +4377,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.9,
-                "validatedAt": "2026-07-25T22:03:54.912834+00:00"
+                "validatedAt": "2026-07-26T03:15:07.220018+00:00"
               },
               "deterministic": true
             },
@@ -4403,7 +4425,7 @@
         "description": "Response for GET, Create APIs.",
         "title": "StoredObjectDescriptor",
         "x-displayname": "Object Metadata Response.",
-        "x-ves-oneof-field-object_attributes": "[\"mobile_app_shield\",\"mobile_integrator\",\"mobile_sdk\",\"no_attributes\"]",
+        "x-ves-oneof-field-object_attributes": "[\"mobile_app_shield\",\"mobile_integrator\",\"mobile_sdk\",\"mobile_sdk_self_serve\",\"no_attributes\"]",
         "x-ves-proto-message": "ves.io.schema.stored_object.StoredObjectDescriptor",
         "properties": {
           "creation_timestamp": {
@@ -4429,7 +4451,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:03:54.912894+00:00"
+                "validatedAt": "2026-07-26T03:15:07.220086+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4464,7 +4486,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-25T22:03:54.912984+00:00"
+                "validatedAt": "2026-07-26T03:15:07.220191+00:00"
               },
               "deterministic": true
             },
@@ -4476,7 +4498,7 @@
             },
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:30.123778+00:00"
+            "x-reconciled-at": "2026-07-26T03:17:38.775184+00:00"
           },
           "mobile_app_shield": {
             "allOf": [
@@ -4494,6 +4516,7 @@
             "x-f5xc-conflicts-with": [
               "mobile_integrator",
               "mobile_sdk",
+              "mobile_sdk_self_serve",
               "no_attributes"
             ]
           },
@@ -4513,6 +4536,7 @@
             "x-f5xc-conflicts-with": [
               "mobile_app_shield",
               "mobile_sdk",
+              "mobile_sdk_self_serve",
               "no_attributes"
             ]
           },
@@ -4532,6 +4556,27 @@
             "x-f5xc-conflicts-with": [
               "mobile_app_shield",
               "mobile_integrator",
+              "mobile_sdk_self_serve",
+              "no_attributes"
+            ]
+          },
+          "mobile_sdk_self_serve": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/stored_objectMobileSDKAttributes"
+              }
+            ],
+            "x-f5xc-example": "{\"key\": \"value\"}",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "mobile_app_shield",
+              "mobile_integrator",
+              "mobile_sdk",
               "no_attributes"
             ]
           },
@@ -4571,7 +4616,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-25T22:03:54.913033+00:00"
+                "validatedAt": "2026-07-26T03:15:07.220252+00:00"
               },
               "deterministic": true
             },
@@ -4583,7 +4628,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:30.123827+00:00",
+            "x-reconciled-at": "2026-07-26T03:17:38.775250+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace": {
@@ -4622,7 +4667,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-25T22:03:54.913074+00:00"
+                "validatedAt": "2026-07-26T03:15:07.220300+00:00"
               },
               "deterministic": true
             },
@@ -4634,7 +4679,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:30.123850+00:00",
+            "x-reconciled-at": "2026-07-26T03:17:38.775278+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "no_attributes": {
@@ -4653,7 +4698,8 @@
             "x-f5xc-conflicts-with": [
               "mobile_app_shield",
               "mobile_integrator",
-              "mobile_sdk"
+              "mobile_sdk",
+              "mobile_sdk_self_serve"
             ]
           },
           "url": {
@@ -4684,7 +4730,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.9,
-                "validatedAt": "2026-07-25T22:03:54.913117+00:00"
+                "validatedAt": "2026-07-26T03:15:07.220352+00:00"
               },
               "deterministic": true
             },
@@ -4717,7 +4763,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:03:54.913164+00:00"
+                "validatedAt": "2026-07-26T03:15:07.220405+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4728,21 +4774,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:30.123891+00:00"
-          },
-          "mobile_sdk_self_serve": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/stored_objectMobileSDKAttributes"
-              }
-            ],
-            "x-f5xc-example": "{\"key\": \"value\"}",
-            "x-f5xc-required-for": {
-              "minimum_config": false,
-              "create": false,
-              "update": false,
-              "read": false
-            }
+            "x-reconciled-at": "2026-07-26T03:17:38.775325+00:00"
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -4753,6 +4785,7 @@
             "mobile_app_shield",
             "mobile_integrator",
             "mobile_sdk",
+            "mobile_sdk_self_serve",
             "name",
             "namespace",
             "no_attributes",
@@ -4857,7 +4890,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:03:54.913224+00:00"
+                "validatedAt": "2026-07-26T03:15:07.220471+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4892,7 +4925,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-25T22:03:54.913311+00:00"
+                "validatedAt": "2026-07-26T03:15:07.220574+00:00"
               },
               "deterministic": true
             },
@@ -4904,7 +4937,7 @@
             },
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:30.123926+00:00"
+            "x-reconciled-at": "2026-07-26T03:17:38.775367+00:00"
           },
           "latest_version": {
             "type": "boolean",
@@ -4948,7 +4981,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.9,
-                "validatedAt": "2026-07-25T22:03:54.913358+00:00"
+                "validatedAt": "2026-07-26T03:15:07.220626+00:00"
               },
               "deterministic": true
             },
@@ -4973,7 +5006,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:03:54.913409+00:00"
+                "validatedAt": "2026-07-26T03:15:07.220671+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4984,7 +5017,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:30.123968+00:00"
+            "x-reconciled-at": "2026-07-26T03:17:38.775415+00:00"
           }
         },
         "x-f5xc-minimum-configuration": {

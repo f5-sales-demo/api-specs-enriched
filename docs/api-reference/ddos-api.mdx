@@ -9,7 +9,7 @@ Deny lists, firewall rule groups, and tunnel-based safeguards. Rate limiting and
 
 - **Category**: Security
 - **Complexity**: advanced
-- **Paths**: 60 | **Schemas**: 246
+- **Paths**: 65 | **Schemas**: 262
 - **Tier**: Advanced
 - **Related domains**: `network_security`, `virtual`
 
@@ -46,6 +46,7 @@ Deny lists, firewall rule groups, and tunnel-based safeguards. Rate limiting and
 | GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/events_summary` | Simple events view. |
 | GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/mitigation/&#123;mitigation_id&#125;` | Mitigation details. |
 | GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/mitigation/&#123;mitigation_id&#125;/annotations` | Mitigation annotations. |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/mitigation/&#123;mitigation_id&#125;/countermeasures` | Mitigation Countermeasures. |
 | GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/mitigation/&#123;mitigation_id&#125;/ips` | Mitigation IPs. |
 | POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/mitigations` | List of mitigations. |
 | GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/networks` | List networks. |
@@ -81,7 +82,6 @@ Deny lists, firewall rule groups, and tunnel-based safeguards. Rate limiting and
 | GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_firewall_rule_groups` | List Infraprotect Firewall Rule Group. |
 | GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_firewall_rule_groups/&#123;name&#125;` | GET Infraprotect Firewall Rule Group. |
 | DELETE | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_firewall_rule_groups/&#123;name&#125;` | DELETE Infraprotect Firewall Rule Group. |
-| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect/mitigation/&#123;mitigation_id&#125;/countermeasures` | Mitigation Countermeasures. |
 | PUT | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_firewall_rulesets/&#123;metadata.name&#125;` | Replace DDoS transit Firewall Ruleset. |
 | GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_firewall_rulesets` | List Infraprotect Firewall Ruleset. |
 | GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_firewall_rulesets/&#123;name&#125;` | GET Infraprotect Firewall Ruleset. |
@@ -92,9 +92,15 @@ Deny lists, firewall rule groups, and tunnel-based safeguards. Rate limiting and
 | POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_internet_prefix_advertisements/update-advertisement-status` | Update Infraprotect Internet prefix advertisement. |
 | GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_internet_prefix_advertisements/&#123;name&#125;` | GET Infraprotect Internet Prefix. |
 | DELETE | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_internet_prefix_advertisements/&#123;name&#125;` | DELETE Infraprotect Internet Prefix Advertisement. |
+| POST | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_packet_captures` | Create DDoS transit Packet Capture. |
+| PUT | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_packet_captures/&#123;metadata.name&#125;` | Replace DDoS transit Packet Capture. |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_packet_captures` | List Infraprotect Packet Capture. |
+| GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_packet_captures/&#123;name&#125;` | GET Infraprotect Packet Capture. |
+| DELETE | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_packet_captures/&#123;name&#125;` | DELETE Infraprotect Packet Capture. |
 | POST | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_tunnels` | Create DDoS Transit Tunnel. |
 | PUT | `/api/infraprotect/namespaces/&#123;metadata.namespace&#125;/infraprotect_tunnels/&#123;metadata.name&#125;` | Replace DDoS Transit Tunnel. |
 | GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_tunnels` | List Tunnel. |
+| POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_tunnels/update-tunnel-clear-df-bit` | Update Tunnel Clear DF Bit. |
 | POST | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_tunnels/update-tunnel-status` | Update Tunnel Status. |
 | GET | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_tunnels/&#123;name&#125;` | GET Tunnel. |
 | DELETE | `/api/infraprotect/namespaces/&#123;namespace&#125;/infraprotect_tunnels/&#123;name&#125;` | DELETE Tunnel. |

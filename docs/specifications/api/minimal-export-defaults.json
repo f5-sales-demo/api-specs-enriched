@@ -187,13 +187,30 @@
       ]
     },
     "api_discovery": {
-      "fieldConflicts": {},
+      "fieldConflicts": {
+        "spec.user_defined_api_discovery_policy.exclusive": [
+          "inclusive"
+        ],
+        "spec.user_defined_api_discovery_policy.exclusive.archive": [
+          "ignore"
+        ],
+        "spec.user_defined_api_discovery_policy.exclusive.ignore": [
+          "archive"
+        ],
+        "spec.user_defined_api_discovery_policy.inclusive": [
+          "exclusive"
+        ]
+      },
       "fieldDefaults": {
-        "spec.custom_auth_types": []
+        "spec.custom_auth_types": [],
+        "spec.user_defined_api_discovery_policy.discovery_rules": [],
+        "spec.user_defined_api_discovery_policy.inclusive": {}
       },
       "minimumConfigFields": [],
       "serverDefaultFields": [
-        "spec.custom_auth_types"
+        "spec.custom_auth_types",
+        "spec.user_defined_api_discovery_policy.discovery_rules",
+        "spec.user_defined_api_discovery_policy.inclusive"
       ]
     },
     "app_firewall": {
@@ -520,6 +537,12 @@
         "spec.ingress_egress_gw.performance_enhancement_mode.perf_mode_l7_enhanced": [
           "perf_mode_l3_enhanced"
         ],
+        "spec.ingress_egress_gw.performance_enhancement_mode.perf_mode_l7_enhanced.jumbo_disabled": [
+          "jumbo_enabled"
+        ],
+        "spec.ingress_egress_gw.performance_enhancement_mode.perf_mode_l7_enhanced.jumbo_enabled": [
+          "jumbo_disabled"
+        ],
         "spec.ingress_egress_gw.sm_connection_public_ip": [
           "sm_connection_pvt_ip"
         ],
@@ -703,6 +726,12 @@
         "spec.ingress_egress_gw_ar.performance_enhancement_mode.perf_mode_l7_enhanced": [
           "perf_mode_l3_enhanced"
         ],
+        "spec.ingress_egress_gw_ar.performance_enhancement_mode.perf_mode_l7_enhanced.jumbo_disabled": [
+          "jumbo_enabled"
+        ],
+        "spec.ingress_egress_gw_ar.performance_enhancement_mode.perf_mode_l7_enhanced.jumbo_enabled": [
+          "jumbo_disabled"
+        ],
         "spec.ingress_egress_gw_ar.sm_connection_public_ip": [
           "sm_connection_pvt_ip"
         ],
@@ -733,6 +762,12 @@
         ],
         "spec.ingress_gw.performance_enhancement_mode.perf_mode_l7_enhanced": [
           "perf_mode_l3_enhanced"
+        ],
+        "spec.ingress_gw.performance_enhancement_mode.perf_mode_l7_enhanced.jumbo_disabled": [
+          "jumbo_enabled"
+        ],
+        "spec.ingress_gw.performance_enhancement_mode.perf_mode_l7_enhanced.jumbo_enabled": [
+          "jumbo_disabled"
         ],
         "spec.ingress_gw_ar": [
           "ingress_egress_gw",
@@ -770,6 +805,12 @@
         ],
         "spec.ingress_gw_ar.performance_enhancement_mode.perf_mode_l7_enhanced": [
           "perf_mode_l3_enhanced"
+        ],
+        "spec.ingress_gw_ar.performance_enhancement_mode.perf_mode_l7_enhanced.jumbo_disabled": [
+          "jumbo_enabled"
+        ],
+        "spec.ingress_gw_ar.performance_enhancement_mode.perf_mode_l7_enhanced.jumbo_enabled": [
+          "jumbo_disabled"
         ],
         "spec.kubernetes_upgrade_drain.disable_upgrade_drain": [
           "enable_upgrade_drain"
@@ -1909,6 +1950,12 @@
           "dns_logs",
           "security_events"
         ],
+        "spec.request_logs.sampled": [
+          "unsampled"
+        ],
+        "spec.request_logs.unsampled": [
+          "sampled"
+        ],
         "spec.s3_receiver": [
           "aws_cloud_watch_receiver",
           "azure_event_hubs_receiver",
@@ -2075,7 +2122,8 @@
         ]
       },
       "fieldDefaults": {
-        "spec.ns_current": {}
+        "spec.ns_current": {},
+        "spec.request_logs.sampled": {}
       },
       "minimumConfigFields": [
         "spec.aws_cloud_watch_receiver.aws_cred.name",
@@ -2114,7 +2162,8 @@
         "spec.sumo_logic_receiver.url.clear_secret_info.url"
       ],
       "serverDefaultFields": [
-        "spec.ns_current"
+        "spec.ns_current",
+        "spec.request_logs.sampled"
       ]
     },
     "healthcheck": {
@@ -2482,8 +2531,8 @@
           "circuit_breaker",
           "default_circuit_breaker"
         ],
-        "spec.default_pool.advanced_options.disable_lb_source_ip_persistance": [
-          "enable_lb_source_ip_persistance"
+        "spec.default_pool.advanced_options.disable_lb_source_ip_persistence": [
+          "enable_lb_source_ip_persistence"
         ],
         "spec.default_pool.advanced_options.disable_outlier_detection": [
           "outlier_detection"
@@ -2495,8 +2544,8 @@
         "spec.default_pool.advanced_options.disable_subsets": [
           "enable_subsets"
         ],
-        "spec.default_pool.advanced_options.enable_lb_source_ip_persistance": [
-          "disable_lb_source_ip_persistance"
+        "spec.default_pool.advanced_options.enable_lb_source_ip_persistence": [
+          "disable_lb_source_ip_persistence"
         ],
         "spec.default_pool.advanced_options.enable_subsets": [
           "disable_subsets"
@@ -3096,6 +3145,12 @@
         ],
         "spec.jwt_validation.action.report": [
           "block"
+        ],
+        "spec.jwt_validation.authorization_server": [
+          "jwks_config"
+        ],
+        "spec.jwt_validation.jwks_config": [
+          "authorization_server"
         ],
         "spec.jwt_validation.reserved_claims.audience": [
           "audience_disable"
@@ -3766,8 +3821,8 @@
           "circuit_breaker",
           "default_circuit_breaker"
         ],
-        "spec.advanced_options.disable_lb_source_ip_persistance": [
-          "enable_lb_source_ip_persistance"
+        "spec.advanced_options.disable_lb_source_ip_persistence": [
+          "enable_lb_source_ip_persistence"
         ],
         "spec.advanced_options.disable_outlier_detection": [
           "outlier_detection"
@@ -3779,8 +3834,8 @@
         "spec.advanced_options.disable_subsets": [
           "enable_subsets"
         ],
-        "spec.advanced_options.enable_lb_source_ip_persistance": [
-          "disable_lb_source_ip_persistance"
+        "spec.advanced_options.enable_lb_source_ip_persistence": [
+          "disable_lb_source_ip_persistence"
         ],
         "spec.advanced_options.enable_subsets": [
           "disable_subsets"
@@ -4046,7 +4101,9 @@
       "fieldDefaults": {
         "spec.user_identification": []
       },
-      "minimumConfigFields": [],
+      "minimumConfigFields": [
+        "spec.limits"
+      ],
       "serverDefaultFields": [
         "spec.user_identification"
       ]
@@ -4106,6 +4163,7 @@
           "kvm",
           "nutanix",
           "oci",
+          "openshift_virtualization",
           "openstack",
           "vmware"
         ],
@@ -4117,6 +4175,7 @@
           "kvm",
           "nutanix",
           "oci",
+          "openshift_virtualization",
           "openstack",
           "vmware"
         ],
@@ -4128,6 +4187,7 @@
           "kvm",
           "nutanix",
           "oci",
+          "openshift_virtualization",
           "openstack",
           "vmware"
         ],
@@ -4162,8 +4222,14 @@
           "no_s2s_connectivity_slo",
           "site_mesh_group_on_slo"
         ],
+        "spec.disable_advanced_delivery": [
+          "enable_advanced_delivery"
+        ],
         "spec.disable_ha": [
           "enable_ha"
+        ],
+        "spec.disable_log_anonymization": [
+          "enable_log_anonymization"
         ],
         "spec.disable_management_network": [
           "enable_management_network"
@@ -4183,8 +4249,14 @@
         "spec.dns_ntp_config.f5_ntp_default": [
           "custom_ntp"
         ],
+        "spec.enable_advanced_delivery": [
+          "disable_advanced_delivery"
+        ],
         "spec.enable_ha": [
           "disable_ha"
+        ],
+        "spec.enable_log_anonymization": [
+          "disable_log_anonymization"
         ],
         "spec.enable_management_network": [
           "disable_management_network"
@@ -4200,6 +4272,7 @@
           "kvm",
           "nutanix",
           "oci",
+          "openshift_virtualization",
           "openstack",
           "vmware"
         ],
@@ -4214,6 +4287,7 @@
           "kvm",
           "nutanix",
           "oci",
+          "openshift_virtualization",
           "openstack",
           "vmware"
         ],
@@ -4225,6 +4299,7 @@
           "gcp",
           "nutanix",
           "oci",
+          "openshift_virtualization",
           "openstack",
           "vmware"
         ],
@@ -4264,7 +4339,7 @@
         "spec.local_vrf.slo_config.static_v6_routes": [
           "no_v6_static_routes"
         ],
-        "spec.log_receiver": [
+        "spec.log_receiver_with_net": [
           "logs_streaming_disabled"
         ],
         "spec.log_receiver_with_net.use_management_network": [
@@ -4274,7 +4349,7 @@
           "use_management_network"
         ],
         "spec.logs_streaming_disabled": [
-          "log_receiver"
+          "log_receiver_with_net"
         ],
         "spec.no_forward_proxy": [
           "active_forward_proxy_policies"
@@ -4300,6 +4375,7 @@
           "gcp",
           "kvm",
           "oci",
+          "openshift_virtualization",
           "openstack",
           "vmware"
         ],
@@ -4311,6 +4387,7 @@
           "gcp",
           "kvm",
           "nutanix",
+          "openshift_virtualization",
           "openstack",
           "vmware"
         ],
@@ -4319,6 +4396,18 @@
         ],
         "spec.offline_survivability_mode.no_offline_survivability_mode": [
           "enable_offline_survivability_mode"
+        ],
+        "spec.openshift_virtualization": [
+          "aws",
+          "azure",
+          "baremetal",
+          "equinix",
+          "gcp",
+          "kvm",
+          "nutanix",
+          "oci",
+          "openstack",
+          "vmware"
         ],
         "spec.openstack": [
           "aws",
@@ -4329,6 +4418,7 @@
           "kvm",
           "nutanix",
           "oci",
+          "openshift_virtualization",
           "vmware"
         ],
         "spec.performance_enhancement_mode.perf_mode_l3_enhanced": [
@@ -4342,6 +4432,12 @@
         ],
         "spec.performance_enhancement_mode.perf_mode_l7_enhanced": [
           "perf_mode_l3_enhanced"
+        ],
+        "spec.performance_enhancement_mode.perf_mode_l7_enhanced.jumbo_disabled": [
+          "jumbo_enabled"
+        ],
+        "spec.performance_enhancement_mode.perf_mode_l7_enhanced.jumbo_enabled": [
+          "jumbo_disabled"
         ],
         "spec.re_select.geo_proximity": [
           "specific_re"
@@ -4398,6 +4494,7 @@
           "kvm",
           "nutanix",
           "oci",
+          "openshift_virtualization",
           "openstack"
         ]
       },
@@ -4417,7 +4514,6 @@
         "spec.local_vrf.sli_config.static_v6_routes.static_routes",
         "spec.local_vrf.slo_config.static_routes.static_routes",
         "spec.local_vrf.slo_config.static_v6_routes.static_routes",
-        "spec.log_receiver.name",
         "spec.log_receiver_with_net.log_receiver.name",
         "spec.site_mesh_group_on_slo.site_mesh_group.name",
         "spec.upgrade_settings.kubernetes_upgrade_drain.enable_upgrade_drain.drain_node_timeout"
@@ -4631,7 +4727,9 @@
         "spec.client_selector.expressions",
         "spec.ip_matcher.prefix_sets",
         "spec.ip_threat_category_list.ip_threat_categories",
-        "spec.port_matcher.ports"
+        "spec.port_matcher.ports",
+        "spec.segment_policy.dst_segments.segments",
+        "spec.segment_policy.src_segments.segments"
       ],
       "serverDefaultFields": [
         "spec.port_matcher"
@@ -4830,7 +4928,9 @@
         "spec.client_selector.expressions",
         "spec.ip_matcher.prefix_sets",
         "spec.ip_threat_category_list.ip_threat_categories",
-        "spec.port_matcher.ports"
+        "spec.port_matcher.ports",
+        "spec.segment_policy.dst_segments.segments",
+        "spec.segment_policy.src_segments.segments"
       ],
       "serverDefaultFields": [
         "spec.port_matcher"
@@ -5120,8 +5220,8 @@
       "serverDefaultFields": []
     }
   },
-  "version": "2.1.190",
+  "version": "2.1.193",
   "info": {
-    "version": "2.1.193"
+    "version": "2.1.194"
   }
 }

@@ -9,7 +9,7 @@ AWS, Azure, GCP VPC integration with transit gateways. Label-based selection for
 
 - **Category**: Infrastructure
 - **Complexity**: advanced
-- **Paths**: 133 | **Schemas**: 1015
+- **Paths**: 133 | **Schemas**: 938
 - **Tier**: Standard
 - **Related domains**: `cloud_infrastructure`, `customer_edge`, `managed_kubernetes`
 
@@ -76,6 +76,7 @@ AWS, Azure, GCP VPC integration with transit gateways. Label-based selection for
 | GET | `/api/config/namespaces/&#123;namespace&#125;/securemesh_sites` | List Configure Secure Mesh Site. |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/securemesh_sites/&#123;name&#125;` | GET Secure Mesh site. |
 | DELETE | `/api/config/namespaces/&#123;namespace&#125;/securemesh_sites/&#123;name&#125;` | DELETE Configure Secure Mesh Site. |
+| GET | `/api/sync-cloud-data/namespaces/system/securemesh_site_v2/&#123;site_name&#125;/cloud_resources` | List Cloud Resources. |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/securemesh_site_v2s` | Create Secure Mesh site. |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/securemesh_site_v2s/&#123;metadata.name&#125;` | Replace Secure Mesh site. |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/securemesh_site_v2s` | List Configure Secure Mesh Site. |
@@ -98,7 +99,6 @@ AWS, Azure, GCP VPC integration with transit gateways. Label-based selection for
 | POST | `/api/data/namespaces/&#123;namespace&#125;/platform_events/aggregation` | Platform event Aggregation Query. |
 | GET | `/api/data/namespaces/&#123;namespace&#125;/platform_events/scroll` | Platform event Scroll Query. |
 | POST | `/api/data/namespaces/&#123;namespace&#125;/platform_events/scroll` | Platform event Scroll Query. |
-| POST | `/api/data/namespaces/&#123;namespace&#125;/site/&#123;site&#125;/external_connector/&#123;external_connector&#125;/logs` | External connector log query. |
 | POST | `/api/data/namespaces/&#123;namespace&#125;/site/&#123;site&#125;/k8s_audit_logs` | K8s Audit Log Query. |
 | POST | `/api/data/namespaces/&#123;namespace&#125;/site/&#123;site&#125;/k8s_audit_logs/aggregation` | K8s Audit Log Aggregation Query. |
 | POST | `/api/data/namespaces/&#123;namespace&#125;/site/&#123;site&#125;/k8s_events` | K8s Events Query. |
@@ -156,11 +156,11 @@ AWS, Azure, GCP VPC integration with transit gateways. Label-based selection for
 | POST | `/api/config/namespaces/&#123;namespace&#125;/sites/&#123;name&#125;/upgrade_os` | Upgrade OS. |
 | POST | `/api/config/namespaces/&#123;namespace&#125;/sites/&#123;name&#125;/upgrade_sw` | Upgrade SW. |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/global_networks` | Global Network List. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/interface` | Interface List. |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/segments` | Segment List. |
 | POST | `/api/data/namespaces/&#123;namespace&#125;/graph/site` | Site Graph Query. |
 | POST | `/api/data/namespaces/&#123;namespace&#125;/graph/site/edge` | Site Edge Query. |
 | POST | `/api/data/namespaces/&#123;namespace&#125;/graph/site/node` | Site Node Query. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/interface` | Interface List. |
 | POST | `/api/data/namespaces/system/topology/dc_cluster_group/&#123;dc_cluster_group&#125;` | DC Cluster Topology. |
 | GET | `/api/data/namespaces/system/topology/dc_cluster_groups` | DC Cluster Groups Summary. |
 | GET | `/api/data/namespaces/system/topology/network/&#123;id&#125;/route_tables` | GET Network Route Tables. |

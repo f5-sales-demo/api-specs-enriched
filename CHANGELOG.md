@@ -1,12 +1,12 @@
 # Changelog
 
-## Version 2.1.193 (2026-07-26)
+## Version 2.1.194 (2026-07-26)
 
 ### Version Information
-- **Full Version**: 2.1.193
+- **Full Version**: 2.1.194
 - **Upstream Timestamp**: unknown
 - **Upstream ETag**: unknown
-- **Enriched Version**: 2.1.193
+- **Enriched Version**: 2.1.194
 
 ### Release Type
 - **patch** release
@@ -25,10 +25,10 @@
 - Merged specifications by domain
 
 ### Statistics
-- Original specs: 521
+- Original specs: 284
 - Domains: 38
-- Total paths: 1647
-- Total schemas: 9018
+- Total paths: 1676
+- Total schemas: 8540
 
 ### API Discovery Enrichment
 - Discovery timestamp: 2025-12-20T19:39:20.211392+00:00
@@ -45,7 +45,7 @@ docs/specifications/api/
 \`\`\`
 
 ### Download
-- ZIP Package: F5xc-api-(unknown-2.1.193).zip
+- ZIP Package: F5xc-api-(unknown-2.1.194).zip
 
 ### Source
 - Source: F5 Distributed Cloud OpenAPI specifications
