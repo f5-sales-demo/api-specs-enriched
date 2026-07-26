@@ -92,6 +92,7 @@ def _is_terminal_additive(terminal: str, after: object) -> bool:
         terminal.startswith("x-")
         or terminal in _FREE_TEXT_KEYS
         or _is_constraint_add(terminal, after)
+        or _is_string_enum_add(terminal, after)
         or _is_schema_annotation_add(terminal, after)
         or _is_known_format_add(terminal, after)
     )
@@ -180,6 +181,30 @@ def _is_constraint_add(terminal: str, after: object) -> bool:
     if terminal in {"minLength", "maxLength", "minItems", "maxItems", "minimum", "maximum"}:
         return isinstance(after, int) and not isinstance(after, bool) and after >= 0
     return terminal == "pattern" and isinstance(after, str)
+
+
+def _is_string_enum_add(terminal: str, after: object) -> bool:
+    """Rule 9 — a native ``enum`` transcribed from an upstream ``string.in`` rule.
+
+    ``ConstraintEnricher._apply_string_in_enum`` copies the values of
+    ``ves.io.schema.rules.string.in`` onto the property's native JSON-Schema
+    ``enum`` so the provider's ``convert.go`` emits a ``OneOf`` validator. The
+    server already rejects any value outside that set, so publishing it as an
+    ``enum`` *documents* a constraint that was always enforced — it cannot
+    reject a request the upstream API would have accepted.
+
+    The rule is deliberately narrow so it does not become a blanket
+    "array-valued adds are additive" escape hatch: only a non-empty list whose
+    every member is a string qualifies, matching what ``string.in`` can produce
+    (it is applied only where ``type: string``). An empty ``enum`` permits
+    nothing and a non-string ``enum`` has no ``string.in`` provenance, so both
+    stay reportable.
+    """
+    if terminal != "enum":
+        return False
+    return (
+        isinstance(after, list) and bool(after) and all(isinstance(value, str) for value in after)
+    )
 
 
 def _is_schema_annotation_add(terminal: str, after: object) -> bool:

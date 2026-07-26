@@ -148,6 +148,12 @@ def _flatten_allof_refs(obj: Any) -> Any:
     ``{"allOf": [{"$ref": "X"}], "x-foo": 1}`` becomes
     ``{"$ref": "X", "x-foo": 1}`` so that the contract diff sees
     allOf-wrapped refs as equivalent to direct refs.
+
+    Both forms mean the same thing in JSON Schema, and the wrapper appears on
+    *either* side: enrichment wraps a bare ``$ref`` so it can attach a sibling
+    ``description`` (OpenAPI 3.0 ignores siblings of ``$ref``), while a handful
+    of upstream properties already ship wrapped. So this normalization must be
+    applied to both specs — see ``run_contract_diff``.
     """
     if isinstance(obj, dict):
         allof = obj.get("allOf")
@@ -183,6 +189,11 @@ def run_contract_diff(
             set is suppressed (design spec 2026-04-22 §5).
     """
     known = known_drift or set()
+    # Normalize both sides: an allOf-wrapped $ref is semantically identical to a
+    # direct $ref, and either spec may use either form. Flattening only the
+    # output turned upstream-wrapped properties into a phantom `allOf` removal
+    # plus `$ref` add.
+    input_spec = _flatten_allof_refs(input_spec)
     output_spec = _flatten_allof_refs(output_spec)
     diff = DeepDiff(
         input_spec,
