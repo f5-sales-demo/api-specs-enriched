@@ -207,12 +207,14 @@ def _run(repo: Path, fake_gh: Path) -> tuple[subprocess.CompletedProcess[str], d
 def test_worktree_output_change_is_detected(tmp_path: Path) -> None:
     repo = _setup_repo(tmp_path)
     # What the enrichment pipeline just produced: renamed property, new
-    # annotation -- exactly the api-specs v2026.07.24-2 wire-name change.
+    # annotation -- exactly the api-specs v2026.07.24-2 wire-name change. The
+    # version stamp moves too (the pipeline writes the previous tag), which
+    # must not mask the real content change.
     (repo / f"{_OUTPUT_DIR}/network.json").write_text(
         json.dumps(
             {
                 "openapi": "3.0.3",
-                "info": {"version": "2.1.0"},
+                "info": {"version": "2.0.9"},
                 "blocked_service": {"x-f5xc-wire-name": "blocked_sevice"},
             },
             indent=2,
@@ -294,6 +296,34 @@ def test_volatile_generator_timestamps_alone_are_not_a_change(tmp_path: Path) ->
     """
     repo = _setup_repo(tmp_path)
     (repo / _INDEX).write_text(_index_json(timestamp="2026-07-25T23:59:59.999999+00:00"))
+
+    proc, outputs = _run(repo, _write_fake_gh(tmp_path, release_lines=1))
+
+    assert proc.returncode == 0, proc.stderr
+    assert outputs["has_changes"] == "false", proc.stdout
+
+
+def test_version_stamp_alone_is_not_a_change(tmp_path: Path) -> None:
+    """The release process assigns `version` *after* this gate runs.
+
+    The pipeline writes the previous tag and the committed files carry the tag
+    they shipped as, so a cache-restored tree always differs by exactly one
+    bump. Counting that would make every run publish a content-free release.
+    """
+    repo = _setup_repo(tmp_path)
+    (repo / _INDEX).write_text(_index_json(version="2.0.9"))
+
+    proc, outputs = _run(repo, _write_fake_gh(tmp_path, release_lines=1))
+
+    assert proc.returncode == 0, proc.stderr
+    assert outputs["has_changes"] == "false", proc.stdout
+
+
+def test_domain_spec_info_version_stamp_alone_is_not_a_change(tmp_path: Path) -> None:
+    repo = _setup_repo(tmp_path)
+    (repo / f"{_OUTPUT_DIR}/network.json").write_text(
+        json.dumps({"openapi": "3.0.3", "info": {"version": "2.0.9"}}, indent=2) + "\n"
+    )
 
     proc, outputs = _run(repo, _write_fake_gh(tmp_path, release_lines=1))
 

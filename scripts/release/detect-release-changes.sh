@@ -45,12 +45,22 @@ UPSTREAM_STATE=".github_release"
 # the invariant that matters is trackedness, not .gitignore membership.
 SIGNAL_PATHS=("$OUTPUT_DIR" "$UPSTREAM_STATE")
 
-# Volatile generator metadata: every pipeline run stamps a fresh wall clock
-# into these top-level keys (`timestamp` in index.json via
-# scripts/pipeline.py create_spec_index, `generated_at` in the
-# namespace-profile and validation reports). They carry no content, so a diff
-# made only of them must not publish an otherwise empty release.
-VOLATILE_FILTER='del(.timestamp, .generated_at)'
+# Fields that move without the content moving, stripped before comparing:
+#
+#   timestamp, generated_at  A fresh wall clock on every pipeline run
+#                            (scripts/pipeline.py create_spec_index, plus the
+#                            namespace-profile and validation report writers).
+#   version, info.version    Version STAMPS, assigned by the release process
+#                            itself in `Update version in specs` — after this
+#                            gate has already run. Treating them as a change
+#                            signal is circular: the pipeline writes the
+#                            previous tag, the committed files carry the tag
+#                            they shipped as, so a cache-restored tree always
+#                            looks "changed" and every run would publish a
+#                            content-free patch release.
+#
+# A diff made only of these must not publish an otherwise empty release.
+VOLATILE_FILTER='del(.timestamp, .generated_at, .version, .info.version)'
 
 GH_CMD="${DETECT_RELEASE_GH:-gh}"
 
