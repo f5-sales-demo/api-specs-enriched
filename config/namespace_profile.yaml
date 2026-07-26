@@ -1834,6 +1834,28 @@ resources:
       category: "networking"
       multi_tenant_pattern: "none"
 
+  # Arrived upstream in api-specs v2026.07.24-2. Same InfraProtect family as the
+  # entries above: create path is POST
+  # /api/infraprotect/namespaces/{metadata.namespace}/infraprotect_packet_captures
+  # (operationId ves.io.schema.infraprotect_packet_capture.API.Create, tag
+  # "infraprotect", summary "Create DDoS transit Packet Capture."). The spec does not
+  # itself constrain the namespace — the path parameter is a free-form DNS_LABEL — but
+  # live CRUD evidence for three probed siblings (infraprotect_deny_list_rule,
+  # infraprotect_firewall_rule_group, infraprotect_internet_prefix_advertisement in
+  # config/namespace_crud_evidence.yaml) returns "allowed to be created only in
+  # system". Classified system-only on that family evidence and left advisory
+  # (enforced=false) until a live CRUD probe covers this resource directly.
+  infraprotect_packet_capture:
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: conservative_default, date: "2026-07-25"}
+    recommendation:
+      primary: "system"
+      rationale: "DDoS transit packet capture is platform-level InfraProtect configuration"
+    classification:
+      category: "networking"
+      multi_tenant_pattern: "none"
+
   nginx_instance:
     constraint:
       allowed: ["system"]
