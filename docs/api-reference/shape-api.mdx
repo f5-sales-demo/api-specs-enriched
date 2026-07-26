@@ -9,7 +9,7 @@ Threat recognition with behavioral analysis and device fingerprinting. Mobile SD
 
 - **Category**: Security
 - **Complexity**: advanced
-- **Paths**: 271 | **Schemas**: 813
+- **Paths**: 287 | **Schemas**: 860
 - **Tier**: Advanced
 - **Related domains**: `bot_defense`, `virtual`
 
@@ -68,13 +68,13 @@ Threat recognition with behavioral analysis and device fingerprinting. Mobile SD
 | GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_detection_rules` | List Bot Detection Rule. |
 | GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_detection_rules/&#123;id&#125;/history` | GET the change history for a bot detection rule. |
 | GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_detection_rules/&#123;name&#125;` | GET Bot Detection Rule. |
-| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/suggest-values` | Suggest Values. |
 | GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_detection_updates` | GET bot detection updates. |
 | GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_detection_updates/download_release_notes` | Download BotDetection Updates Release Notes. |
 | GET | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_endpoint_policies` | List All Bot Endpoint Policies And Versions. |
 | PUT | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_endpoint_policys/&#123;name&#125;` | Custom Replace Bot Endpoint Policy. |
 | PUT | `/api/shape/bot/namespaces/&#123;metadata.namespace&#125;/bot_endpoint_policys/&#123;metadata.name&#125;` | Replace Bot Endpoint Policy. |
 | GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_endpoint_policy/&#123;name&#125;/versions` | Bot Endpoint Policy Versions. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_endpoint_policy/&#123;name&#125;/versions/&#123;number&#125;/mobile_base_config/&#123;os&#125;` | GET Mobile Base Configuration File. |
 | GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_endpoint_policys` | List Bot Endpoint Policy. |
 | GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_endpoint_policys/&#123;name&#125;` | GET Bot Endpoint Policy. |
 | GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_endpoint_policys/&#123;name&#125;/versions/&#123;number&#125;` | GET Content. |
@@ -82,9 +82,12 @@ Threat recognition with behavioral analysis and device fingerprinting. Mobile SD
 | PUT | `/api/shape/bot/namespaces/&#123;metadata.namespace&#125;/bot_infrastructures/&#123;metadata.name&#125;` | Replace Bot Infrastructure. |
 | GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_infrastructures` | List Bot Infrastructure. |
 | GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_infrastructures/&#123;name&#125;` | GET Bot Infrastructure. |
+| PUT | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_infrastructures/&#123;name&#125;/apply-certificate` | Apply Certificate. |
 | GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_infrastructures/&#123;name&#125;/deployment_history` | Deployment History. |
 | GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_infrastructures/&#123;name&#125;/deployment_status` | Deployment Status. |
 | POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_infrastructures/&#123;name&#125;/policies` | Deploy Policies to Bot Infra. |
+| PUT | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_infrastructures/&#123;name&#125;/rollback-certificate-to-default` | Rollback Certificate To Default. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/ti_packages` | List bot threat intelligence packages. |
 | GET | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_allowlist_policies` | List All Bot Allowlist Policies And Versions. |
 | PUT | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_allowlist_policys/&#123;name&#125;` | Custom Replace Bot allowlist Policy. |
 | PUT | `/api/shape/bot/namespaces/&#123;metadata.namespace&#125;/bot_allowlist_policys/&#123;metadata.name&#125;` | Replace Bot allowlist Policy. |
@@ -92,7 +95,6 @@ Threat recognition with behavioral analysis and device fingerprinting. Mobile SD
 | GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_allowlist_policys` | List Bot allowlist Policy. |
 | GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_allowlist_policys/&#123;name&#125;` | GET Bot allowlist Policy. |
 | GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_allowlist_policys/&#123;name&#125;/versions/&#123;number&#125;` | GET Content. |
-| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_endpoint_policy/&#123;name&#125;/versions/&#123;number&#125;/mobile_base_config/&#123;os&#125;` | GET Mobile Base Configuration File. |
 | GET | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_network_policies` | List All Bot Network Policies And Versions. |
 | PUT | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_network_policys/&#123;name&#125;` | Custom Replace Bot network Policy. |
 | PUT | `/api/shape/bot/namespaces/&#123;metadata.namespace&#125;/bot_network_policys/&#123;metadata.name&#125;` | Replace Bot network Policy. |
@@ -101,22 +103,30 @@ Threat recognition with behavioral analysis and device fingerprinting. Mobile SD
 | GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_network_policys/&#123;name&#125;` | GET Bot network Policy. |
 | GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_network_policys/&#123;name&#125;/versions/&#123;number&#125;` | GET Content. |
 | POST | `/api/shape/csd/namespaces/system/init` | Enable Client-Side Defense. |
+| POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/detectedDomains` | List All Detected Domains. |
 | GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/detected_domains` | GET Detected Domains. |
 | GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/domain_details` | GET Domain Details. |
+| DELETE | `/api/shape/csd/namespaces/&#123;namespace&#125;/domains` | Bulk DELETE Domains. |
 | GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/formFields` | List All Form Fields with GET method. |
 | POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/formFields` | List All Form Fields. |
 | POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/formFields/analysis` | Update FormField Analysis. |
 | GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/formFields/&#123;id&#125;` | GET Form Field. |
 | GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/js_configuration` | GET JS Injection Configuration. |
+| POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/reports` | Create Report. |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/reports-history` | List Reports With History. |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/reports/metadata/&#123;job_id&#125;/download` | GET Report Download URL. |
 | DELETE | `/api/shape/csd/namespaces/&#123;namespace&#125;/script/justification/&#123;justification_id&#125;` | DELETE Script Justification. |
 | GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts` | List Scripts. |
 | POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts` | List Scripts. |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/overview` | GET Scripts Overview. |
+| POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;id&#125;/approval-status` | Update Script Approval Status. |
 | GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;id&#125;/behaviors` | List Behaviors By Script. |
 | GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;id&#125;/dashboard` | GET Script Overview. |
 | GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;id&#125;/formFields` | List Form Fields By Script. |
 | GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;id&#125;/networkInteractions` | List Network Interactions By Script. |
 | POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;id&#125;/readStatus` | Update Script FormFields ReadStatus. |
 | POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;script_id&#125;/affectedUsers` | List Affected Users. |
+| GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;script_id&#125;/inline` | List Inline Scripts. |
 | POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;script_id&#125;/justification` | Update Script Justification. |
 | GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/status` | GET Status. |
 | GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/summary` | GET Summary. |
@@ -134,9 +144,19 @@ Threat recognition with behavioral analysis and device fingerprinting. Mobile SD
 | GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/mitigated_domains` | List Client-Side Defense Mitigated Domain. |
 | GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/mitigated_domains/&#123;name&#125;` | GET Mitigated Domain. |
 | DELETE | `/api/shape/csd/namespaces/&#123;namespace&#125;/mitigated_domains/&#123;name&#125;` | DELETE Client-Side Defense Mitigated Domain. |
-| POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/detectedDomains` | List All Detected Domains. |
 | POST | `/api/shape/csd/namespaces/system/subscribe` | Subscribe to Client-Side Defense. |
 | POST | `/api/shape/csd/namespaces/system/unsubscribe` | Unsubscribe to Client-Side Defense. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/certificate/add-to-csr` | Add Certificate to CSR. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/certificate/add-with-private-key` | Add Certificate with Private Key. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/certificate/csr/&#123;csr_id&#125;` | GET CSR By ID. |
+| DELETE | `/api/shape/bot/namespaces/&#123;namespace&#125;/certificate/csr/&#123;csr_id&#125;` | DELETE CSR By ID. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/certificate/generate-csr` | Generate CSR. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/certificate/list-certificate` | List Certificates. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/certificate/list-csr` | List CSR |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/certificate/&#123;cert_id&#125;` | GET Certificate By ID. |
+| DELETE | `/api/shape/bot/namespaces/&#123;namespace&#125;/certificate/&#123;cert_id&#125;` | DELETE Certificate By ID. |
+| PUT | `/api/shape/bot/namespaces/&#123;namespace&#125;/certificate/&#123;cert_id&#125;/archive` | Archive Certificate By ID. |
+| PUT | `/api/shape/bot/namespaces/&#123;namespace&#125;/certificate/&#123;cert_id&#125;/unarchive` | Unarchive Certificate By ID. |
 | POST | `/api/mobile/app-shield/namespaces/system/mobile-app-shield/addon/subscribe` | Subscribe to Mobile App Shield. |
 | POST | `/api/mobile/app-shield/namespaces/system/mobile-app-shield/addon/unsubscribe` | Unsubscribe to Mobile App Shield. |
 | POST | `/api/mobile/integrator/namespaces/system/mobile-integrator/addon/subscribe` | Subscribe to Mobile Integrator. |
@@ -161,6 +181,7 @@ Threat recognition with behavioral analysis and device fingerprinting. Mobile SD
 | POST | `/api/shape/bot/namespaces/system/reporting/peers/check` | Check Peer Status. |
 | GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/atb` | ATB Status. |
 | POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/atb` | ATB |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/config` | Enterprise Config. |
 | GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/consumption/summary` | Consumption Summary. |
 | POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/endpoint/categories` | Endpoint Categories. |
 | POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/endpoint/categories/&#123;category&#125;` | Endpoint Categories Label. |
@@ -217,6 +238,14 @@ Threat recognition with behavioral analysis and device fingerprinting. Mobile SD
 | GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/usage/summary` | Usage Summary. |
 | POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v1/reporting/forensic/fields` | Forensic Fields. |
 | POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v1/reporting/traffic/automated/overview/actions` | Automated Traffic Overview in actions. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v1/reporting/traffic/known/active/ai` | Active AI Known Bot. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v1/reporting/traffic/known/dimension/category` | Known Bot Transactions Per Category. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v1/reporting/traffic/known/dimension/category/actions` | Known Bot Actions Per Category. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v1/reporting/traffic/known/dimension/category/actions/ai` | Known Bot Actions Per AI Category. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v1/reporting/traffic/known/dimension/category/timeseries` | Known Bot Categories Over Time. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v1/reporting/traffic/known/dimension/endpoint` | Known Bot Endpoint. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v1/reporting/traffic/known/statistics/overview` | Known Bot Overview Statistics. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v1/reporting/traffic/top/type/known/active` | Top Active Known Bot. |
 | POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/endpoint/summary` | Endpoint Summary V2. |
 | POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/malicious/endpoints` | Malicious Report Endpoints V2. |
 | POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/malicious/transactions/asn` | Malicious Report Transactions ASN V2. |
@@ -278,16 +307,6 @@ Threat recognition with behavioral analysis and device fingerprinting. Mobile SD
 | POST | `/api/shape/recognize/namespaces/system/recognize/addon/subscribe` | Subscribe to Shape Recognize. |
 | POST | `/api/shape/recognize/namespaces/system/recognize/addon/unsubscribe` | Unsubscribe to Shape Recognize. |
 | POST | `/api/shape/recognize/namespaces/system/recognize/addon/validate/src_tag_injection` | ValidateSrcTagInjection Addon. |
-| POST | `/api/shape/safeap/namespaces/system/safeap/addon/subscribe` | Subscribe to Safe AP. |
-| POST | `/api/shape/safeap/namespaces/system/safeap/addon/unsubscribe` | Unsubscribe to Safe AP. |
-| POST | `/api/shape/safeap/namespaces/system/safeap/dashboard/getcurrentfrauddata` | GetCurrentFraudData. |
-| POST | `/api/shape/safeap/namespaces/system/safeap/dashboard/gettopriskyaccounts` | GetTopRiskyAccounts. |
-| POST | `/api/shape/safeap/namespaces/system/safeap/dashboard/gettopriskydevices` | GetTopRiskyDevices. |
-| POST | `/api/shape/safeap/namespaces/system/safeap/dashboard/gettopriskyipaddresses` | GetTopRiskyIpAddresses. |
-| POST | `/api/shape/safeap/namespaces/system/safeap/dashboard/gettopriskyreasons` | GetTopRiskyReasons. |
-| POST | `/api/shape/safeap/namespaces/system/safeap/dashboard/gettransactiondata` | GetTransactionData. |
-| GET | `/api/shape/safeap/namespaces/system/safeap/dashboard/health` | Health Check. |
-| POST | `/api/shape/safeap/namespaces/system/safeap/dashboard/safecubejsdata` | GetSafeCubeJSData. |
 | GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/block/audit` | GET SAFE Block table list. |
 | GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/block/csv/audit` | GET SAFE Analyst Block Audit as a CSV file. |
 | GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/block/csv/table` | GET SAFE Analyst Block Table as a CSV file. |
@@ -316,7 +335,6 @@ Threat recognition with behavioral analysis and device fingerprinting. Mobile SD
 | POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/transaction_timeline` | PostSafeTransactionTimeline. |
 | POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/transactions` | List SAFE Analyst Transactions. |
 | POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/transactions_csv` | GET SAFE Analyst Transactions as a CSV file. |
-| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/reporting/config` | Enterprise Config. |
 
 ## Links
 

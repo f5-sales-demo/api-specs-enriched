@@ -3,7 +3,7 @@
   "info": {
     "title": "Billing And Usage",
     "description": "Subscription lifecycle with plan transitions and billing states. Payment method hierarchies supporting primary and secondary configurations. Invoice generation with PDF downloads and custom listing. Resource quotas per namespace with limit definitions and consumption metrics. Contact types for billing notifications and tenant deletion workflows.",
-    "version": "2.1.193",
+    "version": "2.1.194",
     "contact": {
       "name": "F5 Distributed Cloud",
       "url": "https://docs.cloud.f5.com"
@@ -146,6 +146,212 @@
     }
   ],
   "paths": {
+    "/api/data/namespaces/system/billing/usage_details": {
+      "post": {
+        "summary": "Telemetry Data Metrics.",
+        "description": "GET the billing usage details for each feature over the specified duration.",
+        "operationId": "ves.io.schema.billing.CustomPublicAPI.BillingUsageDetails",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/billingBillingUsageDetailsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Returned when operation is not authorized.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Returned when there is no permission to access resource.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Returned when resource is not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Returned when operation on resource is conflicting with current value.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Returned when operation has been rejected as it is happening too frequently.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Returned when server encountered an error in processing API.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Returned when service is unavailable temporarily.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Returned when server timed out processing request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/billingBillingUsageDetailsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "externalDocs": {
+          "description": "Examples of this operation.",
+          "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/billing_and_usage/"
+        },
+        "x-ves-proto-rpc": "ves.io.schema.billing.CustomPublicAPI.BillingUsageDetails",
+        "tags": [
+          "data"
+        ],
+        "x-f5xc-operation-metadata": {
+          "purpose": "Resource creation operation",
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace"
+          ],
+          "optional_fields": [],
+          "field_docs": {},
+          "conditions": {
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Usage-detail resource created",
+              "Resource assigned unique identifier"
+            ]
+          },
+          "side_effects": {
+            "creates": [
+              "usage-detail"
+            ]
+          },
+          "danger_level": "medium",
+          "confirmation_required": false,
+          "common_errors": [
+            {
+              "code": 401,
+              "message": "Authentication required",
+              "solution": "Provide valid API credentials"
+            },
+            {
+              "code": 403,
+              "message": "Permission denied",
+              "solution": "Check access permissions for this operation"
+            },
+            {
+              "code": 404,
+              "message": "Resource not found",
+              "solution": "Verify resource name, namespace, and path"
+            },
+            {
+              "code": 409,
+              "message": "Resource already exists",
+              "solution": "Use different name or update existing resource"
+            },
+            {
+              "code": 429,
+              "message": "Rate limit exceeded",
+              "solution": "Wait before retrying the operation"
+            },
+            {
+              "code": 500,
+              "message": "Server error",
+              "solution": "Retry operation or contact support"
+            }
+          ],
+          "performance_impact": {
+            "latency": "low",
+            "resource_usage": "low"
+          }
+        },
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace"
+        ],
+        "x-f5xc-danger-level": "medium",
+        "x-f5xc-side-effects": {
+          "creates": [
+            "usage-detail"
+          ]
+        },
+        "x-f5xc-discovered-response-time": {
+          "p50_ms": 1000,
+          "p95_ms": 3000,
+          "p99_ms": 8000,
+          "sample_count": 0,
+          "source": "estimate"
+        }
+      },
+      "x-displayname": "Billing",
+      "x-ves-proto-service": "ves.io.schema.billing.CustomPublicAPI",
+      "x-ves-proto-service-type": "CUSTOM_PUBLIC"
+    },
     "/api/data/namespaces/system/billing/usage_summary": {
       "post": {
         "summary": "Billing Usage Summary.",
@@ -3518,7 +3724,7 @@
           },
           {
             "name": "response_format",
-            "description": "The format in which the configuration object is to be fetched. This could be for example\n - in GetSpec form for the contents of object\n - in CreateRequest form to create a new similar object\n - to ReplaceRequest form to replace changeable values\n\nDefault format of returned resource\nResponse should be in CreateRequest format\nResponse should be in ReplaceRequest format\nResponse should be in StatusObject(s) format\nResponse should be in format of GetSpecType\nResponse should have other objects referring to this object\nResponse should have deleted and disabled objects referrred by this object.",
+            "description": "The format in which the configuration object is to be fetched. This could be for example\n - in GetSpec form for the contents of object\n - in CreateRequest form to create a new similar object\n - to ReplaceRequest form to replace changeable values\n\nDefault format of returned resource\nResponse should be in CreateRequest format\nResponse should be in ReplaceRequest format\nResponse should be in StatusObject(s) format\nResponse should be in format of GetSpecType\nResponse should have other objects referring to this object\nResponse should have deleted and disabled objects referred by this object.",
             "in": "query",
             "required": false,
             "x-displayname": "Broken Referred Objects.",
@@ -5737,7 +5943,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T21:47:40.777747+00:00"
+                "validatedAt": "2026-07-26T03:05:36.924597+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5764,7 +5970,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T21:47:40.777828+00:00"
+                "validatedAt": "2026-07-26T03:05:36.924703+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5775,7 +5981,7 @@
             },
             "minLength": 3,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:11.749479+00:00"
+            "x-reconciled-at": "2026-07-26T03:17:27.674190+00:00"
           }
         },
         "x-f5xc-description-short": "Billing Metric Data represents billing metric metadata like unit as well as converted metric value.",
@@ -5790,6 +5996,255 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"unit\": \"value\",\n    \"value\": \"value\"\n  }\n}"
         },
         "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "system"
+            ],
+            "enforced": false
+          },
+          "recommendation": {
+            "primary": "system",
+            "alternatives": [],
+            "rationale": "Quotas are platform-level limits"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "none"
+          }
+        }
+      },
+      "billingBillingUsageDetailsRequest": {
+        "type": "object",
+        "description": "Request to GET billing usage details for the given tenant.",
+        "title": "Billing Usage Details Request",
+        "x-displayname": "Billing Usage Details Request.",
+        "x-ves-proto-message": "ves.io.schema.billing.BillingUsageDetailsRequest",
+        "properties": {
+          "end_time": {
+            "type": "string",
+            "description": "End time of metric collection from which data will be considered to build graph.\nFormat: unix_timestamp|RFC 3339\n\nOptional: If not specified, then the end_time will be evaluated to start_time+1h\nIf start_time is not specified, then the end_time will be evaluated to <current time>",
+            "title": "End time",
+            "x-displayname": "End Time",
+            "x-ves-example": "1570197600.",
+            "x-ves-validation-rules": {
+              "ves.io.schema.rules.string.query_time": "true"
+            },
+            "x-f5xc-example": "1570197600",
+            "x-validation-rules": {
+              "ves.io.schema.rules.string.query_time": "true"
+            },
+            "x-f5xc-description-short": "End time of metric collection from which data will be considered to build graph.",
+            "x-f5xc-description-medium": "End time of metric collection from which data will be considered to build graph. Format: unix_timestamp|RFC 3339 Optional: If not specified, then the end_time will be evaluated to start_time+1h If start_time is not specified, then the end_time will be evaluated to <current time>.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-07-26T03:05:36.924819+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "filters": {
+            "type": "array",
+            "description": "List of usage_type queries and the corresponding object/namespace filters\n\nRequired: YES.",
+            "title": "Name",
+            "items": {
+              "$ref": "#/components/schemas/billingUsageDataFilter"
+            },
+            "x-displayname": "Usage Data Filter.",
+            "x-ves-required": "true",
+            "x-ves-validation-rules": {
+              "ves.io.schema.rules.message.required": "true"
+            },
+            "x-validation-rules": {
+              "ves.io.schema.rules.message.required": "true"
+            },
+            "x-f5xc-description-short": "List of usage_type queries and the corresponding object/namespace filters Required: YES.",
+            "x-f5xc-required-for": {
+              "minimum_config": true,
+              "create": true,
+              "update": false,
+              "read": false
+            }
+          },
+          "start_time": {
+            "type": "string",
+            "description": "Start time of metric collection from which data will be considered to build graph.\nFormat: unix_timestamp|RFC 3339\n\nOptional: If not specified, then the start_time will be evaluated to end_time-1h\nIf end_time is not specified, then the start_time will be evaluated to <current time>-1h.",
+            "title": "Start time",
+            "x-displayname": "Start Time.",
+            "x-ves-example": "1570194000.",
+            "x-ves-validation-rules": {
+              "ves.io.schema.rules.string.query_time": "true"
+            },
+            "x-f5xc-example": "1570194000",
+            "x-validation-rules": {
+              "ves.io.schema.rules.string.query_time": "true"
+            },
+            "x-f5xc-description-short": "Start time of metric collection from which data will be considered to build graph.",
+            "x-f5xc-description-medium": "Start time of metric collection from which data will be considered to build graph. Format: unix_timestamp|RFC 3339 Optional: If not specified, then the start_time will be evaluated to end_time-1h If end_time is not specified, then the start_time will be evaluated to <current time>-1h.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-07-26T03:05:36.924974+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "step": {
+            "type": "string",
+            "description": "Step is the resolution width, which determines the number of the data points [x-axis (time)] to be returned in the response.\nThe timestamps in the response will be t1=start_time, t2=t1+step, ... Tn=tn-1+step, where tn <= end_time.\nFormat: [0-9][smhd], where s - seconds, m - minutes, h - hours, d - days\n\nOptional: If not specified, then step size is evaluated to <end_time - start_time>",
+            "title": "Step",
+            "x-displayname": "Step",
+            "x-ves-example": "5m",
+            "x-ves-validation-rules": {
+              "ves.io.schema.rules.string.query_step": "true"
+            },
+            "x-f5xc-example": "5m",
+            "x-validation-rules": {
+              "ves.io.schema.rules.string.query_step": "true"
+            },
+            "x-f5xc-description-short": "Step is the resolution width, which determines the number of the data points [x-axis (time)] to be returned in the response.",
+            "x-f5xc-description-medium": "Step is the resolution width, which determines the number of the data points [x-axis (time)] to be returned in the response. The timestamps in the response will be t1=start_time, t2=t1+step, ... Tn=tn-1+step, where tn <= end_time.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-07-26T03:05:36.925051+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          }
+        },
+        "x-f5xc-description-short": "Request to GET billing usage details for the given tenant.",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for billingBillingUsageDetailsRequest",
+          "required_fields": [
+            "end_time",
+            "filters",
+            "start_time",
+            "step"
+          ],
+          "mutually_exclusive_groups": [],
+          "example_yaml": "# Minimal example for billingBillingUsageDetailsRequest\nmetadata:\n  name: example\n  namespace: default\nspec:\n  end_time: value\n  filters: value\n  start_time: value\n  step: value",
+          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"end_time\": \"value\",\n    \"filters\": \"value\",\n    \"start_time\": \"value\",\n    \"step\": \"value\"\n  }\n}"
+        },
+        "x-f5xc-cli-domain": "billing_and_usage",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "system"
+            ],
+            "enforced": false
+          },
+          "recommendation": {
+            "primary": "system",
+            "alternatives": [],
+            "rationale": "Quotas are platform-level limits"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "none"
+          }
+        }
+      },
+      "billingBillingUsageDetailsResponse": {
+        "type": "object",
+        "description": "Billing Usage Response.",
+        "title": "Billing Usage Response",
+        "x-displayname": "Billing Usage Response.",
+        "x-ves-proto-message": "ves.io.schema.billing.BillingUsageDetailsResponse",
+        "properties": {
+          "step": {
+            "type": "string",
+            "description": "Actual step size used in the response. It could be higher than the requested step due to metric rollups and the query duration.\nFormat: [0-9][smhd], where s - seconds, m - minutes, h - hours, d - days.",
+            "title": "step",
+            "x-displayname": "Step",
+            "x-ves-example": "30m",
+            "x-ves-validation-rules": {
+              "ves.io.schema.rules.string.time_interval": "true"
+            },
+            "x-f5xc-example": "30m",
+            "x-validation-rules": {
+              "ves.io.schema.rules.string.time_interval": "true"
+            },
+            "x-f5xc-description-short": "Actual step size used in the response. It could be higher than the requested step due to metric rollups and the query duration.",
+            "x-f5xc-description-medium": "Actual step size used in the response. It could be higher than the requested step due to metric rollups and the query duration. Format: [0-9][smhd], where s - seconds, m - minutes, h - hours, d - days.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-07-26T03:05:36.925106+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "usage_data": {
+            "type": "array",
+            "description": "Data contains time-series data for the billing usage.",
+            "title": "Telemetry Data",
+            "items": {
+              "$ref": "#/components/schemas/billingUsageData"
+            },
+            "x-displayname": "Telemetry Data.",
+            "x-f5xc-example": "{\"key\": \"value\"}",
+            "x-f5xc-description-short": "Data contains time-series data for the billing usage.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          }
+        },
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for billingBillingUsageDetailsResponse",
+          "required_fields": [
+            "step",
+            "usage_data"
+          ],
+          "mutually_exclusive_groups": [],
+          "example_yaml": "# Minimal example for billingBillingUsageDetailsResponse\nmetadata:\n  name: example\n  namespace: default\nspec:\n  step: value\n  usage_data: value",
+          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"step\": \"value\",\n    \"usage_data\": \"value\"\n  }\n}"
+        },
+        "x-f5xc-cli-domain": "billing_and_usage",
         "x-f5xc-namespace-profile": {
           "constraint": {
             "allowed": [
@@ -5838,7 +6293,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T21:47:40.777890+00:00"
+                "validatedAt": "2026-07-26T03:05:36.925180+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5871,7 +6326,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T21:47:40.777943+00:00"
+                "validatedAt": "2026-07-26T03:05:36.925236+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5962,6 +6417,394 @@
           }
         }
       },
+      "billingLabelFilter": {
+        "type": "object",
+        "description": "X-example: {\"label\":LABEL_OBJECT_NAME,\"op\":EQ,\"value\":\"CE-01\"}\nMetrics used in the billing usage are tagged with labels listed in the enum Label.\nLabel Filter is used to filter the timeseries that match the specified label key/value\nand the operator.",
+        "title": "Label Filter",
+        "x-displayname": "Label Filter.",
+        "x-ves-proto-message": "ves.io.schema.billing.LabelFilter",
+        "properties": {
+          "label": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemabillingLabel"
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "op": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ioschemaMetricLabelOp"
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "value": {
+            "type": "string",
+            "description": "Value of the label.",
+            "title": "Value",
+            "x-displayname": "Value",
+            "x-ves-example": "Ce01",
+            "x-f5xc-example": "ce01",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-07-26T03:05:36.925312+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "minLength": 3,
+            "x-reconciled-from-discovery": true,
+            "x-reconciled-at": "2026-07-26T03:17:27.674343+00:00"
+          }
+        },
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for billingLabelFilter",
+          "required_fields": [
+            "label",
+            "op",
+            "value"
+          ],
+          "mutually_exclusive_groups": [],
+          "example_yaml": "# Minimal example for billingLabelFilter\nmetadata:\n  name: example\n  namespace: default\nspec:\n  label: value\n  op: value\n  value: value",
+          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"label\": \"value\",\n    \"op\": \"value\",\n    \"value\": \"value\"\n  }\n}"
+        },
+        "x-f5xc-cli-domain": "label",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "system"
+            ],
+            "enforced": false
+          },
+          "recommendation": {
+            "primary": "system",
+            "alternatives": [],
+            "rationale": "Quotas are platform-level limits"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "none"
+          }
+        }
+      },
+      "billingUsageData": {
+        "type": "object",
+        "description": "Usage data contains the usage type and the corresponding metric values.",
+        "title": "Usage Data",
+        "x-displayname": "Usage Data.",
+        "x-ves-proto-message": "ves.io.schema.billing.UsageData",
+        "properties": {
+          "metric_values": {
+            "type": "array",
+            "description": "List of metric values.",
+            "title": "Value",
+            "items": {
+              "$ref": "#/components/schemas/ioschemaMetricValue"
+            },
+            "x-displayname": "Value",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "name": {
+            "type": "string",
+            "title": "x-displayName: \"Name\"\nx-example: \"RE – Container – Large (1 vCPU) – Count\"",
+            "description": "Human-readable name for the resource",
+            "x-f5xc-example": "example-resource",
+            "maxLength": 63,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "naming",
+              "maxLength": 63,
+              "minLength": 1,
+              "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+              "characterSet": {
+                "allowed": "[a-z0-9-]",
+                "restricted": "[^a-z0-9-]",
+                "required": "[a-z0-9]",
+                "description": "Lowercase letter start, alphanumeric with hyphens, alphanumeric end"
+              },
+              "format": "dns-label",
+              "formatDescription": "DNS-1035 label: must start with a lowercase letter, may contain lowercase alphanumeric and hyphens, must end with alphanumeric",
+              "validation": {
+                "rfc": "RFC 1035",
+                "standard": "DNS-1035 label (alpha-first)"
+              },
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.99,
+                "validatedAt": "2026-07-26T03:05:36.925385+00:00"
+              },
+              "deterministic": true
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "minLength": 1,
+            "x-reconciled-from-discovery": true,
+            "x-reconciled-at": "2026-07-26T03:17:27.674386+00:00",
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
+          },
+          "namespace": {
+            "type": "string",
+            "description": "Name of the data field.",
+            "title": "x-displayName: \"Namespace\"\nx-example: \"{system, default\"}\"\nName of the data field",
+            "x-displayname": "Namespace",
+            "x-ves-example": "{system, default\"}",
+            "x-f5xc-example": "example-resource",
+            "maxLength": 63,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "naming",
+              "maxLength": 63,
+              "minLength": 1,
+              "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+              "characterSet": {
+                "allowed": "[a-z0-9-]",
+                "restricted": "[^a-z0-9-]",
+                "required": "[a-z0-9]",
+                "description": "Lowercase letter start, alphanumeric with hyphens, alphanumeric end"
+              },
+              "format": "dns-label",
+              "formatDescription": "DNS-1035 label: must start with a lowercase letter",
+              "validation": {
+                "rfc": "RFC 1035",
+                "standard": "DNS-1035 label (alpha-first)"
+              },
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.99,
+                "validatedAt": "2026-07-26T03:05:36.925432+00:00"
+              },
+              "deterministic": true
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "minLength": 1,
+            "x-reconciled-from-discovery": true,
+            "x-reconciled-at": "2026-07-26T03:17:27.674415+00:00",
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
+          },
+          "obj_name": {
+            "type": "string",
+            "description": "Name of the data field.",
+            "title": "x-displayName: \"Object Name\"\nx-example: \"{site-1, vh-1\"}\"\nName of the data field",
+            "x-displayname": "Object Name.",
+            "x-ves-example": "{site-1, vh-1\"}",
+            "x-f5xc-example": "example-resource",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-07-26T03:05:36.925481+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "unit": {
+            "type": "string",
+            "description": "Name of the quantity unit.",
+            "title": "Unit",
+            "x-displayname": "Unit",
+            "x-ves-example": "MB",
+            "x-f5xc-example": "MB",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-07-26T03:05:36.925524+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "usage_type": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemabillingUsageType"
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          }
+        },
+        "x-f5xc-description-short": "Usage data contains the usage type and the corresponding metric values.",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for billingUsageData",
+          "required_fields": [
+            "metric_values",
+            "name",
+            "namespace",
+            "obj_name",
+            "unit",
+            "usage_type"
+          ],
+          "mutually_exclusive_groups": [],
+          "example_yaml": "# Minimal example for billingUsageData\nmetadata:\n  name: example\n  namespace: default\nspec:\n  metric_values: value\n  name: value\n  namespace: value\n  obj_name: value\n  unit: value",
+          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"metric_values\": \"value\",\n    \"name\": \"value\",\n    \"namespace\": \"value\",\n    \"obj_name\": \"value\",\n    \"unit\": \"value\"\n  }\n}"
+        },
+        "x-f5xc-cli-domain": "billing_and_usage",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "system"
+            ],
+            "enforced": false
+          },
+          "recommendation": {
+            "primary": "system",
+            "alternatives": [],
+            "rationale": "Quotas are platform-level limits"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "none"
+          }
+        }
+      },
+      "billingUsageDataFilter": {
+        "type": "object",
+        "description": "Usage Data Filter represents the usage type query and the corresponding filters\nlike object, namespace.",
+        "title": "Usage Data Filter",
+        "x-displayname": "Usage Data Filter.",
+        "x-ves-proto-message": "ves.io.schema.billing.UsageDataFilter",
+        "properties": {
+          "label_filters": {
+            "type": "array",
+            "description": "List of label filter expressions of the form \"label key\" QueryOp \"value\" related to the usage_type.\nResponse will only contain data that matches all the conditions specified in the label_filter. Filters\ncorresponding to objects with default names like \"CE Mesh Node - Medium\" will be ignored.\n\nOptional: If not specified, glr status data for all global log receiver objects will be returned in the response.",
+            "title": "label_filter",
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/billingLabelFilter"
+            },
+            "x-displayname": "Label Filter.",
+            "x-ves-validation-rules": {
+              "ves.io.schema.rules.repeated.max_items": "100",
+              "ves.io.schema.rules.repeated.unique": "true"
+            },
+            "x-validation-rules": {
+              "ves.io.schema.rules.repeated.max_items": "100",
+              "ves.io.schema.rules.repeated.unique": "true"
+            },
+            "x-f5xc-description-short": "List of label filter expressions of the form \"label key\" QueryOp \"value\" related to the usage_type.",
+            "x-f5xc-description-medium": "List of label filter expressions of the form \"label key\" QueryOp \"value\" related to the usage_type. Response will only contain data that matches all the conditions specified in the label_filter. Filters corresponding to objects with default names like \"CE Mesh Node - Medium\" will be ignored.",
+            "x-f5xc-constraints": {
+              "constraintType": "array",
+              "category": "discovery",
+              "maxItems": 100,
+              "uniqueItems": true,
+              "deterministic": true,
+              "metadata": {
+                "source": "discovery",
+                "confidence": 0.99,
+                "validatedAt": "2026-07-26T03:05:36.925610+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "usage_type": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemabillingUsageType"
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          }
+        },
+        "x-f5xc-description-short": "Usage Data Filter represents the usage type query and the corresponding filters like object, namespace.",
+        "x-f5xc-description-medium": "Usage Data Filter represents the usage type query and the corresponding filters like object, namespace.",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for billingUsageDataFilter",
+          "required_fields": [
+            "label_filters",
+            "usage_type"
+          ],
+          "mutually_exclusive_groups": [],
+          "example_yaml": "# Minimal example for billingUsageDataFilter\nmetadata:\n  name: example\n  namespace: default\nspec:\n  label_filters: value\n  usage_type: value",
+          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"label_filters\": \"value\",\n    \"usage_type\": \"value\"\n  }\n}"
+        },
+        "x-f5xc-cli-domain": "billing_and_usage",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "system"
+            ],
+            "enforced": false
+          },
+          "recommendation": {
+            "primary": "system",
+            "alternatives": [],
+            "rationale": "Quotas are platform-level limits"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "none"
+          }
+        }
+      },
       "billingUsageMetricData": {
         "type": "object",
         "description": "Usage Metric Data represents usage metric metadata like unit and the corresponding actual metric value consumption.",
@@ -5972,7 +6815,7 @@
           "metric_value": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/schemabillingMetricValue"
+                "$ref": "#/components/schemas/ioschemaMetricValue"
               }
             ],
             "x-f5xc-description-short": "Configuration parameter for metric value.",
@@ -5998,7 +6841,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T21:47:40.778010+00:00"
+                "validatedAt": "2026-07-26T03:05:36.925665+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6090,7 +6933,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-25T21:47:40.778059+00:00"
+                "validatedAt": "2026-07-26T03:05:36.925715+00:00"
               },
               "deterministic": true
             },
@@ -6102,7 +6945,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:11.749570+00:00",
+            "x-reconciled-at": "2026-07-26T03:17:27.674527+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "service": {
@@ -6121,7 +6964,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T21:47:40.778103+00:00"
+                "validatedAt": "2026-07-26T03:05:36.925762+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6144,6 +6987,19 @@
               "update": false,
               "read": false
             }
+          },
+          "usage_type": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemabillingUsageType"
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
           }
         },
         "x-f5xc-description-short": "Usage Summary Item represents the usage details for a usage type like Public Load Balancers, for a given service like App Stack.",
@@ -6154,11 +7010,12 @@
             "billing_metric_data",
             "name",
             "service",
-            "usage_metric_data"
+            "usage_metric_data",
+            "usage_type"
           ],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for billingUsageSummaryItem\nmetadata:\n  name: example\n  namespace: default\nspec:\n  billing_metric_data: value\n  name: value\n  service: value\n  usage_metric_data: value",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"billing_metric_data\": \"value\",\n    \"name\": \"value\",\n    \"service\": \"value\",\n    \"usage_metric_data\": \"value\"\n  }\n}"
+          "example_yaml": "# Minimal example for billingUsageSummaryItem\nmetadata:\n  name: example\n  namespace: default\nspec:\n  billing_metric_data: value\n  name: value\n  service: value\n  usage_metric_data: value\n  usage_type: value",
+          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"billing_metric_data\": \"value\",\n    \"name\": \"value\",\n    \"service\": \"value\",\n    \"usage_metric_data\": \"value\",\n    \"usage_type\": \"value\"\n  }\n}"
         },
         "x-f5xc-cli-domain": "billing_and_usage",
         "x-f5xc-namespace-profile": {
@@ -6179,12 +7036,50 @@
           }
         }
       },
-      "schemabillingMetricValue": {
+      "ioschemaMetricLabelOp": {
+        "type": "string",
+        "description": "The operator to use when filtering metrics based on label values.",
+        "title": "Metric Label Operator",
+        "enum": [
+          "EQ",
+          "NEQ"
+        ],
+        "default": "EQ",
+        "x-displayname": "Metric Label Operator.",
+        "x-ves-proto-enum": "ves.io.schema.MetricLabelOp",
+        "x-f5xc-description-short": "The operator to use when filtering metrics based on label values.",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for ioschemaMetricLabelOp",
+          "required_fields": [],
+          "mutually_exclusive_groups": [],
+          "example_yaml": "# Minimal example for ioschemaMetricLabelOp\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
+          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+        },
+        "x-f5xc-cli-domain": "label",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "system"
+            ],
+            "enforced": false
+          },
+          "recommendation": {
+            "primary": "system",
+            "alternatives": [],
+            "rationale": "Quotas are platform-level limits"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "none"
+          }
+        }
+      },
+      "ioschemaMetricValue": {
         "type": "object",
-        "description": "Value returned for a Billing Metrics query.",
+        "description": "Metric data contains timestamp and the value.",
         "title": "Metric Value",
         "x-displayname": "Metric Value.",
-        "x-ves-proto-message": "ves.io.schema.billing.MetricValue",
+        "x-ves-proto-message": "ves.io.schema.MetricValue",
         "properties": {
           "timestamp": {
             "type": "number",
@@ -6194,6 +7089,20 @@
             "x-displayname": "Timestamp",
             "x-ves-example": "1570007981.",
             "x-f5xc-example": "1570007981",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "trend_value": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaTrendValue"
+              }
+            ],
+            "x-f5xc-description-short": "Configuration parameter for trend value.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -6216,7 +7125,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T21:47:40.778168+00:00"
+                "validatedAt": "2026-07-26T03:05:36.925844+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6227,21 +7136,326 @@
             },
             "minLength": 3,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:11.749622+00:00"
+            "x-reconciled-at": "2026-07-26T03:17:27.674607+00:00"
           }
         },
-        "x-f5xc-description-short": "Value returned for a Billing Metrics query.",
+        "x-f5xc-description-short": "Metric data contains timestamp and the value.",
         "x-f5xc-minimum-configuration": {
-          "description": "Minimum configuration for schemabillingMetricValue",
+          "description": "Minimum configuration for ioschemaMetricValue",
           "required_fields": [
             "timestamp",
+            "trend_value",
             "value"
           ],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for schemabillingMetricValue\nmetadata:\n  name: example\n  namespace: default\nspec:\n  timestamp: value\n  value: value",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"timestamp\": \"value\",\n    \"value\": \"value\"\n  }\n}"
+          "example_yaml": "# Minimal example for ioschemaMetricValue\nmetadata:\n  name: example\n  namespace: default\nspec:\n  timestamp: value\n  trend_value: value\n  value: value",
+          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"timestamp\": \"value\",\n    \"trend_value\": \"value\",\n    \"value\": \"value\"\n  }\n}"
         },
         "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "system"
+            ],
+            "enforced": false
+          },
+          "recommendation": {
+            "primary": "system",
+            "alternatives": [],
+            "rationale": "Quotas are platform-level limits"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "none"
+          }
+        }
+      },
+      "schemaTrendSentiment": {
+        "type": "string",
+        "description": "Trend sentiment\n\nIndicates trend sentiment is positive\nIndicates trend sentiment is negative.",
+        "title": "Trend Sentiment",
+        "enum": [
+          "TREND_SENTIMENT_NONE",
+          "TREND_SENTIMENT_POSITIVE",
+          "TREND_SENTIMENT_NEGATIVE"
+        ],
+        "default": "TREND_SENTIMENT_NONE",
+        "x-displayname": "Trend Sentiment.",
+        "x-ves-proto-enum": "ves.io.schema.TrendSentiment",
+        "x-f5xc-description-short": "Trend sentiment Indicates trend sentiment is positive Indicates trend sentiment is negative.",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for schemaTrendSentiment",
+          "required_fields": [],
+          "mutually_exclusive_groups": [],
+          "example_yaml": "# Minimal example for schemaTrendSentiment\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
+          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+        },
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "system"
+            ],
+            "enforced": false
+          },
+          "recommendation": {
+            "primary": "system",
+            "alternatives": [],
+            "rationale": "Quotas are platform-level limits"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "none"
+          }
+        }
+      },
+      "schemaTrendValue": {
+        "type": "object",
+        "description": "Trend value contains trend value, trend sentiment and trend calculation description and window size.",
+        "title": "Trend Value",
+        "x-displayname": "Trend Value.",
+        "x-ves-proto-message": "ves.io.schema.TrendValue",
+        "properties": {
+          "description": {
+            "type": "string",
+            "description": "Description of the method used to calculate trend.",
+            "title": "Description",
+            "x-displayname": "Description.",
+            "x-ves-example": "Trend was calculated by comparing the avg of window size intervals of end-start Time and last window time interval.",
+            "x-f5xc-example": "Trend was calculated by comparing the avg of window size intervals of end-start Time and last window time interval",
+            "x-f5xc-description-short": "Description of the method used to calculate trend.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "content",
+              "maxLength": 1024,
+              "minLength": 0,
+              "characterSet": {
+                "description": "Free text with UTF-8 support"
+              },
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.8,
+                "validatedAt": "2026-07-26T03:05:36.925913+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "minLength": 21,
+            "x-reconciled-from-discovery": true,
+            "x-reconciled-at": "2026-07-26T03:17:27.674639+00:00"
+          },
+          "previous_value": {
+            "type": "string",
+            "description": "Configuration parameter for previous value",
+            "title": "Previous Value",
+            "x-displayname": "Previous Value.",
+            "x-ves-example": "200.00",
+            "x-f5xc-example": "200.00",
+            "x-f5xc-description-short": "Configuration parameter for previous value.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-07-26T03:05:36.925967+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "sentiment": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaTrendSentiment"
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "value": {
+            "type": "string",
+            "description": "Configuration parameter for value",
+            "title": "Value",
+            "x-displayname": "Value",
+            "x-ves-example": "-15",
+            "x-f5xc-example": "-15",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-07-26T03:05:36.926029+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "minLength": 3,
+            "x-reconciled-from-discovery": true,
+            "x-reconciled-at": "2026-07-26T03:17:27.674685+00:00"
+          }
+        },
+        "x-f5xc-description-short": "Trend value contains trend value, trend sentiment and trend calculation description and window size.",
+        "x-f5xc-description-medium": "Trend value contains trend value, trend sentiment and trend calculation description and window size.",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for schemaTrendValue",
+          "required_fields": [
+            "description",
+            "previous_value",
+            "sentiment",
+            "value"
+          ],
+          "mutually_exclusive_groups": [],
+          "example_yaml": "# Minimal example for schemaTrendValue\nmetadata:\n  name: example\n  namespace: default\nspec:\n  description: value\n  previous_value: value\n  sentiment: value\n  value: value",
+          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"description\": \"value\",\n    \"previous_value\": \"value\",\n    \"sentiment\": \"value\",\n    \"value\": \"value\"\n  }\n}"
+        },
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "system"
+            ],
+            "enforced": false
+          },
+          "recommendation": {
+            "primary": "system",
+            "alternatives": [],
+            "rationale": "Quotas are platform-level limits"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "none"
+          }
+        }
+      },
+      "schemabillingLabel": {
+        "type": "string",
+        "description": "Metrics used to construct the billing usage are tagged with these labels and therefore\nthe metrics can be sliced and diced based on one or more labels.\n\nIndicates the field not being set\nIdentifies a object\nIdentifies a namespace.",
+        "title": "Label",
+        "enum": [
+          "LABEL_NONE",
+          "LABEL_OBJECT_NAME",
+          "LABEL_NAMESPACE"
+        ],
+        "default": "LABEL_NONE",
+        "x-displayname": "Label",
+        "x-ves-proto-enum": "ves.io.schema.billing.Label",
+        "x-f5xc-description-short": "Metrics used to construct the billing usage are tagged with these labels and therefore the metrics can be sliced and diced based on one or more...",
+        "x-f5xc-description-medium": "Metrics used to construct the billing usage are tagged with these labels and therefore the metrics can be sliced and diced based on one or more labels. Indicates the field not being set Identifies a object Identifies a namespace.",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for schemabillingLabel",
+          "required_fields": [],
+          "mutually_exclusive_groups": [],
+          "example_yaml": "# Minimal example for schemabillingLabel\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
+          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+        },
+        "x-f5xc-cli-domain": "label",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "system"
+            ],
+            "enforced": false
+          },
+          "recommendation": {
+            "primary": "system",
+            "alternatives": [],
+            "rationale": "Quotas are platform-level limits"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "none"
+          }
+        }
+      },
+      "schemabillingUsageType": {
+        "type": "string",
+        "description": "List of usage type\n\nTenant Info\nRE Container Flavor Large Usage\nRE Container Flavor Medium Usage\nRE Container Flavor Tiny Usage\nPublic IP Usage\nCE Mesh Node Small Usage\nCE Mesh Node Medium Usage\nCE Mesh Node Large Usage\nCE Stack Node Small Usage\nCE Stack Node Medium Usage\nCE Stack Node Large Usage\nDNS LoadBalancer Usage\nDNS LoadBalancer Healthcheck Usage\nDNS Zone Usage\nCE to RE traffic usage\nRE API sec good requests\nCE API sec good requests\nSynthetic monitor invocations usage\nPublic LoadBalancer usage\nRE app fw usage\nCE app fw usage\nTenant plan usage\nTenant logins count\nAPI Discovery LoadBalancer usage\nAPI protection good requests\nTenant object usage\nFast ACL IP prefix usage\nGood requests to origin usage\nTenant add on service info\nClient side defense transactions\nRE WAF requests\nLMA region usage\nGLR sent logs\nGLR sent log bytes\nRE rate limiting good requests\nPublic RE CDN data transfer usage North America\nPublic RE CDN data transfer usage Europe\nPublic RE CDN data transfer usage Asia\nPublic RE CDN data transfer usage South America\nPublic RE CDN request usage North America\nPublic RE CDN request usage Europe\nPublic RE CDN request usage Asia\nPublic RE CDN request usage South America\nDNSSEC Zone Usage\nAdvanced DNS LoadBalancer Usage\nDNS LoadBalancer CNAME pool health check usage\nDNS LoadBalancer CNAME pool priority algorithm usage.",
+        "title": "UsageType",
+        "enum": [
+          "TENANT_INFO",
+          "RE_CONTAINER_FLAVOR_LARGE_USAGE",
+          "RE_CONTAINER_FLAVOR_MEDIUM_USAGE",
+          "RE_CONTAINER_FLAVOR_TINY_USAGE",
+          "PUBLIC_IP_USAGE",
+          "CE_MESH_NODE_SMALL_USAGE",
+          "CE_MESH_NODE_MEDIUM_USAGE",
+          "CE_MESH_NODE_LARGE_USAGE",
+          "CE_STACK_NODE_SMALL_USAGE",
+          "CE_STACK_NODE_MEDIUM_USAGE",
+          "CE_STACK_NODE_LARGE_USAGE",
+          "DNS_LOAD_BALANCER_USAGE",
+          "DNS_LOAD_BALANCER_HEALTHCHECK_USAGE",
+          "DNS_ZONE_USAGE",
+          "CE_TO_RE_TRAFFIC_USAGE",
+          "RE_API_SEC_GOOD_REQUESTS",
+          "CE_API_SEC_GOOD_REQUESTS",
+          "SYNTHETIC_MONITOR_INVOCATIONS_USAGE",
+          "PUBLIC_LOAD_BALANCER_USAGE",
+          "RE_APP_FW_USAGE",
+          "CE_APP_FW_USAGE",
+          "TENANT_PLAN_USAGE",
+          "TENANT_LOGINS_COUNT",
+          "API_DISCOVERY_LOAD_BALANCER_USAGE",
+          "API_PROTECTIONS_GOOD_REQUESTS",
+          "TENANT_OBJECT_USAGE",
+          "FAST_ACL_IP_PREFIX_USAGE",
+          "GOOD_REQUESTS_TO_ORIGIN_USAGE",
+          "TENANT_ADDON_SERVICE_INFO",
+          "CLIENT_SIDE_DEFENSE_TRANSACTIONS",
+          "RE_WAF_REQUESTS",
+          "LMA_REGION_USAGE",
+          "GLR_SENT_LOGS",
+          "GLR_SENT_LOGS_BYTES",
+          "RE_RLIM_GOOD_REQUESTS",
+          "PUBLIC_RE_CDN_DATA_TRANSFER_USAGE_NA",
+          "PUBLIC_RE_CDN_DATA_TRANSFER_USAGE_EU",
+          "PUBLIC_RE_CDN_DATA_TRANSFER_USAGE_AS",
+          "PUBLIC_RE_CDN_DATA_TRANSFER_USAGE_SA",
+          "PUBLIC_RE_CDN_REQUEST_USAGE_NA",
+          "PUBLIC_RE_CDN_REQUEST_USAGE_EU",
+          "PUBLIC_RE_CDN_REQUEST_USAGE_AS",
+          "PUBLIC_RE_CDN_REQUEST_USAGE_SA",
+          "DNSSEC_ZONE_USAGE",
+          "ADVANCED_DNS_LOAD_BALANCER_USAGE",
+          "DNS_LOAD_BALANCER_CNAME_POOL_HEALTH_CHECK_USAGE",
+          "DNS_LOAD_BALANCER_CNAME_POOL_PRIORITY_ALGORITHM_USAGE"
+        ],
+        "default": "TENANT_INFO",
+        "x-displayname": "UsageType",
+        "x-ves-proto-enum": "ves.io.schema.billing.UsageType",
+        "x-f5xc-description-short": "List of usage type Tenant Info RE Container Flavor Large Usage RE Container Flavor Medium Usage RE Container Flavor Tiny Usage Public IP Usage CE...",
+        "x-f5xc-description-medium": "List of usage type Tenant Info RE Container Flavor Large Usage RE Container Flavor Medium Usage RE Container Flavor Tiny Usage Public IP Usage CE Mesh Node Small Usage CE Mesh Node Medium Usage CE Mesh Node Large Usage CE Stack Node Small Usage CE Stack Node Medium Usage CE Stack Node Large...",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for schemabillingUsageType",
+          "required_fields": [],
+          "mutually_exclusive_groups": [],
+          "example_yaml": "# Minimal example for schemabillingUsageType\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
+          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+        },
+        "x-f5xc-cli-domain": "billing_and_usage",
         "x-f5xc-namespace-profile": {
           "constraint": {
             "allowed": [
@@ -6283,7 +7497,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T21:56:56.767306+00:00"
+                "validatedAt": "2026-07-26T03:11:12.727918+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6406,7 +7620,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T21:56:56.767433+00:00"
+                "validatedAt": "2026-07-26T03:11:12.728066+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6431,7 +7645,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T21:56:56.767505+00:00"
+                "validatedAt": "2026-07-26T03:11:12.728159+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6470,7 +7684,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-25T21:56:56.767575+00:00"
+                "validatedAt": "2026-07-26T03:11:12.728239+00:00"
               },
               "deterministic": true
             },
@@ -6482,7 +7696,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:22.613370+00:00",
+            "x-reconciled-at": "2026-07-26T03:17:34.322589+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "period_end": {
@@ -6502,7 +7716,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T21:56:56.767660+00:00"
+                "validatedAt": "2026-07-26T03:11:12.728327+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6529,7 +7743,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T21:56:56.767726+00:00"
+                "validatedAt": "2026-07-26T03:11:12.728387+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6555,7 +7769,7 @@
             "maxLength": 17,
             "minLength": 17,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:22.613425+00:00"
+            "x-reconciled-at": "2026-07-26T03:17:34.322640+00:00"
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -6706,7 +7920,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:02.141538+00:00"
+                "validatedAt": "2026-07-26T03:12:55.583034+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6731,7 +7945,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:02.141624+00:00"
+                "validatedAt": "2026-07-26T03:12:55.583147+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6756,7 +7970,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:02.141667+00:00"
+                "validatedAt": "2026-07-26T03:12:55.583223+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6794,7 +8008,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:02.141715+00:00"
+                "validatedAt": "2026-07-26T03:12:55.583314+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6819,7 +8033,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:02.141758+00:00"
+                "validatedAt": "2026-07-26T03:12:55.583397+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6845,7 +8059,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:02.141810+00:00"
+                "validatedAt": "2026-07-26T03:12:55.583466+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6870,7 +8084,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:02.141851+00:00"
+                "validatedAt": "2026-07-26T03:12:55.583512+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6895,7 +8109,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:02.141899+00:00"
+                "validatedAt": "2026-07-26T03:12:55.583562+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6920,7 +8134,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:02.141945+00:00"
+                "validatedAt": "2026-07-26T03:12:55.583610+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6996,7 +8210,13 @@
             "title": "Namespace",
             "x-displayname": "Namespace",
             "x-ves-example": "System",
+            "x-ves-validation-rules": {
+              "ves.io.schema.rules.string.const": "system"
+            },
             "x-f5xc-example": "system",
+            "x-validation-rules": {
+              "ves.io.schema.rules.string.const": "system"
+            },
             "x-f5xc-description-short": "Namespace specifies the namespace in which the payment method will be created. If not provided, the default 'system' namespace will be used.",
             "x-f5xc-description-medium": "Namespace specifies the namespace in which the payment method will be created. If not provided, the default 'system' namespace will be used.",
             "maxLength": 63,
@@ -7021,7 +8241,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-25T22:00:02.142001+00:00"
+                "validatedAt": "2026-07-26T03:12:55.583688+00:00"
               },
               "deterministic": true
             },
@@ -7033,13 +8253,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:25.467725+00:00",
-            "x-ves-validation-rules": {
-              "ves.io.schema.rules.string.const": "system"
-            },
-            "x-validation-rules": {
-              "ves.io.schema.rules.string.const": "system"
-            },
+            "x-reconciled-at": "2026-07-26T03:17:35.962099+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "role": {
@@ -7073,7 +8287,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.75,
-                "validatedAt": "2026-07-25T22:00:02.142056+00:00"
+                "validatedAt": "2026-07-26T03:12:55.583747+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7149,7 +8363,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-25T22:00:02.142100+00:00"
+                "validatedAt": "2026-07-26T03:12:55.583794+00:00"
               },
               "deterministic": true
             },
@@ -7161,7 +8375,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:25.467771+00:00",
+            "x-reconciled-at": "2026-07-26T03:17:35.962152+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           }
         },
@@ -7230,7 +8444,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-25T22:00:02.142141+00:00"
+                "validatedAt": "2026-07-26T03:12:55.583838+00:00"
               },
               "deterministic": true
             },
@@ -7242,7 +8456,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:25.467797+00:00",
+            "x-reconciled-at": "2026-07-26T03:17:35.962183+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace": {
@@ -7251,7 +8465,13 @@
             "title": "namespace",
             "x-displayname": "Namespace",
             "x-ves-example": "System",
+            "x-ves-validation-rules": {
+              "ves.io.schema.rules.string.const": "system"
+            },
             "x-f5xc-example": "system",
+            "x-validation-rules": {
+              "ves.io.schema.rules.string.const": "system"
+            },
             "x-f5xc-description-short": "The namespace in which the payment method object is present.",
             "maxLength": 63,
             "x-f5xc-constraints": {
@@ -7275,7 +8495,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-25T22:00:02.142179+00:00"
+                "validatedAt": "2026-07-26T03:12:55.583887+00:00"
               },
               "deterministic": true
             },
@@ -7287,13 +8507,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:25.467823+00:00",
-            "x-ves-validation-rules": {
-              "ves.io.schema.rules.string.const": "system"
-            },
-            "x-validation-rules": {
-              "ves.io.schema.rules.string.const": "system"
-            },
+            "x-reconciled-at": "2026-07-26T03:17:35.962210+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           }
         },
@@ -7405,7 +8619,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-25T22:00:02.142220+00:00"
+                "validatedAt": "2026-07-26T03:12:55.583933+00:00"
               },
               "deterministic": true
             },
@@ -7417,7 +8631,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:25.467852+00:00",
+            "x-reconciled-at": "2026-07-26T03:17:35.962241+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace": {
@@ -7426,7 +8640,13 @@
             "title": "namespace",
             "x-displayname": "Namespace",
             "x-ves-example": "System",
+            "x-ves-validation-rules": {
+              "ves.io.schema.rules.string.const": "system"
+            },
             "x-f5xc-example": "system",
+            "x-validation-rules": {
+              "ves.io.schema.rules.string.const": "system"
+            },
             "x-f5xc-description-short": "The namespace in which the payment method object is present.",
             "maxLength": 63,
             "x-f5xc-constraints": {
@@ -7450,7 +8670,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-25T22:00:02.142258+00:00"
+                "validatedAt": "2026-07-26T03:12:55.583978+00:00"
               },
               "deterministic": true
             },
@@ -7462,13 +8682,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:25.467878+00:00",
-            "x-ves-validation-rules": {
-              "ves.io.schema.rules.string.const": "system"
-            },
-            "x-validation-rules": {
-              "ves.io.schema.rules.string.const": "system"
-            },
+            "x-reconciled-at": "2026-07-26T03:17:35.962268+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           }
         },
@@ -7539,7 +8753,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-25T22:00:02.142298+00:00"
+                "validatedAt": "2026-07-26T03:12:55.584042+00:00"
               },
               "deterministic": true
             },
@@ -7551,7 +8765,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:25.467904+00:00",
+            "x-reconciled-at": "2026-07-26T03:17:35.962297+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace": {
@@ -7560,7 +8774,13 @@
             "title": "namespace",
             "x-displayname": "Namespace",
             "x-ves-example": "System",
+            "x-ves-validation-rules": {
+              "ves.io.schema.rules.string.const": "system"
+            },
             "x-f5xc-example": "system",
+            "x-validation-rules": {
+              "ves.io.schema.rules.string.const": "system"
+            },
             "x-f5xc-description-short": "The namespace in which the payment method object is present.",
             "maxLength": 63,
             "x-f5xc-constraints": {
@@ -7584,7 +8804,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-25T22:00:02.142337+00:00"
+                "validatedAt": "2026-07-26T03:12:55.584091+00:00"
               },
               "deterministic": true
             },
@@ -7596,13 +8816,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:25.467928+00:00",
-            "x-ves-validation-rules": {
-              "ves.io.schema.rules.string.const": "system"
-            },
-            "x-validation-rules": {
-              "ves.io.schema.rules.string.const": "system"
-            },
+            "x-reconciled-at": "2026-07-26T03:17:35.962323+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           }
         },
@@ -7700,7 +8914,13 @@
             "title": "Namespace",
             "x-displayname": "Namespace",
             "x-ves-example": "System",
+            "x-ves-validation-rules": {
+              "ves.io.schema.rules.string.const": "system"
+            },
             "x-f5xc-example": "system",
+            "x-validation-rules": {
+              "ves.io.schema.rules.string.const": "system"
+            },
             "x-f5xc-description-short": "Namespace is not used, all requests are stored under system namespace.",
             "maxLength": 63,
             "x-f5xc-constraints": {
@@ -7724,7 +8944,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-25T22:00:16.296511+00:00"
+                "validatedAt": "2026-07-26T03:13:02.893076+00:00"
               },
               "deterministic": true
             },
@@ -7736,13 +8956,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:25.638513+00:00",
-            "x-ves-validation-rules": {
-              "ves.io.schema.rules.string.const": "system"
-            },
-            "x-validation-rules": {
-              "ves.io.schema.rules.string.const": "system"
-            },
+            "x-reconciled-at": "2026-07-26T03:17:36.024312+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "new_plan": {
@@ -7761,7 +8975,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:16.296577+00:00"
+                "validatedAt": "2026-07-26T03:13:02.893181+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7839,7 +9053,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:16.296617+00:00"
+                "validatedAt": "2026-07-26T03:13:02.893258+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7974,7 +9188,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:16.296687+00:00"
+                "validatedAt": "2026-07-26T03:13:02.893387+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8015,7 +9229,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:16.296744+00:00"
+                "validatedAt": "2026-07-26T03:13:02.893452+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8054,7 +9268,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:16.296791+00:00"
+                "validatedAt": "2026-07-26T03:13:02.893507+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8066,7 +9280,7 @@
             "minLength": 26,
             "format": "hostname",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:25.638626+00:00"
+            "x-reconciled-at": "2026-07-26T03:17:36.024435+00:00"
           },
           "payment_address": {
             "allOf": [
@@ -8097,7 +9311,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:16.296848+00:00"
+                "validatedAt": "2026-07-26T03:13:02.893571+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8141,7 +9355,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:16.296923+00:00"
+                "validatedAt": "2026-07-26T03:13:02.893650+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8167,7 +9381,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:16.296975+00:00"
+                "validatedAt": "2026-07-26T03:13:02.893706+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8259,7 +9473,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:16.297040+00:00"
+                "validatedAt": "2026-07-26T03:13:02.893779+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8284,7 +9498,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:16.297086+00:00"
+                "validatedAt": "2026-07-26T03:13:02.893827+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8309,7 +9523,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:16.297125+00:00"
+                "validatedAt": "2026-07-26T03:13:02.893868+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8347,7 +9561,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:16.297172+00:00"
+                "validatedAt": "2026-07-26T03:13:02.893919+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8372,7 +9586,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:16.297213+00:00"
+                "validatedAt": "2026-07-26T03:13:02.893965+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8398,7 +9612,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:16.297262+00:00"
+                "validatedAt": "2026-07-26T03:13:02.894037+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8423,7 +9637,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:16.297303+00:00"
+                "validatedAt": "2026-07-26T03:13:02.894083+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8448,7 +9662,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:16.297350+00:00"
+                "validatedAt": "2026-07-26T03:13:02.894133+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8473,7 +9687,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:16.297396+00:00"
+                "validatedAt": "2026-07-26T03:13:02.894184+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8582,7 +9796,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:53.085864+00:00"
+                "validatedAt": "2026-07-26T03:13:23.335305+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8605,7 +9819,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:53.085960+00:00"
+                "validatedAt": "2026-07-26T03:13:23.335381+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8616,7 +9830,7 @@
             },
             "minLength": 3,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:26.185603+00:00"
+            "x-reconciled-at": "2026-07-26T03:17:36.388626+00:00"
           }
         },
         "x-f5xc-description-short": "Contains an arbitrary serialized protocol buffer message along with a URL that describes the type of the serialized message.",
@@ -8842,7 +10056,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-25T22:00:53.086041+00:00"
+                "validatedAt": "2026-07-26T03:13:23.335465+00:00"
               },
               "deterministic": true
             },
@@ -8854,7 +10068,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:26.185690+00:00",
+            "x-reconciled-at": "2026-07-26T03:17:36.388726+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace": {
@@ -8887,7 +10101,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-25T22:00:53.086083+00:00"
+                "validatedAt": "2026-07-26T03:13:23.335509+00:00"
               },
               "deterministic": true
             },
@@ -8899,7 +10113,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:26.185715+00:00",
+            "x-reconciled-at": "2026-07-26T03:17:36.388754+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           }
         },
@@ -8913,56 +10127,6 @@
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for quotaDeleteRequest\nmetadata:\n  name: example\n  namespace: default\nspec:\n  fail_if_referred: value\n  name: value\n  namespace: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"fail_if_referred\": \"value\",\n    \"name\": \"value\",\n    \"namespace\": \"value\"\n  }\n}"
-        },
-        "x-f5xc-cli-domain": "billing_and_usage",
-        "x-f5xc-namespace-profile": {
-          "constraint": {
-            "allowed": [
-              "system"
-            ],
-            "enforced": false
-          },
-          "recommendation": {
-            "primary": "system",
-            "alternatives": [],
-            "rationale": "Quotas are platform-level limits"
-          },
-          "classification": {
-            "category": "application",
-            "multi_tenant_pattern": "none"
-          }
-        }
-      },
-      "quotaFloatLimitType": {
-        "type": "object",
-        "description": "X-displayName: \"Limit (float)\"\nFloatLimitType defines a float quota value that should not be exceeded. Useful for items that have\nquotas in fractions.",
-        "title": "FloatLimitType",
-        "properties": {
-          "maximum": {
-            "type": "number",
-            "description": "X-displayName: \"Maximum\"\nThe maximum value.",
-            "title": "maximum",
-            "format": "double",
-            "x-f5xc-example": "100",
-            "x-f5xc-description-short": "X-displayName: \"Maximum\" The maximum value.",
-            "x-f5xc-required-for": {
-              "minimum_config": false,
-              "create": false,
-              "update": false,
-              "read": false
-            }
-          }
-        },
-        "x-f5xc-description-short": "X-displayName: \"Limit (float)\" FloatLimitType defines a float quota value that should not be exceeded.",
-        "x-f5xc-description-medium": "X-displayName: \"Limit (float)\" FloatLimitType defines a float quota value that should not be exceeded. Useful for items that have quotas in fractions.",
-        "x-f5xc-minimum-configuration": {
-          "description": "Minimum configuration for quotaFloatLimitType",
-          "required_fields": [
-            "maximum"
-          ],
-          "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for quotaFloatLimitType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  maximum: value",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"maximum\": \"value\"\n  }\n}"
         },
         "x-f5xc-cli-domain": "billing_and_usage",
         "x-f5xc-namespace-profile": {
@@ -9230,7 +10394,7 @@
             "maxLength": 17,
             "minLength": 17,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:26.185876+00:00"
+            "x-reconciled-at": "2026-07-26T03:17:36.388926+00:00"
           },
           "system_metadata": {
             "allOf": [
@@ -9403,56 +10567,6 @@
           }
         }
       },
-      "quotaLimitType": {
-        "type": "object",
-        "description": "X-displayName: \"Limit\"\nLimitType defines a quota value for a specific object kind that should not be exceeded.",
-        "title": "LimitType",
-        "properties": {
-          "maximum": {
-            "type": "integer",
-            "description": "X-displayName: \"Maximum\"\nThe maximum value for the object kind.",
-            "title": "maximum",
-            "format": "int32",
-            "x-f5xc-example": "100",
-            "x-f5xc-description-short": "X-displayName: \"Maximum\" The maximum value for the object kind.",
-            "x-f5xc-required-for": {
-              "minimum_config": false,
-              "create": false,
-              "update": false,
-              "read": false
-            }
-          }
-        },
-        "x-f5xc-description-short": "X-displayName: \"Limit\" LimitType defines a quota value for a specific object kind that should not be exceeded.",
-        "x-f5xc-description-medium": "X-displayName: \"Limit\" LimitType defines a quota value for a specific object kind that should not be exceeded.",
-        "x-f5xc-minimum-configuration": {
-          "description": "Minimum configuration for quotaLimitType",
-          "required_fields": [
-            "maximum"
-          ],
-          "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for quotaLimitType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  maximum: value",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"maximum\": \"value\"\n  }\n}"
-        },
-        "x-f5xc-cli-domain": "billing_and_usage",
-        "x-f5xc-namespace-profile": {
-          "constraint": {
-            "allowed": [
-              "system"
-            ],
-            "enforced": false
-          },
-          "recommendation": {
-            "primary": "system",
-            "alternatives": [],
-            "rationale": "Quotas are platform-level limits"
-          },
-          "classification": {
-            "category": "application",
-            "multi_tenant_pattern": "none"
-          }
-        }
-      },
       "quotaListResponse": {
         "type": "object",
         "description": "This is the output message of 'List' RPC.",
@@ -9495,7 +10609,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.7,
-                "validatedAt": "2026-07-25T22:00:53.086326+00:00"
+                "validatedAt": "2026-07-26T03:13:23.335724+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9573,7 +10687,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.8,
-                "validatedAt": "2026-07-25T22:00:53.086396+00:00"
+                "validatedAt": "2026-07-26T03:13:23.335798+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9584,7 +10698,7 @@
             },
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:26.186015+00:00"
+            "x-reconciled-at": "2026-07-26T03:17:36.389085+00:00"
           },
           "disabled": {
             "type": "boolean",
@@ -9671,7 +10785,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-25T22:00:53.086471+00:00"
+                "validatedAt": "2026-07-26T03:13:23.335857+00:00"
               },
               "deterministic": true
             },
@@ -9683,7 +10797,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:26.186075+00:00",
+            "x-reconciled-at": "2026-07-26T03:17:36.389154+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace": {
@@ -9715,7 +10829,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-25T22:00:53.086509+00:00"
+                "validatedAt": "2026-07-26T03:13:23.335896+00:00"
               },
               "deterministic": true
             },
@@ -9727,7 +10841,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:26.186099+00:00",
+            "x-reconciled-at": "2026-07-26T03:17:36.389183+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "owner_view": {
@@ -9797,7 +10911,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:53.086574+00:00"
+                "validatedAt": "2026-07-26T03:13:23.335968+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9809,7 +10923,7 @@
             "x-field-mutability": "read-only",
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:26.186147+00:00"
+            "x-reconciled-at": "2026-07-26T03:17:36.389240+00:00"
           },
           "uid": {
             "type": "string",
@@ -9826,7 +10940,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:53.086608+00:00"
+                "validatedAt": "2026-07-26T03:13:23.336020+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9839,7 +10953,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:26.186174+00:00"
+            "x-reconciled-at": "2026-07-26T03:17:36.389269+00:00"
           }
         },
         "x-f5xc-description-short": "By default a summary of quota is returned in 'List'. By setting 'report_fields' in the ListRequest more details of each item can be got.",
@@ -9864,96 +10978,6 @@
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for quotaListResponseItem\nmetadata:\n  name: example\n  namespace: default\nspec:\n  annotations: value\n  description: value\n  disabled: value\n  get_spec: value\n  labels: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"annotations\": \"value\",\n    \"description\": \"value\",\n    \"disabled\": \"value\",\n    \"get_spec\": \"value\",\n    \"labels\": \"value\"\n  }\n}"
-        },
-        "x-f5xc-cli-domain": "billing_and_usage",
-        "x-f5xc-namespace-profile": {
-          "constraint": {
-            "allowed": [
-              "system"
-            ],
-            "enforced": false
-          },
-          "recommendation": {
-            "primary": "system",
-            "alternatives": [],
-            "rationale": "Quotas are platform-level limits"
-          },
-          "classification": {
-            "category": "application",
-            "multi_tenant_pattern": "none"
-          }
-        }
-      },
-      "quotaRateLimitType": {
-        "type": "object",
-        "description": "X-displayName: \"Rate Limit\"\nRateLimitType defines a rate quota value for a specific object kind that should not be exceeded in terms access per time unit.",
-        "title": "RateLimitType",
-        "properties": {
-          "burst": {
-            "type": "integer",
-            "description": "X-displayName: \"Burst\"\nThe burst which is to be allowed per quanta.",
-            "title": "burst",
-            "format": "int32",
-            "x-f5xc-example": "100",
-            "x-f5xc-description-short": "X-displayName: \"Burst\" The burst which is to be allowed per quanta.",
-            "x-f5xc-required-for": {
-              "minimum_config": false,
-              "create": false,
-              "update": false,
-              "read": false
-            }
-          },
-          "rate": {
-            "type": "integer",
-            "description": "X-displayName: \"Rate\"\nThe sustained rate which is to be allowed per quanta.",
-            "title": "rate",
-            "format": "int32",
-            "x-f5xc-example": "100",
-            "x-f5xc-description-short": "X-displayName: \"Rate\" The sustained rate which is to be allowed per quanta.",
-            "x-f5xc-required-for": {
-              "minimum_config": false,
-              "create": false,
-              "update": false,
-              "read": false
-            }
-          },
-          "unit": {
-            "type": "string",
-            "description": "X-displayName: \"Unit\"\nThe unit for the quanta.",
-            "title": "unit",
-            "x-f5xc-example": "per-second",
-            "x-f5xc-description-short": "X-displayName: \"Unit\" The unit for the quanta.",
-            "maxLength": 1024,
-            "x-f5xc-constraints": {
-              "constraintType": "string",
-              "category": "general",
-              "maxLength": 1024,
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:53.086671+00:00"
-              }
-            },
-            "x-f5xc-required-for": {
-              "minimum_config": false,
-              "create": false,
-              "update": false,
-              "read": false
-            }
-          }
-        },
-        "x-f5xc-description-short": "X-displayName: \"Rate Limit\" RateLimitType defines a rate quota value for a specific object kind that should not be exceeded in terms access per...",
-        "x-f5xc-description-medium": "X-displayName: \"Rate Limit\" RateLimitType defines a rate quota value for a specific object kind that should not be exceeded in terms access per time unit.",
-        "x-f5xc-minimum-configuration": {
-          "description": "Minimum configuration for quotaRateLimitType",
-          "required_fields": [
-            "burst",
-            "rate",
-            "unit"
-          ],
-          "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for quotaRateLimitType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  burst: value\n  rate: value\n  unit: value",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"burst\": \"value\",\n    \"rate\": \"value\",\n    \"unit\": \"value\"\n  }\n}"
         },
         "x-f5xc-cli-domain": "billing_and_usage",
         "x-f5xc-namespace-profile": {
@@ -10178,7 +11202,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.95,
-                "validatedAt": "2026-07-25T22:00:53.086761+00:00"
+                "validatedAt": "2026-07-26T03:13:23.336122+00:00"
               },
               "deterministic": true
             },
@@ -10206,7 +11230,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:53.086811+00:00"
+                "validatedAt": "2026-07-26T03:13:23.336183+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -10218,13 +11242,12 @@
           },
           "reason": {
             "type": "string",
-            "description": "X-reason: \"Insufficient memory in data plane\"\nA human readable string explaining the reason for reaching this condition.",
+            "description": "A human readable string explaining the reason for reaching this condition.",
             "title": "reason",
             "x-displayname": "Reason",
-            "x-ves-example": "Value",
-            "x-f5xc-example": "value",
-            "x-f5xc-description-short": "X-reason: \"Insufficient memory in data plane\" A human readable string explaining the reason for reaching this condition.",
-            "x-f5xc-description-medium": "X-reason: \"Insufficient memory in data plane\" A human readable string explaining the reason for reaching this condition.",
+            "x-ves-example": "Insufficient memory in data plane.",
+            "x-f5xc-example": "Insufficient memory in data plane",
+            "x-f5xc-description-short": "Human readable string explaining the reason for reaching this condition.",
             "maxLength": 1024,
             "x-f5xc-constraints": {
               "constraintType": "string",
@@ -10233,7 +11256,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:53.086855+00:00"
+                "validatedAt": "2026-07-26T03:13:23.336229+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -10244,7 +11267,7 @@
             },
             "minLength": 27,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:26.186291+00:00"
+            "x-reconciled-at": "2026-07-26T03:17:36.389372+00:00"
           },
           "service_name": {
             "type": "string",
@@ -10261,7 +11284,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:53.086904+00:00"
+                "validatedAt": "2026-07-26T03:13:23.336283+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -10273,7 +11296,7 @@
           },
           "status": {
             "type": "string",
-            "description": "Status of the condition\n\"Success\" Validtion has succeded. Requested operation was successful.\n\"Failed\" Validation has failed.\n\"Incomplete\" Validation of configuration has failed due to missing configuration.\n\"Installed\" Validation has passed and configuration has been installed in data path or K8s\n\"Down\" Configuration is operationally down. E.g. Down interface\n\"Disabled\" Configuration is administratively disabled i.e. objectmetatype.disable = true.\n\"NotApplicable\" Configuration is not applicable e.g. Tenant service_policy_set(s) in system namespace are not applicable on REs.",
+            "description": "Status of the condition\n\"Success\" Validation has succeeded. Requested operation was successful.\n\"Failed\" Validation has failed.\n\"Incomplete\" Validation of configuration has failed due to missing configuration.\n\"Installed\" Validation has passed and configuration has been installed in data path or K8s\n\"Down\" Configuration is operationally down. E.g. Down interface\n\"Disabled\" Configuration is administratively disabled i.e. objectmetatype.disable = true.\n\"NotApplicable\" Configuration is not applicable e.g. Tenant service_policy_set(s) in system namespace are not applicable on REs.",
             "title": "status",
             "x-displayname": "Status",
             "x-ves-example": "Failed",
@@ -10284,8 +11307,8 @@
             "x-validation-rules": {
               "ves.io.schema.rules.string.in": "[\\\"Success\\\",\\\"Failed\\\",\\\"Incomplete\\\",\\\"Installed\\\",\\\"Down\\\",\\\"Disabled\\\",\\\"NotApplicable\\\"]"
             },
-            "x-f5xc-description-short": "Status of the condition \"Success\" Validtion has succeded.",
-            "x-f5xc-description-medium": "Status of the condition \"Success\" Validtion has succeded. Requested operation was successful. \"Failed\" Validation has failed. \"Incomplete\" Validation of configuration has failed due to missing configuration. \"Installed\" Validation has passed and configuration has been installed in data path or...",
+            "x-f5xc-description-short": "Status of the condition \"Success\" Validation has succeeded.",
+            "x-f5xc-description-medium": "Status of the condition \"Success\" Validation has succeeded. Requested operation was successful. \"Failed\" Validation has failed. \"Incomplete\" Validation of configuration has failed due to missing configuration. \"Installed\" Validation has passed and configuration has been installed in data path or...",
             "maxLength": 1024,
             "enum": [
               "Success",
@@ -10303,7 +11326,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:53.087025+00:00"
+                "validatedAt": "2026-07-26T03:13:23.336411+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -10314,7 +11337,7 @@
             },
             "minLength": 17,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:26.186325+00:00"
+            "x-reconciled-at": "2026-07-26T03:17:36.389410+00:00"
           },
           "type": {
             "type": "string",
@@ -10343,7 +11366,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:53.087100+00:00"
+                "validatedAt": "2026-07-26T03:13:23.336495+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -10483,7 +11506,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:53.087150+00:00"
+                "validatedAt": "2026-07-26T03:13:23.336551+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -10561,7 +11584,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-25T22:00:53.087190+00:00"
+                "validatedAt": "2026-07-26T03:13:23.336598+00:00"
               },
               "deterministic": true
             },
@@ -10573,7 +11596,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:26.186387+00:00",
+            "x-reconciled-at": "2026-07-26T03:17:36.389483+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           }
         },
@@ -10734,7 +11757,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-25T22:00:53.087325+00:00"
+                "validatedAt": "2026-07-26T03:13:23.336740+00:00"
               },
               "byteLength": {
                 "max": 1200
@@ -10749,7 +11772,7 @@
             },
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:26.186458+00:00"
+            "x-reconciled-at": "2026-07-26T03:17:36.389546+00:00"
           },
           "disable": {
             "type": "boolean",
@@ -10819,7 +11842,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-25T22:00:53.087380+00:00"
+                "validatedAt": "2026-07-26T03:13:23.336799+00:00"
               },
               "deterministic": true
             },
@@ -10831,7 +11854,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:26.186501+00:00",
+            "x-reconciled-at": "2026-07-26T03:17:36.389607+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace": {
@@ -10865,7 +11888,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-25T22:00:53.087428+00:00"
+                "validatedAt": "2026-07-26T03:13:23.336839+00:00"
               },
               "deterministic": true
             },
@@ -10877,7 +11900,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:26.186525+00:00",
+            "x-reconciled-at": "2026-07-26T03:17:36.389658+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           }
         },
@@ -10976,7 +11999,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-25T22:00:53.087527+00:00"
+                "validatedAt": "2026-07-26T03:13:23.336949+00:00"
               },
               "byteLength": {
                 "max": 1200
@@ -10991,7 +12014,7 @@
             },
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:26.186561+00:00"
+            "x-reconciled-at": "2026-07-26T03:17:36.389703+00:00"
           },
           "disable": {
             "type": "boolean",
@@ -11063,7 +12086,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-25T22:00:53.087576+00:00"
+                "validatedAt": "2026-07-26T03:13:23.337022+00:00"
               },
               "deterministic": true
             },
@@ -11075,7 +12098,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:26.186607+00:00",
+            "x-reconciled-at": "2026-07-26T03:17:36.389752+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace": {
@@ -11109,7 +12132,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-25T22:00:53.087611+00:00"
+                "validatedAt": "2026-07-26T03:13:23.337063+00:00"
               },
               "deterministic": true
             },
@@ -11121,7 +12144,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:26.186631+00:00",
+            "x-reconciled-at": "2026-07-26T03:17:36.389780+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           }
         },
@@ -11183,7 +12206,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:53.087651+00:00"
+                "validatedAt": "2026-07-26T03:13:23.337108+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11195,7 +12218,7 @@
             "readOnly": true,
             "minLength": 12,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:26.186658+00:00"
+            "x-reconciled-at": "2026-07-26T03:17:36.389810+00:00"
           },
           "name": {
             "type": "string",
@@ -11214,7 +12237,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:53.087671+00:00"
+                "validatedAt": "2026-07-26T03:13:23.337133+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11225,7 +12248,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:26.186684+00:00"
+            "x-reconciled-at": "2026-07-26T03:17:36.389837+00:00"
           },
           "namespace": {
             "type": "string",
@@ -11258,7 +12281,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-25T22:00:53.087707+00:00"
+                "validatedAt": "2026-07-26T03:13:23.337176+00:00"
               },
               "deterministic": true
             },
@@ -11270,7 +12293,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:26.186709+00:00",
+            "x-reconciled-at": "2026-07-26T03:17:36.389865+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "tenant": {
@@ -11290,7 +12313,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:53.087749+00:00"
+                "validatedAt": "2026-07-26T03:13:23.337221+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11303,7 +12326,7 @@
             "x-field-mutability": "read-only",
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:26.186733+00:00"
+            "x-reconciled-at": "2026-07-26T03:17:36.389892+00:00"
           },
           "uid": {
             "type": "string",
@@ -11322,7 +12345,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:53.087783+00:00"
+                "validatedAt": "2026-07-26T03:13:23.337255+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11336,7 +12359,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:26.186758+00:00"
+            "x-reconciled-at": "2026-07-26T03:17:36.389921+00:00"
           }
         },
         "x-f5xc-description-short": "Type establishes a 'direct reference' from one object(the referrer) to another(the referred).",
@@ -11434,7 +12457,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-25T22:00:53.087880+00:00"
+                "validatedAt": "2026-07-26T03:13:23.337367+00:00"
               },
               "byteLength": {
                 "max": 1200
@@ -11449,7 +12472,7 @@
             },
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:26.186795+00:00"
+            "x-reconciled-at": "2026-07-26T03:17:36.389962+00:00"
           },
           "disable": {
             "type": "boolean",
@@ -11519,7 +12542,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-25T22:00:53.087931+00:00"
+                "validatedAt": "2026-07-26T03:13:23.337422+00:00"
               },
               "deterministic": true
             },
@@ -11531,7 +12554,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:26.186840+00:00",
+            "x-reconciled-at": "2026-07-26T03:17:36.390048+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace": {
@@ -11565,7 +12588,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-25T22:00:53.087966+00:00"
+                "validatedAt": "2026-07-26T03:13:23.337461+00:00"
               },
               "deterministic": true
             },
@@ -11577,7 +12600,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:26.186869+00:00",
+            "x-reconciled-at": "2026-07-26T03:17:36.390078+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           }
         },
@@ -11639,7 +12662,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:53.088022+00:00"
+                "validatedAt": "2026-07-26T03:13:23.337519+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11667,7 +12690,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:53.088073+00:00"
+                "validatedAt": "2026-07-26T03:13:23.337575+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11695,7 +12718,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:53.088119+00:00"
+                "validatedAt": "2026-07-26T03:13:23.337625+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11734,7 +12757,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:53.088169+00:00"
+                "validatedAt": "2026-07-26T03:13:23.337677+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11761,7 +12784,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:53.088202+00:00"
+                "validatedAt": "2026-07-26T03:13:23.337711+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11774,7 +12797,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:26.186942+00:00"
+            "x-reconciled-at": "2026-07-26T03:17:36.390160+00:00"
           },
           "vtrp_id": {
             "type": "string",
@@ -11790,7 +12813,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:53.088244+00:00"
+                "validatedAt": "2026-07-26T03:13:23.337759+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11931,7 +12954,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:53.088304+00:00"
+                "validatedAt": "2026-07-26T03:13:23.337827+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11942,7 +12965,7 @@
             },
             "minLength": 27,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:26.186994+00:00"
+            "x-reconciled-at": "2026-07-26T03:17:36.390225+00:00"
           },
           "status": {
             "type": "string",
@@ -11960,7 +12983,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:53.088346+00:00"
+                "validatedAt": "2026-07-26T03:13:23.337873+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11971,7 +12994,7 @@
             },
             "minLength": 17,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:26.187018+00:00"
+            "x-reconciled-at": "2026-07-26T03:17:36.390252+00:00"
           }
         },
         "x-f5xc-description-short": "Status is a return value for calls that don't return other objects.",
@@ -12029,7 +13052,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:53.088410+00:00"
+                "validatedAt": "2026-07-26T03:13:23.337930+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -12056,7 +13079,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:53.088461+00:00"
+                "validatedAt": "2026-07-26T03:13:23.337985+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -12083,7 +13106,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:53.088508+00:00"
+                "validatedAt": "2026-07-26T03:13:23.338053+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -12111,7 +13134,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:53.088562+00:00"
+                "validatedAt": "2026-07-26T03:13:23.338111+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -12187,7 +13210,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:53.088641+00:00"
+                "validatedAt": "2026-07-26T03:13:23.338196+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -12255,7 +13278,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:53.088702+00:00"
+                "validatedAt": "2026-07-26T03:13:23.338263+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -12267,7 +13290,7 @@
             "x-field-mutability": "read-only",
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:26.187134+00:00"
+            "x-reconciled-at": "2026-07-26T03:17:36.390379+00:00"
           },
           "uid": {
             "type": "string",
@@ -12286,7 +13309,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:53.088734+00:00"
+                "validatedAt": "2026-07-26T03:13:23.338299+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -12299,7 +13322,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:26.187162+00:00"
+            "x-reconciled-at": "2026-07-26T03:17:36.390407+00:00"
           }
         },
         "x-f5xc-description-short": "SystemObjectGetMetaType is metadata generated or populated by the system for all persisted objects and cannot be updated directly by users.",
@@ -12365,7 +13388,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:53.088771+00:00"
+                "validatedAt": "2026-07-26T03:13:23.338342+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -12376,7 +13399,7 @@
             },
             "minLength": 12,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:26.187190+00:00"
+            "x-reconciled-at": "2026-07-26T03:17:36.390437+00:00"
           },
           "name": {
             "type": "string",
@@ -12409,7 +13432,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-25T22:00:53.088809+00:00"
+                "validatedAt": "2026-07-26T03:13:23.338383+00:00"
               },
               "deterministic": true
             },
@@ -12421,7 +13444,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:26.187216+00:00",
+            "x-reconciled-at": "2026-07-26T03:17:36.390465+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace": {
@@ -12455,7 +13478,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-25T22:00:53.088844+00:00"
+                "validatedAt": "2026-07-26T03:13:23.338423+00:00"
               },
               "deterministic": true
             },
@@ -12467,7 +13490,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:26.187240+00:00",
+            "x-reconciled-at": "2026-07-26T03:17:36.390492+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "uid": {
@@ -12485,7 +13508,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:00:53.088875+00:00"
+                "validatedAt": "2026-07-26T03:13:23.338458+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -12498,7 +13521,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:26.187265+00:00"
+            "x-reconciled-at": "2026-07-26T03:17:36.390520+00:00"
           }
         },
         "x-f5xc-description-short": "ViewRefType represents a reference to a view.",
@@ -12862,104 +13885,6 @@
           }
         }
       },
-      "usageFloatUsageType": {
-        "type": "object",
-        "description": "X-displayName: \"Usage (float)\"\nFloatUsageType defines the usage in float. Useful to report usage for items that have limits in\nfractions.",
-        "title": "FloatUsageType",
-        "properties": {
-          "current": {
-            "type": "number",
-            "description": "X-displayName: \"Current\"\nThe in-use value.",
-            "title": "current",
-            "format": "double",
-            "x-f5xc-description-short": "X-displayName: \"Current\" The in-use value.",
-            "x-f5xc-required-for": {
-              "minimum_config": false,
-              "create": false,
-              "update": false,
-              "read": false
-            }
-          }
-        },
-        "x-f5xc-description-short": "X-displayName: \"Usage (float)\" FloatUsageType defines the usage in float. Useful to report usage for items that have limits in fractions.",
-        "x-f5xc-description-medium": "X-displayName: \"Usage (float)\" FloatUsageType defines the usage in float. Useful to report usage for items that have limits in fractions.",
-        "x-f5xc-minimum-configuration": {
-          "description": "Minimum configuration for usageFloatUsageType",
-          "required_fields": [
-            "current"
-          ],
-          "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for usageFloatUsageType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  current: value",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"current\": \"value\"\n  }\n}"
-        },
-        "x-f5xc-cli-domain": "billing_and_usage",
-        "x-f5xc-namespace-profile": {
-          "constraint": {
-            "allowed": [
-              "system"
-            ],
-            "enforced": false
-          },
-          "recommendation": {
-            "primary": "system",
-            "alternatives": [],
-            "rationale": "Quotas are platform-level limits"
-          },
-          "classification": {
-            "category": "application",
-            "multi_tenant_pattern": "none"
-          }
-        }
-      },
-      "usageUsageType": {
-        "type": "object",
-        "description": "X-displayName: \"Usage\"\nUsageType defines the number of objects of a specific object kind that are currently in use.",
-        "title": "UsageType",
-        "properties": {
-          "current": {
-            "type": "integer",
-            "description": "X-displayName: \"Current\"\nThe in-use value for the object kind.",
-            "title": "current",
-            "format": "int32",
-            "x-f5xc-description-short": "X-displayName: \"Current\" The in-use value for the object kind.",
-            "x-f5xc-required-for": {
-              "minimum_config": false,
-              "create": false,
-              "update": false,
-              "read": false
-            }
-          }
-        },
-        "x-f5xc-description-short": "X-displayName: \"Usage\" UsageType defines the number of objects of a specific object kind that are currently in use.",
-        "x-f5xc-description-medium": "X-displayName: \"Usage\" UsageType defines the number of objects of a specific object kind that are currently in use.",
-        "x-f5xc-minimum-configuration": {
-          "description": "Minimum configuration for usageUsageType",
-          "required_fields": [
-            "current"
-          ],
-          "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for usageUsageType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  current: value",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"current\": \"value\"\n  }\n}"
-        },
-        "x-f5xc-cli-domain": "billing_and_usage",
-        "x-f5xc-namespace-profile": {
-          "constraint": {
-            "allowed": [
-              "system"
-            ],
-            "enforced": false
-          },
-          "recommendation": {
-            "primary": "system",
-            "alternatives": [],
-            "rationale": "Quotas are platform-level limits"
-          },
-          "classification": {
-            "category": "application",
-            "multi_tenant_pattern": "none"
-          }
-        }
-      },
       "subscriptionListSubscriptionsRsp": {
         "type": "object",
         "description": "Response to call to GET list of tenant subscriptions.",
@@ -13050,7 +13975,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:04:07.602630+00:00"
+                "validatedAt": "2026-07-26T03:15:12.342670+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -13078,7 +14003,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:04:07.602727+00:00"
+                "validatedAt": "2026-07-26T03:15:12.342792+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -13106,7 +14031,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:04:07.602783+00:00"
+                "validatedAt": "2026-07-26T03:15:12.342883+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -13165,7 +14090,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:04:07.602863+00:00"
+                "validatedAt": "2026-07-26T03:15:12.342973+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -13204,7 +14129,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:04:07.602903+00:00"
+                "validatedAt": "2026-07-26T03:15:12.343048+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -13217,7 +14142,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:30.597827+00:00"
+            "x-reconciled-at": "2026-07-26T03:17:38.856653+00:00"
           }
         },
         "x-f5xc-description-short": "Response to call to GET list of tenant subscriptions.",
@@ -13282,7 +14207,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:04:07.602960+00:00"
+                "validatedAt": "2026-07-26T03:15:12.343109+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -13338,7 +14263,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:04:07.603027+00:00"
+                "validatedAt": "2026-07-26T03:15:12.343182+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -13366,7 +14291,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:04:07.603088+00:00"
+                "validatedAt": "2026-07-26T03:15:12.343244+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -13407,7 +14332,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-25T22:04:07.603135+00:00"
+                "validatedAt": "2026-07-26T03:15:12.343295+00:00"
               },
               "deterministic": true
             },
@@ -13419,7 +14344,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:30.597898+00:00",
+            "x-reconciled-at": "2026-07-26T03:17:38.856736+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "plan_name": {
@@ -13437,7 +14362,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:04:07.603185+00:00"
+                "validatedAt": "2026-07-26T03:15:12.343349+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -13462,7 +14387,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:04:07.603238+00:00"
+                "validatedAt": "2026-07-26T03:15:12.343403+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -13504,7 +14429,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:04:07.603306+00:00"
+                "validatedAt": "2026-07-26T03:15:12.343474+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -14534,7 +15459,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:06:07.885880+00:00"
+                "validatedAt": "2026-07-26T03:16:21.486883+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -14559,7 +15484,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:06:07.885981+00:00"
+                "validatedAt": "2026-07-26T03:16:21.486960+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -14586,7 +15511,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:06:07.886060+00:00"
+                "validatedAt": "2026-07-26T03:16:21.487092+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -14662,7 +15587,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:06:07.886212+00:00"
+                "validatedAt": "2026-07-26T03:16:21.487231+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -14689,7 +15614,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:06:07.886272+00:00"
+                "validatedAt": "2026-07-26T03:16:21.487290+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -14715,7 +15640,7 @@
             "maxLength": 17,
             "minLength": 17,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:32.411206+00:00"
+            "x-reconciled-at": "2026-07-26T03:17:39.909127+00:00"
           },
           "unit_name": {
             "type": "string",
@@ -14732,7 +15657,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:06:07.886323+00:00"
+                "validatedAt": "2026-07-26T03:16:21.487347+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -14757,7 +15682,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:06:07.886376+00:00"
+                "validatedAt": "2026-07-26T03:16:21.487406+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -14782,7 +15707,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:06:07.886441+00:00"
+                "validatedAt": "2026-07-26T03:16:21.487457+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -14892,7 +15817,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:06:07.886517+00:00"
+                "validatedAt": "2026-07-26T03:16:21.487544+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -14903,7 +15828,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:32.411279+00:00"
+            "x-reconciled-at": "2026-07-26T03:17:39.909212+00:00"
           }
         },
         "x-f5xc-description-short": "Coupon details, discount type, amount and name.",
@@ -15000,7 +15925,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:06:07.886567+00:00"
+                "validatedAt": "2026-07-26T03:16:21.487598+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -15033,7 +15958,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:06:07.886622+00:00"
+                "validatedAt": "2026-07-26T03:16:21.487665+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -15060,7 +15985,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:06:07.886672+00:00"
+                "validatedAt": "2026-07-26T03:16:21.487720+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -15102,7 +16027,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:06:07.886738+00:00"
+                "validatedAt": "2026-07-26T03:16:21.487792+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -15127,7 +16052,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:06:07.886782+00:00"
+                "validatedAt": "2026-07-26T03:16:21.487842+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -15197,7 +16122,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:06:07.886822+00:00"
+                "validatedAt": "2026-07-26T03:16:21.487886+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -15213,7 +16138,13 @@
             "title": "Namespace",
             "x-displayname": "Namespace",
             "x-ves-example": "System",
+            "x-ves-validation-rules": {
+              "ves.io.schema.rules.string.const": "system"
+            },
             "x-f5xc-example": "system",
+            "x-validation-rules": {
+              "ves.io.schema.rules.string.const": "system"
+            },
             "maxLength": 63,
             "x-f5xc-constraints": {
               "constraintType": "string",
@@ -15236,7 +16167,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-25T22:06:07.886864+00:00"
+                "validatedAt": "2026-07-26T03:16:21.487944+00:00"
               },
               "deterministic": true
             },
@@ -15248,13 +16179,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:32.411373+00:00",
-            "x-ves-validation-rules": {
-              "ves.io.schema.rules.string.const": "system"
-            },
-            "x-validation-rules": {
-              "ves.io.schema.rules.string.const": "system"
-            },
+            "x-reconciled-at": "2026-07-26T03:17:39.909316+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "to": {
@@ -15274,7 +16199,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:06:07.886897+00:00"
+                "validatedAt": "2026-07-26T03:16:21.487980+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -15355,7 +16280,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:06:07.886958+00:00"
+                "validatedAt": "2026-07-26T03:16:21.488075+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -15382,7 +16307,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:06:07.887005+00:00"
+                "validatedAt": "2026-07-26T03:16:21.488129+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -15454,7 +16379,13 @@
             "title": "Namespace",
             "x-displayname": "Namespace",
             "x-ves-example": "System",
+            "x-ves-validation-rules": {
+              "ves.io.schema.rules.string.const": "system"
+            },
             "x-f5xc-example": "system",
+            "x-validation-rules": {
+              "ves.io.schema.rules.string.const": "system"
+            },
             "maxLength": 63,
             "x-f5xc-constraints": {
               "constraintType": "string",
@@ -15477,7 +16408,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-25T22:06:07.887061+00:00"
+                "validatedAt": "2026-07-26T03:16:21.488203+00:00"
               },
               "deterministic": true
             },
@@ -15489,13 +16420,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:32.411452+00:00",
-            "x-ves-validation-rules": {
-              "ves.io.schema.rules.string.const": "system"
-            },
-            "x-validation-rules": {
-              "ves.io.schema.rules.string.const": "system"
-            },
+            "x-reconciled-at": "2026-07-26T03:17:39.909397+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "query": {
@@ -15515,7 +16440,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.75,
-                "validatedAt": "2026-07-25T22:06:07.887113+00:00"
+                "validatedAt": "2026-07-26T03:16:21.488261+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -15622,7 +16547,13 @@
             "title": "Namespace",
             "x-displayname": "Namespace",
             "x-ves-example": "System",
+            "x-ves-validation-rules": {
+              "ves.io.schema.rules.string.const": "system"
+            },
             "x-f5xc-example": "system",
+            "x-validation-rules": {
+              "ves.io.schema.rules.string.const": "system"
+            },
             "maxLength": 63,
             "x-f5xc-constraints": {
               "constraintType": "string",
@@ -15645,7 +16576,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-25T22:06:07.887169+00:00"
+                "validatedAt": "2026-07-26T03:16:21.488330+00:00"
               },
               "deterministic": true
             },
@@ -15657,13 +16588,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:32.411497+00:00",
-            "x-ves-validation-rules": {
-              "ves.io.schema.rules.string.const": "system"
-            },
-            "x-validation-rules": {
-              "ves.io.schema.rules.string.const": "system"
-            },
+            "x-reconciled-at": "2026-07-26T03:17:39.909448+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           }
         },
@@ -15774,7 +16699,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:06:07.887226+00:00"
+                "validatedAt": "2026-07-26T03:16:21.488393+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -15790,7 +16715,13 @@
             "title": "Namespace",
             "x-displayname": "Namespace",
             "x-ves-example": "System",
+            "x-ves-validation-rules": {
+              "ves.io.schema.rules.string.const": "system"
+            },
             "x-f5xc-example": "system",
+            "x-validation-rules": {
+              "ves.io.schema.rules.string.const": "system"
+            },
             "maxLength": 63,
             "x-f5xc-constraints": {
               "constraintType": "string",
@@ -15813,7 +16744,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-25T22:06:07.887264+00:00"
+                "validatedAt": "2026-07-26T03:16:21.488439+00:00"
               },
               "deterministic": true
             },
@@ -15825,13 +16756,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:32.411541+00:00",
-            "x-ves-validation-rules": {
-              "ves.io.schema.rules.string.const": "system"
-            },
-            "x-validation-rules": {
-              "ves.io.schema.rules.string.const": "system"
-            },
+            "x-reconciled-at": "2026-07-26T03:17:39.909499+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "to": {
@@ -15851,7 +16776,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:06:07.887295+00:00"
+                "validatedAt": "2026-07-26T03:16:21.488473+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -15968,7 +16893,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:06:07.887356+00:00"
+                "validatedAt": "2026-07-26T03:16:21.488543+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -15993,7 +16918,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:06:07.887417+00:00"
+                "validatedAt": "2026-07-26T03:16:21.488597+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -16020,7 +16945,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:06:07.887465+00:00"
+                "validatedAt": "2026-07-26T03:16:21.488650+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -16047,7 +16972,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:06:07.887517+00:00"
+                "validatedAt": "2026-07-26T03:16:21.488704+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -16114,7 +17039,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:06:07.887568+00:00"
+                "validatedAt": "2026-07-26T03:16:21.488759+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -16165,7 +17090,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:06:07.887644+00:00"
+                "validatedAt": "2026-07-26T03:16:21.488839+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -16196,7 +17121,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:06:07.887697+00:00"
+                "validatedAt": "2026-07-26T03:16:21.488895+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -16235,7 +17160,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-25T22:06:07.887735+00:00"
+                "validatedAt": "2026-07-26T03:16:21.488937+00:00"
               },
               "deterministic": true
             },
@@ -16247,7 +17172,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:32.411656+00:00",
+            "x-reconciled-at": "2026-07-26T03:17:39.909628+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "object_name": {
@@ -16266,7 +17191,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:06:07.887784+00:00"
+                "validatedAt": "2026-07-26T03:16:21.488990+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -16308,7 +17233,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:06:07.887848+00:00"
+                "validatedAt": "2026-07-26T03:16:21.489076+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -16333,7 +17258,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:06:07.887894+00:00"
+                "validatedAt": "2026-07-26T03:16:21.489127+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -16358,7 +17283,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:06:07.887942+00:00"
+                "validatedAt": "2026-07-26T03:16:21.489177+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -16433,7 +17358,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.8,
-                "validatedAt": "2026-07-25T22:06:12.289143+00:00"
+                "validatedAt": "2026-07-26T03:16:23.875037+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -16472,7 +17397,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-25T22:06:12.289209+00:00"
+                "validatedAt": "2026-07-26T03:16:23.875129+00:00"
               },
               "deterministic": true
             },
@@ -16484,7 +17409,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:32.457720+00:00",
+            "x-reconciled-at": "2026-07-26T03:17:39.933105+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           }
         },
@@ -16590,7 +17515,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:06:12.289309+00:00"
+                "validatedAt": "2026-07-26T03:16:23.875262+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -16772,7 +17697,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.8,
-                "validatedAt": "2026-07-25T22:06:12.289503+00:00"
+                "validatedAt": "2026-07-26T03:16:23.875438+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -16783,7 +17708,7 @@
             },
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:32.457822+00:00"
+            "x-reconciled-at": "2026-07-26T03:17:39.933213+00:00"
           },
           "flat_price": {
             "type": "integer",
@@ -16845,7 +17770,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-07-25T22:06:12.289581+00:00"
+                "validatedAt": "2026-07-26T03:16:23.875523+00:00"
               },
               "deterministic": true
             },
@@ -16857,7 +17782,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:32.457866+00:00",
+            "x-reconciled-at": "2026-07-26T03:17:39.933261+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "renewal_period_unit": {
@@ -16904,7 +17829,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:06:12.289634+00:00"
+                "validatedAt": "2026-07-26T03:16:23.875584+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -16942,7 +17867,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-07-25T22:06:12.289678+00:00"
+                "validatedAt": "2026-07-26T03:16:23.875634+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -16953,7 +17878,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-07-25T22:08:32.457928+00:00"
+            "x-reconciled-at": "2026-07-26T03:17:39.933326+00:00"
           },
           "transition_flow": {
             "allOf": [
@@ -17263,376 +18188,6 @@
           "classification": {
             "category": "application",
             "multi_tenant_pattern": "none"
-          }
-        }
-      },
-      "rate_limiterInputHours": {
-        "type": "object",
-        "description": "X-displayName: \"Hours\"\nInput Duration Hours.",
-        "title": "Hours",
-        "properties": {
-          "duration": {
-            "type": "integer",
-            "description": "X-displayName: \"Duration\"",
-            "title": "Duration",
-            "format": "int64",
-            "x-f5xc-required-for": {
-              "minimum_config": false,
-              "create": false,
-              "update": false,
-              "read": false
-            }
-          }
-        },
-        "x-f5xc-description-short": "X-displayName: \"Hours\" Input Duration Hours.",
-        "x-f5xc-minimum-configuration": {
-          "description": "Minimum configuration for rate_limiterInputHours",
-          "required_fields": [
-            "duration"
-          ],
-          "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for rate_limiterInputHours\nmetadata:\n  name: example\n  namespace: default\nspec:\n  duration: value",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"duration\": \"value\"\n  }\n}"
-        },
-        "x-f5xc-cli-domain": "rate_limiting",
-        "x-f5xc-namespace-profile": {
-          "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
-            "enforced": true
-          },
-          "recommendation": {
-            "primary": "shared",
-            "alternatives": [
-              {
-                "namespace_type": "custom",
-                "use_case": "Namespace-specific rate limit thresholds"
-              }
-            ],
-            "rationale": "Rate limiters benefit from centralized management for consistent enforcement"
-          },
-          "classification": {
-            "category": "security",
-            "multi_tenant_pattern": "shared-ref"
-          }
-        }
-      },
-      "rate_limiterInputMinutes": {
-        "type": "object",
-        "description": "X-displayName: \"Minutes\"\nInput Duration Minutes.",
-        "title": "Minutes",
-        "properties": {
-          "duration": {
-            "type": "integer",
-            "description": "X-displayName: \"Duration\"",
-            "title": "Duration",
-            "format": "int64",
-            "x-f5xc-required-for": {
-              "minimum_config": false,
-              "create": false,
-              "update": false,
-              "read": false
-            }
-          }
-        },
-        "x-f5xc-description-short": "X-displayName: \"Minutes\" Input Duration Minutes.",
-        "x-f5xc-minimum-configuration": {
-          "description": "Minimum configuration for rate_limiterInputMinutes",
-          "required_fields": [
-            "duration"
-          ],
-          "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for rate_limiterInputMinutes\nmetadata:\n  name: example\n  namespace: default\nspec:\n  duration: value",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"duration\": \"value\"\n  }\n}"
-        },
-        "x-f5xc-cli-domain": "rate_limiting",
-        "x-f5xc-namespace-profile": {
-          "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
-            "enforced": true
-          },
-          "recommendation": {
-            "primary": "shared",
-            "alternatives": [
-              {
-                "namespace_type": "custom",
-                "use_case": "Namespace-specific rate limit thresholds"
-              }
-            ],
-            "rationale": "Rate limiters benefit from centralized management for consistent enforcement"
-          },
-          "classification": {
-            "category": "security",
-            "multi_tenant_pattern": "shared-ref"
-          }
-        }
-      },
-      "rate_limiterInputSeconds": {
-        "type": "object",
-        "description": "X-displayName: \"Seconds\"\nInput Duration Seconds.",
-        "title": "Seconds",
-        "properties": {
-          "duration": {
-            "type": "integer",
-            "description": "X-displayName: \"Duration\"",
-            "title": "Duration",
-            "format": "int64",
-            "x-f5xc-required-for": {
-              "minimum_config": false,
-              "create": false,
-              "update": false,
-              "read": false
-            }
-          }
-        },
-        "x-f5xc-description-short": "X-displayName: \"Seconds\" Input Duration Seconds.",
-        "x-f5xc-minimum-configuration": {
-          "description": "Minimum configuration for rate_limiterInputSeconds",
-          "required_fields": [
-            "duration"
-          ],
-          "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for rate_limiterInputSeconds\nmetadata:\n  name: example\n  namespace: default\nspec:\n  duration: value",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"duration\": \"value\"\n  }\n}"
-        },
-        "x-f5xc-cli-domain": "rate_limiting",
-        "x-f5xc-namespace-profile": {
-          "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
-            "enforced": true
-          },
-          "recommendation": {
-            "primary": "shared",
-            "alternatives": [
-              {
-                "namespace_type": "custom",
-                "use_case": "Namespace-specific rate limit thresholds"
-              }
-            ],
-            "rationale": "Rate limiters benefit from centralized management for consistent enforcement"
-          },
-          "classification": {
-            "category": "security",
-            "multi_tenant_pattern": "shared-ref"
-          }
-        }
-      },
-      "rate_limiterLeakyBucketRateLimiter": {
-        "type": "object",
-        "description": "X-displayName: \"Leaky Bucket Rate Limiter\"\nLeaky-Bucket is the default rate limiter algorithm for F5.",
-        "title": "LeakyBucketRateLimiter",
-        "x-f5xc-description-short": "X-displayName: \"Leaky Bucket Rate Limiter\" Leaky-Bucket is the default rate limiter algorithm for F5.",
-        "x-f5xc-description-medium": "X-displayName: \"Leaky Bucket Rate Limiter\" Leaky-Bucket is the default rate limiter algorithm for F5.",
-        "x-f5xc-minimum-configuration": {
-          "description": "Minimum configuration for rate_limiterLeakyBucketRateLimiter",
-          "required_fields": [],
-          "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for rate_limiterLeakyBucketRateLimiter\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
-        },
-        "x-f5xc-cli-domain": "rate_limiting",
-        "x-f5xc-namespace-profile": {
-          "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
-            "enforced": true
-          },
-          "recommendation": {
-            "primary": "shared",
-            "alternatives": [
-              {
-                "namespace_type": "custom",
-                "use_case": "Namespace-specific rate limit thresholds"
-              }
-            ],
-            "rationale": "Rate limiters benefit from centralized management for consistent enforcement"
-          },
-          "classification": {
-            "category": "security",
-            "multi_tenant_pattern": "shared-ref"
-          }
-        }
-      },
-      "rate_limiterRateLimitBlockAction": {
-        "type": "object",
-        "description": "X-displayName: \"Rate Limit Block Action\"\nAction where a user is blocked from making further requests after exceeding rate limit threshold.",
-        "title": "RateLimitBlockAction",
-        "properties": {
-          "hours": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/rate_limiterInputHours"
-              }
-            ],
-            "x-f5xc-required-for": {
-              "minimum_config": false,
-              "create": false,
-              "update": false,
-              "read": false
-            }
-          },
-          "minutes": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/rate_limiterInputMinutes"
-              }
-            ],
-            "x-f5xc-required-for": {
-              "minimum_config": false,
-              "create": false,
-              "update": false,
-              "read": false
-            }
-          },
-          "seconds": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/rate_limiterInputSeconds"
-              }
-            ],
-            "x-f5xc-required-for": {
-              "minimum_config": false,
-              "create": false,
-              "update": false,
-              "read": false
-            }
-          }
-        },
-        "x-f5xc-description-short": "X-displayName: \"Rate Limit Block Action\" Action where a user is blocked from making further requests after exceeding rate limit threshold.",
-        "x-f5xc-description-medium": "X-displayName: \"Rate Limit Block Action\" Action where a user is blocked from making further requests after exceeding rate limit threshold.",
-        "x-f5xc-minimum-configuration": {
-          "description": "Minimum configuration for rate_limiterRateLimitBlockAction",
-          "required_fields": [
-            "hours",
-            "minutes",
-            "seconds"
-          ],
-          "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for rate_limiterRateLimitBlockAction\nmetadata:\n  name: example\n  namespace: default\nspec:\n  hours: value\n  minutes: value\n  seconds: value",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"hours\": \"value\",\n    \"minutes\": \"value\",\n    \"seconds\": \"value\"\n  }\n}"
-        },
-        "x-f5xc-cli-domain": "rate_limiting",
-        "x-f5xc-namespace-profile": {
-          "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
-            "enforced": true
-          },
-          "recommendation": {
-            "primary": "shared",
-            "alternatives": [
-              {
-                "namespace_type": "custom",
-                "use_case": "Namespace-specific rate limit thresholds"
-              }
-            ],
-            "rationale": "Rate limiters benefit from centralized management for consistent enforcement"
-          },
-          "classification": {
-            "category": "security",
-            "multi_tenant_pattern": "shared-ref"
-          }
-        }
-      },
-      "rate_limiterRateLimitPeriodUnit": {
-        "type": "string",
-        "description": "X-displayName: \"Rate Limit Period Unit\"\nUnit for the period per which the rate limit is applied.\n\n- SECOND: Second\n\nx-displayName: \"Seconds\"\nRate limit period unit is seconds\n- MINUTE: Minute\n\nx-displayName: \"Minutes\"\nRate limit period unit is minutes\n- HOUR: Hour\n\nx-displayName: \"Hours\"\nRate limit period unit is hours\n- DAY: Day\n\nx-displayName: \"Days\"\nRate limit period unit is days.",
-        "title": "RateLimitPeriodUnit",
-        "enum": [
-          "SECOND",
-          "MINUTE",
-          "HOUR",
-          "DAY"
-        ],
-        "default": "SECOND",
-        "x-f5xc-description-short": "X-displayName: \"Rate Limit Period Unit\" Unit for the period per which the rate limit is applied. - SECOND: Second x-displayName: \"Seconds\" Rate...",
-        "x-f5xc-description-medium": "X-displayName: \"Rate Limit Period Unit\" Unit for the period per which the rate limit is applied. - SECOND: Second x-displayName: \"Seconds\" Rate limit period unit is seconds - MINUTE: Minute x-displayName: \"Minutes\" Rate limit period unit is minutes - HOUR: Hour x-displayName: \"Hours\" Rate limit...",
-        "x-f5xc-minimum-configuration": {
-          "description": "Minimum configuration for rate_limiterRateLimitPeriodUnit",
-          "required_fields": [],
-          "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for rate_limiterRateLimitPeriodUnit\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
-        },
-        "x-f5xc-cli-domain": "rate_limiting",
-        "x-f5xc-namespace-profile": {
-          "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
-            "enforced": true
-          },
-          "recommendation": {
-            "primary": "shared",
-            "alternatives": [
-              {
-                "namespace_type": "custom",
-                "use_case": "Namespace-specific rate limit thresholds"
-              }
-            ],
-            "rationale": "Rate limiters benefit from centralized management for consistent enforcement"
-          },
-          "classification": {
-            "category": "security",
-            "multi_tenant_pattern": "shared-ref"
-          }
-        }
-      },
-      "rate_limiterTokenBucketRateLimiter": {
-        "type": "object",
-        "description": "X-displayName: \"Token Bucket Rate Limiter\"\nToken-Bucket is a rate limiter algorithm that is stricter with enforcing limits.",
-        "title": "TokenBucketRateLimiter",
-        "x-f5xc-description-short": "X-displayName: \"Token Bucket Rate Limiter\" Token-Bucket is a rate limiter algorithm that is stricter with enforcing limits.",
-        "x-f5xc-description-medium": "X-displayName: \"Token Bucket Rate Limiter\" Token-Bucket is a rate limiter algorithm that is stricter with enforcing limits.",
-        "x-f5xc-minimum-configuration": {
-          "description": "Minimum configuration for rate_limiterTokenBucketRateLimiter",
-          "required_fields": [],
-          "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for rate_limiterTokenBucketRateLimiter\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
-        },
-        "x-f5xc-cli-domain": "users",
-        "x-f5xc-namespace-profile": {
-          "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
-            "enforced": true
-          },
-          "recommendation": {
-            "primary": "shared",
-            "alternatives": [
-              {
-                "namespace_type": "custom",
-                "use_case": "Namespace-specific rate limit thresholds"
-              }
-            ],
-            "rationale": "Rate limiters benefit from centralized management for consistent enforcement"
-          },
-          "classification": {
-            "category": "security",
-            "multi_tenant_pattern": "shared-ref"
           }
         }
       },

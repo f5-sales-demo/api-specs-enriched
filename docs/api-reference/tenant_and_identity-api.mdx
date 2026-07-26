@@ -9,7 +9,7 @@ Account view configurations and admin alert channels. One-time password resets, 
 
 - **Category**: Platform
 - **Complexity**: advanced
-- **Paths**: 183 | **Schemas**: 511
+- **Paths**: 184 | **Schemas**: 508
 - **Tier**: Standard
 - **Related domains**: `users`, `authentication`, `system`
 
@@ -55,6 +55,7 @@ Account view configurations and admin alert channels. One-time password resets, 
 | GET | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;` | GET customer support ticket in child tenant. |
 | POST | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;/close` | Close a customer support ticket in child tenant. |
 | POST | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;/comment` | Add comment to a customer support ticket in child tenant. |
+| GET | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;/comment/&#123;comment_id&#125;/attachment/&#123;attachment_id&#125;` | GET attachment. |
 | POST | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;/escalate` | Escalate a ticket in child tenant. |
 | POST | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;/priority` | Change priority of a ticket in child tenant. |
 | POST | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;/reopen` | Reopen a closed customer support ticket in child tenant. |
@@ -70,8 +71,8 @@ Account view configurations and admin alert channels. One-time password resets, 
 | GET | `/api/web/namespaces/&#123;namespace&#125;/child_tenant_managers` | List Child Tenant Manager. |
 | GET | `/api/web/namespaces/&#123;namespace&#125;/child_tenant_managers/&#123;name&#125;` | GET Child Tenant Manager. |
 | DELETE | `/api/web/namespaces/&#123;namespace&#125;/child_tenant_managers/&#123;name&#125;` | DELETE Child Tenant Manager. |
-| GET | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;/comment/&#123;comment_id&#125;/attachment/&#123;attachment_id&#125;` | GET attachment. |
-| POST | `/api/cloud-data/namespaces/system/cloud_user_accounts/discover_networks` | Discover Cloud Networks. |
+| GET | `/api/cloud-data/namespaces/system/cloud_user_accounts/&#123;cloud_user_account_name&#125;/onboarded_networks` | GET Onboarded Cloud Networks. |
+| GET | `/api/cloud-data/namespaces/system/cloud_user_accounts/&#123;cloud_user_account_name&#125;/validate` | Validates Cloud User Account. |
 | POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/contacts` | Create Contact. |
 | PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/contacts/&#123;metadata.name&#125;` | Replace Contact. |
 | GET | `/api/web/namespaces/&#123;namespace&#125;/contacts` | List Contact. |
@@ -82,6 +83,7 @@ Account view configurations and admin alert channels. One-time password resets, 
 | GET | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;` | GET customer support ticket in managed tenant. |
 | POST | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;/close` | Close a customer support ticket in managed tenant. |
 | POST | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;/comment` | Add comment to a customer support ticket in managed tenant. |
+| GET | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;/comment/&#123;comment_id&#125;/attachment/&#123;attachment_id&#125;` | GET attachment. |
 | POST | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;/escalate` | Escalate a ticket in managed tenant. |
 | POST | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;/priority` | Priority of a ticket in managed tenant. |
 | POST | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;/reopen` | Reopen a closed customer support ticket in managed tenant. |
@@ -93,7 +95,6 @@ Account view configurations and admin alert channels. One-time password resets, 
 | GET | `/api/web/namespaces/&#123;namespace&#125;/managed_tenants` | List Managed Tenant. |
 | GET | `/api/web/namespaces/&#123;namespace&#125;/managed_tenants/&#123;name&#125;` | GET Managed Tenant. |
 | DELETE | `/api/web/namespaces/&#123;namespace&#125;/managed_tenants/&#123;name&#125;` | DELETE Managed Tenant. |
-| GET | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;/comment/&#123;comment_id&#125;/attachment/&#123;attachment_id&#125;` | GET attachment. |
 | GET | `/api/web/namespaces` | List Namespace. |
 | POST | `/api/web/namespaces` | Create Namespace. |
 | POST | `/api/config/namespaces/system/all_application_inventory` | All Application Objects Inventory. |
@@ -115,6 +116,7 @@ Account view configurations and admin alert channels. One-time password resets, 
 | POST | `/api/config/namespaces/&#123;namespace&#125;/active_service_policies` | Set Active Service Policies. |
 | POST | `/api/ml/data/namespaces/&#123;namespace&#125;/api_endpoints/stats` | GET API Endpoints Stats for Namespace. |
 | POST | `/api/config/namespaces/&#123;namespace&#125;/application_inventory` | Application Objects Inventory. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/dynamic-data` | Dynamic Data. |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/fast_acls_for_internet_vips` | GET FastACLs For Internet VIPs. |
 | POST | `/api/config/namespaces/&#123;namespace&#125;/fast_acls_for_internet_vips` | Set FastACLs For Internet VIPs. |
 | POST | `/api/web/namespaces/&#123;namespace&#125;/suggest-values` | Suggest Values. |
@@ -122,7 +124,6 @@ Account view configurations and admin alert channels. One-time password resets, 
 | POST | `/api/web/namespaces/&#123;name&#125;/cascade_delete` | Cascade DELETE. |
 | GET | `/api/web/namespaces/&#123;namespace&#125;/namespace_roles` | List Namespace Role. |
 | GET | `/api/web/namespaces/&#123;namespace&#125;/namespace_roles/&#123;name&#125;` | GET Namespace Role. |
-| POST | `/api/config/namespaces/&#123;namespace&#125;/dynamic-data` | Dynamic Data. |
 | GET | `/api/web/namespaces/&#123;namespace&#125;/rbac_policys` | List RBAC Policy. |
 | GET | `/api/web/namespaces/&#123;namespace&#125;/rbac_policys/&#123;name&#125;` | GET RBAC Policy. |
 | GET | `/api/web/custom/namespaces/&#123;namespace&#125;/roles` | Custom List Roles. |
