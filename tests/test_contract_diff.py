@@ -283,3 +283,101 @@ def test_allof_wrapped_ref_is_not_a_violation() -> None:
     }
     violations = run_contract_diff(input_spec, output_spec)
     assert violations == []
+
+
+def test_upstream_allof_wrapped_ref_is_not_a_violation() -> None:
+    """Reverse direction: upstream wraps the $ref, enrichment adds a sibling.
+
+    A handful of upstream properties are emitted as
+    ``{"allOf": [{"$ref": X}]}`` rather than ``{"$ref": X}``. Enrichment keeps
+    the wrapper and attaches a description. Normalising only the output side
+    turned those sites into a bogus ``allOf`` removal plus ``$ref`` add.
+    """
+    input_spec = {
+        "components": {
+            "schemas": {
+                "originPoolAdvancedOptions": {
+                    "properties": {
+                        "disable_lb_source_ip_persistence": {
+                            "allOf": [{"$ref": "#/components/schemas/ioschemaEmpty"}],
+                        },
+                    },
+                },
+            },
+        },
+    }
+    output_spec = {
+        "components": {
+            "schemas": {
+                "originPoolAdvancedOptions": {
+                    "properties": {
+                        "disable_lb_source_ip_persistence": {
+                            "allOf": [{"$ref": "#/components/schemas/ioschemaEmpty"}],
+                            "description": "IP address configuration",
+                        },
+                    },
+                },
+            },
+        },
+    }
+    assert run_contract_diff(input_spec, output_spec) == []
+
+
+def test_dropped_ref_under_upstream_allof_is_still_a_violation() -> None:
+    """Normalising both sides must not hide a reference the output lost."""
+    input_spec = {
+        "components": {
+            "schemas": {
+                "Foo": {
+                    "properties": {
+                        "bar": {"allOf": [{"$ref": "#/components/schemas/Bar"}]},
+                    },
+                },
+            },
+        },
+    }
+    output_spec = {
+        "components": {
+            "schemas": {
+                "Foo": {
+                    "properties": {
+                        "bar": {"description": "no longer references Bar"},
+                    },
+                },
+            },
+        },
+    }
+    violations = run_contract_diff(input_spec, output_spec)
+    assert [v.rule_category for v in violations] == ["removal"]
+
+
+def test_multi_member_allof_is_not_flattened() -> None:
+    """Only a single-member allOf is a $ref wrapper; dropping a member breaks."""
+    input_spec = {
+        "components": {
+            "schemas": {
+                "Foo": {
+                    "properties": {
+                        "bar": {
+                            "allOf": [
+                                {"$ref": "#/components/schemas/Bar"},
+                                {"$ref": "#/components/schemas/Baz"},
+                            ],
+                        },
+                    },
+                },
+            },
+        },
+    }
+    output_spec = {
+        "components": {
+            "schemas": {
+                "Foo": {
+                    "properties": {
+                        "bar": {"allOf": [{"$ref": "#/components/schemas/Bar"}]},
+                    },
+                },
+            },
+        },
+    }
+    assert run_contract_diff(input_spec, output_spec) != []

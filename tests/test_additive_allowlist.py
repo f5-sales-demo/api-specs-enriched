@@ -297,3 +297,52 @@ def test_non_additive_dict_add_is_rejected():
     pointer = "root['components']['schemas']['Foo']['required']"
     after = ["bar", "baz"]
     assert not is_additive_change("dictionary_item_added", pointer, None, after)
+
+
+# Rule 9 — native `enum` transcribed from an upstream `string.in` rule
+
+
+def test_added_string_enum_is_additive():
+    """Creating the `enum` key from an upstream `string.in` rule is additive.
+
+    `ConstraintEnricher._apply_string_in_enum` copies the values of
+    `ves.io.schema.rules.string.in` onto the property's native `enum`. The
+    server already rejects anything outside that set, so transcribing it
+    documents an existing constraint rather than adding a new one.
+    """
+    pointer = (
+        "root['components']['schemas']['routeRouteRedirect']"
+        "['properties']['proto_redirect']['enum']"
+    )
+    assert is_additive_change(
+        "dictionary_item_added",
+        pointer,
+        None,
+        ["incoming-proto", "http", "https"],
+    )
+
+
+def test_added_empty_enum_is_not_additive():
+    """An empty `enum` permits nothing — that narrows the contract to zero."""
+    pointer = "root['components']['schemas']['Foo']['properties']['bar']['enum']"
+    assert not is_additive_change("dictionary_item_added", pointer, None, [])
+
+
+def test_added_non_string_enum_is_not_additive():
+    """Only all-string enums come from `string.in`; anything else is unproven."""
+    pointer = "root['components']['schemas']['Foo']['properties']['bar']['enum']"
+    assert not is_additive_change("dictionary_item_added", pointer, None, [1, 2, 3])
+    assert not is_additive_change("dictionary_item_added", pointer, None, [{"a": "b"}])
+
+
+def test_added_non_list_enum_is_not_additive():
+    """A scalar `enum` value is malformed, not additive."""
+    pointer = "root['components']['schemas']['Foo']['properties']['bar']['enum']"
+    assert not is_additive_change("dictionary_item_added", pointer, None, "http")
+
+
+def test_enum_rule_does_not_widen_other_array_valued_adds():
+    """Guard against blanket widening: other array-valued adds stay breaking."""
+    for terminal in ("required", "oneOf", "anyOf", "allOf"):
+        pointer = f"root['components']['schemas']['Foo']['{terminal}']"
+        assert not is_additive_change("dictionary_item_added", pointer, None, ["bar"])
