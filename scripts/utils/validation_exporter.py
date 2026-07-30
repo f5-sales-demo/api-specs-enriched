@@ -16,13 +16,14 @@ import argparse
 import json
 import sys
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 import yaml
 
 from scripts.utils.json_writer import write_json_file
+
+from .build_stamp import artifact_timestamp
 
 
 @dataclass
@@ -125,7 +126,7 @@ class ValidationExporter:
             ),
             "version": "2.1.0",  # Bumped for unified defaults structure
             "description": self.config.get("description", "F5 XC API Validation Specification"),
-            "generated_at": datetime.now(tz=timezone.utc).isoformat(),
+            "generated_at": artifact_timestamp(),
             "source": "api-specs-enriched",
         }
 

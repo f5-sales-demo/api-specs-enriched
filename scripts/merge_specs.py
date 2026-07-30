@@ -20,6 +20,7 @@ from rich.console import Console
 from rich.progress import BarColumn, Progress, SpinnerColumn, TextColumn, TimeElapsedColumn
 from rich.table import Table
 
+from scripts.utils.build_stamp import artifact_timestamp
 from scripts.utils.description_enricher import DescriptionEnricher
 from scripts.utils.domain_categorizer import categorize_spec as categorize_spec_util
 from scripts.utils.domain_metadata import (
@@ -460,7 +461,11 @@ def create_spec_index(
     """Create an index file listing all available specifications."""
     index: dict[str, Any] = {
         "version": version,
-        "timestamp": datetime.now(tz=timezone.utc).isoformat(),
+        # Derived from the upstream seed, not wall-clock: index.json is a committed
+        # artifact, and a per-run timestamp here was the last thing making two
+        # consecutive rebuilds differ (#1152). Everything else converged once the
+        # enrichers stopped stamping now() into every schema.
+        "timestamp": artifact_timestamp(),
         "specifications": [],
     }
 

@@ -14,8 +14,9 @@ Key behaviors:
 """
 
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
 from typing import Any, ClassVar
+
+from .build_stamp import artifact_timestamp
 
 
 @dataclass
@@ -181,7 +182,7 @@ class ConstraintReconciler:
         # Add reconciliation marker
         if reconciled_any and self.audit_enabled:
             prop["x-reconciled-from-discovery"] = True
-            prop["x-reconciled-at"] = datetime.now(timezone.utc).isoformat()
+            prop["x-reconciled-at"] = artifact_timestamp()
             if sample_size > 0:
                 prop["x-reconciled-sample-size"] = sample_size
 
@@ -284,7 +285,7 @@ class ConstraintReconciler:
             Report dictionary with timestamp, mode, and statistics
         """
         return {
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": artifact_timestamp(),
             "mode": self.mode,
             "confidence_threshold": self.confidence_threshold,
             "min_sample_size": self.min_sample_size,

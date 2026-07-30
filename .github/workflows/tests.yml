@@ -103,6 +103,57 @@ jobs:
           API_SPECS_SKIP_BIOME: "1"
         run: make pipeline PYTHON=python
 
+      # #1152: the pipeline just rebuilt every spec from the freshly downloaded
+      # upstream seed, so this is the cheapest possible place to answer "is the
+      # committed tree what the pipeline produces?" — a question that had no answer
+      # while 43 files carried a per-run wall-clock timestamp.
+      #
+      # It matters because an unanswerable version of this question is how a stale
+      # local seed came to silently revert the upstream misspelled-`persistence`
+      # rename that the F5 server depends on (api-specs#686 — emitting the corrected
+      # spelling makes F5 discard the field), and how index.json came to report
+      # 2.1.200 while namespace_profiles.json reported 2.1.199.
+      #
+      # Two consecutive local rebuilds were verified byte-identical before this step
+      # was added, so a diff here means the committed tree is stale — never that the
+      # pipeline is nondeterministic.
+      #
+      # Compared semantically, not byte-wise: this job runs with
+      # API_SPECS_SKIP_BIOME=1, so its JSON formatting differs from the committed
+      # (biome-formatted) tree. Installing biome here to allow a byte comparison is
+      # the better check and is the follow-up; parsed-equality already catches
+      # content drift, which is what reverted the rename.
+      - name: Verify the committed specs match a clean rebuild
+        run: |
+          python - <<'EOF'
+          import json, pathlib, subprocess, sys
+
+          spec_dir = pathlib.Path("docs/specifications/api")
+          drifted = []
+          for path in sorted(spec_dir.glob("*.json")):
+              committed = subprocess.run(
+                  ["git", "show", f"HEAD:{path}"],
+                  capture_output=True, text=True, check=False,
+              )
+              if committed.returncode != 0:
+                  drifted.append(f"{path} (not in HEAD)")
+                  continue
+              try:
+                  if json.loads(committed.stdout) != json.loads(path.read_text()):
+                      drifted.append(str(path))
+              except json.JSONDecodeError as exc:
+                  drifted.append(f"{path} (unparseable: {exc})")
+
+          if drifted:
+              print("::error::The committed specs differ from a clean rebuild.")
+              print("Run `make download-force && make pipeline` and commit the result.")
+              print("Files that differ:")
+              for name in drifted:
+                  print(f"  - {name}")
+              sys.exit(1)
+          print(f"All {len(list(spec_dir.glob('*.json')))} specs match a clean rebuild.")
+          EOF
+
       - name: Run contract-diff gate
         id: contract_diff
         run: |

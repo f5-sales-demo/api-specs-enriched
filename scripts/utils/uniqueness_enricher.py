@@ -24,12 +24,12 @@ Issue #503 - Phase 5 expansion of constraint metadata system
 import logging
 import re
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 import yaml
 
+from .build_stamp import artifact_timestamp
 from .extension_constants import X_F5XC_NAMESPACE_PROFILE, X_F5XC_UNIQUENESS
 
 # Configure logging
@@ -299,7 +299,7 @@ class UniquenessEnricher:
             "metadata": {
                 "source": "inferred",
                 "confidence": mapping.get("confidence", 0.95),
-                "validatedAt": datetime.now(timezone.utc).isoformat(),
+                "validatedAt": artifact_timestamp(),
             },
         }
 
@@ -323,7 +323,7 @@ class UniquenessEnricher:
             "metadata": {
                 "source": "inferred",
                 "confidence": override.get("confidence", 0.95),
-                "validatedAt": datetime.now(timezone.utc).isoformat(),
+                "validatedAt": artifact_timestamp(),
             },
         }
 

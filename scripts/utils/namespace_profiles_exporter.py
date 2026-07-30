@@ -21,12 +21,13 @@ from __future__ import annotations
 import argparse
 import json
 import sys
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 from scripts.utils.json_writer import write_json_file
 from scripts.utils.namespace_profile_enricher import NamespaceProfileEnricher
+
+from .build_stamp import artifact_timestamp
 
 
 class NamespaceProfilesExporter:
@@ -105,7 +106,7 @@ class NamespaceProfilesExporter:
 
         return {
             "version": version or "0.0.0",
-            "generated_at": datetime.now(tz=timezone.utc).isoformat(),
+            "generated_at": artifact_timestamp(),
             "source": "api-specs-enriched/config/namespace_profile.yaml",
             "default": default_profile,
             "resources": resources,

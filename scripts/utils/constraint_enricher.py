@@ -19,11 +19,12 @@ Usage:
 import json
 import logging
 import re
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, ClassVar
 
 import yaml
+
+from .build_stamp import artifact_timestamp
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -293,7 +294,7 @@ class ConstraintReconciler:
         result["metadata"] = {
             "source": source,
             "confidence": confidence,
-            "validatedAt": datetime.now(timezone.utc).isoformat(),
+            "validatedAt": artifact_timestamp(),
         }
 
         # Set deterministic flag if confidence meets threshold
@@ -579,7 +580,7 @@ class ConstraintEnricher:
         result["metadata"] = {
             "source": source_override or "discovery",
             "confidence": 0.99,
-            "validatedAt": datetime.now(timezone.utc).isoformat(),
+            "validatedAt": artifact_timestamp(),
         }
         result["deterministic"] = True
 
@@ -657,7 +658,7 @@ class ConstraintEnricher:
                 "deterministic": confidence >= threshold,
                 "metadata": {
                     **override_metadata,
-                    "validatedAt": datetime.now(timezone.utc).isoformat(),
+                    "validatedAt": artifact_timestamp(),
                 },
             }
             schema["x-f5xc-constraints"] = override_result
@@ -750,7 +751,7 @@ class ConstraintEnricher:
         # Add metadata from pattern
         if pattern_match and "metadata" in pattern_match:
             metadata: dict[str, Any] = pattern_match["metadata"].copy()
-            metadata["validatedAt"] = datetime.now(timezone.utc).isoformat()
+            metadata["validatedAt"] = artifact_timestamp()
             result["metadata"] = metadata
 
             # Set deterministic flag based on confidence
@@ -785,7 +786,7 @@ class ConstraintEnricher:
         # Add metadata from pattern
         if pattern_match and "metadata" in pattern_match:
             metadata: dict[str, Any] = pattern_match["metadata"].copy()
-            metadata["validatedAt"] = datetime.now(timezone.utc).isoformat()
+            metadata["validatedAt"] = artifact_timestamp()
             result["metadata"] = metadata
 
             # Set deterministic flag based on confidence
@@ -826,7 +827,7 @@ class ConstraintEnricher:
         # Add metadata from pattern
         if pattern_match and "metadata" in pattern_match:
             metadata: dict[str, Any] = pattern_match["metadata"].copy()
-            metadata["validatedAt"] = datetime.now(timezone.utc).isoformat()
+            metadata["validatedAt"] = artifact_timestamp()
             result["metadata"] = metadata
 
             # Set deterministic flag based on confidence
@@ -852,7 +853,7 @@ class ConstraintEnricher:
             "metadata": {
                 "source": "inferred",
                 "confidence": 0.75,
-                "validatedAt": datetime.now(timezone.utc).isoformat(),
+                "validatedAt": artifact_timestamp(),
             },
         }
 
@@ -900,7 +901,7 @@ class ConstraintEnricher:
                 "metadata": {
                     "source": "discovery",
                     "confidence": 0.99,
-                    "validatedAt": datetime.now(timezone.utc).isoformat(),
+                    "validatedAt": artifact_timestamp(),
                 },
                 "deterministic": True,
             }
