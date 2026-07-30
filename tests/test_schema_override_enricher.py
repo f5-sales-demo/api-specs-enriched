@@ -491,14 +491,17 @@ class TestShippedRequirednessCorrections:
             },
         }
 
-    def test_force_loses_the_marker_on_both_upgrade_requests(self, enricher, upstream_shaped_spec):
-        result = enricher.enrich_spec(upstream_shaped_spec)
+    def test_force_is_negated_on_both_upgrade_requests(self, enricher, upstream_shaped_spec):
+        result = enricher.enrich_spec(upstream_shaped_spec, corrections_only=True)
         for schema_name in ("siteUpgradeSWRequest", "siteUpgradeOSRequest"):
             props = result["components"]["schemas"][schema_name]["properties"]
-            assert "x-ves-required" not in props["force"], (
-                f"{schema_name}.force is still marked required; the API does not "
+            assert props["force"].get("x-ves-required") == "false", (
+                f"{schema_name}.force must be marked NOT required; the API does not "
                 "enforce it (400 names only `version` when both are omitted)"
             )
+            # Negated, never deleted — a removal fails the contract-diff gate, and it
+            # would erase the evidence that upstream asserted the opposite.
+            assert "x-ves-required" in props["force"]
             assert props["version"]["x-ves-required"] == "true", (
                 f"{schema_name}.version must keep its marker — the API does enforce it"
             )
@@ -695,3 +698,132 @@ class TestCorrectionsOnlyPass:
             "$ref": "#/components/schemas/registrationObjectState",
         }
         assert schema["x-f5xc-action"] == "approve"
+
+
+class TestNestedExtensionKeySet:
+    """#1142 follow-up: correct a nested requiredness rule by NEGATING it.
+
+    The contract-diff gate rejects removing a key upstream provides — it exists to
+    stop the enriched specs quietly dropping contract data. Removing
+    `x-ves-required` therefore failed it (4 violations), while changing the value is
+    classified additive: relaxing a requirement cannot break a caller who already
+    sends the field.
+
+    So requiredness corrections negate rather than delete. That also leaves the
+    disagreement with F5 visible in the artifact — upstream asserts "true", we assert
+    "false" — instead of erasing the evidence that upstream ever said it.
+    """
+
+    @pytest.fixture
+    def negate_config(self, tmp_path):
+        config = {
+            "version": "1.0.0",
+            "overrides": {
+                "negate": {
+                    "upstream_issue": "test#1142",
+                    "schemas": [
+                        {
+                            "pattern": "^probeRules$",
+                            "set_property_extension_keys": {
+                                "force": {
+                                    "x-ves-validation-rules": {
+                                        "ves.io.schema.rules.message.required": "false",
+                                    },
+                                },
+                            },
+                        },
+                    ],
+                },
+            },
+        }
+        config_file = tmp_path / "schema_overrides.yaml"
+        with config_file.open("w") as f:
+            yaml.dump(config, f)
+        return config_file
+
+    @pytest.fixture
+    def negate_spec(self):
+        return {
+            "components": {
+                "schemas": {
+                    "probeRules": {
+                        "type": "object",
+                        "properties": {
+                            "force": {
+                                "type": "boolean",
+                                "x-ves-validation-rules": {
+                                    "ves.io.schema.rules.message.required": "true",
+                                    "ves.io.schema.rules.some.other": "keep-me",
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        }
+
+    def test_negates_the_nested_rule(self, negate_config, negate_spec):
+        enricher = SchemaOverrideEnricher(config_path=negate_config)
+        result = enricher.enrich_spec(negate_spec, corrections_only=True)
+        rules = result["components"]["schemas"]["probeRules"]["properties"]["force"][
+            "x-ves-validation-rules"
+        ]
+        assert rules["ves.io.schema.rules.message.required"] == "false"
+
+    def test_the_key_survives_so_the_diff_is_a_change_not_a_removal(
+        self, negate_config, negate_spec
+    ):
+        enricher = SchemaOverrideEnricher(config_path=negate_config)
+        result = enricher.enrich_spec(negate_spec, corrections_only=True)
+        force = result["components"]["schemas"]["probeRules"]["properties"]["force"]
+        assert "ves.io.schema.rules.message.required" in force["x-ves-validation-rules"], (
+            "the key must remain present: a removal fails the contract-diff gate"
+        )
+
+    def test_keeps_unrelated_sibling_rules(self, negate_config, negate_spec):
+        enricher = SchemaOverrideEnricher(config_path=negate_config)
+        result = enricher.enrich_spec(negate_spec, corrections_only=True)
+        rules = result["components"]["schemas"]["probeRules"]["properties"]["force"][
+            "x-ves-validation-rules"
+        ]
+        assert rules["ves.io.schema.rules.some.other"] == "keep-me"
+
+    def test_creates_the_container_when_absent(self, negate_config, negate_spec):
+        del negate_spec["components"]["schemas"]["probeRules"]["properties"]["force"][
+            "x-ves-validation-rules"
+        ]
+        enricher = SchemaOverrideEnricher(config_path=negate_config)
+        result = enricher.enrich_spec(negate_spec, corrections_only=True)
+        rules = result["components"]["schemas"]["probeRules"]["properties"]["force"][
+            "x-ves-validation-rules"
+        ]
+        assert rules["ves.io.schema.rules.message.required"] == "false"
+
+    def test_counts_the_change(self, negate_config, negate_spec):
+        enricher = SchemaOverrideEnricher(config_path=negate_config)
+        enricher.enrich_spec(negate_spec, corrections_only=True)
+        assert enricher.get_stats()["property_extension_keys_set"] == 1
+
+    def test_a_missing_property_is_counted(self, tmp_path, negate_spec):
+        config = {
+            "version": "1.0.0",
+            "overrides": {
+                "typo": {
+                    "upstream_issue": "test#1142",
+                    "schemas": [
+                        {
+                            "pattern": "^probeRules$",
+                            "set_property_extension_keys": {
+                                "frce": {"x-ves-validation-rules": {"a": "b"}},
+                            },
+                        },
+                    ],
+                },
+            },
+        }
+        config_file = tmp_path / "schema_overrides.yaml"
+        with config_file.open("w") as f:
+            yaml.dump(config, f)
+        enricher = SchemaOverrideEnricher(config_path=config_file)
+        enricher.enrich_spec(negate_spec, corrections_only=True)
+        assert enricher.get_stats()["property_overrides_missed"] == 1

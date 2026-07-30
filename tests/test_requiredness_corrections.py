@@ -49,13 +49,27 @@ class TestForceIsNotRequired:
     """
 
     @pytest.mark.parametrize("schema_name", ["siteUpgradeSWRequest", "siteUpgradeOSRequest"])
-    def test_force_carries_no_requiredness_marker(self, schema_name):
+    def test_force_is_marked_not_required(self, schema_name):
         props = load_schema("sites.json", schema_name)["properties"]
-        assert "x-ves-required" not in props["force"], (
-            f"{schema_name}.force is still marked required. Forcing a caller to state a "
-            "value for a flag that overrides the platform's own safety checks is the "
+        assert props["force"].get("x-ves-required") == "false", (
+            f"{schema_name}.force must be marked NOT required. Forcing a caller to state "
+            "a value for a flag that overrides the platform's own safety checks is the "
             "wrong thing to make unavoidable."
         )
+
+    @pytest.mark.parametrize("schema_name", ["siteUpgradeSWRequest", "siteUpgradeOSRequest"])
+    def test_the_marker_is_negated_not_deleted(self, schema_name):
+        # The contract-diff gate rejects removing a key upstream provides, and it is
+        # right to: erasing the marker also erases the evidence that F5 ever asserted
+        # it. Negating keeps the disagreement auditable and classifies as additive.
+        props = load_schema("sites.json", schema_name)["properties"]
+        assert "x-ves-required" in props["force"]
+        rules = props["force"].get("x-ves-validation-rules") or {}
+        assert rules.get("ves.io.schema.rules.message.required") == "false", (
+            "the nested rule must be negated too — the pipeline derives "
+            "x-f5xc-required-for from it as well as from the marker"
+        )
+        assert "ves.io.schema.rules.message.required" in rules
 
     @pytest.mark.parametrize("schema_name", ["siteUpgradeSWRequest", "siteUpgradeOSRequest"])
     def test_the_derived_field_agrees(self, schema_name):
@@ -103,6 +117,8 @@ class TestForceIsNotRequired:
         props = load_schema("sites.json", schema_name)["properties"]
         assert props["version"].get("x-ves-required") == "true"
         assert required_for_create(props["version"])
+        rules = props["version"].get("x-ves-validation-rules") or {}
+        assert rules.get("ves.io.schema.rules.message.required") == "true"
 
 
 class TestPassportIsRequired:
