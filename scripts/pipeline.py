@@ -298,6 +298,16 @@ def enrich_spec(spec: dict[str, Any], config: dict) -> tuple[dict[str, Any], dic
                 op["tags"] = [tag]
 
     # Apply enrichments in order:
+    # 0. Correct upstream requiredness markers BEFORE anything derives from them.
+    #    x-ves-required is F5's own marker and is wrong in both directions (#1142);
+    #    step 16 below derives x-f5xc-required-for.create from it, so a correction
+    #    applied later in the merge phase would fix the marker and leave the derived
+    #    field asserting the opposite. corrections_only=True so the additive halves
+    #    stay in the merge phase: injecting a property this early runs it through the
+    #    whole enrichment chain, which wrapped an injected bare $ref in allOf and
+    #    changed a shape downstream codegen special-cases.
+    spec = SchemaOverrideEnricher().enrich_spec(spec, corrections_only=True)
+
     # 1. Branding transformations first (most specific)
     spec = branding_transformer.transform_spec(spec, target_fields)
 

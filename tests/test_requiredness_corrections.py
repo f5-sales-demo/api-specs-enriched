@@ -1,0 +1,141 @@
+"""#1142: the shipped specs must carry the corrected requiredness markers.
+
+The enricher tests prove the mechanism and the config-guard tests prove the
+patterns match. Neither proves the built artifact under
+``docs/specifications/api/`` actually ships the correction — and the artifact is
+what downstream codegen reads.
+
+It is also where an ordering bug hides. ``x-ves-required`` is corrected by
+``config/schema_overrides.yaml``, but ``x-f5xc-required-for.create`` is *derived*
+from that marker earlier in the pipeline. Correct the marker after the derivation
+and you ship a property that says "not required" in one field and "required" in
+the other, with the consumer reading whichever it happens to check —
+terraform-provider-xcsh reads both, ORed together, so the stale one wins.
+"""
+
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+import pytest
+
+SPEC_DIR = Path(__file__).parent.parent / "docs" / "specifications" / "api"
+
+
+def load_schema(spec_file: str, schema_name: str) -> dict:
+    path = SPEC_DIR / spec_file
+    if not path.exists():  # pragma: no cover - the specs are committed
+        pytest.skip(f"{path} not built")
+    with path.open() as f:
+        spec = json.load(f)
+    schemas = spec.get("components", {}).get("schemas", {})
+    assert schema_name in schemas, f"{schema_name} missing from {spec_file}"
+    return schemas[schema_name]
+
+
+def required_for_create(prop: dict) -> bool:
+    return bool((prop.get("x-f5xc-required-for") or {}).get("create"))
+
+
+class TestForceIsNotRequired:
+    """Marked required upstream, not enforced by the API.
+
+    Verified live 2026-07-30 against site cem1-l1:
+      POST /api/config/namespaces/system/sites/cem1-l1/upgrade_sw
+        omitting force and version -> 400 "version empty in the request"
+        omitting force only        -> 200
+    The API names version and never mentions force.
+    """
+
+    @pytest.mark.parametrize("schema_name", ["siteUpgradeSWRequest", "siteUpgradeOSRequest"])
+    def test_force_carries_no_requiredness_marker(self, schema_name):
+        props = load_schema("sites.json", schema_name)["properties"]
+        assert "x-ves-required" not in props["force"], (
+            f"{schema_name}.force is still marked required. Forcing a caller to state a "
+            "value for a flag that overrides the platform's own safety checks is the "
+            "wrong thing to make unavoidable."
+        )
+
+    @pytest.mark.parametrize("schema_name", ["siteUpgradeSWRequest", "siteUpgradeOSRequest"])
+    def test_the_derived_field_agrees(self, schema_name):
+        props = load_schema("sites.json", schema_name)["properties"]
+        assert not required_for_create(props["force"]), (
+            f"{schema_name}.force has no x-ves-required but x-f5xc-required-for.create "
+            "is still true. The correction landed after the derivation — consumers OR "
+            "the two signals together, so the stale one decides."
+        )
+
+    @pytest.mark.parametrize("schema_name", ["siteUpgradeSWRequest", "siteUpgradeOSRequest"])
+    def test_no_description_claims_it_is_required(self, schema_name):
+        # F5 asserts requiredness in prose too — the upstream description reads
+        # "... Required: YES ...". A corrected marker beside a sentence saying the
+        # opposite is worse than either alone, and the description is what the API
+        # viewer publishes. Asserted as the ABSENCE of a requiredness claim rather
+        # than as exact wording, so reworded upstream text cannot reintroduce one.
+        props = load_schema("sites.json", schema_name)["properties"]
+        for field in ("description", "x-f5xc-description-short", "x-f5xc-description-medium"):
+            text = props["force"].get(field) or ""
+            assert "Required: YES" not in text, (
+                f"{schema_name}.force {field} still claims the field is required"
+            )
+
+    @pytest.mark.parametrize("schema_name", ["siteUpgradeSWRequest", "siteUpgradeOSRequest"])
+    def test_the_description_still_explains_the_flag(self, schema_name):
+        # Removing the false claim must not remove the useful part.
+        props = load_schema("sites.json", schema_name)["properties"]
+        assert "Force upgrade" in (props["force"].get("description") or "")
+
+    @pytest.mark.parametrize("schema_name", ["siteUpgradeSWRequest", "siteUpgradeOSRequest"])
+    def test_the_example_survives_the_description_override(self, schema_name):
+        # x-f5xc-example is extracted FROM the description prose, so replacing the
+        # description dropped it the first time. Overriding a description must not
+        # cost the field its example.
+        props = load_schema("sites.json", schema_name)["properties"]
+        assert props["force"].get("x-f5xc-example"), (
+            f"{schema_name}.force lost x-f5xc-example — the description override "
+            "removed the 'Example:' line the extractor reads"
+        )
+
+    @pytest.mark.parametrize("schema_name", ["siteUpgradeSWRequest", "siteUpgradeOSRequest"])
+    def test_version_keeps_both_signals(self, schema_name):
+        # The control: version IS enforced, and correcting force must not touch it.
+        props = load_schema("sites.json", schema_name)["properties"]
+        assert props["version"].get("x-ves-required") == "true"
+        assert required_for_create(props["version"])
+
+
+class TestPassportIsRequired:
+    """Unmarked upstream, enforced by the API.
+
+    Verified live 2026-07-30 against registration r-d2e92964-...-615e9b2daf93:
+      POST /api/register/namespaces/system/registration/{name}/approve
+        without passport -> 500 "Validation approval: Passport is required"
+        with passport    -> past that check, fails on the state transition instead
+    Presence is what is checked, and before the state gate: a deliberately wrong
+    passport reached the same state error.
+    """
+
+    def test_passport_carries_the_marker(self):
+        props = load_schema("ce_management.json", "registrationApprovalReq")["properties"]
+        assert props["passport"].get("x-ves-required") == "true", (
+            "passport must be marked required. Its absence is why "
+            "terraform-provider-xcsh#636 failed with a 500 and why that repository "
+            "carries a hand-written workaround to supply it."
+        )
+
+    def test_the_derived_field_agrees(self):
+        props = load_schema("ce_management.json", "registrationApprovalReq")["properties"]
+        assert required_for_create(props["passport"]), (
+            "passport is marked required but x-f5xc-required-for.create is false. The "
+            "correction landed after the derivation."
+        )
+
+    def test_decorative_fields_are_not_swept_in(self):
+        # required_fields already lists labels and annotations (see #1150). Marking
+        # passport must not conflate "the server rejects this if absent" with "this
+        # is a field a user fills in".
+        props = load_schema("ce_management.json", "registrationApprovalReq")["properties"]
+        for decorative in ("labels", "annotations"):
+            assert "x-ves-required" not in props[decorative]
+            assert not required_for_create(props[decorative])
