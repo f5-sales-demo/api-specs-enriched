@@ -16,10 +16,24 @@ CONFIG_PATH = Path(__file__).parent.parent.parent / "config" / "schema_overrides
 
 
 class SchemaOverrideEnricher:
-    """Injects missing oneOf sibling fields declared in schema_overrides.yaml.
+    """Applies the local corrections declared in schema_overrides.yaml.
 
     Runs during the merge phase, before ConflictsWithEnricher, so that
     x-ves-oneof-field-* arrays are complete when conflicts-with derivation runs.
+
+    Three kinds of correction:
+
+    * ``inject_properties`` / ``inject_extensions`` add what upstream omits. Both
+      are additive only — an existing property or extension is left alone.
+    * ``set_property_extensions`` / ``remove_property_extensions`` correct an
+      extension on a property that already exists. Needed because
+      ``x-ves-required`` is F5's own upstream marker and is wrong in both
+      directions (#1142): it appears on fields the API does not enforce, and is
+      absent from fields it does.
+
+    A property named by an override but absent from the schema is counted in
+    ``property_overrides_missed`` rather than ignored, so a typo shows up as a
+    number instead of as a correction everyone believes has been applied.
     """
 
     def __init__(self, config_path: Path | None = None) -> None:
@@ -54,6 +68,11 @@ class SchemaOverrideEnricher:
                 "complete_variants": schema_entry.get("complete_variants", []),
                 "inject_properties": schema_entry.get("inject_properties", {}),
                 "inject_extensions": schema_entry.get("inject_extensions", {}),
+                "set_property_extensions": schema_entry.get("set_property_extensions", {}),
+                "remove_property_extensions": schema_entry.get("remove_property_extensions", {}),
+                "remove_property_extension_keys": schema_entry.get(
+                    "remove_property_extension_keys", {}
+                ),
             }
         except re.error as e:
             logger.warning("Invalid override pattern '%s': %s", schema_entry.get("pattern"), e)
@@ -66,28 +85,49 @@ class SchemaOverrideEnricher:
             "schemas_matched": 0,
             "properties_injected": 0,
             "oneof_arrays_updated": 0,
+            "property_extensions_set": 0,
+            "property_extensions_removed": 0,
+            "property_extension_keys_removed": 0,
+            "property_overrides_missed": 0,
             "error_count": 0,
         }
 
-    def enrich_spec(self, spec: dict) -> dict:
-        """Enrich spec by injecting missing oneOf properties and updating variant arrays."""
+    def enrich_spec(self, spec: dict, corrections_only: bool = False) -> dict:
+        """Apply the overrides declared in schema_overrides.yaml.
+
+        corrections_only restricts the pass to the property-key corrections
+        (set/remove_property_extensions, remove_property_extension_keys) and skips
+        the additive halves. That is what the enrich phase needs: requiredness has
+        to be corrected before anything derives from it, but injecting a property
+        that early would then run it through the whole enrichment chain and change
+        its shape — an injected bare $ref came back wrapped in allOf, which
+        downstream codegen special-cases. So injection stays in the merge phase,
+        where it has always been.
+        """
         schemas = spec.get("components", {}).get("schemas")
         if not schemas:
             return spec
 
         for schema_name, schema in schemas.items():
             self._stats["schemas_processed"] += 1
-            self._apply_overrides(schema_name, schema)
+            self._apply_overrides(schema_name, schema, corrections_only=corrections_only)
 
         return spec
 
-    def _apply_overrides(self, schema_name: str, schema: dict) -> None:
+    def _apply_overrides(
+        self, schema_name: str, schema: dict, corrections_only: bool = False
+    ) -> None:
         for override in self._compiled:
             if not override["regex"].search(schema_name):
                 continue
             self._stats["schemas_matched"] += 1
 
             props = schema.get("properties", {})
+
+            if corrections_only:
+                self._apply_property_extensions(schema_name, props, override)
+                continue
+
             for prop_name, prop_def in override["inject_properties"].items():
                 if prop_name not in props:
                     props[prop_name] = dict(prop_def)
@@ -98,6 +138,8 @@ class SchemaOverrideEnricher:
             for ext_key, ext_val in override["inject_extensions"].items():
                 if ext_key not in schema:
                     schema[ext_key] = ext_val
+
+            self._apply_property_extensions(schema_name, props, override)
 
             if not override["oneof_group"]:
                 continue
@@ -117,6 +159,64 @@ class SchemaOverrideEnricher:
                 updated = sorted(existing_set)
                 schema[ext_key] = json.dumps(updated) if was_string else updated
                 self._stats["oneof_arrays_updated"] += 1
+
+    def _apply_property_extensions(self, schema_name: str, props: dict, override: dict) -> None:
+        """Set or remove keys on properties that already exist.
+
+        Unlike inject_*, these overwrite: correcting a wrong marker is the point.
+
+        ``set_property_extensions`` sets any property-level key, not only ``x-``
+        ones. ``description`` is a legitimate target: F5 states requiredness in the
+        prose as well as in the marker ("Required: YES", present in 3628 property
+        descriptions), so a field whose marker is corrected here would otherwise
+        keep a sentence asserting the opposite.
+        """
+        for prop_name, extensions in override["set_property_extensions"].items():
+            prop = props.get(prop_name)
+            if not isinstance(prop, dict):
+                self._miss(schema_name, prop_name, "set")
+                continue
+            for ext_key, ext_val in extensions.items():
+                if prop.get(ext_key) != ext_val:
+                    prop[ext_key] = ext_val
+                    self._stats["property_extensions_set"] += 1
+
+        for prop_name, ext_keys in override["remove_property_extensions"].items():
+            prop = props.get(prop_name)
+            if not isinstance(prop, dict):
+                self._miss(schema_name, prop_name, "remove")
+                continue
+            for ext_key in ext_keys:
+                if ext_key in prop:
+                    del prop[ext_key]
+                    self._stats["property_extensions_removed"] += 1
+
+        for prop_name, extensions in override["remove_property_extension_keys"].items():
+            prop = props.get(prop_name)
+            if not isinstance(prop, dict):
+                self._miss(schema_name, prop_name, "remove keys from")
+                continue
+            for ext_key, inner_keys in extensions.items():
+                container = prop.get(ext_key)
+                if not isinstance(container, dict):
+                    continue
+                for inner in inner_keys:
+                    if inner in container:
+                        del container[inner]
+                        self._stats["property_extension_keys_removed"] += 1
+                # An extension left as {} still reads as "there are rules here".
+                if not container:
+                    del prop[ext_key]
+
+    def _miss(self, schema_name: str, prop_name: str, action: str) -> None:
+        """Record an override that named a property the schema does not have."""
+        self._stats["property_overrides_missed"] += 1
+        logger.warning(
+            "schema_overrides: cannot %s extensions on '%s.%s' — no such property",
+            action,
+            schema_name,
+            prop_name,
+        )
 
     def get_stats(self) -> dict[str, int]:
         """Return current enrichment statistics."""

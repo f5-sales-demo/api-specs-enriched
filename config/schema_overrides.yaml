@@ -29,3 +29,91 @@ overrides:
             $ref: "#/components/schemas/registrationObjectState"
         inject_extensions:
           x-f5xc-action: "approve"
+        # #1142: passport carries no x-ves-required upstream, yet the API enforces
+        # it. Verified live 2026-07-30 against registration
+        # r-d2e92964-...-615e9b2daf93 in the f5-sales-demo tenant:
+        #
+        #   POST /api/register/namespaces/system/registration/{name}/approve
+        #     without passport -> 500 "Validation approval: Passport is required"
+        #     with passport    -> gets past that check and fails later, on
+        #                         "Registration state transition ONLINE to
+        #                         APPROVED is forbidden"
+        #
+        # Presence is what is checked, and it is checked before the state gate: a
+        # deliberately wrong passport ({cluster_name: "not-this-site"}) reached the
+        # same state error. Whether the VALUE is validated after that gate is not
+        # observable on an already-approved registration and remains unmeasured.
+        #
+        # This absence is why terraform-provider-xcsh#636 failed with a 500 and why
+        # that repository carries tools/action-derived-fields.json to read the
+        # passport off the object being approved. The workaround exists because the
+        # spec did not say the field was required; saying so here is the fix.
+        set_property_extensions:
+          passport:
+            x-ves-required: "true"
+
+  site_upgrade_requests:
+    upstream_issue: "f5-sales-demo/api-specs-enriched#1142"
+    description: >-
+      siteUpgradeSWRequest and siteUpgradeOSRequest mark `force` as
+      x-ves-required upstream, but the API does not enforce it. Marking it
+      required makes a generator force every caller to state a value for a flag
+      whose documented purpose is to override the platform's own safety checks
+      ("force upgrade even when logic checks are in place to not allow software
+      upgrades, i.e. OS upgrade in progress"). That is the wrong thing to make
+      unavoidable.
+    schemas:
+      - pattern: "^siteUpgrade(SW|OS)Request$"
+        # Verified live 2026-07-30 against site cem1-l1:
+        #
+        #   POST /api/config/namespaces/system/sites/cem1-l1/upgrade_sw
+        #     omitting BOTH force and version -> 400 "version empty in the request"
+        #     omitting force only             -> 200
+        #
+        # The API names `version` and never mentions `force`, so requiredness here
+        # is asserted by the marker alone. `namespace` and `name` are path
+        # parameters and keep their markers.
+        #
+        # Not corrected here: x-f5xc-minimum-configuration.required_fields still
+        # lists `force`, because that field is derived from "all properties" rather
+        # than from any requiredness signal — see the separate issue. Downstream
+        # action codegen already declines to consult it.
+        remove_property_extensions:
+          force:
+            - x-ves-required
+        # x-ves-required is not the only upstream assertion. F5 also ships
+        # ves.io.schema.rules.message.required inside x-ves-validation-rules, and the
+        # pipeline's own derivation of x-f5xc-required-for reads BOTH — so leaving the
+        # rule in place would keep `force` required no matter what the marker says.
+        # Measured across the built specs: the two signals travel together on 3613
+        # properties and disagree on 43, so neither is redundant.
+        #
+        # Only the required rule is removed; any sibling rule on the same field stays,
+        # and the extension is dropped entirely only if it empties.
+        remove_property_extension_keys:
+          force:
+            x-ves-validation-rules:
+              - ves.io.schema.rules.message.required
+            x-validation-rules:
+              - ves.io.schema.rules.message.required
+        # F5 states requiredness in the PROSE as well, and the pipeline keeps it:
+        # upstream reads "... (i.e. os upgrade in progress)\n\nRequired: YES\n\n
+        # Validation Rules: ves.io.schema.rules.message.required: true". Leaving it
+        # would publish a sentence contradicting every corrected marker, in the API
+        # viewer and in whatever reads these descriptions for context.
+        #
+        # Only these two fields are corrected here. 3628 property descriptions carry
+        # "Required: YES" and the general question — prose duplicating a marker this
+        # issue proves unreliable — is tracked in #1151 rather than settled by a sweep
+        # in this change. Remove this override when #1151 makes it redundant. The text below is the upstream sentence with the
+        # requiredness assertion removed and nothing else changed; the test asserts
+        # the ABSENCE of a requiredness claim rather than this exact wording, so a
+        # reworded upstream does not silently reintroduce one.
+        set_property_extensions:
+          force:
+            description: >-
+              Force upgrade even when logic checks are PUT in place to not allow
+              software upgrades (i.e. OS upgrade in progress). Optional: the API
+              performs the upgrade without it.
+
+              Example: `true`

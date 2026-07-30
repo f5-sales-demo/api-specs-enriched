@@ -130,6 +130,54 @@ X_F5XC_DOC_SECTION = "x-f5xc-doc-section"
 # =============================================================================
 # F5 NATIVE EXTENSIONS TO PRESERVE (DO NOT MODIFY)
 # =============================================================================
+#
+# These come from F5's published swagger and the pipeline carries them through
+# verbatim. Enrichment adds x-f5xc-* extensions alongside them; it does not
+# rewrite these.
+#
+# One documented exception, and one caveat about the extension it applies to.
+#
+# `x-ves-required` is the primary requiredness signal these specs carry. It is
+# F5's, not ours — 2586 occurrences in the upstream api-specs repository — and it
+# only ever appears with the value "true", so a field is "required" when the marker
+# is present and unmarked otherwise. There is no standard signal to fall back on:
+# measured 2026-07-30, 0 of 14,729 schemas carry a JSON Schema `required` array.
+# Anything generated from these specs therefore inherits this marker's accuracy
+# exactly.
+#
+# It is not accurate. Verified against the live API on 2026-07-30, in both
+# directions:
+#
+#   marked but not enforced   siteUpgradeSWRequest.force. POST .../upgrade_sw
+#                             omitting force returns 200; omitting force AND
+#                             version returns 400 "version empty in the request",
+#                             naming version and never mentioning force.
+#   enforced but unmarked     registrationApprovalReq.passport. POST
+#                             .../registration/{name}/approve without it returns
+#                             500 "Validation approval: Passport is required".
+#
+# The second one is why terraform-provider-xcsh#636 failed with a 500 and why that
+# repository carries tools/action-derived-fields.json — a downstream workaround that
+# exists only because the spec did not say the field was required.
+#
+# So: do not treat an unmarked field as safely optional, and do not treat a marked
+# one as genuinely enforced, without a live call. Corrections belong in
+# config/schema_overrides.yaml via set_property_extensions /
+# remove_property_extensions, which is the sanctioned way to modify one of these
+# and the only place that should. Each correction records the call that
+# established it. See issue #1142.
+#
+# Two sibling representations of the same fact, both tracked separately, because
+# three disagreeing sources is the real shape of this problem:
+#   #1150  x-f5xc-minimum-configuration.required_fields — derived from "all
+#          properties" rather than from any requiredness signal, on 12,377 of
+#          14,729 schemas.
+#   #1151  the requiredness sentence F5 puts in the property description, present
+#          on 3,628 of them and carried through verbatim.
+# There is also a second UPSTREAM signal: ves.io.schema.rules.message.required
+# inside x-ves-validation-rules. It travels with x-ves-required on 3613 properties
+# and disagrees on 43, and the pipeline derives x-f5xc-required-for from both — so
+# correcting only the marker does not change what consumers see.
 
 PRESERVED_NATIVE_EXTENSIONS = frozenset(
     [
