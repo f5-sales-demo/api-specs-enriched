@@ -146,7 +146,12 @@ DEFAULT_CONFIG = {
         "enriched": "docs/specifications/api",
         "reports": "reports",
     },
-    "target_fields": ["description", "summary", "title", "x-displayname"],
+    "target_fields": [
+        "description",
+        "summary",
+        "x-displayname",
+        "x-ves-example",
+    ],
     "preserve_fields": ["operationId", "$ref", "x-ves-proto-rpc", "x-ves-proto-service"],
     "grammar": {
         "capitalize_sentences": True,
@@ -390,6 +395,11 @@ def enrich_spec(spec: dict[str, Any], config: dict) -> tuple[dict[str, Any], dic
     # Note: Best practices and guided workflow enrichment moved to merge_specs_by_domain()
     # These enrichers require domain context which is only available after merging.
     # See Issue #314 for details.
+
+    # Sanitize after every enricher that can create example metadata. This pass
+    # is intentionally narrower than the prose pipeline so API-shaped values
+    # are otherwise preserved byte-for-byte.
+    spec = _sanitize_documentation_examples(spec, branding_transformer)
 
     # Close grammar improver resources
     grammar_improver.close()
@@ -817,6 +827,64 @@ def _normalize_domain_names(
         return obj
 
     return normalize_recursive(spec), normalize_count
+
+
+_EMBEDDED_EXAMPLE_PATTERN = re.compile(
+    r"(?im)(\bx-example:\s*)(?P<value>[^\r\n]+)",
+)
+
+
+def _sanitize_documentation_examples(
+    spec: dict[str, Any],
+    transformer: BrandingTransformer,
+) -> dict[str, Any]:
+    """Sanitize example metadata without running the general prose pipeline.
+
+    Example values are API-shaped data, so grammar and acronym rewriting can
+    corrupt them. Apply only configured documentation-value replacements and
+    reserved-domain normalization, then handle examples embedded in titles.
+    """
+    result = transformer.transform_spec(spec, ["x-f5xc-example"])
+    result, _ = _normalize_domain_names(result, ["x-f5xc-example"])
+    return _sanitize_embedded_examples(result, transformer)
+
+
+def _sanitize_embedded_examples(
+    spec: dict[str, Any],
+    transformer: BrandingTransformer,
+) -> dict[str, Any]:
+    """Sanitize embedded ``x-example`` lines while preserving title metadata.
+
+    Some upstream titles contain a multiline metadata block with an example
+    value. Running the normal enrichment chain on ``title`` would rewrite API
+    contract text, so only the value on an embedded ``x-example`` line is sent
+    through the configured documentation-value transformations.
+    """
+
+    def sanitize_title(title: str) -> str:
+        def replace(match: re.Match[str]) -> str:
+            value = transformer.transform_text(
+                match.group("value"),
+                field_name="x-f5xc-example",
+            )
+            normalized, _ = _normalize_domain_names({"value": value}, ["value"])
+            return f"{match.group(1)}{normalized['value']}"
+
+        return _EMBEDDED_EXAMPLE_PATTERN.sub(replace, title)
+
+    def sanitize_recursive(obj: Any) -> Any:
+        if isinstance(obj, dict):
+            return {
+                key: sanitize_title(value)
+                if key == "title" and isinstance(value, str)
+                else sanitize_recursive(value)
+                for key, value in obj.items()
+            }
+        if isinstance(obj, list):
+            return [sanitize_recursive(item) for item in obj]
+        return obj
+
+    return sanitize_recursive(spec)
 
 
 # =============================================================================

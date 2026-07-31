@@ -150,13 +150,30 @@ branding:
       replacement: "example-\\1"
       case_sensitive: true
 
-    # Tenant naming: AcmeCorp → Example-Corp (F5 XC documentation standard)
+    # Unsafe upstream documentation placeholders → reserved Example values.
+    - pattern: "\\bjoe\\.doe@acme\\.com\\b"
+      replacement: "dana@example.com"
+      case_sensitive: false
+
+    - pattern: "\\bACME Ltd\\."
+      replacement: "Example Corp"
+      case_sensitive: false
+
+    - pattern: "\\bAcme-ce01\\b"
+      replacement: "example-ce01"
+      case_sensitive: false
+
+    - pattern: "\\bacme-key-([a-z0-9-]+)\\b"
+      replacement: "example-key-\\1"
+      case_sensitive: false
+
+    # Tenant naming: AcmeCorp → example-corp (F5 XC documentation standard)
     - pattern: "\\bAcmecorp-web\\b"
-      replacement: "Example-Corp-web"
+      replacement: "example-corp-web"
       case_sensitive: true
 
     - pattern: "\\bAcmeCorp\\b"
-      replacement: "Example-Corp"
+      replacement: "example-corp"
       case_sensitive: true
 
     - pattern: "\\bacmecorp\\b"

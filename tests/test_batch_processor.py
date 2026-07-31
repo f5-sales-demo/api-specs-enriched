@@ -68,7 +68,7 @@ class TestBatchProcessorInitialization:
         processor = BatchSpecProcessor()
 
         assert processor.batch_size == 20
-        assert processor.cache_dir.name == "f5xc_spec_cache"
+        assert processor.cache_dir.name.startswith("f5xc_spec_cache-")
         assert processor.cache_dir.exists()
         assert processor.stats["batches_processed"] == 0
         assert processor.stats["specs_processed"] == 0
@@ -78,6 +78,19 @@ class TestBatchProcessorInitialization:
         processor = BatchSpecProcessor(batch_size=10)
 
         assert processor.batch_size == 10
+
+    def test_default_cache_directories_are_isolated(self):
+        """Concurrent processors must never delete each other's cached specs."""
+        first = BatchSpecProcessor()
+        second = BatchSpecProcessor()
+
+        try:
+            assert first.cache_dir != second.cache_dir
+            assert first.cache_dir.name.startswith("f5xc_spec_cache-")
+            assert second.cache_dir.name.startswith("f5xc_spec_cache-")
+        finally:
+            first.cleanup_cache()
+            second.cleanup_cache()
 
     def test_custom_cache_dir(self):
         """Verify custom cache directory is created."""
