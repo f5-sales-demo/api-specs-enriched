@@ -89,42 +89,30 @@ overrides:
         # schemas are affected, and special-casing two would make #1150 harder to fix
         # rather than easier. Downstream action codegen already declines to consult
         # it, for this exact reason.
-        remove_property_extensions:
-          force:
-            - x-ves-required
-        # x-ves-required is not the only upstream assertion. F5 also ships
-        # ves.io.schema.rules.message.required inside x-ves-validation-rules, and the
-        # pipeline's own derivation of x-f5xc-required-for reads BOTH — so leaving the
-        # rule in place would keep `force` required no matter what the marker says.
-        # Measured across the built specs: the two signals travel together on 3613
-        # properties and disagree on 43, so neither is redundant.
+        # NEGATED, not removed. The contract-diff gate rejects deleting a key
+        # upstream provides — it exists to stop the enriched specs quietly dropping
+        # contract data, and removing these four produced 4 violations. Changing the
+        # VALUE is classified additive (scripts/utils/additive_allowlist.py), and
+        # rightly so: relaxing a requirement cannot break a caller who already sends
+        # the field.
         #
-        # Only the required rule is removed; any sibling rule on the same field stays,
-        # and the extension is dropped entirely only if it empties.
-        remove_property_extension_keys:
-          force:
-            x-ves-validation-rules:
-              - ves.io.schema.rules.message.required
-            x-validation-rules:
-              - ves.io.schema.rules.message.required
-        # F5 states requiredness in the PROSE as well, and the pipeline keeps it:
-        # upstream reads "... (i.e. os upgrade in progress)\n\nRequired: YES\n\n
-        # Validation Rules: ves.io.schema.rules.message.required: true". Leaving it
-        # would publish a sentence contradicting every corrected marker, in the API
-        # viewer and in whatever reads these descriptions for context.
-        #
-        # Only these two fields are corrected here. 3628 property descriptions carry
-        # "Required: YES" and the general question — prose duplicating a marker this
-        # issue proves unreliable — is tracked in #1151 rather than settled by a sweep
-        # in this change. Remove this override when #1151 makes it redundant. The text below is the upstream sentence with the
-        # requiredness assertion removed and nothing else changed; the test asserts
-        # the ABSENCE of a requiredness claim rather than this exact wording, so a
-        # reworded upstream does not silently reintroduce one.
+        # Negating is better than removing anyway. It leaves the disagreement with F5
+        # visible in the artifact — upstream asserts "true", we assert "false" — rather
+        # than erasing the evidence that upstream ever said it. Every consumer tests
+        # for the string "true" (the provider's convert.go and actionPropIsRequired,
+        # and _has_required_validation_rules here), so "false" reads as not-required.
         set_property_extensions:
           force:
+            x-ves-required: "false"
             description: >-
               Force upgrade even when logic checks are PUT in place to not allow
               software upgrades (i.e. OS upgrade in progress). Optional: the API
               performs the upgrade without it.
 
               Example: `true`
+        set_property_extension_keys:
+          force:
+            x-ves-validation-rules:
+              ves.io.schema.rules.message.required: "false"
+            x-validation-rules:
+              ves.io.schema.rules.message.required: "false"

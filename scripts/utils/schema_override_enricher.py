@@ -73,6 +73,7 @@ class SchemaOverrideEnricher:
                 "remove_property_extension_keys": schema_entry.get(
                     "remove_property_extension_keys", {}
                 ),
+                "set_property_extension_keys": schema_entry.get("set_property_extension_keys", {}),
             }
         except re.error as e:
             logger.warning("Invalid override pattern '%s': %s", schema_entry.get("pattern"), e)
@@ -88,6 +89,7 @@ class SchemaOverrideEnricher:
             "property_extensions_set": 0,
             "property_extensions_removed": 0,
             "property_extension_keys_removed": 0,
+            "property_extension_keys_set": 0,
             "property_overrides_missed": 0,
             "error_count": 0,
         }
@@ -190,6 +192,21 @@ class SchemaOverrideEnricher:
                 if ext_key in prop:
                     del prop[ext_key]
                     self._stats["property_extensions_removed"] += 1
+
+        for prop_name, extensions in override["set_property_extension_keys"].items():
+            prop = props.get(prop_name)
+            if not isinstance(prop, dict):
+                self._miss(schema_name, prop_name, "set keys on")
+                continue
+            for ext_key, inner in extensions.items():
+                container = prop.get(ext_key)
+                if not isinstance(container, dict):
+                    container = {}
+                    prop[ext_key] = container
+                for inner_key, inner_val in inner.items():
+                    if container.get(inner_key) != inner_val:
+                        container[inner_key] = inner_val
+                        self._stats["property_extension_keys_set"] += 1
 
         for prop_name, extensions in override["remove_property_extension_keys"].items():
             prop = props.get(prop_name)
