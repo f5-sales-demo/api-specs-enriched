@@ -191,13 +191,18 @@ def save_release_metadata(
     """
     version_file.parent.mkdir(parents=True, exist_ok=True)
 
+    # Every field here identifies WHICH release is in the tree. A `downloaded_at`
+    # wall-clock stamp used to sit alongside them; it was written here and read
+    # nowhere, and because .github_release is tracked it made each download dirty the
+    # working tree with a change that says nothing about the specs. Same rule as the
+    # artifact stamps in build_stamp.py: a committed value must be a function of the
+    # input.
     metadata = {
         "version": parse_release_version(release_data["tag_name"]),
         "tag_name": release_data["tag_name"],
         "published_at": release_data["published_at"],
         "asset_name": asset_name,
         "asset_size": asset_size,
-        "downloaded_at": datetime.now(tz=timezone.utc).isoformat(),
     }
 
     with version_file.open("w") as f:

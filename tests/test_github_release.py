@@ -104,7 +104,22 @@ class TestSaveReleaseMetadata:
         assert metadata["published_at"] == "2026-01-26T10:30:00Z"
         assert metadata["asset_name"] == "api-specs-v2026.01.22-2.zip"
         assert metadata["asset_size"] == 5971024
-        assert "downloaded_at" in metadata
+
+        # .github_release is tracked, so a per-run wall-clock stamp made every
+        # download dirty the working tree with a change that says nothing about the
+        # specs. `downloaded_at` was written here and read nowhere — every other
+        # field identifies WHICH release is in the tree, which is what the file is
+        # for. Same reasoning as the artifact stamps in build_stamp.py: a committed
+        # value must be a function of the input, or "is the tree what the pipeline
+        # produces?" has no answer.
+        assert "downloaded_at" not in metadata
+        assert set(metadata) == {
+            "version",
+            "tag_name",
+            "published_at",
+            "asset_name",
+            "asset_size",
+        }
 
 
 class TestFindReleaseAsset:
