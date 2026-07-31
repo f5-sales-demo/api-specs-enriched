@@ -371,17 +371,12 @@ jobs:
         run: |
           echo "Updating specs to version: $VERSION"
 
-          # Update index.json
-          jq --arg v "$VERSION" '.version = $v' docs/specifications/api/index.json > /tmp/index.json
-          mv /tmp/index.json docs/specifications/api/index.json
-
-          # Update all domain specs info.version
-          for spec in docs/specifications/api/*.json; do
-            if [ "$(basename "$spec")" != "index.json" ]; then
-              jq --arg v "$VERSION" '.info.version = $v' "$spec" > /tmp/spec.json
-              mv /tmp/spec.json "$spec"
-            fi
-          done
+          # OpenAPI documents use info.version; auxiliary build artifacts use a
+          # top-level version; self-describing $schema artifacts keep their own
+          # format version. Keep this aligned with the contract-diff gate.
+          python -m scripts.stamp_release_version \
+            docs/specifications/api \
+            --version "$VERSION"
 
           echo "Updated all specs to version $VERSION"
 
