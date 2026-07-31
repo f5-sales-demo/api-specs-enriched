@@ -232,7 +232,12 @@ jobs:
           node-version: '22'
 
       - name: Install Spectral CLI
-        run: npm install -g @stoplight/spectral-cli
+        # Pinned: an unpinned `npm install -g` takes whatever was published at run
+        # time, which is the supply-chain exposure zizmor's adhoc-packages audit
+        # flags. Pre-existing; surfaced when a workflow file was next staged.
+        # zizmor: ignore[adhoc-packages] — a global CLI with no project lockfile to
+        # install from; pinning the version is the available mitigation.
+        run: npm install -g @stoplight/spectral-cli@6.16.2
 
       - name: Check for Discovery Data
         id: check-discovery

@@ -2066,6 +2066,23 @@ resources:
         fields: ["spec.disable_management_network", "spec.enable_management_network"]
         reason: "Management network"
 
+    # Derived from example_json below rather than written by hand, so the two cannot
+    # drift. validate_configs requires example_yaml; this entry had only the JSON,
+    # which is why validation has failed on main for as long as the entry existed.
+    example_yaml: |
+      metadata:
+        name: example-smsv2
+        namespace: system
+      spec:
+        azure:
+          not_managed:
+            node_list: []
+        disable_ha: {}
+        no_network_policy: {}
+        no_forward_proxy: {}
+        logs_streaming_disabled: {}
+        block_all_services: {}
+
     example_json: |
       {
         "metadata": {

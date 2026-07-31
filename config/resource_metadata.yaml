@@ -374,6 +374,25 @@ resources:
     relationship_hints:
       - "virtual_site: Logical grouping for policy targeting"
 
+  # Present in minimum_configs.yaml since the SMSv2 work, but never added here, so
+  # validate_configs has failed on main for as long as that entry has existed. It
+  # went unnoticed because the only thing that runs the validator is the pre-commit
+  # hook, and the hook discarded its exit code.
+  securemesh_site_v2:
+    description: "Secure Mesh Site v2 for multi-cloud Customer Edge deployments (Azure, AWS, GCP, bare-metal)"
+    description_short: "Secure Mesh Site v2"
+    tier: "Standard"
+    icon: "🔒"
+    category: "Infrastructure"
+    supports_logs: true
+    supports_metrics: true
+    dependencies:
+      required: []
+      optional:
+        - virtual_site
+    relationship_hints:
+      - "virtual_site: Logical grouping for policy targeting"
+
   # ===========================================================================
   # cdn domain
   # ===========================================================================

@@ -107,6 +107,7 @@ from scripts.utils import (
     get_version_from_tags,
 )
 from scripts.utils.batch_processor import BatchSpecProcessor
+from scripts.utils.build_stamp import artifact_timestamp
 from scripts.utils.domain_metadata import (
     calculate_complexity,
     get_domain_icon,
@@ -1498,7 +1499,16 @@ def create_spec_index(domain_specs: dict[str, dict[str, Any]], version: str) -> 
     """Create an index file listing all available specifications."""
     index: dict[str, Any] = {
         "version": version,
-        "timestamp": datetime.now(tz=timezone.utc).isoformat(),
+        # Derived from the upstream seed, not wall-clock: index.json is a committed
+        # artifact, and this was the LAST thing making two consecutive rebuilds differ
+        # (#1152) — everything else converged once the enrichers stopped stamping
+        # now() into every schema.
+        #
+        # Note there are two index builders: this one, and create_index in
+        # merge_specs.py. `make pipeline` uses this one. Both are fixed, because a
+        # duplicate that drifts is how the first attempt at this fix landed in the
+        # path that nothing runs.
+        "timestamp": artifact_timestamp(),
         "specifications": [],
     }
 

@@ -26,7 +26,20 @@ fi
 CONFIG_FILES=$(echo "$STAGED_FILES" | grep '^config/.*\.yaml$' || true)
 if [ -n "$CONFIG_FILES" ] && [ -n "$PYTHON" ]; then
   echo "[local] Validating config interdependencies..."
-  $PYTHON -m scripts.validate_configs 2>/dev/null || echo "[local] validate_configs failed or not configured"
+  # This used to be `... 2>/dev/null || echo "failed or not configured"`, which threw
+  # away the diagnostics AND the exit code, so a real failure was indistinguishable
+  # from a missing module and the hook went on to report success. It failed on main
+  # for as long as securemesh_site_v2 had been in minimum_configs.yaml without a
+  # matching resource_metadata.yaml entry, and nobody saw it.
+  #
+  # "not importable" and "validation failed" are now different outcomes: the first
+  # is skipped with a warning, the second stops the commit.
+  if ! $PYTHON -c "import scripts.validate_configs" 2>/dev/null; then
+    echo "[local] scripts.validate_configs is not importable — skipping" >&2
+  elif ! $PYTHON -m scripts.validate_configs; then
+    echo "[local] config validation FAILED — see the errors above" >&2
+    exit 1
+  fi
 fi
 
 # --- Python linting (ruff) ---

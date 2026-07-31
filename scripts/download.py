@@ -278,6 +278,7 @@ def generate_manifest(
     files: list[str],
     version: str,
     release_version: str,
+    release_published_at: str,
 ) -> None:
     """Generate manifest file with metadata about extracted specs.
 
@@ -286,11 +287,21 @@ def generate_manifest(
         files: List of extracted filenames.
         version: Git-based version from tags (e.g., "2.0.38").
         release_version: GitHub release version (e.g., "2026.01.22-2").
+        release_published_at: When the upstream release was published (e.g.,
+            "2026-07-30T08:27:17Z"). Committed artifacts are stamped from this, so it
+            must describe the RELEASE and never this download.
     """
     manifest = {
         "version": version,
         "release_version": release_version,
+        # When THIS machine downloaded — informational only. Nothing derived from it
+        # may reach a committed artifact: two machines fetching the same release get
+        # different values, which is how every generated spec came to differ between
+        # a local rebuild and CI's (#1156). See scripts/utils/build_stamp.py.
         "timestamp": datetime.now(tz=timezone.utc).isoformat(),
+        # When the upstream release was published — a property of the INPUT, and the
+        # same value for everyone who downloads it. This is what artifacts stamp.
+        "release_published_at": release_published_at,
         "file_count": len(files),
         "files": sorted(files),
     }
@@ -383,7 +394,13 @@ def download_from_github_release(config: dict, force: bool = False) -> tuple[boo
         # Generate manifest
         version = get_version()
         release_version = parse_release_version(release_data["tag_name"])
-        generate_manifest(output_dir, extracted_files, version, release_version)
+        generate_manifest(
+            output_dir,
+            extracted_files,
+            version,
+            release_version,
+            release_data["published_at"],
+        )
 
         console.print(
             f"\n[bold green]✅ Successfully downloaded {len(extracted_files)} specs![/bold green]",

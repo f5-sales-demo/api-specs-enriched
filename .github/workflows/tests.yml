@@ -103,6 +103,108 @@ jobs:
           API_SPECS_SKIP_BIOME: "1"
         run: make pipeline PYTHON=python
 
+      # #1152: the pipeline just rebuilt every spec from the freshly downloaded
+      # upstream seed, so this is the cheapest possible place to answer "is the
+      # committed tree what the pipeline produces?" — a question that had no answer
+      # while 43 files carried a per-run wall-clock timestamp.
+      #
+      # It matters because an unanswerable version of this question is how a stale
+      # local seed came to silently revert the upstream misspelled-`persistence`
+      # rename that the F5 server depends on (api-specs#686 — emitting the corrected
+      # spelling makes F5 discard the field), and how index.json came to report
+      # 2.1.200 while namespace_profiles.json reported 2.1.199.
+      #
+      # Two consecutive local rebuilds were verified byte-identical before this step
+      # was added, so a diff here means the committed tree is stale — never that the
+      # pipeline is nondeterministic.
+      #
+      # Compared semantically, not byte-wise: this job runs with
+      # API_SPECS_SKIP_BIOME=1, so its JSON formatting differs from the committed
+      # (biome-formatted) tree. Installing biome here to allow a byte comparison is
+      # the better check and is the follow-up; parsed-equality already catches
+      # content drift, which is what reverted the rename.
+      - name: Verify the committed specs match a clean rebuild
+        run: |
+          python - <<'EOF'
+          import json, pathlib, subprocess, sys
+
+          # The repo's own release version is stamped into every spec — `info.version`
+          # in each domain file and a top-level `version` in the index. It comes from
+          # `git describe --tags`, so it is a property of the BUILD, not of the content:
+          #
+          #   * this job checks out shallow and without tags, so `git describe` fails
+          #     and the version becomes the "0.0.0" fallback, while a developer's tree
+          #     carries a real tag — all 41 files then differ on that field alone;
+          #   * a release is cut on every merge, so even with tags fetched, the value
+          #     advances and the committed tree would go stale the instant a release
+          #     lands, failing the NEXT pull request for something it did not do.
+          #
+          # This check exists to catch CONTENT drift — the stale seed that silently
+          # reverted the upstream misspelled-`persistence` rename the F5 server depends
+          # on (api-specs#686). So compare content and normalise the build identity out.
+          # validation.json is not an OpenAPI document — it is a self-describing
+          # artifact carrying its own `$schema` and its own format version (2.1.0,
+          # against the repo's 2.1.201). That version is content, not build identity,
+          # so leave it alone.
+          def carries_build_version(doc):
+              return isinstance(doc, dict) and "$schema" not in doc
+
+          def strip_build_identity(doc):
+              if not carries_build_version(doc):
+                  return doc
+              doc = dict(doc)
+              doc.pop("version", None)
+              info = doc.get("info")
+              if isinstance(info, dict):
+                  info = dict(info)
+                  info.pop("version", None)
+                  doc["info"] = info
+              return doc
+
+          spec_dir = pathlib.Path("docs/specifications/api")
+          drifted = []
+          rebuilt_versions = {}
+          for path in sorted(spec_dir.glob("*.json")):
+              committed = subprocess.run(
+                  ["git", "show", f"HEAD:{path}"],
+                  capture_output=True, text=True, check=False,
+              )
+              if committed.returncode != 0:
+                  drifted.append(f"{path} (not in HEAD)")
+                  continue
+              try:
+                  rebuilt = json.loads(path.read_text())
+                  if strip_build_identity(json.loads(committed.stdout)) != strip_build_identity(rebuilt):
+                      drifted.append(str(path))
+              except json.JSONDecodeError as exc:
+                  drifted.append(f"{path} (unparseable: {exc})")
+                  continue
+              if carries_build_version(rebuilt):
+                  stamped = rebuilt.get("version") or (rebuilt.get("info") or {}).get("version")
+                  if stamped:
+                      rebuilt_versions.setdefault(str(stamped), []).append(path.name)
+
+          if drifted:
+              print("::error::The committed specs differ from a clean rebuild.")
+              print("Run `make download-force && make pipeline` and commit the result.")
+              print("Files that differ:")
+              for name in drifted:
+                  print(f"  - {name}")
+              sys.exit(1)
+
+          # The version is not compared against the committed tree, but it must still be
+          # CONSISTENT across a single build. Skew is a real defect this repo has had:
+          # index.json reported 2.1.200 while namespace_profiles.json reported 2.1.199.
+          if len(rebuilt_versions) > 1:
+              print("::error::One rebuild produced more than one version stamp.")
+              for value, files in sorted(rebuilt_versions.items()):
+                  print(f"  {value}: {len(files)} file(s), e.g. {files[0]}")
+              sys.exit(1)
+
+          print(f"All {len(list(spec_dir.glob('*.json')))} specs match a clean rebuild.")
+          print(f"Single consistent version stamp: {next(iter(rebuilt_versions), 'none')}")
+          EOF
+
       - name: Run contract-diff gate
         id: contract_diff
         run: |
