@@ -98,6 +98,7 @@ from scripts.utils import (
     ReadOnlyEnricher,
     ReferencesEnricher,
     ResourceExamplesEnricher,
+    ResourceVersionEnricher,
     SchemaConstraintProjector,
     SchemaFixer,
     SchemaOverrideEnricher,
@@ -360,6 +361,19 @@ def enrich_spec(spec: dict[str, Any], config: dict) -> tuple[dict[str, Any], dic
     validation_enricher = ValidationEnricher()
     spec = validation_enricher.enrich_spec(spec)
     validation_stats = validation_enricher.get_stats()
+
+    # 13.4. resource_version declaration (optimistic concurrency; #1159)
+    # The API implements conditional replace and the specs never said so, so no
+    # generated client could send the token and every update overwrote unconditionally.
+    resource_version_enricher = ResourceVersionEnricher()
+    spec = resource_version_enricher.enrich_spec(spec)
+    resource_version_stats = resource_version_enricher.get_stats()
+    if resource_version_stats["error_count"]:
+        logger.warning(
+            "resource_version enrichment reported %d error(s): %s",
+            resource_version_stats["error_count"],
+            resource_version_stats["errors"][:3],
+        )
 
     # 13.5. Constraint enrichment (add x-f5xc-constraints from patterns)
     constraint_enricher = ConstraintEnricher(config_path=Path("config/constraint_patterns.yaml"))
