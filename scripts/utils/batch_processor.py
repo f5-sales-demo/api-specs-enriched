@@ -54,7 +54,11 @@ class BatchSpecProcessor:
             cache_dir: Optional custom cache directory (defaults to system temp)
         """
         self.batch_size = batch_size
-        self.cache_dir = cache_dir or Path(tempfile.gettempdir()) / "f5xc_spec_cache"
+        self.cache_dir = (
+            Path(cache_dir)
+            if cache_dir is not None
+            else Path(tempfile.mkdtemp(prefix="f5xc_spec_cache-"))
+        )
         self.cache_dir.mkdir(parents=True, exist_ok=True)
 
         self.stats = {
