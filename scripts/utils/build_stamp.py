@@ -47,23 +47,34 @@ def artifact_timestamp() -> str:
     means the specs were not downloaded through ``scripts.download``; that case is
     logged, because it silently reintroduces per-run churn.
     """
-    if _MANIFEST.exists():
-        try:
-            manifest = json.loads(_MANIFEST.read_text())
-            upstream = manifest.get("timestamp")
-            if upstream:
-                # Normalise so the value is stable regardless of how the manifest
-                # spells its timezone.
-                parsed = datetime.fromisoformat(str(upstream).replace("Z", "+00:00"))
-                return parsed.astimezone(timezone.utc).isoformat()
-        except (json.JSONDecodeError, ValueError, TypeError) as exc:
-            logger.warning("specs/original/manifest.json is unreadable (%s)", exc)
+    remedy = "Run `make download-force` to refresh specs/original/."
 
-    logger.warning(
-        "No upstream timestamp available — stamping artifacts with the current time. "
-        "The build will not be reproducible; run `make download` first. See #1152.",
-    )
-    return datetime.now(tz=timezone.utc).isoformat()
+    if not _MANIFEST.exists():
+        raise RuntimeError(f"No {_MANIFEST} — artifacts cannot be stamped reproducibly. {remedy}")
+
+    try:
+        manifest = json.loads(_MANIFEST.read_text())
+    except json.JSONDecodeError as exc:
+        raise RuntimeError(f"{_MANIFEST} is unreadable ({exc}). {remedy}") from exc
+
+    published = manifest.get("release_published_at")
+    if not published:
+        raise RuntimeError(
+            f"{_MANIFEST} has no release_published_at. Its `timestamp` field records when "
+            f"THIS machine downloaded, so deriving the stamp from it makes every generated "
+            f"spec differ between a local rebuild and CI's. {remedy}",
+        )
+
+    try:
+        # Normalise so the value is stable regardless of how the manifest spells its
+        # timezone.
+        parsed = datetime.fromisoformat(str(published).replace("Z", "+00:00"))
+    except (ValueError, TypeError) as exc:
+        raise RuntimeError(
+            f"{_MANIFEST} has an unparseable release_published_at ({exc}). {remedy}"
+        ) from exc
+
+    return parsed.astimezone(timezone.utc).isoformat()
 
 
 def reset_cache() -> None:
