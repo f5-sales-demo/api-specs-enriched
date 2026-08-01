@@ -7,6 +7,7 @@ set -euo pipefail
 REPO_ROOT=$(cd "$(dirname "$0")/.." && pwd)
 SCANNER="${REPO_ROOT}/scripts/check-pii.sh"
 PYTHON_SCANNER="${REPO_ROOT}/scripts/check_pii.py"
+SYNTHETIC_USER=realperson
 
 FAIL=0
 WORK=$(mktemp -d)
@@ -115,6 +116,42 @@ git -C "$repo" add fixture.yaml
 git -C "$repo" commit -qm synthetic
 assert_clean "reserved synthetic values" "$repo" --scope head --mode enforce
 
+repo=$(new_repo documentation-expressions)
+cat >"${repo}/fixture.mdx" <<'EOF'
+```bash
+curl "https://example.com/api/config/namespaces/xEXAMPLE_NAMESPACEx/resources" \
+  | jq '{namespace: .metadata.namespace}'
+jq -n '{metadata: {namespace: "xEXAMPLE_NAMESPACEx"}}'
+jq -n '{detail: "Namespace: write denied — create it before continuing"}'
+```
+EOF
+git -C "$repo" add fixture.mdx
+git -C "$repo" commit -qm expressions
+assert_clean "schematic variables and documentation expressions" "$repo" --scope head --mode enforce
+
+repo=$(new_repo documentation-prose-labels)
+cat >"${repo}/fixture.mdx" <<'EOF'
+<Note>
+Every customer: "Use the documented example tenant." Continue with the setup instructions.
+</Note>
+EOF
+git -C "$repo" add fixture.mdx
+git -C "$repo" commit -qm prose-labels
+assert_clean "identity words used as prose labels" "$repo" --scope head --mode enforce
+
+repo=$(new_repo expression-shaped-literals)
+cat >"${repo}/fixture.mdx" <<'EOF'
+```yaml
+namespace: xcustomer-namespacex
+```
+```json
+{"namespace": ".customer-namespace"}
+```
+EOF
+git -C "$repo" add fixture.mdx
+git -C "$repo" commit -qm literals
+assert_violation "expression-shaped identity literals remain enforced" "$repo" --scope head --mode enforce
+
 repo=$(new_repo public-ip-contexts)
 cat >"${repo}/fixture.txt" <<'EOF'
 rfc6598=100.64.0.1/10
@@ -180,19 +217,19 @@ git -C "$repo" commit -qm numeric-name
 assert_clean "numeric person fields are not names" "$repo" --scope head --mode enforce
 
 repo=$(new_repo home-path)
-printf 'cache=/Users/realperson/.cache/tool\n' >"${repo}/config.ini"
+printf 'cache=/Users/%s/.cache/tool\n' "$SYNTHETIC_USER" >"${repo}/config.ini"
 git -C "$repo" add config.ini
 git -C "$repo" commit -qm path
 assert_violation "personal home path" "$repo" --scope head --mode enforce
 
 repo=$(new_repo placeholder-paths)
-printf 'mac=/Users/you/work ci=/home/runner/work variable=/home/${USERNAME}/work route=/home/index\n' >"${repo}/config.ini"
+printf 'mac=/Users/you/work ci=/home/runner/work variable=/home/${USERNAME}/work route=/home/%s\n' index >"${repo}/config.ini"
 git -C "$repo" add config.ini
 git -C "$repo" commit -qm paths
 assert_clean "placeholder, CI, and variable home paths" "$repo" --scope head --mode enforce
 
 repo=$(new_repo embedded-home-tokens)
-printf 'keys=Shift+page/home/end route=service/Users/list windows=prefixC:\\Users\\record\n' >"${repo}/config.ini"
+printf 'keys=Shift+page/%s/%s route=service/%s/%s windows=prefixC:\\%s\\%s\n' home end Users list Users record >"${repo}/config.ini"
 git -C "$repo" add config.ini
 git -C "$repo" commit -qm tokens
 assert_clean "embedded home-like tokens are not absolute paths" "$repo" --scope head --mode enforce
@@ -377,7 +414,7 @@ git -C "$repo" commit -qm odd
 assert_violation "option-like filename containing spaces" "$repo" --scope head --mode enforce
 
 repo=$(new_repo symlink)
-ln -s /Users/realperson/private "${repo}/linked"
+ln -s "/Users/${SYNTHETIC_USER}/private" "${repo}/linked"
 git -C "$repo" add linked
 git -C "$repo" commit -qm symlink
 assert_clean "scanner does not dereference symlinks" "$repo" --scope head --mode enforce
