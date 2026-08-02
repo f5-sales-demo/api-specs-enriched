@@ -1,6 +1,6 @@
 # Changelog
 
-## Version 2.1.208 (2026-08-01)
+## Version 2.1.208 (2026-08-02)
 
 ### Version Information
 - **Full Version**: 2.1.208
