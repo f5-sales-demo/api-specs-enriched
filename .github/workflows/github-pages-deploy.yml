@@ -1,17 +1,16 @@
 ---
 name: GitHub Pages Deploy
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'docs/**'
-  workflow_dispatch:
+  # Publication owns ordering: GitHub Pages must never advance before the tag
+  # and all five release assets have been byte-verified.
+  workflow_call:
+    inputs:
+      target-commit:
+        description: 'Exact reconciled release commit to build'
+        required: true
+        type: string
 
-permissions:
-  contents: read
-  packages: read
-  pages: write
-  id-token: write
+permissions: {}
 
 concurrency:
   group: pages
@@ -22,4 +21,12 @@ concurrency:
 
 jobs:
   docs:
-    uses: f5-sales-demo/docs-control/.github/workflows/github-pages-deploy.yml@main
+    uses: f5-sales-demo/docs-control/.github/workflows/github-pages-deploy.yml@456fed72b588919317fc10a99c2afe9ad0efe115
+    permissions:
+      contents: read # read documentation sources at the verified content ref
+      packages: read # pull the pinned fleet documentation builder image
+      pages: write # publish the verified Pages artifact
+      id-token: write # authenticate the Pages deployment
+    with:
+      content-ref: ${{ inputs.target-commit }}
+      builder-image: ghcr.io/f5-sales-demo/docs-builder@sha256:905d2398fec15c05e828c881ab0e8b782368c30d70d97a978dc383935d7d0163
