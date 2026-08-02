@@ -27,23 +27,54 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import subprocess
 import sys
 from pathlib import Path
 
 DEFAULT_GOVERNANCE_JSON = Path(".claude/governance.json")
 
-# Branches created by the docs-control sync-managed-files workflow carry
-# the very files this check would otherwise reject. Exempt them by prefix;
-# the sync is the authorized upstream channel, so blocking it would self-
-# block every consumer every time docs-control updates a managed file.
-SYNC_BRANCH_PREFIXES = ("governance/sync-managed-files",)
+# Automation branches carry the governed files this check would otherwise
+# reject. Authorization requires an exact branch identity and same-repository
+# ownership proven by GitHub's pull-request event receipt.
+AUTHORIZED_AUTOMATION_BRANCH = re.compile(
+    r"(?:governance/sync-managed-files|"
+    r"sync/exact-caller-[0-9a-f]{12}-[1-9][0-9]*-[1-9][0-9]*)",
+)
 
 
-def _is_governance_sync_branch() -> bool:
-    """Return True when running on a PR from the managed-files sync bot."""
+def _is_authorized_automation_branch() -> bool:
+    """Return whether GitHub proves an exact, same-repository automation PR."""
     head_ref = os.environ.get("GITHUB_HEAD_REF", "")
-    return any(head_ref.startswith(prefix) for prefix in SYNC_BRANCH_PREFIXES)
+    repository = os.environ.get("GITHUB_REPOSITORY", "")
+    event_path = os.environ.get("GITHUB_EVENT_PATH", "")
+    if (
+        not head_ref
+        or not repository
+        or not event_path
+        or AUTHORIZED_AUTOMATION_BRANCH.fullmatch(head_ref) is None
+    ):
+        return False
+
+    try:
+        with Path(event_path).open(encoding="utf-8") as handle:
+            event = json.load(handle)
+    except (OSError, UnicodeError, ValueError):
+        return False
+
+    if not isinstance(event, dict):
+        return False
+    pull_request = event.get("pull_request")
+    if not isinstance(pull_request, dict):
+        return False
+    head = pull_request.get("head")
+    if not isinstance(head, dict):
+        return False
+    head_repo = head.get("repo")
+    if not isinstance(head_repo, dict):
+        return False
+    head_repository = head_repo.get("full_name")
+    return isinstance(head_repository, str) and head_repository == repository
 
 
 class GovernanceViolationError(RuntimeError):
@@ -113,9 +144,9 @@ def main(argv: list[str] | None = None) -> int:
     )
     args = parser.parse_args(argv)
 
-    if _is_governance_sync_branch():
+    if _is_authorized_automation_branch():
         head_ref = os.environ.get("GITHUB_HEAD_REF", "")
-        print(f"ok: skipping governance check on sync branch {head_ref}")
+        print(f"ok: skipping governance check on authorized automation branch {head_ref}")
         return 0
 
     try:

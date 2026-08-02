@@ -30,17 +30,38 @@ def _run(cmd: list[str], cwd: Path) -> None:
     subprocess.run(cmd, cwd=cwd, check=True, capture_output=True)
 
 
+def _set_pull_request_context(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    *,
+    head_ref: str,
+    head_repository: str = "example/managed",
+    base_repository: str = "example/managed",
+) -> None:
+    event_path = tmp_path / "event.json"
+    event_path.write_text(
+        json.dumps(
+            {
+                "pull_request": {
+                    "head": {"repo": {"full_name": head_repository}},
+                },
+            },
+        ),
+    )
+    monkeypatch.setenv("GITHUB_HEAD_REF", head_ref)
+    monkeypatch.setenv("GITHUB_REPOSITORY", base_repository)
+    monkeypatch.setenv("GITHUB_EVENT_PATH", str(event_path))
+
+
 @pytest.fixture(autouse=True)
 def _clear_sync_env(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Isolate tests from CI's GITHUB_HEAD_REF.
+    """Isolate tests from GitHub's pull-request identity environment.
 
-    `scripts.verify_governance.main` short-circuits when the env var
-    matches the sync-branch prefix. CI on the docs-control sync PR
-    sets GITHUB_HEAD_REF=governance/sync-managed-files, which would
-    make every `main()` test here return 0 regardless of the scenario
-    under test.
+    Authorized automation tests install a complete synthetic event receipt.
+    Every other test must exercise the verifier without CI state leaking in.
     """
-    monkeypatch.delenv("GITHUB_HEAD_REF", raising=False)
+    for variable in ("GITHUB_EVENT_PATH", "GITHUB_HEAD_REF", "GITHUB_REPOSITORY"):
+        monkeypatch.delenv(variable, raising=False)
 
 
 @pytest.fixture
@@ -197,3 +218,208 @@ class TestMain:
         assert rc == 2
         captured = capsys.readouterr()
         assert "error:" in captured.err
+
+    @pytest.mark.parametrize(
+        "head_ref",
+        [
+            "governance/sync-managed-files",
+            "sync/exact-caller-0123456789ab-123-4",
+        ],
+    )
+    def test_same_repository_automation_branch_is_authorized(
+        self,
+        repo: Path,
+        tmp_path: Path,
+        monkeypatch: pytest.MonkeyPatch,
+        head_ref: str,
+    ) -> None:
+        (repo / "biome.json").write_text('{"x": 1}\n')
+        _run(["git", "add", "."], repo)
+        _run(["git", "commit", "-q", "-m", "authorized governance update"], repo)
+        _set_pull_request_context(monkeypatch, tmp_path, head_ref=head_ref)
+        monkeypatch.chdir(repo)
+
+        rc = main(
+            [
+                "--base",
+                "main",
+                "--head",
+                "feature",
+                "--governance-json",
+                str(repo / "governance.json"),
+            ],
+        )
+
+        assert rc == 0
+
+    @pytest.mark.parametrize(
+        "head_ref",
+        [
+            "governance/sync-managed-files",
+            "sync/exact-caller-0123456789ab-123-4",
+        ],
+    )
+    def test_same_ref_fork_is_not_authorized(
+        self,
+        repo: Path,
+        tmp_path: Path,
+        monkeypatch: pytest.MonkeyPatch,
+        head_ref: str,
+    ) -> None:
+        (repo / "biome.json").write_text('{"x": 1}\n')
+        _run(["git", "add", "."], repo)
+        _run(["git", "commit", "-q", "-m", "hostile fork update"], repo)
+        _set_pull_request_context(
+            monkeypatch,
+            tmp_path,
+            head_ref=head_ref,
+            head_repository="example/fork",
+        )
+        monkeypatch.chdir(repo)
+
+        rc = main(
+            [
+                "--base",
+                "main",
+                "--head",
+                "feature",
+                "--governance-json",
+                str(repo / "governance.json"),
+            ],
+        )
+
+        assert rc == 1
+
+    @pytest.mark.parametrize(
+        "head_ref",
+        [
+            "governance/sync-managed-files-lookalike",
+            "sync/exact-caller-0123456789ab-0-1",
+            "sync/exact-caller-0123456789ab-1-0",
+            "sync/exact-caller-0123456789ab-1-1-extra",
+        ],
+    )
+    def test_lookalike_automation_branch_is_not_authorized(
+        self,
+        repo: Path,
+        tmp_path: Path,
+        monkeypatch: pytest.MonkeyPatch,
+        head_ref: str,
+    ) -> None:
+        (repo / "biome.json").write_text('{"x": 1}\n')
+        _run(["git", "add", "."], repo)
+        _run(["git", "commit", "-q", "-m", "lookalike update"], repo)
+        _set_pull_request_context(monkeypatch, tmp_path, head_ref=head_ref)
+        monkeypatch.chdir(repo)
+
+        rc = main(
+            [
+                "--base",
+                "main",
+                "--head",
+                "feature",
+                "--governance-json",
+                str(repo / "governance.json"),
+            ],
+        )
+
+        assert rc == 1
+
+    def test_missing_event_receipt_is_not_authorized(
+        self,
+        repo: Path,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        (repo / "biome.json").write_text('{"x": 1}\n')
+        _run(["git", "add", "."], repo)
+        _run(["git", "commit", "-q", "-m", "unmeasured update"], repo)
+        monkeypatch.setenv("GITHUB_HEAD_REF", "governance/sync-managed-files")
+        monkeypatch.setenv("GITHUB_REPOSITORY", "example/managed")
+        monkeypatch.chdir(repo)
+
+        rc = main(
+            [
+                "--base",
+                "main",
+                "--head",
+                "feature",
+                "--governance-json",
+                str(repo / "governance.json"),
+            ],
+        )
+
+        assert rc == 1
+
+    @pytest.mark.parametrize("missing_variable", ["GITHUB_HEAD_REF", "GITHUB_REPOSITORY"])
+    def test_incomplete_environment_is_not_authorized(
+        self,
+        repo: Path,
+        tmp_path: Path,
+        monkeypatch: pytest.MonkeyPatch,
+        missing_variable: str,
+    ) -> None:
+        (repo / "biome.json").write_text('{"x": 1}\n')
+        _run(["git", "add", "."], repo)
+        _run(["git", "commit", "-q", "-m", "incomplete identity"], repo)
+        _set_pull_request_context(
+            monkeypatch,
+            tmp_path,
+            head_ref="governance/sync-managed-files",
+        )
+        monkeypatch.delenv(missing_variable)
+        monkeypatch.chdir(repo)
+
+        rc = main(
+            [
+                "--base",
+                "main",
+                "--head",
+                "feature",
+                "--governance-json",
+                str(repo / "governance.json"),
+            ],
+        )
+
+        assert rc == 1
+
+    @pytest.mark.parametrize(
+        "event_content",
+        [
+            "not JSON",
+            "[]",
+            "{}",
+            '{"pull_request": []}',
+            '{"pull_request": {"head": []}}',
+            '{"pull_request": {"head": {"repo": []}}}',
+            '{"pull_request": {"head": {"repo": {"full_name": 7}}}}',
+        ],
+    )
+    def test_malformed_event_receipt_is_not_authorized(
+        self,
+        repo: Path,
+        tmp_path: Path,
+        monkeypatch: pytest.MonkeyPatch,
+        event_content: str,
+    ) -> None:
+        (repo / "biome.json").write_text('{"x": 1}\n')
+        _run(["git", "add", "."], repo)
+        _run(["git", "commit", "-q", "-m", "malformed identity"], repo)
+        event_path = tmp_path / "event.json"
+        event_path.write_text(event_content)
+        monkeypatch.setenv("GITHUB_HEAD_REF", "governance/sync-managed-files")
+        monkeypatch.setenv("GITHUB_REPOSITORY", "example/managed")
+        monkeypatch.setenv("GITHUB_EVENT_PATH", str(event_path))
+        monkeypatch.chdir(repo)
+
+        rc = main(
+            [
+                "--base",
+                "main",
+                "--head",
+                "feature",
+                "--governance-json",
+                str(repo / "governance.json"),
+            ],
+        )
+
+        assert rc == 1
