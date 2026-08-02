@@ -1,16 +1,4 @@
-🌐 English |
-[日本語](https://f5-sales-demo.github.io/api-specs-enriched/ja/) |
-[한국어](https://f5-sales-demo.github.io/api-specs-enriched/ko/) |
-[简体中文](https://f5-sales-demo.github.io/api-specs-enriched/zh-cn/) |
-[繁體中文](https://f5-sales-demo.github.io/api-specs-enriched/zh-tw/) |
-[Español](https://f5-sales-demo.github.io/api-specs-enriched/es/) |
-[Português](https://f5-sales-demo.github.io/api-specs-enriched/pt-br/) |
-[Français](https://f5-sales-demo.github.io/api-specs-enriched/fr/) |
-[Deutsch](https://f5-sales-demo.github.io/api-specs-enriched/de/) |
-[Italiano](https://f5-sales-demo.github.io/api-specs-enriched/it/) |
-[العربية](https://f5-sales-demo.github.io/api-specs-enriched/ar/) |
-[हिन्दी](https://f5-sales-demo.github.io/api-specs-enriched/hi/) |
-[ไทย](https://f5-sales-demo.github.io/api-specs-enriched/th/)
+🌐 English
 
 # API Specs Enriched
 
@@ -21,6 +9,22 @@
 [![License](https://img.shields.io/github/license/f5-sales-demo/api-specs-enriched)](LICENSE)
 
 Enriched OpenAPI specifications for F5 Distributed Cloud
+
+## Role in the API supply chain
+
+[`api-specs`](https://github.com/f5-sales-demo/api-specs) is the correction
+layer for the source API specifications. This repository consumes an immutable
+`api-specs` release, applies deterministic enrichment, and publishes the
+canonical enriched specification bundle used by
+[`terraform-provider-xcsh`](https://github.com/f5-sales-demo/terraform-provider-xcsh)
+and other downstream projects.
+
+Changes advance in that order: source corrections land in `api-specs`,
+enrichment lands and publishes here, and consumers update to the exact enriched
+release. The specification leads provider implementation.
+
+Documentation publication is English-only until the production release.
+Translation generation is deliberately suspended during prerelease iteration.
 
 ## Documentation
 
