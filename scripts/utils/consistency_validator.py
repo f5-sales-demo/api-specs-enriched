@@ -144,9 +144,6 @@ class ConsistencyValidator:
 
     def _check_parameter_naming(self, spec: dict[str, Any]) -> None:
         """Check parameter naming conventions."""
-        # Track parameter names by location for inconsistency detection
-        param_names_by_location: dict[str, set[str]] = defaultdict(set)
-
         for path, path_item in spec.get("paths", {}).items():
             if not isinstance(path_item, dict):
                 continue
@@ -174,12 +171,6 @@ class ConsistencyValidator:
 
                 for param in operation.get("parameters", []):
                     self._validate_parameter(param, f"paths.{path}.{method}")
-                    param_name = param.get("name", "")
-                    param_in = param.get("in", "")
-                    param_names_by_location[param_in].add(param_name)
-
-        # Check for naming inconsistencies across parameter locations
-        self._check_parameter_inconsistencies(param_names_by_location)
 
     def _validate_parameter(self, param: dict[str, Any], location: str) -> None:
         """Validate a single parameter."""
@@ -230,34 +221,6 @@ class ConsistencyValidator:
                 location=location,
                 suggestion=f"Consider using '{name.title()}'",
             )
-
-    def _check_parameter_inconsistencies(
-        self,
-        param_names_by_location: dict[str, set[str]],
-    ) -> None:
-        """Check for naming inconsistencies between path and query parameters."""
-        path_params = param_names_by_location.get("path", set())
-        query_params = param_names_by_location.get("query", set())
-
-        # Check if same concept uses different names in path vs query
-        # e.g., {namespace} in path but ?ns= in query
-        known_conflicts = [
-            ({"namespace", "metadata.namespace"}, {"namespace", "ns"}),
-            ({"name", "metadata.name"}, {"name", "object_name"}),
-        ]
-
-        for path_variants, query_variants in known_conflicts:
-            path_match = path_params & path_variants
-            query_match = query_params & query_variants
-
-            if path_match and query_match:
-                self._add_issue(
-                    severity="warning",
-                    category="parameter",
-                    message=f"Inconsistent parameter naming: path uses '{path_match}' but query uses '{query_match}'",
-                    location="global",
-                    suggestion="Consider standardizing parameter names across path and query parameters",
-                )
 
     def _check_schema_naming(self, spec: dict[str, Any]) -> None:
         """Check schema naming conventions."""

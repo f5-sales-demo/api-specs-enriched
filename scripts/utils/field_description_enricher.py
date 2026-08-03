@@ -190,7 +190,7 @@ class FieldDescriptionEnricher:
                 elif key == "schemas" and isinstance(value, dict):
                     # This is the components.schemas section
                     result[key] = {
-                        schema_name: self._enrich_schema(schema, schema_name)
+                        schema_name: self._enrich_schema(schema)
                         for schema_name, schema in value.items()
                     }
                 else:
@@ -205,13 +205,11 @@ class FieldDescriptionEnricher:
         # Return primitives unchanged
         return obj
 
-    def _enrich_schema(self, schema: dict[str, Any], schema_name: str) -> dict[str, Any]:
+    def _enrich_schema(self, schema: dict[str, Any]) -> dict[str, Any]:
         """Enrich a single schema definition.
 
         Args:
             schema: Schema definition
-            schema_name: Name of the schema
-
         Returns:
             Enriched schema
         """
@@ -220,10 +218,7 @@ class FieldDescriptionEnricher:
 
         # Process properties if present
         if "properties" in result and isinstance(result["properties"], dict):
-            result["properties"] = self._enrich_properties(
-                result["properties"],
-                schema_name,
-            )
+            result["properties"] = self._enrich_properties(result["properties"])
 
         # Recursively process nested schemas
         if "items" in result:
@@ -240,17 +235,11 @@ class FieldDescriptionEnricher:
 
         return result
 
-    def _enrich_properties(
-        self,
-        properties: dict[str, Any],
-        schema_name: str = "",
-    ) -> dict[str, Any]:
+    def _enrich_properties(self, properties: dict[str, Any]) -> dict[str, Any]:
         """Enrich all properties in a properties object.
 
         Args:
             properties: Properties dictionary from schema
-            schema_name: Name of parent schema (for context)
-
         Returns:
             Enriched properties dictionary
         """
@@ -261,7 +250,7 @@ class FieldDescriptionEnricher:
             enriched = prop_schema.copy() if isinstance(prop_schema, dict) else prop_schema
 
             if isinstance(enriched, dict):
-                self._enrich_property(enriched, prop_name, schema_name)
+                self._enrich_property(enriched, prop_name)
 
             result[prop_name] = enriched
 
@@ -271,7 +260,6 @@ class FieldDescriptionEnricher:
         self,
         prop: dict[str, Any],
         prop_name: str,
-        _schema_name: str,
     ) -> None:
         """Enrich a single property with description and example.
 
@@ -280,7 +268,6 @@ class FieldDescriptionEnricher:
         Args:
             prop: Property definition to enrich
             prop_name: Name of the property
-            _schema_name: Name of parent schema (unused, kept for interface compatibility)
         """
         # Check if we should add/replace description
         existing_desc = prop.get("description", "")
@@ -311,7 +298,7 @@ class FieldDescriptionEnricher:
             pass
         else:
             # Try to add example based on patterns
-            example = self._generate_example(prop_name, prop)
+            example = self._generate_example(prop_name)
             if example is not None:
                 # Convert to string to ensure JSON schema compatibility
                 # Examples may be numbers (8080) or booleans that need string representation
@@ -478,13 +465,11 @@ class FieldDescriptionEnricher:
 
         return None
 
-    def _generate_example(self, prop_name: str, _prop: dict[str, Any]) -> Any | None:
+    def _generate_example(self, prop_name: str) -> Any | None:
         """Generate realistic example for a property.
 
         Args:
             prop_name: Name of the property
-            _prop: Property schema definition (unused, kept for interface compatibility)
-
         Returns:
             Example value if can be generated, None otherwise
         """
@@ -497,27 +482,11 @@ class FieldDescriptionEnricher:
 
                     # Handle template examples that reference resource type
                     if isinstance(example_value, str) and "{resource_type}" in example_value:
-                        resource_type = self._infer_resource_type(prop_name)
-                        return example_value.format(resource_type=resource_type)
+                        return example_value.format(resource_type="resource")
 
                     return example_value
 
         return None
-
-    @staticmethod
-    def _infer_resource_type(_prop_name: str) -> str:
-        """Infer resource type from property context.
-
-        For now returns a generic placeholder. In future could extract from
-        parent schema name or other context.
-
-        Args:
-            prop_name: Property name for context
-
-        Returns:
-            Resource type identifier
-        """
-        return "resource"
 
     def get_stats(self) -> dict[str, int]:
         """Get enrichment statistics.

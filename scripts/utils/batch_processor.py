@@ -29,6 +29,16 @@ from typing import Any
 logger = logging.getLogger(__name__)
 
 
+class BatchProcessingError(RuntimeError):
+    """One source failed a required batch-processing stage."""
+
+    def __init__(self, stage: str, source: Path, error: Exception) -> None:
+        """Identify the failed stage and exact source while preserving its cause."""
+        self.stage = stage
+        self.source = source
+        super().__init__(f"{stage} failed for {source}: {error}")
+
+
 class BatchSpecProcessor:
     """Process specs in batches to reduce memory pressure.
 
@@ -53,6 +63,8 @@ class BatchSpecProcessor:
             batch_size: Number of specs to process per batch (default: 20)
             cache_dir: Optional custom cache directory (defaults to system temp)
         """
+        if not isinstance(batch_size, int) or isinstance(batch_size, bool) or batch_size <= 0:
+            raise ValueError("batch_size must be a positive integer")
         self.batch_size = batch_size
         self.cache_dir = (
             Path(cache_dir)
@@ -112,6 +124,7 @@ class BatchSpecProcessor:
         """
         processed_paths: dict[str, Path] = {}
         total_specs = len(spec_files)
+        self._validate_source_cache_targets(spec_files)
 
         logger.info("Processing %d specs in batches of %d", total_specs, self.batch_size)
 
@@ -127,32 +140,38 @@ class BatchSpecProcessor:
             )
 
             for spec_file in batch:
-                try:
-                    # Load spec
-                    with spec_file.open() as f:
-                        spec = json.load(f)
+                spec = self._run_stage("load", spec_file, self._load_json, spec_file)
+                spec = self._run_stage(
+                    "enrichment",
+                    spec_file,
+                    self._apply_config_transform,
+                    enrich_func,
+                    spec,
+                    config,
+                )
+                spec = self._run_stage(
+                    "normalization",
+                    spec_file,
+                    self._apply_config_transform,
+                    normalize_func,
+                    spec,
+                    config,
+                )
 
-                    # Enrich
-                    spec, _ = enrich_func(spec, config)
+                cache_path = self._get_cache_path(spec_file)
+                self._run_stage(
+                    "cache write",
+                    spec_file,
+                    self._write_json_atomically,
+                    spec,
+                    cache_path,
+                )
 
-                    # Normalize
-                    spec, _ = normalize_func(spec, config)
+                processed_paths[spec_file.name] = cache_path
+                self.stats["cache_writes"] += 1
+                self.stats["specs_processed"] += 1
 
-                    # Write to cache immediately
-                    cache_path = self._get_cache_path(spec_file)
-                    with cache_path.open("w") as f:
-                        json.dump(spec, f, indent=2)
-
-                    processed_paths[spec_file.name] = cache_path
-                    self.stats["cache_writes"] += 1
-                    self.stats["specs_processed"] += 1
-
-                    # Explicit cleanup
-                    del spec
-
-                except Exception:
-                    logger.exception("Error processing %s", spec_file.name)
-                    # Continue processing other specs
+                del spec
 
             # Garbage collection after each batch
             collected = gc.collect()
@@ -183,8 +202,7 @@ class BatchSpecProcessor:
         Returns:
             Loaded spec dictionary
         """
-        with cache_path.open() as f:
-            spec = json.load(f)
+        spec = self._load_json(cache_path)
 
         self.stats["cache_reads"] += 1
         return spec
@@ -239,9 +257,11 @@ class BatchSpecProcessor:
             ...     reconcile_func=lambda s: reconciler.reconcile_spec(s),
             ... )
         """
-        if not discovery_func and not reconcile_func:
-            logger.warning("No discovery or reconciliation functions provided, skipping")
-            return cache_paths
+        if discovery_func is None and reconcile_func is None:
+            raise ValueError(
+                "discovery/reconciliation batch requires at least one processing function"
+            )
+        self._validate_cached_paths(cache_paths)
 
         total_specs = len(cache_paths)
         logger.info(
@@ -265,33 +285,38 @@ class BatchSpecProcessor:
             )
 
             for filename, cache_path in batch:
-                try:
-                    # Load cached spec
-                    spec = self.load_cached_spec(cache_path)
+                spec = self._run_stage("load", cache_path, self.load_cached_spec, cache_path)
 
-                    # Apply discovery enrichment if provided
-                    if discovery_func:
-                        spec = discovery_func(spec)
+                if discovery_func is not None:
+                    spec = self._run_stage(
+                        "discovery",
+                        cache_path,
+                        self._apply_discovery,
+                        discovery_func,
+                        spec,
+                    )
 
-                    # Apply constraint reconciliation if provided
-                    if reconcile_func:
-                        spec, _ = reconcile_func(spec)
+                if reconcile_func is not None:
+                    spec = self._run_stage(
+                        "reconciliation",
+                        cache_path,
+                        self._apply_reconciliation,
+                        reconcile_func,
+                        spec,
+                    )
 
-                    # Write back to cache immediately (overwrite existing)
-                    with cache_path.open("w") as f:
-                        json.dump(spec, f, indent=2)
+                self._run_stage(
+                    "cache write",
+                    cache_path,
+                    self._write_json_atomically,
+                    spec,
+                    cache_path,
+                )
 
-                    processed_paths[filename] = cache_path
-                    self.stats["cache_writes"] += 1
+                processed_paths[filename] = cache_path
+                self.stats["cache_writes"] += 1
 
-                    # Explicit cleanup
-                    del spec
-
-                except Exception:
-                    logger.exception("Error processing discovery/reconciliation for %s", filename)
-                    # Continue processing other specs
-                    # Keep original cache path if processing fails
-                    processed_paths[filename] = cache_path
+                del spec
 
             # Garbage collection after each batch
             collected = gc.collect()
@@ -333,3 +358,102 @@ class BatchSpecProcessor:
         self.cache_dir.mkdir(parents=True, exist_ok=True)
         cache_filename = f"{spec_file.stem}_processed.json"
         return self.cache_dir / cache_filename
+
+    def _validate_source_cache_targets(self, spec_files: list[Path]) -> None:
+        targets: dict[Path, Path] = {}
+        for spec_file in spec_files:
+            target = self._get_cache_path(spec_file)
+            if target in targets:
+                previous = targets[target]
+                raise ValueError(
+                    f"source cache target collision: {previous} and {spec_file} both map to {target}"
+                )
+            targets[target] = spec_file
+
+    def _validate_cached_paths(self, cache_paths: dict[str, Path]) -> None:
+        seen: dict[Path, str] = {}
+        cache_root = self.cache_dir.resolve()
+        for filename, cache_path in cache_paths.items():
+            path = Path(cache_path)
+            if path.parent.resolve() != cache_root or path.suffix != ".json" or path.is_symlink():
+                raise ValueError(
+                    f"cache path for {filename!r} is outside the processor cache: {path}"
+                )
+            if path in seen:
+                previous = seen[path]
+                raise ValueError(f"duplicate cache path for {previous!r} and {filename!r}: {path}")
+            seen[path] = filename
+
+    @staticmethod
+    def _run_stage(
+        stage: str,
+        source: Path,
+        function: Callable[..., Any],
+        *args: Any,
+    ) -> Any:
+        try:
+            return function(*args)
+        except Exception as error:
+            raise BatchProcessingError(stage, source, error) from error
+
+    @staticmethod
+    def _load_json(path: Path) -> dict[str, Any]:
+        with path.open() as input_file:
+            spec = json.load(input_file)
+        if not isinstance(spec, dict):
+            raise TypeError("specification root must be an object")
+        return spec
+
+    @staticmethod
+    def _apply_config_transform(
+        function: Callable[[dict, dict], tuple[dict, Any]],
+        spec: dict[str, Any],
+        config: dict[str, Any],
+    ) -> dict[str, Any]:
+        transformed, _ = function(spec, config)
+        if not isinstance(transformed, dict):
+            raise TypeError("transformation must return a specification object")
+        return transformed
+
+    @staticmethod
+    def _apply_discovery(function: Callable[[dict], dict], spec: dict[str, Any]) -> dict[str, Any]:
+        transformed = function(spec)
+        if not isinstance(transformed, dict):
+            raise TypeError("discovery must return a specification object")
+        return transformed
+
+    @staticmethod
+    def _apply_reconciliation(
+        function: Callable[[dict], tuple[dict, dict]], spec: dict[str, Any]
+    ) -> dict[str, Any]:
+        transformed, _ = function(spec)
+        if not isinstance(transformed, dict):
+            raise TypeError("reconciliation must return a specification object")
+        return transformed
+
+    @staticmethod
+    def _write_json_atomically(spec: dict[str, Any], cache_path: Path) -> None:
+        cache_path.parent.mkdir(parents=True, exist_ok=True)
+        temporary_path: Path | None = None
+        try:
+            with tempfile.NamedTemporaryFile(
+                mode="w",
+                encoding="utf-8",
+                prefix=f".{cache_path.name}.",
+                suffix=".tmp",
+                dir=cache_path.parent,
+                delete=False,
+            ) as output_file:
+                temporary_path = Path(output_file.name)
+                json.dump(spec, output_file, indent=2)
+                output_file.flush()
+            temporary_path.replace(cache_path)
+        except Exception as error:
+            if temporary_path is not None:
+                try:
+                    temporary_path.unlink(missing_ok=True)
+                except OSError as cleanup_error:
+                    raise RuntimeError(
+                        f"cache write failed and temporary cleanup failed: {cleanup_error}"
+                    ) from error
+            raise

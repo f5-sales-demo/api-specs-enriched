@@ -1,26 +1,10 @@
 #!/usr/bin/env python3
 # Copyright (c) 2026 Robin Mordasiewicz. MIT License.
 
-"""Automated grammar improvement for API specification text fields.
+"""Deterministic grammar normalization for API specification text fields."""
 
-Uses language-tool-python for automated grammar checking and correction.
-No manual intervention required.
-"""
-
-import contextlib
 import re
-from types import TracebackType
-from typing import Any, Literal
-
-from typing_extensions import Self
-
-try:
-    import language_tool_python
-
-    LANGUAGE_TOOL_AVAILABLE = True
-except ImportError:
-    LANGUAGE_TOOL_AVAILABLE = False
-
+from typing import Any
 
 # Precompiled regex patterns for performance (Issue #391)
 # These patterns are used in hot paths (called 56K+ times per pipeline run)
@@ -31,11 +15,7 @@ _SENTENCE_SPLITTER_PATTERN = re.compile(r"([.!?]\s+)")
 
 
 class GrammarImprover:
-    """Improves grammar in API specification text using LanguageTool.
-
-    Fully automated grammar correction with configurable rules.
-    Falls back to basic improvements if LanguageTool is unavailable.
-    """
+    """Apply the repository's deterministic grammar transformations."""
 
     def __init__(
         self,
@@ -44,7 +24,6 @@ class GrammarImprover:
         normalize_whitespace: bool = True,
         fix_double_spaces: bool = True,
         trim_whitespace: bool = True,
-        use_language_tool: bool = True,
     ) -> None:
         """Initialize grammar improver with configuration.
 
@@ -54,44 +33,12 @@ class GrammarImprover:
             normalize_whitespace: Fix spacing issues.
             fix_double_spaces: Remove double spaces.
             trim_whitespace: Remove trailing whitespace.
-            use_language_tool: Enable LanguageTool for advanced grammar checking.
         """
         self.capitalize_sentences = capitalize_sentences
         self.ensure_punctuation = ensure_punctuation
         self.normalize_whitespace = normalize_whitespace
         self.fix_double_spaces = fix_double_spaces
         self.trim_whitespace = trim_whitespace
-        self.use_language_tool = use_language_tool and LANGUAGE_TOOL_AVAILABLE
-
-        self._tool: Any = None
-        if self.use_language_tool:
-            self._init_language_tool()
-
-    def _init_language_tool(self) -> None:
-        """Initialize LanguageTool instance for grammar checking."""
-        try:
-            # Use English language with common disabled rules
-            self._tool = language_tool_python.LanguageTool(
-                "en-US",
-                config={
-                    "cacheSize": 1000,
-                    "pipelineCaching": True,
-                },
-            )
-            # Disable rules that don't apply well to API documentation
-            disabled_rules = [
-                "UPPERCASE_SENTENCE_START",  # We handle this ourselves
-                "WHITESPACE_RULE",  # We handle this ourselves
-                "COMMA_PARENTHESIS_WHITESPACE",  # Often intentional in technical docs
-                "EN_QUOTES",  # Technical docs use various quote styles
-                "DASH_RULE",  # Technical docs use various dash styles
-            ]
-            if self._tool is not None:
-                for rule in disabled_rules:
-                    self._tool.disable_rules(rule)
-        except Exception:
-            # Fall back to basic improvements if LanguageTool fails
-            self._tool = None
 
     def improve_text(self, text: str) -> str:
         """Apply grammar improvements to a text string.
@@ -122,10 +69,6 @@ class GrammarImprover:
 
         if self.ensure_punctuation:
             result = self._ensure_punctuation(result)
-
-        # Apply LanguageTool corrections if available
-        if self._tool is not None:
-            result = self._apply_language_tool(result)
 
         return result
 
@@ -178,41 +121,6 @@ class GrammarImprover:
         # Add period for complete sentences
         return text.rstrip() + "."
 
-    def _apply_language_tool(self, text: str) -> str:
-        """Apply LanguageTool corrections to text."""
-        if self._tool is None:
-            return text
-
-        try:
-            # Get correction suggestions
-            matches = self._tool.check(text)
-
-            # Apply corrections in reverse order to preserve offsets
-            corrections = [
-                {
-                    "offset": match.offset,
-                    "length": match.errorLength,
-                    "replacement": match.replacements[0],
-                }
-                for match in matches
-                if match.replacements
-            ]
-
-            # Sort by offset descending
-            corrections.sort(key=lambda x: x["offset"], reverse=True)
-
-            # Apply corrections
-            result = text
-            for correction in corrections:
-                start = correction["offset"]
-                end = start + correction["length"]
-                result = result[:start] + correction["replacement"] + result[end:]
-
-            return result
-        except Exception:
-            # Return original text if correction fails
-            return text
-
     def improve_spec(
         self,
         spec: dict[str, Any],
@@ -245,23 +153,3 @@ class GrammarImprover:
         if isinstance(obj, list):
             return [self._improve_recursive(item, target_fields) for item in obj]
         return obj
-
-    def close(self) -> None:
-        """Close LanguageTool resources."""
-        if self._tool is not None:
-            with contextlib.suppress(Exception):
-                self._tool.close()
-
-    def __enter__(self) -> Self:
-        """Enter the runtime context for this object."""
-        return self
-
-    def __exit__(
-        self,
-        exc_type: type[BaseException] | None,
-        exc_val: BaseException | None,
-        exc_tb: TracebackType | None,
-    ) -> Literal[False]:
-        """Exit the runtime context and close resources."""
-        self.close()
-        return False

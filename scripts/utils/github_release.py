@@ -3,8 +3,8 @@
 
 """GitHub Releases integration for downloading API specifications.
 
-This module provides utilities for fetching release metadata, comparing versions,
-and downloading assets from GitHub Releases. Supports authentication via GITHUB_TOKEN
+This module provides utilities for fetching exact release metadata and downloading
+assets from GitHub Releases. Supports authentication via GITHUB_TOKEN
 for higher rate limits (5000/hr vs 60/hr).
 
 Example:
@@ -18,10 +18,13 @@ Example:
 """
 
 import fnmatch
+import hashlib
 import json
-from datetime import datetime, timezone
+import re
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
+from urllib.parse import quote
 
 import requests
 from rich.console import Console
@@ -37,6 +40,17 @@ GITHUB_API_VERSION = "2022-11-28"
 RATE_LIMIT_WARNING_THRESHOLD = 10  # Warn if < 10 requests remaining
 UNAUTHENTICATED_RATE_LIMIT = 60  # Per hour
 AUTHENTICATED_RATE_LIMIT = 5000  # Per hour
+_SHA256_DIGEST = re.compile(r"^sha256:[0-9a-f]{64}$")
+_CANONICAL_UTC_TIMESTAMP = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$")
+RELEASE_RECEIPT_FIELDS = (
+    "version",
+    "tag_name",
+    "published_at",
+    "asset_name",
+    "asset_size",
+    "asset_digest",
+)
+RELEASE_RECEIPT_KEYS = frozenset(RELEASE_RECEIPT_FIELDS)
 
 
 def _get_headers(token: str | None = None) -> dict[str, str]:
@@ -68,7 +82,7 @@ def _check_rate_limit(response: requests.Response) -> None:
 
     if remaining != -1 and limit != -1 and remaining < RATE_LIMIT_WARNING_THRESHOLD:
         reset_time = int(response.headers.get("X-RateLimit-Reset", "0"))
-        reset_dt = datetime.fromtimestamp(reset_time, tz=timezone.utc)
+        reset_dt = datetime.fromtimestamp(reset_time, tz=UTC)
         console.print(
             f"[yellow]⚠️  Rate limit approaching: {remaining}/{limit} "
             f"requests remaining (resets at {reset_dt.strftime('%H:%M:%S UTC')})[/yellow]",
@@ -121,6 +135,7 @@ def get_latest_release(
         missing_fields = [f for f in required_fields if f not in release_data]
         if missing_fields:
             raise ValueError(f"Invalid release data: missing {', '.join(missing_fields)}")
+        require_immutable_release(release_data)
 
         return release_data
 
@@ -136,6 +151,45 @@ def get_latest_release(
         raise
 
 
+def get_release_by_tag(
+    repo_owner: str,
+    repo_name: str,
+    tag_name: str,
+    token: str | None = None,
+    timeout: int = 30,
+) -> dict[str, Any]:
+    """Fetch one immutable release by its exact tag, never by ``latest``."""
+    if not isinstance(tag_name, str) or not tag_name:
+        raise ValueError("release tag must be a non-empty string")
+    encoded_tag = quote(tag_name, safe="")
+    url = f"{GITHUB_API_BASE}/repos/{repo_owner}/{repo_name}/releases/tags/{encoded_tag}"
+    headers = _get_headers(token)
+    try:
+        response = requests.get(url, headers=headers, timeout=timeout)
+        _check_rate_limit(response)
+        response.raise_for_status()
+        release_data = response.json()
+        if not isinstance(release_data, dict):
+            raise TypeError("GitHub release response must be an object")
+        required_fields = ["tag_name", "published_at", "assets"]
+        missing_fields = [field for field in required_fields if field not in release_data]
+        if missing_fields:
+            raise ValueError(f"Invalid release data: missing {', '.join(missing_fields)}")
+        if release_data["tag_name"] != tag_name:
+            raise ValueError("exact-tag lookup returned a different release tag")
+        require_immutable_release(release_data)
+        return release_data
+    except requests.HTTPError as exc:
+        if exc.response is not None and exc.response.status_code == 404:
+            raise ValueError(
+                f"Release tag {tag_name!r} was not found for {repo_owner}/{repo_name}"
+            ) from exc
+        raise
+    except requests.RequestException as exc:
+        console.print(f"[red]Error fetching release: {exc}[/red]")
+        raise
+
+
 def parse_release_version(tag_name: str) -> str:
     """Parse version string from GitHub release tag.
 
@@ -147,35 +201,141 @@ def parse_release_version(tag_name: str) -> str:
     Returns:
         Version string without 'v' prefix (e.g., "2026.01.22-2", "1.0.0").
     """
-    return tag_name.lstrip("v")
+    return tag_name.removeprefix("v")
 
 
-def get_local_release_version(version_file: Path) -> str | None:
-    """Read stored release version from local tracking file.
+def validate_release_receipt(document: Any) -> dict[str, Any]:
+    """Validate and canonicalize the complete identity of one upstream asset."""
+    if not isinstance(document, dict) or set(document) != RELEASE_RECEIPT_KEYS:
+        raise ValueError(f"release receipt must contain exactly {sorted(RELEASE_RECEIPT_KEYS)}")
 
-    Args:
-        version_file: Path to .github_release JSON file.
-
-    Returns:
-        Version string from local file (e.g., "2026.01.22-2"), or None if file
-        doesn't exist or is invalid.
-    """
-    if not version_file.exists():
-        return None
-
+    for field in ("version", "tag_name", "published_at", "asset_name", "asset_digest"):
+        if not isinstance(document[field], str) or not document[field]:
+            raise ValueError(f"release receipt {field!r} must be a non-empty string")
+    if document["version"].startswith("v") or document["tag_name"] != f"v{document['version']}":
+        raise ValueError("release receipt version does not match tag_name")
+    if not _CANONICAL_UTC_TIMESTAMP.fullmatch(document["published_at"]):
+        raise ValueError("release receipt published_at must be canonical UTC YYYY-MM-DDTHH:MM:SSZ")
     try:
-        with version_file.open() as f:
-            data = json.load(f)
-            return data.get("version")
-    except (json.JSONDecodeError, KeyError, OSError) as e:
-        console.print(f"[yellow]Warning: Could not read version file: {e}[/yellow]")
-        return None
+        datetime.strptime(document["published_at"], "%Y-%m-%dT%H:%M:%S%z")
+    except ValueError as exc:
+        raise ValueError("release receipt published_at is not a valid UTC timestamp") from exc
+    if Path(document["asset_name"]).name != document["asset_name"]:
+        raise ValueError("release receipt asset_name must be a filename")
+    if (
+        not isinstance(document["asset_size"], int)
+        or isinstance(document["asset_size"], bool)
+        or document["asset_size"] <= 0
+    ):
+        raise ValueError("release receipt asset_size must be a positive integer")
+    if not _SHA256_DIGEST.fullmatch(document["asset_digest"]):
+        raise ValueError("release receipt asset_digest must be a SHA-256 digest")
+
+    return {key: document[key] for key in RELEASE_RECEIPT_FIELDS}
+
+
+def release_receipt(release_data: dict[str, Any], asset: dict[str, Any]) -> dict[str, Any]:
+    """Create the canonical receipt for one release asset."""
+    return validate_release_receipt(
+        {
+            "version": parse_release_version(release_data["tag_name"]),
+            "tag_name": release_data["tag_name"],
+            "published_at": release_data["published_at"],
+            "asset_name": asset["name"],
+            "asset_size": asset["size"],
+            "asset_digest": validated_asset_digest(asset),
+        }
+    )
+
+
+def load_release_receipt(receipt_file: Path) -> dict[str, Any]:
+    """Read one exact release receipt from disk."""
+    try:
+        document = json.loads(receipt_file.read_text())
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ValueError(f"could not read release receipt {receipt_file}: {exc}") from exc
+    return validate_release_receipt(document)
+
+
+def write_release_receipt(receipt_file: Path, receipt: dict[str, Any]) -> None:
+    """Write a validated receipt deterministically."""
+    canonical = validate_release_receipt(receipt)
+    receipt_file.parent.mkdir(parents=True, exist_ok=True)
+    receipt_file.write_text(json.dumps(canonical, indent=2) + "\n")
+
+
+def resolve_release_receipt(
+    repo_owner: str,
+    repo_name: str,
+    receipt: dict[str, Any],
+    *,
+    token: str | None = None,
+    asset_pattern: str = "*.zip",
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Resolve and verify the exact remote release named by *receipt*."""
+    expected = validate_release_receipt(receipt)
+    if not fnmatch.fnmatch(expected["asset_name"], asset_pattern):
+        raise ValueError("release receipt asset_name does not match the configured asset pattern")
+    release_data = get_release_by_tag(
+        repo_owner,
+        repo_name,
+        expected["tag_name"],
+        token=token,
+    )
+    raw_assets = release_data.get("assets")
+    if not isinstance(raw_assets, list):
+        raise TypeError("exact release assets must be a list")
+    zip_assets = [
+        asset
+        for asset in raw_assets
+        if isinstance(asset, dict)
+        and isinstance(asset.get("name"), str)
+        and asset["name"].lower().endswith(".zip")
+    ]
+    if len(zip_assets) != 1:
+        raise ValueError(
+            f"exact release must contain exactly one ZIP asset; found {len(zip_assets)}"
+        )
+    asset = zip_assets[0]
+    if asset["name"] != expected["asset_name"]:
+        raise ValueError("exact release's sole ZIP asset is not the receipt-named asset")
+    actual = release_receipt(release_data, asset)
+    mismatches = sorted(field for field in RELEASE_RECEIPT_KEYS if actual[field] != expected[field])
+    if mismatches:
+        raise ValueError(f"release receipt identity mismatch: {', '.join(mismatches)}")
+    return release_data, asset
+
+
+def require_immutable_release(release_data: dict[str, Any]) -> None:
+    """Reject a release whose assets are not immutable at the source."""
+    if release_data.get("immutable") is not True:
+        tag = release_data.get("tag_name", "<unknown>")
+        raise ValueError(f"release {tag!r} is not immutable")
+
+
+def validated_asset_digest(asset: dict[str, Any]) -> str:
+    """Return GitHub's content digest for an asset, failing closed if absent."""
+    digest = asset.get("digest")
+    if not isinstance(digest, str) or not _SHA256_DIGEST.fullmatch(digest):
+        name = asset.get("name", "<unnamed>")
+        raise ValueError(f"release asset {name!r} has no valid SHA-256 digest")
+    return digest
+
+
+def file_sha256_digest(path: Path) -> str:
+    """Return *path*'s SHA-256 digest in GitHub's release-asset format."""
+    hasher = hashlib.sha256()
+    with path.open("rb") as stream:
+        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+            hasher.update(chunk)
+    return f"sha256:{hasher.hexdigest()}"
 
 
 def save_release_metadata(
     release_data: dict[str, Any],
     asset_name: str,
     asset_size: int,
+    asset_digest: str,
     version_file: Path,
 ) -> None:
     """Save release metadata to local tracking file.
@@ -187,27 +347,15 @@ def save_release_metadata(
         release_data: GitHub release metadata from get_latest_release().
         asset_name: Name of downloaded asset file.
         asset_size: Size of downloaded asset in bytes.
+        asset_digest: Verified SHA-256 identity supplied by GitHub.
         version_file: Path to .github_release tracking file.
     """
     version_file.parent.mkdir(parents=True, exist_ok=True)
-
-    # Every field here identifies WHICH release is in the tree. A `downloaded_at`
-    # wall-clock stamp used to sit alongside them; it was written here and read
-    # nowhere, and because .github_release is tracked it made each download dirty the
-    # working tree with a change that says nothing about the specs. Same rule as the
-    # artifact stamps in build_stamp.py: a committed value must be a function of the
-    # input.
-    metadata = {
-        "version": parse_release_version(release_data["tag_name"]),
-        "tag_name": release_data["tag_name"],
-        "published_at": release_data["published_at"],
-        "asset_name": asset_name,
-        "asset_size": asset_size,
-    }
-
-    with version_file.open("w") as f:
-        json.dump(metadata, f, indent=2)
-        f.write("\n")
+    metadata = release_receipt(
+        release_data,
+        {"name": asset_name, "size": asset_size, "digest": asset_digest},
+    )
+    write_release_receipt(version_file, metadata)
 
 
 def find_release_asset(release_data: dict[str, Any], pattern: str) -> dict[str, Any] | None:
@@ -226,6 +374,25 @@ def find_release_asset(release_data: dict[str, Any], pattern: str) -> dict[str, 
             return asset
 
     return None
+
+
+def require_release_asset(release_data: dict[str, Any], pattern: str) -> dict[str, Any]:
+    """Return the sole selected release asset, rejecting absent or ambiguous input."""
+    raw_assets = release_data.get("assets")
+    if not isinstance(raw_assets, list):
+        raise TypeError("release assets are not a list")
+    matches = [
+        asset
+        for asset in raw_assets
+        if isinstance(asset, dict)
+        and isinstance(asset.get("name"), str)
+        and fnmatch.fnmatch(asset["name"], pattern)
+    ]
+    if len(matches) != 1:
+        raise ValueError(
+            f"release must contain exactly one asset matching {pattern!r}; found {len(matches)}"
+        )
+    return matches[0]
 
 
 def download_release_asset(
@@ -252,7 +419,6 @@ def download_release_asset(
     if not asset_url.startswith("https://github.com/"):
         console.print(f"[red]Security: Rejecting non-GitHub URL: {asset_url}[/red]")
         return False
-
     headers = _get_headers(token)
 
     try:
@@ -287,49 +453,3 @@ def download_release_asset(
         console.print(f"[red]Error downloading asset: {e}[/red]")
         output_path.unlink(missing_ok=True)  # Clean up partial download
         return False
-
-
-def check_for_updates(
-    repo_owner: str,
-    repo_name: str,
-    version_file: Path,
-    token: str | None = None,
-) -> tuple[bool, dict[str, Any] | None]:
-    """Check if a newer release is available compared to local version.
-
-    Args:
-        repo_owner: GitHub repository owner.
-        repo_name: GitHub repository name.
-        version_file: Path to .github_release tracking file.
-        token: Optional GitHub token for authentication.
-
-    Returns:
-        Tuple of (has_updates, release_data):
-            - has_updates: True if remote version differs from local.
-            - release_data: Latest release metadata, or None if check failed.
-    """
-    try:
-        release_data = get_latest_release(repo_owner, repo_name, token=token)
-        remote_version = parse_release_version(release_data["tag_name"])
-
-        local_version = get_local_release_version(version_file)
-
-        if local_version == remote_version:
-            console.print(
-                f"[blue]✅ No updates available (version: {remote_version})[/blue]",
-            )
-            return False, release_data
-
-        if local_version:
-            console.print("[green]🆕 Update available![/green]")
-            console.print(f"  Local version:  {local_version}")
-            console.print(f"  Remote version: {remote_version}")
-        else:
-            console.print("[green]🆕 First download - no local version found[/green]")
-            console.print(f"  Remote version: {remote_version}")
-
-        return True, release_data
-
-    except (requests.RequestException, ValueError) as e:
-        console.print(f"[yellow]Could not check for updates: {e}[/yellow]")
-        return True, None  # Assume update needed if check fails

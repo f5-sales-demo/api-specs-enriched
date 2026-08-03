@@ -2,8 +2,8 @@
 
 """Server variables helper for F5 XC API OpenAPI specifications.
 
-Centralizes server variable configuration and URL template construction
-to eliminate duplication between pipeline.py and merge_specs.py.
+Centralizes server variable configuration and URL template construction for the
+single unified pipeline.
 """
 
 import logging
@@ -151,7 +151,6 @@ class ServerVariableHelper:
         title: str,
         description: str,
         version: str,
-        upstream_info: dict[str, str] | None = None,
     ) -> dict[str, Any]:
         """Create a base OpenAPI specification with server variables.
 
@@ -159,7 +158,6 @@ class ServerVariableHelper:
             title: API title
             description: API description
             version: Full version string
-            upstream_info: Optional dict with upstream_timestamp, upstream_etag, enriched_version
 
         Returns:
             Base OpenAPI specification dictionary
@@ -177,12 +175,6 @@ class ServerVariableHelper:
                 "url": "https://www.f5.com/company/policies/eula",
             },
         }
-
-        # Add upstream tracking fields if available
-        if upstream_info:
-            info["x-upstream-timestamp"] = upstream_info.get("upstream_timestamp", "unknown")
-            info["x-upstream-etag"] = upstream_info.get("upstream_etag", "unknown")
-            info["x-enriched-version"] = upstream_info.get("enriched_version", version)
 
         return {
             "openapi": "3.0.3",

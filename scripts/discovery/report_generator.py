@@ -10,7 +10,7 @@ Generates:
 
 import json
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -45,7 +45,7 @@ class EndpointDiscovery:
 class DiscoverySession:
     """Complete discovery session results."""
 
-    started_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    started_at: datetime = field(default_factory=lambda: datetime.now(UTC))
     completed_at: datetime | None = None
     api_url: str = ""
     namespaces: list[str] = field(default_factory=list)
@@ -56,7 +56,7 @@ class DiscoverySession:
     @property
     def duration_seconds(self) -> float:
         """Get session duration in seconds."""
-        end = self.completed_at or datetime.now(timezone.utc)
+        end = self.completed_at or datetime.now(UTC)
         return (end - self.started_at).total_seconds()
 
     @property
@@ -154,7 +154,7 @@ class ReportGenerator(BaseReporter):
             "openapi": "3.0.3",
             "info": {
                 "title": "F5 Distributed Cloud API (Discovered)",
-                "version": datetime.now(timezone.utc).strftime("%Y%m%d%H%M"),
+                "version": datetime.now(UTC).strftime("%Y%m%d%H%M"),
                 "description": "API specification discovered from live API exploration",
                 X_F5XC_DISCOVERED_AT: session.started_at.isoformat(),
                 X_F5XC_API_URL: session.api_url,
@@ -218,7 +218,7 @@ class ReportGenerator(BaseReporter):
             return None
 
         summary: dict[str, Any] = {
-            "generated_at": datetime.now(timezone.utc).isoformat(),
+            "generated_at": datetime.now(UTC).isoformat(),
             "total_endpoints": len(session.endpoints),
             "endpoints_with_diffs": len([r for r in diff_reports if r.total_diffs > 0]),
             "total_diffs": sum(r.total_diffs for r in diff_reports),
@@ -254,7 +254,7 @@ class ReportGenerator(BaseReporter):
         lines = [
             "# F5 XC API Discovery Report",
             "",
-            f"**Generated**: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}",
+            f"**Generated**: {datetime.now(UTC).strftime('%Y-%m-%d %H:%M:%S UTC')}",
             f"**API URL**: {session.api_url}",
             f"**Duration**: {session.duration_seconds:.1f} seconds",
             "",

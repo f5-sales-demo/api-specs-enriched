@@ -1,8 +1,9 @@
+---
 # F5 XC API Specification Normalization Configuration
 # This configuration controls how specs are normalized for UI compatibility
 #
 # Simplified two-folder architecture:
-#   specs/original/          - READ-ONLY source from F5
+#   specs/original/          - READ-ONLY corrected api-specs release input
 #   docs/specifications/api/ - Merged domain specs (served by GitHub Pages)
 
 # Directory paths
@@ -15,39 +16,14 @@ paths:
 
 # Normalization settings
 normalization:
-  # Fix orphan $ref references by creating missing components
-  # When true, creates stub schemas/requestBodies for referenced but undefined components
-  fix_orphan_refs: true
-
-  # Create missing components as stubs when fixing orphan refs
-  # When false, orphan refs are removed instead of creating stubs
-  create_missing_components: true
-
-  # Inline orphan requestBody references
-  # Converts $ref to inline definitions when the referenced requestBody doesn't exist
-  inline_orphan_request_bodies: true
-
-  # Remove operations with empty {} values that break Scalar
-  # These are operations that failed to merge properly from the source
-  remove_empty_objects: true
-
-  # Detect and break circular $ref chains
-  # Circular refs can cause infinite loops in some viewers
-  detect_circular_refs: true
-
   # Standardize type values to lowercase (string, number, integer, etc.)
   # Some specs have "String" instead of "string"
   type_standardization: true
-
-  # Remove operations that have no meaningful content
-  remove_orphan_operations: true
 
 # Processing configuration
 processing:
   # Number of parallel worker processes
   parallel_workers: 4
-  # Continue processing if individual files fail
-  continue_on_error: true
 
 # Output configuration
 output:
@@ -55,29 +31,3 @@ output:
   json_indent: 2
   # Sort object keys alphabetically
   sort_keys: false
-
-# Component stub templates
-# These define how auto-generated components are created
-stub_templates:
-  schemas:
-    type: "object"
-    description: "Auto-generated stub schema"
-    x-generated: true
-
-  requestBodies:
-    description: "Auto-generated request body"
-    content:
-      application/json:
-        schema:
-          type: "object"
-    x-generated: true
-
-  responses:
-    description: "Auto-generated response"
-    x-generated: true
-
-  parameters:
-    in: "query"
-    schema:
-      type: "string"
-    x-generated: true

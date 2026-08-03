@@ -1,0 +1,429 @@
+---
+name: Publish Verified API Spec Release
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/en/**'
+      - 'docs/specifications/**'
+      - 'docs/api-reference/**'
+      - 'docs/openapi-specs-config.json'
+      - 'CHANGELOG.md'
+      - 'config/downstream_repos.yaml'
+      - 'release/**'
+      - 'scripts/monitor_workflow.py'
+      - 'scripts/release/**'
+      - 'scripts/utils/github_release.py'
+      - 'scripts/stamp_release_version.py'
+      - 'scripts/compile_catalog.py'
+      - 'pyproject.toml'
+      - 'uv.lock'
+      - '.github/workflows/publish-release.yml'
+      - '.github/workflows/github-pages-deploy.yml'
+  schedule:
+    - cron: '30 7 * * *'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Historical semantic version to reconcile (defaults to current main)'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  BUILDER_IMAGE: python:3.13.14-bookworm@sha256:353cf2106d143e1d28f5d7c10c5f5c0387085bba22ef0f7f7e52c2c330fb1779
+  PYTHONHASHSEED: '0'
+  PYTHONUTF8: '1'
+  TZ: UTC
+  LC_ALL: C
+  LANG: C
+
+concurrency:
+  group: publish-verified-api-spec-release
+  cancel-in-progress: false
+
+jobs:
+  reconcile:
+    name: Reconcile and Verify Release Artifacts
+    runs-on: ubuntu-latest
+    container:
+      image: python:3.13.14-bookworm@sha256:353cf2106d143e1d28f5d7c10c5f5c0387085bba22ef0f7f7e52c2c330fb1779
+    permissions:
+      contents: write # create the verified tag and immutable release
+    outputs:
+      version: ${{ steps.publish.outputs.version }}
+      tag: ${{ steps.publish.outputs.tag }}
+      target_commit: ${{ steps.publish.outputs.target_commit }}
+      docs_commit: ${{ steps.publish.outputs.docs_commit }}
+      release_url: ${{ steps.publish.outputs.release_url }}
+      assets_verified: ${{ steps.publish.outputs.assets_verified }}
+      is_current: ${{ steps.publish.outputs.is_current }}
+      publish_needed: ${{ steps.publish.outputs.publish_needed }}
+      audit_needed: ${{ steps.publish.outputs.audit_needed }}
+    steps:
+      - name: Checkout full main history and tags
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.0.2
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Install exact GitHub CLI
+        run: |
+          curl --fail --silent --show-error --location \
+            --output /tmp/gh.tar.gz \
+            https://github.com/cli/cli/releases/download/v2.97.0/gh_2.97.0_linux_amd64.tar.gz
+          echo "a2c9b8497e1f85b1ad0dfcb78b5a622e098801b8e461e459e88e1ee12f018112  /tmp/gh.tar.gz" \
+            | sha256sum --check --strict
+          tar --extract --gzip --file /tmp/gh.tar.gz --directory /tmp
+          install -m 0755 /tmp/gh_2.97.0_linux_amd64/bin/gh /usr/local/bin/gh
+
+      - name: Setup Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: '3.13.14'
+
+      - name: Setup frozen Python package manager
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: '0.12.1'
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      - name: Install deterministic publisher dependencies
+        run: |
+          uv sync --frozen
+          echo "$PWD/.venv/bin" >> "$GITHUB_PATH"
+
+      - name: Verify immutable releases are pre-provisioned
+        env:
+          # The immutable-release settings endpoint requires repository-admin
+          # read access, which the workflow-scoped GITHUB_TOKEN cannot grant.
+          GH_TOKEN: ${{ secrets.REPO_SETTINGS_TOKEN }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          gh api "repos/${REPOSITORY}/immutable-releases" \
+            | jq -e '.enabled == true' >/dev/null || {
+            echo "::error::Repository release immutability must be enabled before publication"
+            exit 1
+          }
+
+      - name: Reconcile tag, release, and five assets
+        id: publish
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REQUESTED_VERSION: ${{ inputs.version }}
+        run: |
+          args=()
+          if [ -n "$REQUESTED_VERSION" ]; then
+            args+=(--version "$REQUESTED_VERSION")
+          fi
+          python -m scripts.release.reconcile_publication "${args[@]}"
+
+  deploy-docs:
+    name: Deploy Verified Documentation
+    needs: reconcile
+    if: >-
+      needs.reconcile.outputs.assets_verified == 'true' &&
+      (needs.reconcile.outputs.publish_needed == 'true' ||
+       needs.reconcile.outputs.audit_needed == 'true')
+    permissions:
+      contents: read
+      packages: read # delegated workflow pulls the pinned builder image
+      pages: write # delegated workflow publishes the Pages artifact
+      id-token: write # delegated workflow authenticates the Pages deployment
+    uses: ./.github/workflows/github-pages-deploy.yml
+    with:
+      target-commit: ${{ needs.reconcile.outputs.docs_commit }}
+    secrets: inherit
+
+  verify-pages:
+    name: Verify Published Pages Artifact
+    needs: [reconcile, deploy-docs]
+    if: >-
+      needs.reconcile.outputs.assets_verified == 'true' &&
+      (needs.reconcile.outputs.publish_needed == 'true' ||
+       needs.reconcile.outputs.audit_needed == 'true')
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read # download the exact github-pages artifact produced by this run
+      contents: read
+    steps:
+      - name: Checkout release commit
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.0.2
+        with:
+          ref: ${{ needs.reconcile.outputs.docs_commit }}
+
+      - name: Setup Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: '3.13.14'
+
+      - name: Setup frozen Python package manager
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: '0.12.1'
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      - name: Install Pages verification dependencies
+        run: |
+          uv sync --frozen
+          echo "$PWD/.venv/bin" >> "$GITHUB_PATH"
+
+      - name: Verify every published file against the same-run artifact
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PAGES_BASE_URL: https://f5-sales-demo.github.io/api-specs-enriched
+          TARGET_REVISION: ${{ needs.reconcile.outputs.docs_commit }}
+        run: |
+          python -m scripts.release.verify_pages \
+            --repository "$GITHUB_REPOSITORY" \
+            --run-id "$GITHUB_RUN_ID" \
+            --target-revision "$TARGET_REVISION" \
+            --base-url "$PAGES_BASE_URL" \
+            --docs-root docs/en \
+            --api-reference-root docs/api-reference \
+            --specs-root docs/specifications/api \
+            --openapi-config docs/openapi-specs-config.json
+
+  notify-downstream:
+    name: Deliver Verified Release to Downstreams
+    needs: [reconcile, verify-pages]
+    if: needs.reconcile.outputs.publish_needed == 'true' && needs.verify-pages.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    permissions:
+      contents: write # checkout the publisher and append verified delivery receipts
+    steps:
+      - name: Checkout immutable publisher implementation
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.0.2
+        with:
+          ref: ${{ needs.reconcile.outputs.docs_commit }}
+
+      - name: Setup Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: '3.13.14'
+
+      - name: Setup frozen Python package manager
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: '0.12.1'
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      - name: Install delivery dependencies
+        run: |
+          uv sync --frozen
+          echo "$PWD/.venv/bin" >> "$GITHUB_PATH"
+
+      - name: Dispatch only unreceipted targets
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DOWNSTREAM_DISPATCH_TOKEN: ${{ secrets.DOWNSTREAM_DISPATCH_TOKEN }}
+          VERSION: ${{ needs.reconcile.outputs.version }}
+          RELEASE_TAG: ${{ needs.reconcile.outputs.tag }}
+          RELEASE_URL: ${{ needs.reconcile.outputs.release_url }}
+          TARGET_COMMIT: ${{ needs.reconcile.outputs.target_commit }}
+        run: |
+          python -m scripts.release.dispatch_downstreams \
+            --version "$VERSION" \
+            --tag "$RELEASE_TAG" \
+            --release-url "$RELEASE_URL" \
+            --target-commit "$TARGET_COMMIT"
+
+  audit-downstream:
+    name: Audit Receipted Downstream Authorities
+    needs: [reconcile, notify-downstream]
+    if: >-
+      always() &&
+      needs.reconcile.result == 'success' &&
+      needs.reconcile.outputs.assets_verified == 'true' &&
+      needs.reconcile.outputs.audit_needed == 'true' &&
+      (needs.reconcile.outputs.publish_needed == 'false' ||
+       needs.notify-downstream.result == 'success')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    outputs:
+      failure_detail: ${{ steps.audit.outputs.failure_detail }}
+    steps:
+      - name: Checkout immutable publisher implementation
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.0.2
+        with:
+          ref: ${{ needs.reconcile.outputs.docs_commit }}
+
+      - name: Setup Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: '3.13.14'
+
+      - name: Setup frozen Python package manager
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: '0.12.1'
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      - name: Install authority-audit dependencies
+        run: |
+          uv sync --frozen
+          echo "$PWD/.venv/bin" >> "$GITHUB_PATH"
+
+      - name: Verify every receipted authority without mutation
+        id: audit
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DOWNSTREAM_DISPATCH_TOKEN: ${{ secrets.DOWNSTREAM_DISPATCH_TOKEN }}
+          VERSION: ${{ needs.reconcile.outputs.version }}
+          RELEASE_TAG: ${{ needs.reconcile.outputs.tag }}
+          RELEASE_URL: ${{ needs.reconcile.outputs.release_url }}
+          TARGET_COMMIT: ${{ needs.reconcile.outputs.target_commit }}
+        run: |
+          set -o pipefail
+          audit_log=$(mktemp)
+          trap 'rm -f "$audit_log"' EXIT
+          set +e
+          python -m scripts.release.dispatch_downstreams \
+            --version "$VERSION" \
+            --tag "$RELEASE_TAG" \
+            --release-url "$RELEASE_URL" \
+            --target-commit "$TARGET_COMMIT" \
+            --verify-only 2>&1 | tee "$audit_log"
+          audit_status=${PIPESTATUS[0]}
+          set -e
+          if [ "$audit_status" -ne 0 ]; then
+            detail=$(tail -n 1 "$audit_log" | tr -d '\r\n' | cut -c 1-4000)
+            if [ -z "$detail" ]; then
+              detail="authority audit exited with status $audit_status"
+            fi
+            printf 'failure_detail=%s\n' "$detail" >> "$GITHUB_OUTPUT"
+            exit "$audit_status"
+          fi
+
+  mark-complete:
+    name: Record Publication Completion
+    needs: [reconcile, verify-pages, notify-downstream, audit-downstream]
+    if: >-
+      always() &&
+      needs.reconcile.result == 'success' &&
+      needs.reconcile.outputs.publish_needed == 'true' &&
+      needs.verify-pages.result == 'success' &&
+      needs.notify-downstream.result == 'success' &&
+      needs.audit-downstream.result == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # persist the completion receipt in the release body
+    steps:
+      - name: Checkout publisher
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.0.2
+        with:
+          ref: ${{ needs.reconcile.outputs.docs_commit }}
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Setup Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: '3.13.14'
+
+      - name: Setup frozen Python package manager
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: '0.12.1'
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      - name: Install publisher dependencies
+        run: |
+          uv sync --frozen
+          echo "$PWD/.venv/bin" >> "$GITHUB_PATH"
+
+      - name: Record release-body receipt
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ needs.reconcile.outputs.version }}
+          TARGET_COMMIT: ${{ needs.reconcile.outputs.target_commit }}
+          DOCS_COMMIT: ${{ needs.reconcile.outputs.docs_commit }}
+        run: |
+          python -m scripts.release.reconcile_publication \
+            --mark-complete \
+            --version "$VERSION" \
+            --target-commit "$TARGET_COMMIT" \
+            --docs-commit "$DOCS_COMMIT"
+
+  monitor-failures:
+    name: File Publication Failures
+    needs: [reconcile, deploy-docs, verify-pages, notify-downstream, audit-downstream, mark-complete]
+    if: always()
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read # inspect upstream job results for the failure report
+      contents: read
+      issues: write # create or update the deterministic publication failure issue
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.0.2
+
+      - name: Setup Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: '3.13.14'
+
+      - name: Setup frozen Python package manager
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: '0.12.1'
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      - name: Install monitoring dependencies
+        run: |
+          uv sync --frozen
+          echo "$PWD/.venv/bin" >> "$GITHUB_PATH"
+
+      - name: Ensure monitoring labels exist
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python scripts/ensure_labels.py
+
+      - name: File any measured workflow failures
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUN_ID: ${{ github.run_id }}
+          WORKFLOW_NAME: ${{ github.workflow }}
+          TRIGGER_EVENT: ${{ github.event_name }}
+          BRANCH_NAME: ${{ github.ref_name }}
+          COMMIT_SHA: ${{ github.sha }}
+          JOB_RECONCILE: ${{ needs.reconcile.result }}
+          JOB_DEPLOY_DOCS: ${{ needs.deploy-docs.result }}
+          JOB_VERIFY_PAGES: ${{ needs.verify-pages.result }}
+          JOB_NOTIFY_DOWNSTREAM: ${{ needs.notify-downstream.result }}
+          JOB_AUDIT_DOWNSTREAM: ${{ needs.audit-downstream.result }}
+          AUDIT_FAILURE_DETAIL: ${{ needs.audit-downstream.outputs.failure_detail }}
+          JOB_MARK_COMPLETE: ${{ needs.mark-complete.result }}
+          EXPECTED_SKIPPED_JOBS: >-
+            ${{ needs.reconcile.result == 'success' &&
+                needs.reconcile.outputs.publish_needed == 'false' &&
+                needs.reconcile.outputs.audit_needed == 'true' &&
+                'JOB_DEPLOY_DOCS,JOB_VERIFY_PAGES,JOB_NOTIFY_DOWNSTREAM,JOB_MARK_COMPLETE' ||
+                needs.reconcile.result == 'success' &&
+                needs.reconcile.outputs.publish_needed == 'false' &&
+                needs.reconcile.outputs.audit_needed == 'false' &&
+                'JOB_DEPLOY_DOCS,JOB_VERIFY_PAGES,JOB_NOTIFY_DOWNSTREAM,JOB_AUDIT_DOWNSTREAM,JOB_MARK_COMPLETE' || '' }}
+        run: |
+          python scripts/monitor_workflow.py \
+            --run-id "$RUN_ID" \
+            --workflow "$WORKFLOW_NAME" \
+            --event "$TRIGGER_EVENT" \
+            --branch "$BRANCH_NAME" \
+            --commit "$COMMIT_SHA"

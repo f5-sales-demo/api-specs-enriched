@@ -9,7 +9,7 @@ markdown and JSON reports consistently across all generators.
 import json
 import logging
 from abc import ABC, abstractmethod
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -44,7 +44,7 @@ class BaseReporter(ABC):
         self.title = title
         self.description = description
         self.path_config = path_config or PathConfig()
-        self.generated_at = datetime.now(tz=timezone.utc).isoformat()
+        self.generated_at = datetime.now(tz=UTC).isoformat()
 
     @abstractmethod
     def to_dict(self) -> dict[str, Any]:

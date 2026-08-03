@@ -21,7 +21,7 @@ import json
 import os
 import re
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 from urllib.parse import urljoin
@@ -652,7 +652,7 @@ async def run_discovery(
 
                     progress.update(task, advance=1)
 
-    session.completed_at = datetime.now(timezone.utc)
+    session.completed_at = datetime.now(UTC)
     session.rate_limiter_stats = rate_limiter.get_stats()
 
     return session

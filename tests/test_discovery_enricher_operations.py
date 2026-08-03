@@ -26,31 +26,27 @@ from scripts.utils.extension_constants import (
 def base_config() -> dict:
     """Provide base configuration for DiscoveryEnricher."""
     return {
-        "discovery_enrichment": {
-            "enabled": True,
-            "extensions": {"prefix": "x-discovered"},
-            "performance": {
-                "add_response_times": True,
-                "add_percentiles": True,
-                "add_sample_size": True,
-                "latency_estimates_file": "config/latency_estimates.yaml",
-            },
-            "rate_limits": {
-                "enabled": True,
-                "include_confidence": True,
-                "min_confidence": 0.7,
-            },
-            "errors": {
-                "enabled": True,
-                "max_errors_per_operation": 10,
-                "min_frequency": 0.01,
-            },
-            "mutability": {
-                "known_read_only": ["uid", "creation_timestamp"],
-                "known_write_only": [],
-            },
-            "examples": {"redact_patterns": []},
+        "enabled": True,
+        "extensions": {"prefix": "x-discovered"},
+        "performance": {
+            "add_response_times": True,
+            "add_percentiles": True,
         },
+        "rate_limits": {
+            "enabled": True,
+            "include_confidence": True,
+            "min_confidence": 0.7,
+        },
+        "errors": {
+            "enabled": True,
+            "max_errors_per_operation": 10,
+            "min_frequency": 0.01,
+        },
+        "mutability": {
+            "known_read_only": ["uid", "creation_timestamp"],
+            "known_write_only": [],
+        },
+        "examples": {"redact_patterns": []},
     }
 
 
@@ -89,70 +85,59 @@ class TestResponseTimeEnrichment:
     def test_response_time_with_discovery_data(self, enricher: DiscoveryEnricher):
         """Test response time enrichment when discovery data is available."""
         operation: dict[str, Any] = {}
-        discovered_op = {"x-response-time-ms": 150.5}
-        enricher.discovery_data = DiscoveryData(discovered_at="2025-01-01T00:00:00Z")
+        discovered_op = {
+            "x-response-time-percentiles": {
+                "p50": 150.5,
+                "p95": 240.0,
+                "p99": 310.0,
+                "sample_count": 25,
+                "last_measured": "2025-01-01T00:00:00Z",
+            }
+        }
 
-        enricher._enrich_operation_with_response_time(
-            operation,
-            discovered_op,
-            "GET",
-            "/api/test",
-        )
+        enricher._enrich_operation_with_response_time(operation, discovered_op)
 
         assert X_F5XC_DISCOVERED_RESPONSE_TIME in operation
         rt_data = operation[X_F5XC_DISCOVERED_RESPONSE_TIME]
-        assert rt_data["p50_ms"] == 150.5
-        assert rt_data["source"] == "discovery"
-        assert rt_data["sample_count"] == 1
-        assert "last_measured" in rt_data
+        assert rt_data == {
+            "p50": 150.5,
+            "p95": 240.0,
+            "p99": 310.0,
+            "sample_count": 25,
+            "last_measured": "2025-01-01T00:00:00Z",
+        }
 
-    def test_response_time_fallback_to_estimates(self, enricher: DiscoveryEnricher):
-        """Test response time falls back to latency estimates when no discovery data."""
+    def test_single_observation_does_not_fabricate_percentiles(self, enricher: DiscoveryEnricher):
+        """A single observation is not a measured percentile distribution."""
         operation: dict[str, Any] = {}
-        enricher._enrich_operation_with_response_time(
-            operation,
-            None,
-            "GET",
-            "/api/test",
-        )
+        enricher._enrich_operation_with_response_time(operation, {"x-response-time-ms": 150.5})
 
-        assert X_F5XC_DISCOVERED_RESPONSE_TIME in operation
-        rt_data = operation[X_F5XC_DISCOVERED_RESPONSE_TIME]
-        assert rt_data["source"] == "estimate"
-        assert rt_data["sample_count"] == 0
-        assert "p50_ms" in rt_data
-        assert "p95_ms" in rt_data
-        assert "p99_ms" in rt_data
+        assert X_F5XC_DISCOVERED_RESPONSE_TIME not in operation
 
-    def test_response_time_method_based_estimates(self, enricher: DiscoveryEnricher):
-        """Test latency estimates vary by HTTP method."""
-        get_op: dict[str, Any] = {}
-        post_op: dict[str, Any] = {}
-
-        enricher._enrich_operation_with_response_time(get_op, None, "GET", "/api/test")
-        enricher._enrich_operation_with_response_time(
-            post_op,
-            None,
-            "POST",
-            "/api/test",
-        )
-
-        # POST operations typically have higher latency estimates than GET
-        get_p50 = get_op[X_F5XC_DISCOVERED_RESPONSE_TIME]["p50_ms"]
-        post_p50 = post_op[X_F5XC_DISCOVERED_RESPONSE_TIME]["p50_ms"]
-        assert post_p50 > get_p50
+    def test_incomplete_measured_percentiles_fail_closed(self, enricher: DiscoveryEnricher):
+        """Incomplete percentile evidence must stop enrichment."""
+        with pytest.raises(ValueError, match="missing measured fields"):
+            enricher._enrich_operation_with_response_time(
+                {},
+                {"x-response-time-percentiles": {"p50": 10, "sample_count": 2}},
+            )
 
     def test_response_time_disabled(self, base_config: dict):
         """Test response time enrichment when disabled."""
-        base_config["discovery_enrichment"]["performance"]["add_percentiles"] = False
+        base_config["performance"]["add_percentiles"] = False
         enricher = DiscoveryEnricher(base_config)
         operation: dict[str, Any] = {}
 
         enricher._enrich_operation_with_response_time(
             operation,
-            {"x-response-time-ms": 100},
-            "GET",
-            "/api/test",
+            {
+                "x-response-time-percentiles": {
+                    "p50": 100,
+                    "p95": 150,
+                    "p99": 200,
+                    "sample_count": 5,
+                }
+            },
         )
 
         assert X_F5XC_DISCOVERED_RESPONSE_TIME not in operation
@@ -162,9 +147,14 @@ class TestResponseTimeEnrichment:
         operation: dict[str, Any] = {}
         enricher._enrich_operation_with_response_time(
             operation,
-            {"x-response-time-ms": 100},
-            "GET",
-            "/api/test",
+            {
+                "x-response-time-percentiles": {
+                    "p50": 100,
+                    "p95": 150,
+                    "p99": 200,
+                    "sample_count": 5,
+                }
+            },
         )
 
         assert enricher.stats.response_times_added == 1
@@ -229,7 +219,7 @@ class TestRateLimitEnrichment:
 
     def test_rate_limits_disabled(self, base_config: dict):
         """Test rate limit enrichment when disabled."""
-        base_config["discovery_enrichment"]["rate_limits"]["enabled"] = False
+        base_config["rate_limits"]["enabled"] = False
         enricher = DiscoveryEnricher(base_config)
         operation: dict[str, Any] = {}
 
@@ -321,7 +311,7 @@ class TestErrorCatalogEnrichment:
 
     def test_error_catalog_max_errors_limit(self, base_config: dict):
         """Test error catalog respects max_errors_per_operation."""
-        base_config["discovery_enrichment"]["errors"]["max_errors_per_operation"] = 2
+        base_config["errors"]["max_errors_per_operation"] = 2
         enricher = DiscoveryEnricher(base_config)
         operation: dict[str, Any] = {}
         discovered_op = {
@@ -347,7 +337,7 @@ class TestErrorCatalogEnrichment:
 
     def test_error_catalog_disabled(self, base_config: dict):
         """Test error catalog enrichment when disabled."""
-        base_config["discovery_enrichment"]["errors"]["enabled"] = False
+        base_config["errors"]["enabled"] = False
         enricher = DiscoveryEnricher(base_config)
         operation: dict[str, Any] = {}
 
@@ -406,47 +396,6 @@ class TestErrorTypeClassification:
         assert enricher._classify_error_type(502, "Gateway issue") == "gateway_error"
 
 
-class TestLatencyEstimates:
-    """Test latency estimate loading and application."""
-
-    def test_load_latency_estimates(self, enricher: DiscoveryEnricher):
-        """Test latency estimates are loaded."""
-        assert enricher.latency_estimates is not None
-        assert "defaults" in enricher.latency_estimates
-
-    def test_get_latency_level_get_operation(self, enricher: DiscoveryEnricher):
-        """Test latency level detection for GET operations."""
-        level = enricher._get_latency_level("GET", "/api/resources")
-        assert level == "get_operations"
-
-    def test_get_latency_level_list_operation(self, enricher: DiscoveryEnricher):
-        """Test latency level detection for list operations."""
-        level = enricher._get_latency_level("GET", "/api/resources/list")
-        assert level == "list_operations"
-
-    def test_get_latency_level_create_operation(self, enricher: DiscoveryEnricher):
-        """Test latency level detection for POST operations."""
-        level = enricher._get_latency_level("POST", "/api/resources")
-        assert level == "create_operations"
-
-    def test_get_latency_level_update_operation(self, enricher: DiscoveryEnricher):
-        """Test latency level detection for PUT/PATCH operations."""
-        assert enricher._get_latency_level("PUT", "/api/resources/1") == "update_operations"
-        assert enricher._get_latency_level("PATCH", "/api/resources/1") == "update_operations"
-
-    def test_get_latency_level_delete_operation(self, enricher: DiscoveryEnricher):
-        """Test latency level detection for DELETE operations."""
-        level = enricher._get_latency_level("DELETE", "/api/resources/1")
-        assert level == "delete_operations"
-
-    def test_get_default_latency_estimates(self, enricher: DiscoveryEnricher):
-        """Test default latency estimates include percentiles."""
-        estimates = enricher._get_default_latency_estimates("GET", "/api/test")
-        assert "p50" in estimates
-        assert "p95" in estimates
-        assert "p99" in estimates
-
-
 class TestPathsEnrichment:
     """Test _enrich_paths integration with operation-level enrichment."""
 
@@ -469,7 +418,12 @@ class TestPathsEnrichment:
             paths={
                 "/api/test": {
                     "get": {
-                        "x-response-time-ms": 150,
+                        "x-response-time-percentiles": {
+                            "p50": 150,
+                            "p95": 225,
+                            "p99": 300,
+                            "sample_count": 20,
+                        },
                         "x-rate-limit": {
                             "requests_per_minute": 1000,
                             "confidence": 0.9,
@@ -511,7 +465,4 @@ class TestPathsEnrichment:
         enricher._enrich_paths(spec, discoveries)
 
         operation = spec["paths"]["/api/unknown"]["get"]
-        # Response time should still be added via fallback estimates
-        assert X_F5XC_DISCOVERED_RESPONSE_TIME in operation
-        rt_data = operation[X_F5XC_DISCOVERED_RESPONSE_TIME]
-        assert rt_data["source"] == "estimate"
+        assert X_F5XC_DISCOVERED_RESPONSE_TIME not in operation

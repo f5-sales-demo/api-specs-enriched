@@ -41,49 +41,55 @@ Pipeline flow:
         └── index.json      (spec metadata)
 
 Usage:
-    python -m scripts.pipeline              # Full pipeline
-    python -m scripts.pipeline --dry-run    # Analyze without writing
+    python -m scripts.pipeline --version 2.1.208              # Full pipeline
+    python -m scripts.pipeline --version 2.1.208 --dry-run    # Analyze without writing
 """
 
 from __future__ import annotations
 
 import argparse
+import copy
 import json
 import logging
-import os
 import re
+import shutil
 import sys
+import tempfile
+import uuid
 from collections import defaultdict
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
-
-if TYPE_CHECKING:
-    from collections.abc import Callable
+from typing import Any
 
 import yaml
+from openapi_spec_validator import validate as validate_openapi
+from openapi_spec_validator.validation.exceptions import (
+    OpenAPIValidationError,
+    ValidatorDetectError,
+)
 from rich.console import Console
 from rich.table import Table
 
 # Import processing modules
-from scripts.merge_specs import load_critical_resources
+from scripts.enrich import _validate_config as _validate_enrichment_config
+from scripts.normalize import _validate_config as _validate_normalization_config
+from scripts.package_config import load_packaged_yaml, packaged_config_path
 from scripts.utils import (
     AcronymEnricher,
     AcronymNormalizer,
     BestPracticesEnricher,
     BrandingTransformer,
+    BrandingValidator,
     ConflictsWithEnricher,
     ConsistencyValidator,
     ConstrainedFieldsEnricher,
     ConstraintEnricher,
-    ConstraintReconciler,
     DefaultValueEnricher,
     DependencyEnricher,
     DescriptionEnricher,
     DescriptionStructureTransformer,
     DescriptionValidator,
-    DiscoveryEnricher,
     ErrorResolutionEnricher,
     ExampleFieldEnricher,
     ExternalDocsEnricher,
@@ -104,10 +110,14 @@ from scripts.utils import (
     ValidationEnricher,
     ValidationExporter,
     categorize_spec,
-    get_version_from_tags,
 )
 from scripts.utils.batch_processor import BatchSpecProcessor
 from scripts.utils.build_stamp import artifact_timestamp
+from scripts.utils.component_canonicalization import (
+    CanonicalizationResult,
+    canonicalize_source_components,
+)
+from scripts.utils.critical_resources import load_critical_resources
 from scripts.utils.domain_metadata import (
     calculate_complexity,
     get_domain_icon,
@@ -125,6 +135,8 @@ from scripts.utils.extension_constants import (
     X_F5XC_ICON,
     X_F5XC_IS_PREVIEW,
     X_F5XC_LOGO_SVG,
+    X_F5XC_OPERATION_ALIASES,
+    X_F5XC_OPERATION_METADATA,
     X_F5XC_PRIMARY_RESOURCES,
     X_F5XC_RELATED_DOMAINS,
     X_F5XC_REQUIRES_TIER,
@@ -134,48 +146,31 @@ from scripts.utils.json_writer import write_json_file
 from scripts.utils.memory_profiler import MemoryProfiler
 from scripts.utils.minimal_defaults_exporter import MinimalDefaultsExporter
 from scripts.utils.namespace_profiles_exporter import NamespaceProfilesExporter
+from scripts.utils.resource_version_enricher import declare_resource_versions
 from scripts.utils.server_variables import ServerVariableHelper
+from scripts.utils.source_graph_validator import (
+    HTTP_METHODS,
+    SourceGraphValidationError,
+    source_spec_files,
+    validate_source_files,
+    validate_source_graph,
+)
+from scripts.utils.technical_text import prose_target_fields
 
 console = Console()
 logger = logging.getLogger(__name__)
 
-# Default configuration
-DEFAULT_CONFIG = {
-    "paths": {
-        "original": "specs/original",
-        "enriched": "docs/specifications/api",
-        "reports": "reports",
-    },
-    "target_fields": [
-        "description",
-        "summary",
-        "x-displayname",
-        "x-ves-example",
-    ],
-    "preserve_fields": ["operationId", "$ref", "x-ves-proto-rpc", "x-ves-proto-service"],
-    "grammar": {
-        "capitalize_sentences": True,
-        "ensure_punctuation": True,
-        "normalize_whitespace": True,
-        "fix_double_spaces": True,
-        "trim_whitespace": True,
-    },
-    "normalization": {
-        "fix_orphan_refs": True,
-        "create_missing_components": True,
-        "inline_orphan_request_bodies": True,
-        "remove_empty_objects": True,
-        "type_standardization": True,
-    },
-    "processing": {
-        "parallel_workers": 4,
-        "continue_on_error": True,
-    },
-    "output": {
-        "json_indent": 2,
-        "sort_keys": False,
-    },
-}
+
+def _packaged_pipeline_config() -> dict[str, Any]:
+    """Compose the pipeline contract from the packaged enrichment and normalization YAML."""
+    config = load_packaged_yaml("enrichment.yaml")
+    normalization = load_packaged_yaml("normalization.yaml")
+    config["normalization"] = normalization["normalization"]
+    return config
+
+
+# Public for processing APIs and tests; its bytes come only from packaged YAML.
+DEFAULT_CONFIG = _packaged_pipeline_config()
 
 
 @dataclass
@@ -194,9 +189,18 @@ class PipelineStats:
     domains_created: int = 0
     paths_merged: int = 0
     schemas_merged: int = 0
-    discovery_enriched: int = 0
-    constraints_reconciled: int = 0
-    constraints_preserved: int = 0
+    source_operations: int = 0
+    canonical_operations: int = 0
+    explicit_operation_aliases: int = 0
+    resource_version_get_responses: int = 0
+    resource_version_replace_requests: int = 0
+    resource_version_declarations: int = 0
+    component_occurrences: int = 0
+    component_canonical_keys: int = 0
+    component_conflict_name_groups: int = 0
+    component_renamed_occurrences: int = 0
+    component_shared_occurrences: int = 0
+    component_accounting: dict[str, Any] = field(default_factory=dict)
     naming_constraints_projected: int = 0
     best_practices_enriched: int = 0
     guided_workflows_added: int = 0
@@ -206,12 +210,21 @@ class PipelineStats:
 
 
 def load_config(config_path: Path | None = None) -> dict:
-    """Load configuration from YAML file or use defaults."""
-    if config_path and config_path.exists():
+    """Load packaged pipeline configuration with an optional validated overlay."""
+    canonical = _packaged_pipeline_config()
+    overlay: dict[str, Any] = {}
+    if config_path is not None:
+        if not config_path.is_file():
+            raise FileNotFoundError(f"pipeline configuration not found: {config_path}")
         with config_path.open() as f:
-            config = yaml.safe_load(f) or {}
-            return _deep_merge(DEFAULT_CONFIG, config)
-    return DEFAULT_CONFIG
+            document = yaml.safe_load(f)
+        if document is not None:
+            if not isinstance(document, dict):
+                raise TypeError("pipeline configuration must be an object")
+            overlay = document
+    config = _deep_merge(canonical, overlay)
+    _validate_pipeline_config(config)
+    return config
 
 
 def _deep_merge(base: dict, override: dict) -> dict:
@@ -223,6 +236,14 @@ def _deep_merge(base: dict, override: dict) -> dict:
         else:
             result[key] = value
     return result
+
+
+def _validate_pipeline_config(config: dict[str, Any]) -> None:
+    """Validate the composed enrichment and normalization contract."""
+    normalization = config["normalization"]
+    enrichment = {key: value for key, value in config.items() if key != "normalization"}
+    _validate_enrichment_config(enrichment)
+    _validate_normalization_config({"normalization": normalization})
 
 
 def load_spec(spec_path: Path) -> dict[str, Any]:
@@ -264,44 +285,32 @@ def enrich_spec(spec: dict[str, Any], config: dict) -> tuple[dict[str, Any], dic
     # metadata field that downstream codegens and doc tools compare
     # byte-for-byte against upstream; rewriting it breaks those tools.
     # See design spec 2026-04-22 §3.1.
-    target_fields = config.get("target_fields", ["description", "summary"])
-    grammar_config = config.get("grammar", {})
+    target_fields = config["target_fields"]
+    prose_fields = prose_target_fields(target_fields)
+    grammar_config = config["grammar"]
 
     # Initialize enrichment utilities
     acronym_normalizer = AcronymNormalizer()
     branding_transformer = BrandingTransformer()
     description_structure_transformer = DescriptionStructureTransformer()
     grammar_improver = GrammarImprover(
-        capitalize_sentences=grammar_config.get("capitalize_sentences", True),
-        ensure_punctuation=grammar_config.get("ensure_punctuation", True),
-        normalize_whitespace=grammar_config.get("normalize_whitespace", True),
-        fix_double_spaces=grammar_config.get("fix_double_spaces", True),
-        trim_whitespace=grammar_config.get("trim_whitespace", True),
-        use_language_tool=False,  # Disable for pipeline performance
+        capitalize_sentences=grammar_config["capitalize_sentences"],
+        ensure_punctuation=grammar_config["ensure_punctuation"],
+        normalize_whitespace=grammar_config["normalize_whitespace"],
+        fix_double_spaces=grammar_config["fix_double_spaces"],
+        trim_whitespace=grammar_config["trim_whitespace"],
     )
     schema_fixer = SchemaFixer()
     description_validator = DescriptionValidator()
     consistency_validator = ConsistencyValidator()
 
     # Count fields before
-    field_count = _count_text_fields(spec, target_fields)
+    field_count = _count_text_fields(spec, prose_fields)
 
     # Phase 1: Upstream validation (assert upstream-injected fields exist)
     upstream_warnings = validate_upstream_spec(spec)
     for warning in upstream_warnings:
         logger.warning(warning)
-
-    # Fallback: assign tags to operations upstream left untagged
-    for path, path_item in spec.get("paths", {}).items():
-        if not isinstance(path_item, dict):
-            continue
-        # Derive tag from path prefix (e.g., /api/config/... -> config)
-        parts = [p for p in path.split("/") if p and p != "api" and not p.startswith("{")]
-        tag = parts[0] if parts else "other"
-        for method in ("get", "post", "put", "delete", "patch", "head", "options"):
-            op = path_item.get(method)
-            if isinstance(op, dict) and not op.get("tags"):
-                op["tags"] = [tag]
 
     # Apply enrichments in order:
     # 0. Correct upstream requiredness markers BEFORE anything derives from them.
@@ -315,22 +324,22 @@ def enrich_spec(spec: dict[str, Any], config: dict) -> tuple[dict[str, Any], dic
     spec = SchemaOverrideEnricher().enrich_spec(spec, corrections_only=True)
 
     # 1. Branding transformations first (most specific)
-    spec = branding_transformer.transform_spec(spec, target_fields)
+    spec = branding_transformer.transform_spec(spec, prose_fields)
 
     # 2. Description structure normalization (extract examples, validation rules)
-    spec = description_structure_transformer.transform_spec(spec, target_fields)
+    spec = description_structure_transformer.transform_spec(spec, prose_fields)
 
     # 3. Acronym normalization
-    spec = acronym_normalizer.normalize_spec(spec, target_fields)
+    spec = acronym_normalizer.normalize_spec(spec, prose_fields)
 
     # 4. Grammar improvements
-    spec = grammar_improver.improve_spec(spec, target_fields)
+    spec = grammar_improver.improve_spec(spec, prose_fields)
 
     # 5. Sanitize script tags in descriptions (prevent Spectral security warnings)
-    spec, _ = _sanitize_script_tags(spec, target_fields)
+    spec, _ = _sanitize_script_tags(spec, prose_fields)
 
     # 6. Normalize domain names (RFC 2606 compliance + lowercase hostnames)
-    spec, domain_normalize_count = _normalize_domain_names(spec, target_fields)
+    spec, domain_normalize_count = _normalize_domain_names(spec, prose_fields)
 
     # 7. Schema fixes (fix format-without-type issues)
     spec = schema_fixer.fix_spec(spec)
@@ -362,7 +371,8 @@ def enrich_spec(spec: dict[str, Any], config: dict) -> tuple[dict[str, Any], dic
     validation_stats = validation_enricher.get_stats()
 
     # 13.5. Constraint enrichment (add x-f5xc-constraints from patterns)
-    constraint_enricher = ConstraintEnricher(config_path=Path("config/constraint_patterns.yaml"))
+    with packaged_config_path("constraint_patterns.yaml") as constraint_config_path:
+        constraint_enricher = ConstraintEnricher(config_path=constraint_config_path)
     spec = constraint_enricher.enrich_spec(spec)
     constraint_stats = constraint_enricher.get_stats()
 
@@ -400,9 +410,6 @@ def enrich_spec(spec: dict[str, Any], config: dict) -> tuple[dict[str, Any], dic
     # is intentionally narrower than the prose pipeline so API-shaped values
     # are otherwise preserved byte-for-byte.
     spec = _sanitize_documentation_examples(spec, branding_transformer)
-
-    # Close grammar improver resources
-    grammar_improver.close()
 
     return spec, {
         "field_count": field_count,
@@ -517,12 +524,9 @@ def normalize_spec(spec: dict[str, Any], config: dict) -> tuple[dict[str, Any], 
 
     Returns (normalized_spec, stats_dict).
     """
-    norm_config = config.get("normalization", {})
+    norm_config = config["normalization"]
     stats: dict[str, int] = {
         "ref_siblings_removed": 0,
-        "orphan_refs_fixed": 0,
-        "orphan_request_bodies_inlined": 0,
-        "empty_operations_removed": 0,
         "types_normalized": 0,
     }
 
@@ -530,177 +534,13 @@ def normalize_spec(spec: dict[str, Any], config: dict) -> tuple[dict[str, Any], 
     spec, count = _remove_ref_siblings(spec)
     stats["ref_siblings_removed"] = count
 
-    # 1. Fix orphan $refs
-    if norm_config.get("fix_orphan_refs", True):
-        spec, count = _fix_orphan_refs(spec)
-        stats["orphan_refs_fixed"] = count
-
-    # 2. Inline orphan requestBodies
-    if norm_config.get("inline_orphan_request_bodies", True):
-        spec, count = _inline_orphan_request_bodies(spec)
-        stats["orphan_request_bodies_inlined"] = count
-
-    # 3. Remove empty operations
-    if norm_config.get("remove_empty_objects", True):
-        spec, count = _remove_empty_operations(spec)
-        stats["empty_operations_removed"] = count
-
-    # 4. Normalize types
-    if norm_config.get("type_standardization", True):
+    # 1. Normalize types. Source graph defects are rejected before enrichment;
+    # normalization must never fabricate or discard API contracts.
+    if norm_config["type_standardization"]:
         spec, count = _normalize_types(spec)
         stats["types_normalized"] = count
 
     return spec, stats
-
-
-def _fix_orphan_refs(spec: dict[str, Any]) -> tuple[dict[str, Any], int]:
-    """Fix orphan $ref references by creating missing components."""
-    # Collect all $refs
-    all_refs: set[str] = set()
-
-    def collect_refs(obj: Any) -> None:
-        if isinstance(obj, dict):
-            if "$ref" in obj and isinstance(obj["$ref"], str):
-                all_refs.add(obj["$ref"])
-            for value in obj.values():
-                collect_refs(value)
-        elif isinstance(obj, list):
-            for item in obj:
-                collect_refs(item)
-
-    collect_refs(spec)
-
-    # Get existing components
-    existing: dict[str, set[str]] = defaultdict(set)
-    for comp_type in ["schemas", "responses", "parameters", "requestBodies"]:
-        if comp_type in spec.get("components", {}):
-            existing[comp_type] = set(spec["components"][comp_type].keys())
-
-    # Find orphans
-    fixed_count = 0
-    if "components" not in spec:
-        spec["components"] = {}
-
-    for ref in all_refs:
-        match = re.match(r"^#/components/(\w+)/(.+)$", ref)
-        if match:
-            comp_type, comp_name = match.groups()
-            if comp_name not in existing.get(comp_type, set()):
-                # Create stub component
-                if comp_type not in spec["components"]:
-                    spec["components"][comp_type] = {}
-
-                if comp_name not in spec["components"][comp_type]:
-                    spec["components"][comp_type][comp_name] = _create_stub(comp_type, comp_name)
-                    fixed_count += 1
-
-    return spec, fixed_count
-
-
-def _create_stub(comp_type: str, comp_name: str) -> dict[str, Any]:
-    """Create a stub component definition."""
-
-    def create_schema_stub(name: str) -> dict[str, Any]:
-        return {
-            "type": "object",
-            "description": f"Auto-generated stub for {name}",
-            "x-generated": True,
-        }
-
-    def create_request_body_stub(name: str) -> dict[str, Any]:
-        return {
-            "description": f"Auto-generated stub for {name}",
-            "content": {"application/json": {"schema": {"type": "object"}}},
-            "x-generated": True,
-        }
-
-    def create_response_stub(name: str) -> dict[str, Any]:
-        return {
-            "description": f"Auto-generated stub response for {name}",
-            "x-generated": True,
-        }
-
-    def create_default_stub(name: str) -> dict[str, Any]:
-        return {
-            "description": f"Auto-generated stub for {name}",
-            "x-generated": True,
-        }
-
-    stub_factories: dict[str, Callable[[str], dict[str, Any]]] = {
-        "schemas": create_schema_stub,
-        "requestBodies": create_request_body_stub,
-        "responses": create_response_stub,
-    }
-    return stub_factories.get(comp_type, create_default_stub)(comp_name)
-
-
-def _inline_orphan_request_bodies(spec: dict[str, Any]) -> tuple[dict[str, Any], int]:
-    """Convert orphan requestBody $refs to inline definitions."""
-    inlined_count = 0
-    existing = set(spec.get("components", {}).get("requestBodies", {}).keys())
-
-    for path_item in spec.get("paths", {}).values():
-        if not isinstance(path_item, dict):
-            continue
-
-        for method in ["get", "post", "put", "delete", "patch"]:
-            operation = path_item.get(method)
-            if not isinstance(operation, dict):
-                continue
-
-            request_body = operation.get("requestBody")
-            if isinstance(request_body, dict) and "$ref" in request_body:
-                match = re.match(r"^#/components/requestBodies/(.+)$", request_body["$ref"])
-                if match and match.group(1) not in existing:
-                    operation["requestBody"] = {
-                        "description": f"Request body (originally referenced {match.group(1)})",
-                        "content": {"application/json": {"schema": {"type": "object"}}},
-                    }
-                    inlined_count += 1
-
-    return spec, inlined_count
-
-
-def _remove_empty_operations(spec: dict[str, Any]) -> tuple[dict[str, Any], int]:
-    """Remove operations that have empty {} values."""
-    removed_count = 0
-    paths_to_remove = []
-
-    for path, path_item in spec.get("paths", {}).items():
-        if not isinstance(path_item, dict):
-            continue
-
-        methods_to_remove = []
-        for method in ["get", "post", "put", "delete", "patch", "options", "head", "trace"]:
-            if method in path_item:
-                operation = path_item[method]
-                is_empty_dict = operation == {}
-                has_no_critical_fields = (
-                    isinstance(operation, dict)
-                    and not operation.get("operationId")
-                    and not operation.get("responses")
-                    and not operation.get("summary")
-                    and not operation.get("description")
-                )
-                if is_empty_dict or has_no_critical_fields:
-                    methods_to_remove.append(method)
-
-        for method in methods_to_remove:
-            del path_item[method]
-            removed_count += 1
-
-        remaining = [
-            m
-            for m in ["get", "post", "put", "delete", "patch", "options", "head", "trace"]
-            if m in path_item
-        ]
-        if not remaining:
-            paths_to_remove.append(path)
-
-    for path in paths_to_remove:
-        del spec["paths"][path]
-
-    return spec, removed_count
 
 
 def _normalize_types(spec: dict[str, Any]) -> tuple[dict[str, Any], int]:
@@ -844,8 +684,9 @@ def _sanitize_documentation_examples(
     corrupt them. Apply only configured documentation-value replacements and
     reserved-domain normalization, then handle examples embedded in titles.
     """
-    result = transformer.transform_spec(spec, ["x-f5xc-example"])
-    result, _ = _normalize_domain_names(result, ["x-f5xc-example"])
+    example_fields = ["x-f5xc-example", "x-ves-example"]
+    result = transformer.transform_spec(spec, example_fields)
+    result, _ = _normalize_domain_names(result, example_fields)
     return _sanitize_embedded_examples(result, transformer)
 
 
@@ -1008,89 +849,448 @@ def _sanitize_script_tags(
 # =============================================================================
 
 
-def _merge_schema_union(target: dict[str, Any], source: dict[str, Any]) -> None:
-    """Union-merge a schema: add missing keys at every level from source.
+def _canonical_json(value: Any) -> str:
+    """Serialize JSON with scalar types preserved for exact comparisons."""
+    return json.dumps(
+        value,
+        allow_nan=False,
+        ensure_ascii=False,
+        separators=(",", ":"),
+        sort_keys=True,
+    )
 
-    Skips merging when schemas have incompatible ``type`` values
-    (e.g., one is ``object`` and the other is ``string``) since those
-    represent different schemas that share a name.
+
+def _insert_exact_component(
+    target: dict[str, Any],
+    category: str,
+    name: str,
+    value: Any,
+    context: str,
+) -> bool:
+    """Insert one canonical component or reject a non-identical duplicate.
+
+    Returns ``True`` when the key was inserted and ``False`` for an exact
+    duplicate. Combining partial schemas is contract fabrication and is never
+    permitted.
     """
-    if target.get("type") != source.get("type") and "type" in target and "type" in source:
-        return
-    for key, value in source.items():
-        if key not in target:
-            target[key] = value
-        elif isinstance(value, dict) and isinstance(target[key], dict):
-            if "$ref" not in target[key] and "$ref" not in value:
-                _merge_schema_union(target[key], value)
-        elif isinstance(value, list) and isinstance(target[key], list) and key == "enum":
-            existing = {str(v) for v in target[key]}
-            for item in value:
-                if str(item) not in existing:
-                    target[key].append(item)
-                    existing.add(str(item))
+    if name not in target:
+        target[name] = copy.deepcopy(value)
+        return True
+    if _canonical_json(target[name]) != _canonical_json(value):
+        raise ValueError(f"{context}: conflicting canonical components.{category}.{name}")
+    return False
 
 
-def ensure_unique_operation_ids(
-    paths: dict[str, Any],
-    existing_ids: set[str],
-    source_prefix: str,
-) -> tuple[dict[str, Any], set[str], int]:
-    """Ensure all operationIds in paths are unique.
+_OPERATION_ALIAS_EXTENSION = X_F5XC_OPERATION_ALIASES
+_WIRE_OPERATION_FIELDS = frozenset(
+    {"callbacks", "parameters", "requestBody", "responses", "security", "servers"},
+)
 
-    When merging specs, duplicate operationIds violate OpenAPI 3.0 requirements.
-    This function prefixes duplicates with the source name to ensure uniqueness.
 
-    Args:
-        paths: Dict of path -> path_item to process.
-        existing_ids: Set of operationIds already used across merged specs.
-        source_prefix: Prefix to add for deduplication (derived from source filename).
+class PathMemberConflictError(ValueError):
+    """Raised when specifications define incompatible members at one API path."""
 
-    Returns:
-        Tuple of (modified_paths, updated_existing_ids, dedup_count).
+
+@dataclass(frozen=True)
+class OperationAliasContract:
+    """One explicitly approved pair of wire-equivalent operation identities."""
+
+    path: str
+    method: str
+    canonical_operation_id: str
+    alternate_operation_id: str
+    canonical_service_identity: str
+    alternate_service_identity: str
+
+    @property
+    def endpoint(self) -> tuple[str, str]:
+        """Return the normalized path-and-method identity."""
+        return self.path, self.method
+
+    @property
+    def operation_ids(self) -> frozenset[str]:
+        """Return the exact two operation identities approved by this contract."""
+        return frozenset({self.canonical_operation_id, self.alternate_operation_id})
+
+
+def load_operation_aliases(
+    config_path: Path | None = None,
+) -> dict[tuple[str, str], OperationAliasContract]:
+    """Load and strictly validate explicit operation aliases."""
+    if config_path is None:
+        document = load_packaged_yaml("operation_aliases.yaml")
+    else:
+        try:
+            document = yaml.safe_load(config_path.read_text())
+        except (OSError, UnicodeError, yaml.YAMLError) as exc:
+            raise RuntimeError(f"cannot load operation aliases from {config_path}: {exc}") from exc
+
+    if not isinstance(document, dict) or document.get("version") != 1:
+        raise ValueError("operation alias config must be an object with version: 1")
+    entries = document.get("aliases")
+    if not isinstance(entries, list):
+        raise TypeError("operation alias config aliases must be a list")
+
+    required_fields = {
+        "alternate_operation_id",
+        "alternate_service_identity",
+        "canonical_operation_id",
+        "canonical_service_identity",
+        "method",
+        "path",
+    }
+    contracts: dict[tuple[str, str], OperationAliasContract] = {}
+    for index, entry in enumerate(entries):
+        if not isinstance(entry, dict) or set(entry) != required_fields:
+            raise ValueError(
+                f"operation alias entry {index} must contain exactly {sorted(required_fields)}",
+            )
+        if any(not isinstance(entry[field], str) or not entry[field] for field in required_fields):
+            raise ValueError(f"operation alias entry {index} fields must be non-empty strings")
+
+        method = entry["method"].lower()
+        if method not in HTTP_METHODS:
+            raise ValueError(f"operation alias entry {index} has invalid HTTP method {method!r}")
+        contract = OperationAliasContract(
+            path=entry["path"],
+            method=method,
+            canonical_operation_id=entry["canonical_operation_id"],
+            alternate_operation_id=entry["alternate_operation_id"],
+            canonical_service_identity=entry["canonical_service_identity"],
+            alternate_service_identity=entry["alternate_service_identity"],
+        )
+        if contract.canonical_operation_id == contract.alternate_operation_id:
+            raise ValueError(f"operation alias entry {index} identities must differ")
+        if contract.canonical_service_identity not in contract.canonical_operation_id:
+            raise ValueError(f"operation alias entry {index} canonical identity is inconsistent")
+        if contract.alternate_service_identity not in contract.alternate_operation_id:
+            raise ValueError(f"operation alias entry {index} alternate identity is inconsistent")
+        if contract.endpoint in contracts:
+            raise ValueError(f"duplicate operation alias endpoint {contract.endpoint!r}")
+        contracts[contract.endpoint] = contract
+
+    return contracts
+
+
+def _resolve_local_pointer(spec: dict[str, Any], ref: str) -> Any:
+    """Resolve a local JSON Pointer or fail closed."""
+    if not ref.startswith("#/"):
+        raise PathMemberConflictError(f"wire-shape comparison rejects non-local $ref {ref!r}")
+    current: Any = spec
+    for encoded_token in ref[2:].split("/"):
+        token = encoded_token.replace("~1", "/").replace("~0", "~")
+        if isinstance(current, dict) and token in current:
+            current = current[token]
+        elif isinstance(current, list) and token.isdigit() and int(token) < len(current):
+            current = current[int(token)]
+        else:
+            raise PathMemberConflictError(f"wire-shape comparison cannot resolve {ref!r}")
+    return current
+
+
+def _normalize_service_metadata(value: str, contract: OperationAliasContract | None) -> str:
+    """Normalize the configured identity only in explicit non-wire metadata.
+
+    Recursive schemas retain their reference identity in the resolved comparison so
+    equivalent cycles terminate deterministically.  Resolved protobuf message names
+    also retain their source service identity.  Callers must restrict this helper to
+    those two metadata locations: payload keys and scalar values are wire data and
+    must never be rewritten for an alias comparison.
     """
-    modified_paths = {}
-    dedup_count = 0
-    http_methods = {"get", "post", "put", "delete", "patch", "options", "head", "trace"}
+    if contract is None:
+        return value
+    return value.replace(
+        contract.alternate_service_identity,
+        contract.canonical_service_identity,
+    )
 
-    for path, path_item in paths.items():
-        if not isinstance(path_item, dict):
-            modified_paths[path] = path_item
+
+def _resolved_wire_value(
+    spec: dict[str, Any],
+    value: Any,
+    contract: OperationAliasContract | None,
+    ref_stack: tuple[str, ...] = (),
+) -> Any:
+    """Resolve wire data recursively while ignoring documentation-only enrichment."""
+    if isinstance(value, dict):
+        if "$ref" in value:
+            ref = value["$ref"]
+            if not isinstance(ref, str):
+                raise PathMemberConflictError("wire-shape comparison found a malformed $ref")
+            if ref in ref_stack:
+                return {"$recursiveRef": _normalize_service_metadata(ref, contract)}
+            resolved = _resolved_wire_value(
+                spec,
+                _resolve_local_pointer(spec, ref),
+                contract,
+                (*ref_stack, ref),
+            )
+            siblings = {
+                key: child
+                for key, child in value.items()
+                if key != "$ref" and not key.startswith("x-f5xc-")
+            }
+            if siblings:
+                return {
+                    "$resolved": resolved,
+                    "$siblings": _resolved_wire_value(spec, siblings, contract, ref_stack),
+                }
+            return resolved
+
+        resolved_object: dict[str, Any] = {}
+        for key, child in value.items():
+            if key.startswith("x-f5xc-"):
+                continue
+            if key == "x-ves-proto-message" and isinstance(child, str):
+                resolved_object[key] = _normalize_service_metadata(child, contract)
+            else:
+                resolved_object[key] = _resolved_wire_value(spec, child, contract, ref_stack)
+        return resolved_object
+    if isinstance(value, list):
+        return [_resolved_wire_value(spec, child, contract, ref_stack) for child in value]
+    return value
+
+
+def _operation_wire_shape(
+    spec: dict[str, Any],
+    operation: dict[str, Any],
+    contract: OperationAliasContract | None = None,
+) -> dict[str, Any]:
+    """Return the recursively resolved request/response wire contract."""
+    wire_operation = {
+        key: value for key, value in operation.items() if key in _WIRE_OPERATION_FIELDS
+    }
+    return _resolved_wire_value(spec, wire_operation, contract)
+
+
+def _operation_without_generated_alias(operation: dict[str, Any]) -> dict[str, Any]:
+    """Return an operation without the extension generated by this merge."""
+    return {key: value for key, value in operation.items() if key != _OPERATION_ALIAS_EXTENSION}
+
+
+def _merge_path_member(
+    *,
+    path: str,
+    member: str,
+    existing: Any,
+    existing_spec: dict[str, Any],
+    incoming: Any,
+    incoming_spec: dict[str, Any],
+    aliases: dict[tuple[str, str], OperationAliasContract],
+) -> tuple[Any, dict[str, Any]]:
+    """Merge one path member without losing a conflicting API contract."""
+    method = member.lower()
+    if method not in HTTP_METHODS:
+        if existing == incoming:
+            return existing, existing_spec
+        raise PathMemberConflictError(f"conflicting path member {member!r} at {path}")
+
+    if not isinstance(existing, dict) or not isinstance(incoming, dict):
+        raise PathMemberConflictError(f"malformed {method.upper()} operation collision at {path}")
+
+    existing_base = _operation_without_generated_alias(existing)
+    incoming_base = _operation_without_generated_alias(incoming)
+    if existing_base == incoming_base:
+        if _operation_wire_shape(existing_spec, existing_base) != _operation_wire_shape(
+            incoming_spec,
+            incoming_base,
+        ):
+            raise PathMemberConflictError(
+                f"identical {method.upper()} operation at {path} resolves to divergent wire shapes",
+            )
+        return existing, existing_spec
+
+    contract = aliases.get((path, method))
+    existing_id = existing_base.get("operationId")
+    incoming_id = incoming_base.get("operationId")
+    if not isinstance(existing_id, str) or not isinstance(incoming_id, str):
+        raise PathMemberConflictError(
+            f"malformed {method.upper()} operation identity collision at {path}",
+        )
+    operation_ids = frozenset({existing_id, incoming_id})
+    if contract is None or operation_ids != contract.operation_ids:
+        raise PathMemberConflictError(
+            f"unconfigured {method.upper()} operation collision at {path}: "
+            f"{sorted(str(value) for value in operation_ids)!r}",
+        )
+
+    existing_shape = _operation_wire_shape(existing_spec, existing_base, contract)
+    incoming_shape = _operation_wire_shape(incoming_spec, incoming_base, contract)
+    if existing_shape != incoming_shape:
+        raise PathMemberConflictError(
+            f"configured {method.upper()} operation alias at {path} has divergent wire shapes",
+        )
+
+    if existing_base.get("operationId") == contract.canonical_operation_id:
+        canonical_operation = existing_base
+        canonical_spec = existing_spec
+    else:
+        canonical_operation = incoming_base
+        canonical_spec = incoming_spec
+    canonical_operation = copy.deepcopy(canonical_operation)
+    canonical_operation[_OPERATION_ALIAS_EXTENSION] = [
+        {
+            "operationId": contract.alternate_operation_id,
+            "relationship": "wire-equivalent",
+        },
+    ]
+    return canonical_operation, canonical_spec
+
+
+def _merge_path_item(
+    target_paths: dict[str, Any],
+    path: str,
+    incoming_path_item: Any,
+    incoming_spec: dict[str, Any],
+    owners: dict[tuple[str, str], dict[str, Any]],
+    aliases: dict[tuple[str, str], OperationAliasContract],
+) -> int:
+    """Merge one Path Item Object and return the number of members added."""
+    if not isinstance(incoming_path_item, dict):
+        raise PathMemberConflictError(f"path item at {path} must be an object")
+    target_path_item = target_paths.setdefault(path, {})
+    if not isinstance(target_path_item, dict):
+        raise PathMemberConflictError(f"target path item at {path} must be an object")
+
+    added = 0
+    # Operations establish the canonical owner used for configured alias
+    # metadata; JSON object key order must not affect that decision.
+    members = sorted(
+        incoming_path_item.items(),
+        key=lambda item: (item[0].lower() not in HTTP_METHODS, item[0]),
+    )
+    for member, incoming in members:
+        owner_key = (path, member)
+        if member not in target_path_item:
+            target_path_item[member] = copy.deepcopy(incoming)
+            owners[owner_key] = incoming_spec
+            added += 1
             continue
 
-        modified_path_item = {}
-        for key, value in path_item.items():
-            if key.lower() not in http_methods:
-                modified_path_item[key] = value
+        if member.lower() not in HTTP_METHODS and target_path_item[member] != incoming:
+            path_aliases = [contract for contract in aliases.values() if contract.path == path]
+            if len(path_aliases) == 1 and (
+                member.startswith("x-") or member in {"description", "summary"}
+            ):
+                contract = path_aliases[0]
+                canonical_owner = owners.get((path, contract.method))
+                if canonical_owner is owners[owner_key]:
+                    continue
+                if canonical_owner is incoming_spec:
+                    target_path_item[member] = copy.deepcopy(incoming)
+                    owners[owner_key] = incoming_spec
+                    continue
+        merged, owner = _merge_path_member(
+            path=path,
+            member=member,
+            existing=target_path_item[member],
+            existing_spec=owners[owner_key],
+            incoming=incoming,
+            incoming_spec=incoming_spec,
+            aliases=aliases,
+        )
+        target_path_item[member] = merged
+        owners[owner_key] = owner
+    return added
+
+
+def validate_operation_alias_accounting(
+    specs: dict[str, dict[str, Any]],
+    aliases: dict[tuple[str, str], OperationAliasContract] | None = None,
+    *,
+    require_all_aliases: bool = True,
+) -> dict[str, int]:
+    """Validate all source operation collisions and return identity accounting."""
+    alias_contracts = aliases if aliases is not None else load_operation_aliases()
+    occurrences: dict[tuple[str, str], list[tuple[str, dict[str, Any], dict[str, Any]]]] = (
+        defaultdict(list)
+    )
+    identity_endpoints: dict[str, tuple[str, str]] = {}
+    operation_count = 0
+    for filename, spec in specs.items():
+        for path, path_item in spec.get("paths", {}).items():
+            if not isinstance(path_item, dict):
                 continue
+            for method in HTTP_METHODS:
+                operation = path_item.get(method)
+                if not isinstance(operation, dict):
+                    continue
+                operation_count += 1
+                operation_id = operation.get("operationId")
+                if not isinstance(operation_id, str) or not operation_id:
+                    raise PathMemberConflictError(
+                        f"{filename}: {method.upper()} {path} is missing operationId",
+                    )
+                endpoint = (path, method)
+                previous_endpoint = identity_endpoints.setdefault(operation_id, endpoint)
+                if previous_endpoint != endpoint:
+                    raise PathMemberConflictError(
+                        f"operationId {operation_id!r} is used by multiple endpoints",
+                    )
+                occurrences[endpoint].append((filename, operation, spec))
 
-            if not isinstance(value, dict):
-                modified_path_item[key] = value
+    exercised_aliases: set[tuple[str, str]] = set()
+    explicit_aliases = 0
+    identical_duplicates = 0
+    for (path, method), group in sorted(occurrences.items()):
+        if len(group) == 1:
+            continue
+        _, merged_operation, owner_spec = group[0]
+        for _, operation, spec in group[1:]:
+            before_id = merged_operation.get("operationId")
+            merged_operation, owner_spec = _merge_path_member(
+                path=path,
+                member=method,
+                existing=merged_operation,
+                existing_spec=owner_spec,
+                incoming=operation,
+                incoming_spec=spec,
+                aliases=alias_contracts,
+            )
+            if operation.get("operationId") == before_id:
+                identical_duplicates += 1
+            else:
+                explicit_aliases += 1
+                exercised_aliases.add((path, method))
+
+    if require_all_aliases and exercised_aliases != set(alias_contracts):
+        missing = sorted(set(alias_contracts) - exercised_aliases)
+        unexpected = sorted(exercised_aliases - set(alias_contracts))
+        raise PathMemberConflictError(
+            f"operation alias allowlist does not match source collisions: "
+            f"missing={missing}, unexpected={unexpected}",
+        )
+
+    return {
+        "source_operations": operation_count,
+        "unique_operation_ids": len(identity_endpoints),
+        "canonical_operations": len(occurrences),
+        "explicit_aliases": explicit_aliases,
+        "identical_duplicates": identical_duplicates,
+    }
+
+
+def _validate_unique_merged_operation_ids(paths: dict[str, Any], context: str) -> None:
+    """Reject one operationId being used by distinct merged endpoints."""
+    identities: dict[str, tuple[str, str]] = {}
+    for path, path_item in paths.items():
+        if not isinstance(path_item, dict):
+            continue
+        for method in HTTP_METHODS:
+            operation = path_item.get(method)
+            if not isinstance(operation, dict):
                 continue
-
-            operation = value.copy()
-            op_id = operation.get("operationId", "")
-
-            if op_id:
-                if op_id in existing_ids:
-                    # Generate unique operationId by prefixing with source
-                    new_op_id = f"{source_prefix}_{op_id}"
-                    # Handle case where prefixed ID also exists
-                    counter = 1
-                    while new_op_id in existing_ids:
-                        new_op_id = f"{source_prefix}_{op_id}_{counter}"
-                        counter += 1
-                    operation["operationId"] = new_op_id
-                    dedup_count += 1
-                    op_id = new_op_id
-
-                existing_ids.add(op_id)
-
-            modified_path_item[key] = operation
-
-        modified_paths[path] = modified_path_item
-
-    return modified_paths, existing_ids, dedup_count
+            operation_id = operation.get("operationId")
+            if not isinstance(operation_id, str) or not operation_id:
+                raise PathMemberConflictError(
+                    f"{context}: {method.upper()} {path} is missing operationId",
+                )
+            endpoint = (path, method)
+            previous = identities.setdefault(operation_id, endpoint)
+            if previous != endpoint:
+                raise PathMemberConflictError(
+                    f"{context}: operationId {operation_id!r} is used by multiple endpoints",
+                )
 
 
 def create_base_spec(title: str, description: str, version: str) -> dict[str, Any]:
@@ -1175,17 +1375,81 @@ def add_domain_metadata_to_spec(spec: dict[str, Any], domain: str) -> None:
         info[X_F5XC_CLI_DOMAIN] = domain
 
 
+def _apply_merged_schema_enrichments(
+    spec: dict[str, Any],
+    *,
+    allow_partition_residuals: bool,
+) -> tuple[dict[str, Any], dict[str, int]]:
+    """Apply graph-wide schema enrichments to one independent merged graph."""
+    stats: dict[str, int] = {}
+
+    default_values = DefaultValueEnricher()
+    spec = default_values.enrich_spec(
+        spec,
+        allow_partition_residuals=allow_partition_residuals,
+    )
+    default_stats = default_values.get_stats()
+    if default_stats.get("error_count"):
+        raise RuntimeError(f"default value enrichment failed: {default_stats.get('errors', [])}")
+    stats["server_defaults_added"] = default_stats.get("defaults_added", 0) + default_stats.get(
+        "nested_defaults_added", 0
+    )
+    stats["server_default_partition_residuals"] = len(
+        default_stats.get("partition_residual_config_entries", [])
+    )
+
+    schema_overrides = SchemaOverrideEnricher()
+    spec = schema_overrides.enrich_spec(spec)
+    stats["schema_overrides_applied"] = schema_overrides.get_stats().get("properties_injected", 0)
+
+    conflicts = ConflictsWithEnricher()
+    spec = conflicts.enrich_spec(spec)
+    stats["conflicts_with_added"] = conflicts.get_stats().get("conflicts_added", 0)
+
+    dependencies = DependencyEnricher()
+    spec = dependencies.enrich_spec(spec)
+    stats["dependencies_added"] = dependencies.get_stats().get("dependencies_added", 0)
+
+    references = ReferencesEnricher.from_config()
+    spec = references.enrich_spec(spec)
+    stats["references_stamped"] = references.get_stats().get("references_stamped", 0)
+
+    examples = ExampleFieldEnricher()
+    spec = examples.enrich_spec(spec)
+    stats["example_fields_stamped"] = examples.get_stats().get("fields_stamped", 0)
+
+    constrained = ConstrainedFieldsEnricher()
+    spec = constrained.enrich_spec(spec)
+    stats["constrained_fields_added"] = constrained.get_stats().get("constraints_applied", 0)
+
+    namespace_profiles = NamespaceProfileEnricher()
+    spec = namespace_profiles.enrich_spec(spec)
+    namespace_stats = namespace_profiles.get_stats()
+    if namespace_stats.get("errors"):
+        raise RuntimeError(f"namespace profile enrichment failed: {namespace_stats['errors']}")
+    stats["namespace_profiles_added"] = namespace_stats.get("specs_enriched", 0)
+
+    spec, _ = _remove_ref_siblings(spec)
+    projector = SchemaConstraintProjector()
+    spec = projector.enrich_spec(spec)
+    stats["naming_constraints_projected"] = projector.get_stats().get("properties_projected", 0)
+    return spec, stats
+
+
 def merge_specs_by_domain(
     specs: dict[str, dict[str, Any]],
     version: str,
 ) -> tuple[dict[str, dict[str, Any]], dict[str, int]]:
     """Merge specifications grouped by domain.
 
-    Ensures operationId uniqueness across merged specs by prefixing
-    duplicates with the source filename.
+    Rejects path-member conflicts and models only explicitly configured,
+    wire-equivalent operation aliases.
 
     Returns (merged_specs_by_domain, stats).
     """
+    operation_aliases = load_operation_aliases()
+    alias_accounting = validate_operation_alias_accounting(specs, operation_aliases)
+
     # Group specs by domain
     domain_specs: dict[str, list[tuple[str, dict[str, Any]]]] = defaultdict(list)
     for filename, spec in specs.items():
@@ -1238,7 +1502,9 @@ def merge_specs_by_domain(
         "paths": 0,
         "schemas": 0,
         "requestBodies": 0,
-        "operationIds_deduplicated": 0,
+        "source_operations": alias_accounting["source_operations"],
+        "canonical_operations": alias_accounting["canonical_operations"],
+        "explicit_operation_aliases": alias_accounting["explicit_aliases"],
         "best_practices_enriched": 0,
         "guided_workflows_added": 0,
         "server_defaults_added": 0,
@@ -1250,35 +1516,9 @@ def merge_specs_by_domain(
     # Load description enricher for domain-specific descriptions
     description_enricher = DescriptionEnricher()
 
-    # Load enrichers that require domain context (Issue #314)
-    # These run after merging when domain is known
+    # Load enrichers that require domain context (Issue #314).
     best_practices_enricher = BestPracticesEnricher()
     guided_workflow_enricher = GuidedWorkflowEnricher()
-    namespace_profile_enricher_domain = NamespaceProfileEnricher()
-
-    # Load enrichers that require merged schemas (Issue #449)
-    # Server-applied defaults need the full merged schema to match patterns
-    default_value_enricher = DefaultValueEnricher()
-
-    # Load conflicts-with enricher (Issue #494)
-    # Auto-derives mutual exclusivity from x-ves-oneof-field-* extensions
-    conflicts_with_enricher = ConflictsWithEnricher()
-
-    # Load dependency enricher — stamps x-f5xc-requires for cross-field deps
-    dependency_enricher = DependencyEnricher()
-
-    # Load references enricher — stamps x-f5xc-references for resource-reference deps
-    references_enricher = ReferencesEnricher.from_config()
-
-    # Load example-field enricher — derives per-field create examples from example_yaml
-    example_field_enricher = ExampleFieldEnricher()
-
-    # Load constrained fields enricher — stamps enum/range constraints from config
-    constrained_fields_enricher = ConstrainedFieldsEnricher()
-
-    # Load schema override enricher (Issue #294)
-    # Injects missing oneOf variants from schema_overrides.yaml before conflicts-with
-    schema_override_enricher = SchemaOverrideEnricher()
 
     for domain, spec_list in sorted(domain_specs.items()):
         domain_title = domain.replace("_", " ").title()
@@ -1297,24 +1537,10 @@ def merge_specs_by_domain(
         merged_spec = description_enricher.enrich_spec(merged_spec, domain=domain)
 
         all_tags = []
-        existing_operation_ids: set[str] = set()  # Track operationIds within domain
+        path_member_owners: dict[tuple[str, str], dict[str, Any]] = {}
 
-        for filename, spec in spec_list:
-            # Extract source name for prefix (remove .json and common patterns)
-            source_prefix = re.sub(r"\.json$", "", filename)
-            source_prefix = re.sub(r"^ves\.io\.schema\.", "", source_prefix)
-            source_prefix = re.sub(r"[^a-zA-Z0-9_]", "_", source_prefix)
-
-            # Process paths with operationId deduplication
+        for _filename, spec in spec_list:
             spec_paths = spec.get("paths", {})
-            deduplicated_paths, existing_operation_ids, dedup_count = ensure_unique_operation_ids(
-                spec_paths,
-                existing_operation_ids,
-                source_prefix,
-            )
-            stats["operationIds_deduplicated"] += dedup_count
-
-            # Merge deduplicated paths
             # Skip domain-specific paths when not merging into their target domains
             is_cdn_domain = domain == "cdn"
             is_data_intelligence_domain = domain == "data_intelligence"
@@ -1322,7 +1548,7 @@ def merge_specs_by_domain(
             is_auth_domain = domain == "authentication"
             is_threat_campaign_domain = domain == "threat_campaign"
 
-            for path, path_item in deduplicated_paths.items():
+            for path, path_item in spec_paths.items():
                 # Skip CDN paths if not merging into CDN domain
                 if not is_cdn_domain and ("/api/cdn/" in path or "/cdn_loadbalancers/" in path):
                     continue
@@ -1357,21 +1583,14 @@ def merge_specs_by_domain(
                 if data_target_domain and data_target_domain != domain:
                     continue
 
-                if path not in merged_spec["paths"]:
-                    merged_spec["paths"][path] = path_item
-                    stats["paths"] += 1
-                else:
-                    for method, operation in path_item.items():
-                        if method not in merged_spec["paths"][path]:
-                            merged_spec["paths"][path][method] = operation
-                            stats["paths"] += 1
-                        elif isinstance(operation, dict) and isinstance(
-                            merged_spec["paths"][path].get(method), dict
-                        ):
-                            existing = merged_spec["paths"][path][method]
-                            for k, v in operation.items():
-                                if k not in existing:
-                                    existing[k] = v
+                stats["paths"] += _merge_path_item(
+                    merged_spec["paths"],
+                    path,
+                    path_item,
+                    spec,
+                    path_member_owners,
+                    operation_aliases,
+                )
 
             # Merge components
             for comp_type in [
@@ -1384,14 +1603,18 @@ def merge_specs_by_domain(
                 source_comps = spec.get("components", {}).get(comp_type, {})
                 target_comps = merged_spec["components"].setdefault(comp_type, {})
                 for name, comp in source_comps.items():
-                    if name not in target_comps:
-                        target_comps[name] = comp
+                    inserted = _insert_exact_component(
+                        target_comps,
+                        comp_type,
+                        name,
+                        comp,
+                        f"domain {domain}",
+                    )
+                    if inserted:
                         if comp_type == "schemas":
                             stats["schemas"] += 1
                         elif comp_type == "requestBodies":
                             stats["requestBodies"] += 1
-                    elif isinstance(comp, dict) and isinstance(target_comps[name], dict):
-                        _merge_schema_union(target_comps[name], comp)
 
             # Collect tags
             all_tags.extend(spec.get("tags", []))
@@ -1400,13 +1623,15 @@ def merge_specs_by_domain(
                     if isinstance(operation, dict):
                         all_tags.extend({"name": tag} for tag in operation.get("tags", []))
 
+        _validate_unique_merged_operation_ids(merged_spec["paths"], f"domain {domain}")
+
         # Deduplicate tags
         seen = set()
         unique_tags = []
         for tag in all_tags:
             name = tag.get("name") if isinstance(tag, dict) else tag
             if name and name not in seen:
-                unique_tags.append(tag if isinstance(tag, dict) else {"name": tag})
+                unique_tags.append(copy.deepcopy(tag) if isinstance(tag, dict) else {"name": tag})
                 seen.add(name)
         merged_spec["tags"] = sorted(unique_tags, key=lambda t: t.get("name", ""))
 
@@ -1434,63 +1659,12 @@ def merge_specs_by_domain(
             gw_stats.get("workflows_added", 0),
         )
 
-        # Server-applied defaults: add discovered defaults to schema properties (Issue #449)
-        merged_spec = default_value_enricher.enrich_spec(merged_spec)
-        dv_stats = default_value_enricher.get_stats()
-        stats["server_defaults_added"] = max(
-            stats["server_defaults_added"],
-            dv_stats.get("defaults_added", 0),
+        merged_spec, graph_stats = _apply_merged_schema_enrichments(
+            merged_spec,
+            allow_partition_residuals=True,
         )
-
-        # Schema overrides: inject missing oneOf variants (Issue #294)
-        merged_spec = schema_override_enricher.enrich_spec(merged_spec)
-        so_stats = schema_override_enricher.get_stats()
-        stats["schema_overrides_applied"] += so_stats.get("properties_injected", 0)
-        schema_override_enricher.reset_stats()
-
-        # Conflicts-with: auto-derive mutual exclusivity from x-ves-oneof-field-* (Issue #494)
-        merged_spec = conflicts_with_enricher.enrich_spec(merged_spec)
-        cw_stats = conflicts_with_enricher.get_stats()
-        stats["conflicts_with_added"] += cw_stats.get("conflicts_added", 0)
-        # Reset stats for next domain to avoid double-counting
-        conflicts_with_enricher.reset_stats()
-
-        # Cross-field dependencies: stamp x-f5xc-requires from minimum_configs.yaml
-        merged_spec = dependency_enricher.enrich_spec(merged_spec)
-        dep_stats = dependency_enricher.get_stats()
-        stats.setdefault("dependencies_added", 0)
-        stats["dependencies_added"] += dep_stats.get("dependencies_added", 0)
-        dependency_enricher.reset_stats()
-
-        # Resource references: stamp x-f5xc-references on ObjectRefType properties
-        merged_spec = references_enricher.enrich_spec(merged_spec)
-        ref_stats = references_enricher.get_stats()
-        stats.setdefault("references_stamped", 0)
-        stats["references_stamped"] += ref_stats.get("references_stamped", 0)
-        references_enricher.reset_stats()
-
-        # Per-field create examples: derive x-f5xc-field-examples from example_yaml
-        merged_spec = example_field_enricher.enrich_spec(merged_spec)
-        ex_stats = example_field_enricher.get_stats()
-        stats.setdefault("example_fields_stamped", 0)
-        stats["example_fields_stamped"] += ex_stats.get("fields_stamped", 0)
-        example_field_enricher.reset_stats()
-
-        # Constrained fields: stamp enum/range constraints from minimum_configs.yaml
-        merged_spec = constrained_fields_enricher.enrich_spec(merged_spec)
-        cf_stats = constrained_fields_enricher.get_stats()
-        stats.setdefault("constrained_fields_added", 0)
-        stats["constrained_fields_added"] += cf_stats.get("constraints_applied", 0)
-        constrained_fields_enricher.reset_stats()
-
-        # Namespace profiles: add x-f5xc-namespace-profile to info + per-schema
-        merged_spec = namespace_profile_enricher_domain.enrich_spec(merged_spec)
-        np_stats = namespace_profile_enricher_domain.get_stats()
-        stats["namespace_profiles_added"] += np_stats.get("specs_enriched", 0)
-        namespace_profile_enricher_domain.reset_stats()
-
-        # Final cleanup: strip any $ref siblings introduced by enrichers
-        merged_spec, _ = _remove_ref_siblings(merged_spec)
+        for name, value in graph_stats.items():
+            stats[name] = stats.get(name, 0) + value
 
         merged[domain] = merged_spec
         stats["domains"] += 1
@@ -1498,53 +1672,52 @@ def merge_specs_by_domain(
     return merged, stats
 
 
-def create_master_spec(domain_specs: dict[str, dict[str, Any]], version: str) -> dict[str, Any]:
-    """Create a master specification combining all domains.
-
-    Ensures operationId uniqueness across all domains by prefixing
-    cross-domain duplicates with the domain name.
-    """
-    # Load enriched description for root/master spec
+def _create_master_graph(
+    canonical: CanonicalizationResult,
+    version: str,
+) -> dict[str, Any]:
+    """Assemble the master directly from the canonical source graph."""
     enricher = DescriptionEnricher()
     root_desc = enricher.get_description("root", tier="long")
-
     master = create_base_spec(
         title="F5 Distributed Cloud API",
         description=root_desc or "Complete F5 Distributed Cloud API specification",
         version=version,
     )
-
-    # Apply medium tier to info.x-f5xc-summary for root spec
     master = enricher.enrich_spec(master, domain="root")
+    for category, values in canonical.components.items():
+        master["components"][category] = copy.deepcopy(values)
 
-    all_tags = []
-    existing_operation_ids: set[str] = set()  # Track operationIds across all domains
-
-    for domain, spec in domain_specs.items():
-        # Process paths with operationId deduplication across domains
+    all_tags: list[Any] = []
+    operation_aliases = load_operation_aliases()
+    validate_operation_alias_accounting(canonical.documents, operation_aliases)
+    path_member_owners: dict[tuple[str, str], dict[str, Any]] = {}
+    security_schemes = master["components"].setdefault("securitySchemes", {})
+    for source_id in sorted(canonical.documents):
+        spec = canonical.documents[source_id]
         spec_paths = spec.get("paths", {})
-        deduplicated_paths, existing_operation_ids, _ = ensure_unique_operation_ids(
-            spec_paths,
-            existing_operation_ids,
-            domain,  # Use domain name as prefix for cross-domain deduplication
-        )
+        for path, path_item in spec_paths.items():
+            _merge_path_item(
+                master["paths"],
+                path,
+                path_item,
+                spec,
+                path_member_owners,
+                operation_aliases,
+            )
 
-        # Merge deduplicated paths
-        for path, path_item in deduplicated_paths.items():
-            if path not in master["paths"]:
-                master["paths"][path] = path_item
-
-        # Merge components (union merge for schema superset)
-        for comp_type in ["schemas", "responses", "parameters", "requestBodies"]:
-            source_comps = spec.get("components", {}).get(comp_type, {})
-            target_comps = master["components"].setdefault(comp_type, {})
-            for name, comp in source_comps.items():
-                if name not in target_comps:
-                    target_comps[name] = comp
-                elif isinstance(comp, dict) and isinstance(target_comps[name], dict):
-                    _merge_schema_union(target_comps[name], comp)
+        for name, value in spec.get("components", {}).get("securitySchemes", {}).items():
+            _insert_exact_component(
+                security_schemes,
+                "securitySchemes",
+                name,
+                value,
+                f"master source {source_id}",
+            )
 
         all_tags.extend(spec.get("tags", []))
+
+    _validate_unique_merged_operation_ids(master["paths"], "master specification")
 
     # Deduplicate tags
     seen: set[str] = set()
@@ -1552,14 +1725,21 @@ def create_master_spec(domain_specs: dict[str, dict[str, Any]], version: str) ->
     for tag in all_tags:
         name = tag.get("name") if isinstance(tag, dict) else tag
         if name and name not in seen:
-            unique_tags.append(tag if isinstance(tag, dict) else {"name": tag})
+            unique_tags.append(copy.deepcopy(tag) if isinstance(tag, dict) else {"name": tag})
             seen.add(name)
 
-    def get_tag_name(t: dict[str, Any]) -> str:
-        return t.get("name", "")
+    master["tags"] = sorted(unique_tags, key=lambda tag: tag.get("name", ""))
+    return master
 
-    master["tags"] = sorted(unique_tags, key=get_tag_name)
 
+def create_master_spec(canonical: CanonicalizationResult, version: str) -> dict[str, Any]:
+    """Create the provider-facing master independently of all domain projections."""
+    master = _create_master_graph(canonical, version)
+    ExternalDocsEnricher().enrich_spec(master, filename="openapi.json")
+    master, _ = _apply_merged_schema_enrichments(
+        master,
+        allow_partition_residuals=False,
+    )
     return master
 
 
@@ -1572,10 +1752,7 @@ def create_spec_index(domain_specs: dict[str, dict[str, Any]], version: str) -> 
         # (#1152) — everything else converged once the enrichers stopped stamping
         # now() into every schema.
         #
-        # Note there are two index builders: this one, and create_index in
-        # merge_specs.py. `make pipeline` uses this one. Both are fixed, because a
-        # duplicate that drifts is how the first attempt at this fix landed in the
-        # path that nothing runs.
+        # This is the sole index builder used by the unified pipeline.
         "timestamp": artifact_timestamp(),
         "specifications": [],
     }
@@ -1658,118 +1835,527 @@ def create_spec_index(domain_specs: dict[str, dict[str, Any]], version: str) -> 
     return index
 
 
+_SUPPORT_ARTIFACTS = {
+    "index.json",
+    "minimal-export-defaults.json",
+    "namespace_profiles.json",
+    "openapi.json",
+    "validation.json",
+}
+
+
+def _write_staged_outputs(
+    domain_specs: dict[str, dict[str, Any]],
+    master_spec: dict[str, Any],
+    staging_dir: Path,
+    version: str,
+    indent: int,
+) -> None:
+    """Generate every release artifact inside an isolated staging directory."""
+    for domain, spec in domain_specs.items():
+        save_spec(spec, staging_dir / f"{domain}.json", indent=indent)
+
+    save_spec(master_spec, staging_dir / "openapi.json", indent=indent)
+
+    index = create_spec_index(domain_specs, version)
+    save_spec(index, staging_dir / "index.json", indent=indent)
+
+    validation_exporter = ValidationExporter()
+    validation_exporter.export(staging_dir / "validation.json")
+    validation_stats = validation_exporter.get_stats()
+    console.print(
+        f"[green]Exported validation.json: "
+        f"{validation_stats['resources_processed']} resources, "
+        f"{validation_stats['required_fields_exported']} required fields, "
+        f"{validation_stats['enum_values_exported']} enum values[/green]",
+    )
+
+    minimal_exporter = MinimalDefaultsExporter()
+    minimal_artifact = minimal_exporter.export(
+        master_spec["components"]["schemas"],
+        staging_dir / "minimal-export-defaults.json",
+        version=version,
+    )
+    console.print(
+        f"[green]Exported minimal-export-defaults.json: "
+        f"{len(minimal_artifact['resources'])} resources[/green]",
+    )
+
+    np_profiles_exporter = NamespaceProfilesExporter()
+    np_profiles_artifact = np_profiles_exporter.export(
+        staging_dir / "namespace_profiles.json",
+        version=version,
+    )
+    console.print(
+        f"[green]Exported namespace_profiles.json: "
+        f"{len(np_profiles_artifact['resources'])} resource overrides + default[/green]",
+    )
+
+
+def _validate_staged_outputs(staging_dir: Path, domains: set[str]) -> None:
+    """Verify exact membership, JSON readability, and every OpenAPI contract."""
+    expected = {f"{domain}.json" for domain in domains} | _SUPPORT_ARTIFACTS
+    openapi_artifacts = {f"{domain}.json" for domain in domains} | {"openapi.json"}
+    entries = list(staging_dir.iterdir())
+    actual = {entry.name for entry in entries}
+    if actual != expected:
+        missing = sorted(expected - actual)
+        unexpected = sorted(actual - expected)
+        raise RuntimeError(
+            f"staged artifact set is incomplete: missing={missing}, unexpected={unexpected}",
+        )
+    if any(not entry.is_file() for entry in entries):
+        raise RuntimeError("staged artifact directory contains a non-file entry")
+
+    for artifact in sorted(entries):
+        try:
+            value = json.loads(artifact.read_text())
+        except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+            raise RuntimeError(f"staged artifact {artifact.name} is unreadable: {exc}") from exc
+        if not isinstance(value, dict):
+            raise TypeError(f"staged artifact {artifact.name} must contain a JSON object")
+        if artifact.name in openapi_artifacts:
+            try:
+                validate_openapi(value)
+            except (OpenAPIValidationError, ValidatorDetectError) as exc:
+                raise RuntimeError(
+                    f"staged OpenAPI artifact {artifact.name} is invalid: {exc}"
+                ) from exc
+
+
+def _promote_staged_outputs(staging_dir: Path, output_dir: Path) -> None:
+    """Replace the artifact directory, restoring the previous tree on failure.
+
+    Renaming the staged tree into place is the commit point. Failure to remove
+    the recovery copy afterward is reported as cleanup residue, not as a failed
+    publication with the new tree still live.
+    """
+    backup_dir = output_dir.parent / f".{output_dir.name}.backup-{uuid.uuid4().hex}"
+    previous_output_moved = False
+    try:
+        if output_dir.exists():
+            output_dir.rename(backup_dir)
+            previous_output_moved = True
+        staging_dir.rename(output_dir)
+    except BaseException:
+        if previous_output_moved and backup_dir.exists() and not output_dir.exists():
+            backup_dir.rename(output_dir)
+        raise
+
+    if previous_output_moved:
+        try:
+            shutil.rmtree(backup_dir)
+        except OSError as exc:
+            logger.warning(
+                "generated artifacts were promoted successfully, but recovery "
+                "backup cleanup failed; preserved backup at %s: %s",
+                backup_dir,
+                exc,
+            )
+
+
+def _format_release_findings(findings: list[dict[str, Any]]) -> str:
+    """Render every validation finding in deterministic order."""
+    return json.dumps(
+        sorted(findings, key=_canonical_json),
+        ensure_ascii=False,
+        separators=(",", ":"),
+        sort_keys=True,
+    )
+
+
+def _normalize_release_text(
+    spec: dict[str, Any],
+    target_fields: list[str],
+) -> dict[str, Any]:
+    """Normalize prose created by late enrichers without mutating wire identifiers."""
+    prose_fields = prose_target_fields(target_fields)
+    normalized = AcronymNormalizer().normalize_spec(spec, prose_fields)
+    return BrandingTransformer().transform_spec(normalized, prose_fields)
+
+
+def _validate_release_findings(
+    release_specs: dict[str, dict[str, Any]],
+    target_fields: list[str],
+) -> None:
+    """Reject findings in any canonical or domain release graph."""
+    failures = []
+    for artifact, spec in sorted(release_specs.items()):
+        consistency_findings = ConsistencyValidator().validate(spec)
+        branding_findings = BrandingValidator().validate_spec(
+            spec,
+            prose_target_fields(target_fields),
+        )
+        if consistency_findings:
+            failures.append(
+                f"{artifact}: consistency validation found "
+                f"{len(consistency_findings)} configured finding(s): "
+                f"{_format_release_findings(consistency_findings)}"
+            )
+        if branding_findings:
+            failures.append(
+                f"{artifact}: branding validation found "
+                f"{len(branding_findings)} finding(s): "
+                f"{_format_release_findings(branding_findings)}"
+            )
+    if failures:
+        raise RuntimeError("release validation failed: " + "; ".join(failures))
+
+
+def _publish_generated_outputs(
+    domain_specs: dict[str, dict[str, Any]],
+    master_spec: dict[str, Any],
+    output_dir: Path,
+    version: str,
+    indent: int,
+) -> None:
+    """Stage, validate, and promote a complete generated artifact tree."""
+    output_dir.parent.mkdir(parents=True, exist_ok=True)
+    staging_dir = Path(
+        tempfile.mkdtemp(prefix=f".{output_dir.name}.staging-", dir=output_dir.parent),
+    )
+    try:
+        _write_staged_outputs(domain_specs, master_spec, staging_dir, version, indent)
+        _validate_staged_outputs(staging_dir, set(domain_specs))
+        _promote_staged_outputs(staging_dir, output_dir)
+    finally:
+        if staging_dir.exists():
+            shutil.rmtree(staging_dir)
+
+
+_EXPECTED_SOURCE_FILES = 283
+_EXPECTED_SOURCE_OPERATIONS = 1852
+_EXPECTED_CANONICAL_OPERATIONS = 1851
+_EXPECTED_OPERATION_ALIASES = 1
+_EXPECTED_COMPONENT_OCCURRENCES = 11268
+_EXPECTED_COMPONENT_CANONICAL_KEYS = 6287
+_EXPECTED_COMPONENT_CONFLICT_GROUPS = 61
+_EXPECTED_COMPONENT_RENAMED_OCCURRENCES = 869
+_EXPECTED_COMPONENT_SHARED_OCCURRENCES = 4981
+_EXPECTED_SOURCE_GET_RESPONSES = 202
+_EXPECTED_SOURCE_REPLACE_REQUESTS = 167
+_EXPECTED_OUTPUT_GET_RESPONSES = 411
+_EXPECTED_OUTPUT_REPLACE_REQUESTS = 339
+_OPERATION_METADATA_FIELDS = frozenset(
+    {
+        "purpose",
+        "required_fields",
+        "optional_fields",
+        "field_docs",
+        "conditions",
+        "side_effects",
+        "danger_level",
+        "confirmation_required",
+        "common_errors",
+        "performance_impact",
+    }
+)
+_FLAT_OPERATION_METADATA_FIELDS = frozenset(
+    {
+        "x-f5xc-required-fields",
+        "x-f5xc-danger-level",
+        "x-f5xc-confirmation-required",
+        "x-f5xc-side-effects",
+    }
+)
+
+
+def _require_expected_accounting(
+    canonical: CanonicalizationResult,
+    resource_version: dict[str, int],
+    operations: dict[str, int],
+) -> None:
+    """Gate the measured upstream release contract before artifact projection."""
+    totals = canonical.accounting.totals
+    measured = {
+        "source_files": len(canonical.documents),
+        "source_operations": operations["source_operations"],
+        "canonical_operations": operations["canonical_operations"],
+        "operation_aliases": operations["explicit_aliases"],
+        "component_occurrences": totals.occurrences,
+        "component_canonical_keys": totals.canonical_keys,
+        "component_conflict_groups": totals.conflict_name_groups,
+        "component_renamed_occurrences": totals.renamed_occurrences,
+        "component_shared_occurrences": totals.shared_occurrences,
+        "source_get_responses": resource_version["get_responses"],
+        "source_replace_requests": resource_version["replace_requests"],
+    }
+    expected = {
+        "source_files": _EXPECTED_SOURCE_FILES,
+        "source_operations": _EXPECTED_SOURCE_OPERATIONS,
+        "canonical_operations": _EXPECTED_CANONICAL_OPERATIONS,
+        "operation_aliases": _EXPECTED_OPERATION_ALIASES,
+        "component_occurrences": _EXPECTED_COMPONENT_OCCURRENCES,
+        "component_canonical_keys": _EXPECTED_COMPONENT_CANONICAL_KEYS,
+        "component_conflict_groups": _EXPECTED_COMPONENT_CONFLICT_GROUPS,
+        "component_renamed_occurrences": _EXPECTED_COMPONENT_RENAMED_OCCURRENCES,
+        "component_shared_occurrences": _EXPECTED_COMPONENT_SHARED_OCCURRENCES,
+        "source_get_responses": _EXPECTED_SOURCE_GET_RESPONSES,
+        "source_replace_requests": _EXPECTED_SOURCE_REPLACE_REQUESTS,
+    }
+    if measured != expected:
+        raise RuntimeError(
+            f"upstream release accounting changed: expected={expected}, measured={measured}"
+        )
+
+
+def _count_output_resource_versions(specs: list[dict[str, Any]]) -> tuple[int, int]:
+    """Require every and only measured output shape to carry the optional token."""
+    get_responses = 0
+    replace_requests = 0
+    for spec in specs:
+        schemas = spec.get("components", {}).get("schemas")
+        if not isinstance(schemas, dict):
+            raise TypeError("generated OpenAPI graph has no components.schemas object")
+        for name, schema in schemas.items():
+            if not isinstance(schema, dict):
+                raise TypeError(f"generated schema {name!r} is not an object")
+            properties = schema.get("properties", {})
+            if not isinstance(properties, dict):
+                raise TypeError(f"generated schema {name!r} properties is not an object")
+            targeted = name.endswith(("GetResponse", "ReplaceRequest"))
+            declared = "resource_version" in properties
+            if targeted != declared:
+                raise RuntimeError(
+                    f"generated schema {name!r} resource_version declaration mismatch"
+                )
+            if not targeted:
+                continue
+            if schema.get("type") != "object":
+                raise RuntimeError(f"generated schema {name!r} is not an object schema")
+            declaration = properties["resource_version"]
+            if not isinstance(declaration, dict) or declaration.get("type") != "string":
+                raise RuntimeError(
+                    f"generated schema {name!r} resource_version is not a string schema"
+                )
+            required = schema.get("required", [])
+            if not isinstance(required, list):
+                raise TypeError(f"generated schema {name!r} required is not an array")
+            if "resource_version" in required:
+                raise RuntimeError(f"generated schema {name!r} requires resource_version")
+            if name.endswith("GetResponse"):
+                get_responses += 1
+            else:
+                replace_requests += 1
+    return get_responses, replace_requests
+
+
+def _require_expected_output_resource_versions(
+    specs: list[dict[str, Any]],
+) -> tuple[int, int]:
+    """Gate the exact generated optimistic-concurrency contract."""
+    measured = _count_output_resource_versions(specs)
+    expected = (
+        _EXPECTED_OUTPUT_GET_RESPONSES,
+        _EXPECTED_OUTPUT_REPLACE_REQUESTS,
+    )
+    if measured != expected:
+        raise RuntimeError(
+            "generated resource_version accounting changed: "
+            f"expected={expected}, measured={measured}"
+        )
+    return measured
+
+
+def _string_array(value: object) -> bool:
+    return (
+        isinstance(value, list)
+        and all(isinstance(item, str) and bool(item.strip()) for item in value)
+        and len(value) == len(set(value))
+    )
+
+
+def _operation_metadata_errors(metadata: object) -> list[str]:
+    """Return every structural defect in one operation metadata wrapper."""
+    if not isinstance(metadata, dict):
+        return ["x-f5xc-operation-metadata is not an object"]
+    errors: list[str] = []
+    missing = sorted(_OPERATION_METADATA_FIELDS - set(metadata))
+    extra = sorted(set(metadata) - _OPERATION_METADATA_FIELDS)
+    if missing:
+        errors.append(f"missing fields={missing}")
+    if extra:
+        errors.append(f"unknown fields={extra}")
+    if missing or extra:
+        return errors
+
+    if not isinstance(metadata["purpose"], str) or not metadata["purpose"].strip():
+        errors.append("purpose is not a non-empty string")
+    required = metadata["required_fields"]
+    optional = metadata["optional_fields"]
+    required_is_valid = _string_array(required)
+    optional_is_valid = _string_array(optional)
+    if not required_is_valid:
+        errors.append("required_fields is not a unique non-empty string array")
+    if not optional_is_valid:
+        errors.append("optional_fields is not a unique non-empty string array")
+    if required_is_valid and optional_is_valid and set(required) & set(optional):
+        errors.append("required_fields and optional_fields overlap")
+
+    field_docs = metadata["field_docs"]
+    if not isinstance(field_docs, dict) or any(
+        not isinstance(name, str)
+        or not name
+        or not isinstance(description, str)
+        or not description.strip()
+        for name, description in getattr(field_docs, "items", lambda: ())()
+    ):
+        errors.append("field_docs is not a non-empty-string mapping")
+
+    conditions = metadata["conditions"]
+    if not isinstance(conditions, dict) or set(conditions) != {
+        "prerequisites",
+        "postconditions",
+    }:
+        errors.append("conditions does not contain the exact structured fields")
+    elif not all(_string_array(conditions[field]) for field in sorted(conditions)):
+        errors.append("conditions values are not unique non-empty string arrays")
+
+    side_effects = metadata["side_effects"]
+    if not isinstance(side_effects, dict) or any(
+        effect not in {"creates", "modifies", "deletes"} or not _string_array(values)
+        for effect, values in getattr(side_effects, "items", lambda: ())()
+    ):
+        errors.append("side_effects is not a structured effect mapping")
+    danger = metadata["danger_level"]
+    if danger not in {"low", "medium", "high"}:
+        errors.append("danger_level is invalid")
+    confirmation = metadata["confirmation_required"]
+    if not isinstance(confirmation, bool) or confirmation != (danger == "high"):
+        errors.append("confirmation_required disagrees with danger_level")
+
+    common_errors = metadata["common_errors"]
+    if not isinstance(common_errors, list) or any(
+        not isinstance(error, dict)
+        or set(error) != {"code", "message", "solution"}
+        or not isinstance(error["code"], (int, str))
+        or isinstance(error["code"], bool)
+        or not isinstance(error["message"], str)
+        or not error["message"].strip()
+        or not isinstance(error["solution"], str)
+        or not error["solution"].strip()
+        for error in common_errors
+    ):
+        errors.append("common_errors is not a structured error array")
+
+    performance = metadata["performance_impact"]
+    if (
+        not isinstance(performance, dict)
+        or set(performance)
+        != {
+            "latency",
+            "resource_usage",
+        }
+        or any(value not in {"low", "moderate", "high"} for value in performance.values())
+    ):
+        errors.append("performance_impact is not the exact structured contract")
+    return errors
+
+
+def _require_complete_operation_metadata(specs: dict[str, dict[str, Any]]) -> int:
+    """Gate every operation in every candidate artifact without sampling."""
+    failures: list[str] = []
+    operation_count = 0
+    for filename, spec in sorted(specs.items()):
+        paths = spec.get("paths")
+        if not isinstance(paths, dict):
+            failures.append(f"{filename} paths is not an object")
+            continue
+        for path, path_item in sorted(paths.items()):
+            if not isinstance(path_item, dict):
+                failures.append(f"{filename} path {path} is not an object")
+                continue
+            for method, operation in sorted(path_item.items()):
+                if method.lower() not in HTTP_METHODS:
+                    continue
+                operation_count += 1
+                location = f"{filename} {method.upper()} {path}"
+                if not isinstance(operation, dict):
+                    failures.append(f"{location}: operation is not an object")
+                    continue
+                flat = sorted(_FLAT_OPERATION_METADATA_FIELDS & set(operation))
+                if flat:
+                    failures.append(f"{location}: flat metadata fields={flat}")
+                failures.extend(
+                    f"{location}: {error}"
+                    for error in _operation_metadata_errors(
+                        operation.get(X_F5XC_OPERATION_METADATA)
+                    )
+                )
+    if failures:
+        raise RuntimeError(
+            "generated operation metadata contract failed:\n- " + "\n- ".join(failures)
+        )
+    return operation_count
+
+
 # =============================================================================
 # MAIN PIPELINE
 # =============================================================================
 
 
-def get_version() -> str:
-    """Get version from git tags or generate date-based version.
-
-    Uses tag-based versioning to eliminate race conditions from file-based versioning.
-    """
-    version = get_version_from_tags()
-    if version == "0.0.0":
-        # Fallback to date-based version if no tags exist
-        return datetime.now(tz=timezone.utc).strftime("%Y.%m.%d")
-    return version
-
-
 def run_pipeline(
     input_dir: Path,
     output_dir: Path,
+    report_dir: Path,
     config: dict,
+    version: str,
     dry_run: bool = False,
 ) -> PipelineStats:
     """Run the complete enrichment pipeline.
 
-    Processes specs in memory (enrich → normalize → discovery → reconcile) then merges by domain.
+    Processes immutable upstream specs in memory, then canonicalizes and merges by domain.
     No individual files are written - only merged domain specs.
 
     Args:
         input_dir: Directory containing original specifications (READ-ONLY).
         output_dir: Directory for merged domain specs output.
+        report_dir: Directory for non-release diagnostic reports.
         config: Pipeline configuration.
+        version: Explicit build identity for every generated artifact.
         dry_run: Analyze without writing output.
 
     Returns:
         PipelineStats with processing summary.
     """
+    if "discovery_enrichment" in config:
+        raise ValueError(
+            "release pipeline configuration must not include discovery_enrichment; "
+            "live discovery snapshots are not release inputs"
+        )
+
     # Initialize memory profiler (Issue #390)
     with MemoryProfiler() as profiler:
         profiler.checkpoint("pipeline_start")
 
         stats = PipelineStats()
 
-        # Find all spec files
-        spec_files = sorted(input_dir.glob("*.json"))
-        if not spec_files:
-            console.print(f"[yellow]No specification files found in {input_dir}[/yellow]")
-            return stats
+        spec_files = source_spec_files(input_dir)
 
         console.print(f"[blue]Found {len(spec_files)} specification files[/blue]")
         profiler.checkpoint("specs_discovered")
 
-        # Create output directory and clean old files
-        if not dry_run:
-            output_dir.mkdir(parents=True, exist_ok=True)
-
-            # Remove all existing JSON spec files to ensure clean state
-            # This prevents rogue/stale files from previous runs
-            for json_file in output_dir.glob("*.json"):
-                json_file.unlink()
-                console.print(f"[dim]Cleaned: {json_file.name}[/dim]")
-
-        # Load discovery enrichment configuration
-        discovery_config_path = Path("config/discovery_enrichment.yaml")
-        discovery_config: dict = {}
-        if discovery_config_path.exists():
-            with discovery_config_path.open() as f:
-                discovery_config = yaml.safe_load(f) or {}
-
-        # Check if discovery enrichment is enabled
-        discovery_enabled = config.get("discovery_enrichment", {}).get("enabled", False)
-        discovery_enricher = None
-        discovery_data = None
-
-        if discovery_enabled:
-            discovery_settings = discovery_config.get("discovery_enrichment", {})
-            discovered_dir = Path(
-                discovery_settings.get("discovered_specs_dir", "specs/discovered"),
-            )
-
-            if discovered_dir.exists() and (discovered_dir / "openapi.json").exists():
-                console.print("[blue]Loading discovery data for enrichment...[/blue]")
-                discovery_enricher = DiscoveryEnricher(discovery_settings)
-                discovery_data = discovery_enricher.load_discovery_data(discovered_dir)
-                console.print(
-                    f"[green]Discovery data loaded: {len(discovery_data.schemas)} schemas, "
-                    f"{len(discovery_data.paths)} paths[/green]",
-                )
-            else:
-                console.print(
-                    "[yellow]Discovery enrichment enabled but no discovery data found[/yellow]",
-                )
-
-        # Check if constraint reconciliation is enabled
-        reconciliation_config = discovery_config.get("reconciliation", {})
-        reconciliation_enabled = reconciliation_config.get("enabled", True) and discovery_enabled
-        reconciler = None
-
-        if reconciliation_enabled:
-            reconciler = ConstraintReconciler(reconciliation_config)
+        # Validate the complete source graph before enrichment or destructive
+        # output preparation. A documentation pipeline cannot repair API contracts.
+        source_errors = validate_source_files(spec_files)
+        if source_errors:
+            stats.files_processed = len(spec_files)
+            stats.files_failed = len(source_errors)
+            stats.errors.extend(source_errors)
             console.print(
-                f"[blue]Constraint reconciliation enabled (mode: {reconciler.mode})[/blue]",
+                f"[red]Source graph validation failed for {len(source_errors)} "
+                "specification(s)[/red]",
             )
+            return stats
 
         # Process specs in memory using batch processing (Issue #390 Phase 2)
         processed_specs: dict[str, dict[str, Any]] = {}
-        output_config = config.get("output", {})
-        indent = output_config.get("json_indent", 2)
+        output_config = config["output"]
+        indent = output_config["json_indent"]
         profiler.checkpoint("configuration_loaded")
 
         # Initialize batch processor with configurable batch size
-        batch_size = config.get("processing", {}).get("batch_size", 20)
+        batch_size = config["processing"]["batch_size"]
         batch_processor = BatchSpecProcessor(batch_size=batch_size)
         console.print(f"[blue]Using batch processing: {batch_size} specs per batch[/blue]")
 
@@ -1783,16 +2369,17 @@ def run_pipeline(
             )
             profiler.checkpoint("batch_processing_complete", force_gc=True)
 
-            # Collect batch stats from first spec (all specs contribute equally)
-            if cache_paths:
-                first_cache_path = next(iter(cache_paths.values()))
-                batch_processor.load_cached_spec(first_cache_path)
-
-                # Estimate stats (multiply by number of processed specs)
-                processed_count = len(cache_paths)
-                stats.files_processed = processed_count
-                stats.files_succeeded = processed_count
-                # Note: Actual enrichment/normalization stats collection happens below
+            stats.files_processed = len(spec_files)
+            stats.files_succeeded = len(cache_paths)
+            missing_files = sorted({path.name for path in spec_files} - cache_paths.keys())
+            stats.files_failed = len(missing_files)
+            stats.errors.extend(
+                {
+                    "file": filename,
+                    "error": "batch processing failed to produce a cached specification",
+                }
+                for filename in missing_files
+            )
 
             batch_stats = batch_processor.get_stats()
             console.print(
@@ -1800,62 +2387,20 @@ def run_pipeline(
                 f"{batch_stats['batches_processed']} batches[/green]",
             )
 
+            if missing_files:
+                batch_processor.cleanup_cache()
+                console.print(
+                    f"[red]Batch processing omitted {len(missing_files)} specification(s); "
+                    "merge aborted[/red]",
+                )
+                return stats
+
         except Exception as e:
+            batch_processor.cleanup_cache()
             console.print(f"[red]Batch processing failed: {e!s}[/red]")
             raise
 
-        # Step 3-4: Batch process discovery/reconciliation (Phase 3 optimization)
-        # Process in batches to avoid accumulating all specs in memory
-        if (discovery_enricher and discovery_data) or reconciler:
-            console.print("[blue]Applying discovery and reconciliation in batches...[/blue]")
-
-            # Create wrapper functions with statistics tracking
-            discovery_func = None
-            if discovery_enricher and discovery_data:
-
-                def apply_discovery(spec: dict) -> dict:
-                    """Apply discovery enrichment and track stats."""
-                    enriched = discovery_enricher.enrich_with_discoveries(spec, discovery_data)
-                    discovery_stats = discovery_enricher.get_stats()
-                    stats.discovery_enriched += discovery_stats.get("fields_enriched", 0)
-                    return enriched
-
-                discovery_func = apply_discovery
-
-            reconcile_func = None
-            if reconciler:
-
-                def apply_reconciliation(spec: dict) -> tuple[dict, dict]:
-                    """Apply constraint reconciliation and track stats."""
-                    reconciled, reconcile_report = reconciler.reconcile_spec(spec)
-                    reconcile_stats = reconcile_report.get("statistics", {})
-                    stats.constraints_reconciled += reconcile_stats.get("reconciled", 0)
-                    stats.constraints_preserved += reconcile_stats.get("preserved", 0)
-                    return reconciled, reconcile_report
-
-                reconcile_func = apply_reconciliation
-
-            try:
-                # Batch process discovery/reconciliation (writes back to cache)
-                cache_paths = batch_processor.process_discovery_reconciliation_batch(
-                    cache_paths,
-                    discovery_func=discovery_func,
-                    reconcile_func=reconcile_func,
-                )
-
-                batch_stats = batch_processor.get_stats()
-                console.print(
-                    f"[green]Discovery/reconciliation complete: {len(cache_paths)} specs processed "
-                    f"in {batch_stats['batches_processed']} batches[/green]",
-                )
-
-            except Exception as e:
-                console.print(f"[red]Discovery/reconciliation batch processing failed: {e!s}[/red]")
-                raise
-
-        profiler.checkpoint("discovery_reconciliation_complete", force_gc=True)
-
-        # Step 5: Merge by domain (load from cache just-in-time for merge)
+        # Merge by domain (load from cache just-in-time for merge)
         if not dry_run and cache_paths:
             console.print("[blue]Loading processed specs from cache for merging...[/blue]")
 
@@ -1865,113 +2410,107 @@ def run_pipeline(
                 try:
                     processed_specs[filename] = batch_processor.load_cached_spec(cache_path)
                 except Exception as e:
-                    console.print(
-                        f"[yellow]Warning: Failed to load {filename} from cache: {e!s}[/yellow]",
-                    )
+                    console.print(f"[red]Failed to load {filename} from cache: {e!s}[/red]")
                     stats.files_failed += 1
+                    stats.files_succeeded -= 1
+                    stats.errors.append(
+                        {"file": filename, "error": f"failed to load cached specification: {e!s}"},
+                    )
+
+            if stats.errors:
+                batch_processor.cleanup_cache()
+                console.print("[red]Cached specification load failed; merge aborted[/red]")
+                return stats
 
             profiler.checkpoint("specs_loaded_for_merge", force_gc=True)
 
-            console.print("[blue]Merging specifications by domain...[/blue]")
-            version = get_version()
+            for filename, spec in sorted(processed_specs.items()):
+                try:
+                    validate_source_graph(spec)
+                except SourceGraphValidationError as exc:
+                    batch_processor.cleanup_cache()
+                    raise RuntimeError(
+                        f"processed source graph {filename} is invalid: {exc}"
+                    ) from exc
 
-            domain_specs, merge_stats = merge_specs_by_domain(processed_specs, version)
-            stats.domains_created = merge_stats["domains"]
-            stats.paths_merged = merge_stats["paths"]
-            stats.schemas_merged = merge_stats["schemas"]
-            stats.best_practices_enriched = merge_stats.get("best_practices_enriched", 0)
-            stats.guided_workflows_added = merge_stats.get("guided_workflows_added", 0)
-            stats.conflicts_with_added = merge_stats.get("conflicts_with_added", 0)
-
-            # Clear processed_specs to free memory before saving
+            resource_documents, resource_accounting = declare_resource_versions(processed_specs)
             del processed_specs
+            canonical = canonicalize_source_components(resource_documents)
+            del resource_documents
+            operation_accounting = validate_operation_alias_accounting(
+                canonical.documents,
+                load_operation_aliases(),
+            )
+            _require_expected_accounting(
+                canonical,
+                resource_accounting.to_dict(),
+                operation_accounting,
+            )
 
-            profiler.checkpoint("specs_merged", force_gc=True)
+            totals = canonical.accounting.totals
+            stats.resource_version_get_responses = resource_accounting.get_responses
+            stats.resource_version_replace_requests = resource_accounting.replace_requests
+            stats.resource_version_declarations = resource_accounting.total
+            stats.component_occurrences = totals.occurrences
+            stats.component_canonical_keys = totals.canonical_keys
+            stats.component_conflict_name_groups = totals.conflict_name_groups
+            stats.component_renamed_occurrences = totals.renamed_occurrences
+            stats.component_shared_occurrences = totals.shared_occurrences
+            stats.component_accounting = canonical.accounting.to_dict()
 
-            # Clean up cache files after merge
             batch_processor.cleanup_cache()
             console.print("[dim]Cache cleanup complete[/dim]")
 
-            # Project naming constraints onto standard JSON-Schema keywords as the
-            # final, authoritative step (after discovery + reconciliation), so
-            # downstream consumers can pull them without parsing x-f5xc-constraints.
-            schema_projector = SchemaConstraintProjector()
-            for spec in domain_specs.values():
-                schema_projector.enrich_spec(spec)
-            stats.naming_constraints_projected = schema_projector.get_stats()[
-                "properties_projected"
-            ]
+            console.print("[blue]Creating canonical master specification...[/blue]")
+            master_spec = create_master_spec(canonical, version)
 
-            # Save domain specs
-            for domain, spec in domain_specs.items():
-                save_spec(spec, output_dir / f"{domain}.json", indent=indent)
+            console.print("[blue]Merging specifications by domain...[/blue]")
+            domain_specs, merge_stats = merge_specs_by_domain(canonical.documents, version)
+            stats.domains_created = merge_stats["domains"]
+            stats.paths_merged = merge_stats["paths"]
+            stats.schemas_merged = merge_stats["schemas"]
+            stats.source_operations = merge_stats["source_operations"]
+            stats.canonical_operations = merge_stats["canonical_operations"]
+            stats.explicit_operation_aliases = merge_stats["explicit_operation_aliases"]
+            stats.best_practices_enriched = merge_stats.get("best_practices_enriched", 0)
+            stats.guided_workflows_added = merge_stats.get("guided_workflows_added", 0)
+            stats.conflicts_with_added = merge_stats.get("conflicts_with_added", 0)
+            stats.naming_constraints_projected = merge_stats.get("naming_constraints_projected", 0)
 
-            # Create master spec
-            master = create_master_spec(domain_specs, version)
-            save_spec(master, output_dir / "openapi.json", indent=indent)
+            del canonical
 
-            # Create index
-            index = create_spec_index(domain_specs, version)
-            save_spec(index, output_dir / "index.json", indent=indent)
+            profiler.checkpoint("specs_merged", force_gc=True)
 
-            # Export validation specification for downstream consumers.
-            # ValidationExporter.export() now delegates to write_json_file,
-            # which applies Biome formatting at the source.
-            try:
-                validation_exporter = ValidationExporter()
-                validation_path = output_dir / "validation.json"
-                validation_exporter.export(validation_path)
-                validation_stats = validation_exporter.get_stats()
-                console.print(
-                    f"[green]Exported validation.json: "
-                    f"{validation_stats['resources_processed']} resources, "
-                    f"{validation_stats['required_fields_exported']} required fields, "
-                    f"{validation_stats['enum_values_exported']} enum values[/green]",
-                )
-            except Exception as e:
-                console.print(f"[yellow]Warning: Failed to export validation spec: {e}[/yellow]")
+            target_fields = config["target_fields"]
+            release_specs = {
+                "openapi.json": _normalize_release_text(master_spec, target_fields),
+                **{
+                    f"{domain}.json": _normalize_release_text(spec, target_fields)
+                    for domain, spec in sorted(domain_specs.items())
+                },
+            }
+            master_spec = release_specs["openapi.json"]
+            domain_specs = {domain: release_specs[f"{domain}.json"] for domain in domain_specs}
 
-            # Export minimal-export-defaults.json for downstream minimum-settings
-            # export (xcsh, vscode-xcsh). Walks each covered SpecType schema
-            # and emits the flat per-kind defaults table.
-            try:
-                minimal_exporter = MinimalDefaultsExporter()
-                minimal_schemas = MinimalDefaultsExporter.collect_schemas(domain_specs.values())
-                minimal_artifact = minimal_exporter.export(
-                    minimal_schemas,
-                    output_dir / "minimal-export-defaults.json",
-                    version=version,
-                )
-                console.print(
-                    f"[green]Exported minimal-export-defaults.json: "
-                    f"{len(minimal_artifact['resources'])} resources[/green]",
-                )
-            except Exception as e:
-                console.print(f"[yellow]Warning: Failed to export minimal defaults: {e}[/yellow]")
+            _require_expected_output_resource_versions([master_spec, *domain_specs.values()])
+            _require_complete_operation_metadata(release_specs)
+            _validate_release_findings(release_specs, target_fields)
 
-            # Export namespace_profiles.json — the authoritative resource->namespace
-            # scope map consumed by downstream tree filtering (vscode-xcsh, xcsh).
-            # Rides alongside the domain specs (like validation.json) and is read by
-            # the consumer via an explicit path, not parsed as a domain spec.
-            try:
-                np_profiles_exporter = NamespaceProfilesExporter()
-                np_profiles_artifact = np_profiles_exporter.export(
-                    output_dir / "namespace_profiles.json",
-                    version=version,
-                )
-                console.print(
-                    f"[green]Exported namespace_profiles.json: "
-                    f"{len(np_profiles_artifact['resources'])} resource overrides + default[/green]",
-                )
-            except Exception as e:
-                console.print(f"[yellow]Warning: Failed to export namespace profiles: {e}[/yellow]")
+            # Generate every artifact into a sibling directory, validate the
+            # complete set, and only then replace the current artifact tree.
+            _publish_generated_outputs(
+                domain_specs,
+                master_spec,
+                output_dir,
+                version,
+                indent,
+            )
 
             console.print(f"[green]Created {len(domain_specs)} domain specs + master spec[/green]")
 
         profiler.checkpoint("pipeline_complete")
 
         # Save memory profiling report (Issue #390)
-        report_dir = Path("reports")
         report_dir.mkdir(parents=True, exist_ok=True)
         profiler.save_report(report_dir / "memory-profile.json")
         console.print("[blue]Memory profiling report saved to reports/memory-profile.json[/blue]")
@@ -1997,14 +2536,12 @@ def print_summary(stats: PipelineStats) -> None:
     table.add_row("Domains Created", str(stats.domains_created))
     table.add_row("Paths Merged", str(stats.paths_merged))
     table.add_row("Schemas Merged", str(stats.schemas_merged))
-
-    # Discovery enrichment stats (if any)
-    if stats.discovery_enriched > 0:
-        table.add_row("Discovery Enriched", str(stats.discovery_enriched))
-    if stats.constraints_reconciled > 0:
-        table.add_row("Constraints Reconciled", str(stats.constraints_reconciled))
-    if stats.constraints_preserved > 0:
-        table.add_row("Custom Extensions Preserved", str(stats.constraints_preserved))
+    table.add_row("Source Operations", str(stats.source_operations))
+    table.add_row("Canonical Operations", str(stats.canonical_operations))
+    table.add_row("Explicit Operation Aliases", str(stats.explicit_operation_aliases))
+    table.add_row("Resource Version Declarations", str(stats.resource_version_declarations))
+    table.add_row("Component Occurrences", str(stats.component_occurrences))
+    table.add_row("Canonical Component Keys", str(stats.component_canonical_keys))
 
     # Issue #314 enrichment stats
     if stats.best_practices_enriched > 0:
@@ -2029,7 +2566,7 @@ def print_summary(stats: PipelineStats) -> None:
 def generate_report(stats: PipelineStats, output_path: Path) -> None:
     """Generate pipeline report."""
     report = {
-        "timestamp": datetime.now(tz=timezone.utc).isoformat(),
+        "timestamp": datetime.now(tz=UTC).isoformat(),
         "summary": {
             "files_processed": stats.files_processed,
             "files_succeeded": stats.files_succeeded,
@@ -2043,14 +2580,23 @@ def generate_report(stats: PipelineStats, output_path: Path) -> None:
             "domains_created": stats.domains_created,
             "paths_merged": stats.paths_merged,
             "schemas_merged": stats.schemas_merged,
-            "discovery_enriched": stats.discovery_enriched,
-            "constraints_reconciled": stats.constraints_reconciled,
-            "constraints_preserved": stats.constraints_preserved,
+            "source_operations": stats.source_operations,
+            "canonical_operations": stats.canonical_operations,
+            "explicit_operation_aliases": stats.explicit_operation_aliases,
+            "resource_version_get_responses": stats.resource_version_get_responses,
+            "resource_version_replace_requests": stats.resource_version_replace_requests,
+            "resource_version_declarations": stats.resource_version_declarations,
+            "component_occurrences": stats.component_occurrences,
+            "component_canonical_keys": stats.component_canonical_keys,
+            "component_conflict_name_groups": stats.component_conflict_name_groups,
+            "component_renamed_occurrences": stats.component_renamed_occurrences,
+            "component_shared_occurrences": stats.component_shared_occurrences,
             "best_practices_enriched": stats.best_practices_enriched,
             "guided_workflows_added": stats.guided_workflows_added,
             "error_resolutions_added": stats.error_resolutions_added,
             "conflicts_with_added": stats.conflicts_with_added,
         },
+        "component_accounting": stats.component_accounting,
         "errors": stats.errors,
     }
 
@@ -2069,8 +2615,8 @@ def main() -> int:
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-    python -m scripts.pipeline              # Full pipeline
-    python -m scripts.pipeline --dry-run    # Analyze without writing
+    python -m scripts.pipeline --version 2.1.208              # Full pipeline
+    python -m scripts.pipeline --version 2.1.208 --dry-run    # Analyze without writing
 
 Output (merged domain specs only):
     docs/specifications/api/
@@ -2099,10 +2645,15 @@ Output (merged domain specs only):
         """,
     )
     parser.add_argument(
+        "--version",
+        required=True,
+        type=_semantic_version,
+        help="Explicit build version to stamp into every generated artifact",
+    )
+    parser.add_argument(
         "--config",
         type=Path,
-        default=Path("config/enrichment.yaml"),
-        help="Path to configuration file",
+        help="Path to configuration overlay (default: packaged enrichment configuration)",
     )
     parser.add_argument(
         "--input-dir",
@@ -2115,6 +2666,11 @@ Output (merged domain specs only):
         help="Override output directory for enriched specs",
     )
     parser.add_argument(
+        "--report-dir",
+        type=Path,
+        help="Override directory for diagnostic reports",
+    )
+    parser.add_argument(
         "--dry-run",
         action="store_true",
         help="Analyze specs without writing output",
@@ -2125,20 +2681,10 @@ Output (merged domain specs only):
     # Load configuration
     config = load_config(args.config)
 
-    # Auto-enable discovery enrichment if environment variable is set
-    # This allows GitHub Actions to enable discovery without config changes
-    if os.environ.get("DISCOVERY_ENRICHMENT_ENABLED", "").lower() == "true":
-        if "discovery_enrichment" not in config:
-            config["discovery_enrichment"] = {}
-        config["discovery_enrichment"]["enabled"] = True
-        console.print(
-            "[blue]Discovery enrichment enabled via DISCOVERY_ENRICHMENT_ENABLED env var[/blue]",
-        )
-
     # Determine directories
     input_dir = args.input_dir or Path(config["paths"]["original"])
     output_dir = args.output_dir or Path(config["paths"]["enriched"])
-    report_dir = Path(config["paths"]["reports"])
+    report_dir = args.report_dir or Path(config["paths"]["reports"])
 
     console.print("[bold blue]F5 XC API Enrichment Pipeline[/bold blue]")
     console.print(f"  Input:  {input_dir}")
@@ -2156,7 +2702,9 @@ Output (merged domain specs only):
     stats = run_pipeline(
         input_dir=input_dir,
         output_dir=output_dir,
+        report_dir=report_dir,
         config=config,
+        version=args.version,
         dry_run=args.dry_run,
     )
 
@@ -2168,13 +2716,24 @@ Output (merged domain specs only):
     # Print summary
     print_summary(stats)
 
-    # Exit with error if any files failed
-    if stats.files_failed > 0:
-        console.print(f"\n[yellow]Completed with {stats.files_failed} failures[/yellow]")
-        return 1 if not config.get("processing", {}).get("continue_on_error", True) else 0
+    # Every recorded error is fatal, even if a stage failed to increment the
+    # legacy files_failed counter.
+    if stats.files_failed > 0 or stats.errors:
+        console.print(
+            f"\n[yellow]Completed with {stats.files_failed} failed file(s) and "
+            f"{len(stats.errors)} recorded error(s)[/yellow]",
+        )
+        return 1
 
     console.print(f"\n[bold green]Pipeline complete! Output: {output_dir}[/bold green]")
     return 0
+
+
+def _semantic_version(value: str) -> str:
+    """Validate a release build identity for argparse."""
+    if not re.fullmatch(r"\d+\.\d+\.\d+", value):
+        raise argparse.ArgumentTypeError(f"not a semantic version: {value!r}")
+    return value
 
 
 if __name__ == "__main__":

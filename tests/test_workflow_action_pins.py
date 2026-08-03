@@ -1,7 +1,12 @@
+# Copyright (c) 2026 Robin Mordasiewicz. MIT License.
+
+"""Every remote workflow dependency must resolve to immutable Git bytes."""
+
 import re
 from pathlib import Path
 
-WORKFLOWS = Path(__file__).parents[1] / ".github" / "workflows"
+ROOT = Path(__file__).resolve().parents[1]
+WORKFLOWS = ROOT / ".github" / "workflows"
 USES_LINE = re.compile(r"^\s*(?:-\s*)?uses:\s*(\S+)")
 IMMUTABLE_REMOTE_USE = re.compile(r"^[^@\s]+@[0-9a-f]{40}$")
 
@@ -17,19 +22,20 @@ def test_uses_parser_accepts_job_and_inline_step_syntax() -> None:
 
 def test_every_remote_action_reference_is_immutable() -> None:
     mutable: list[str] = []
+    workflow_files = sorted(
+        [*(ROOT / ".github").rglob("*.yml"), *(ROOT / ".github").rglob("*.yaml")]
+    )
 
-    for workflow in sorted(WORKFLOWS.glob("*.y*ml")):
+    for workflow in workflow_files:
         for line_number, line in enumerate(workflow.read_text().splitlines(), start=1):
             match = USES_LINE.match(line)
             if match is None:
                 continue
             reference = match.group(1)
-            if reference.startswith("./"):
+            if reference.startswith(("./", "docker://")):
                 continue
             if IMMUTABLE_REMOTE_USE.fullmatch(reference) is None:
-                mutable.append(
-                    f"{workflow.relative_to(WORKFLOWS.parent.parent)}:{line_number}: {reference}"
-                )
+                mutable.append(f"{workflow.relative_to(ROOT)}:{line_number}: {reference}")
 
     assert not mutable, "Mutable remote action references:\n" + "\n".join(mutable)
 

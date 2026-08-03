@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
 # Copyright (c) 2026 Robin Mordasiewicz. MIT License.
 
-"""Normalize OpenAPI specifications to fix structural issues.
+"""Normalize structurally valid OpenAPI specifications.
 
-Resolves orphan $ref references, removes empty operations, and ensures
-schema compliance for Scalar and Swagger UI compatibility.
-Fully automated - no manual intervention required.
+Malformed references and operations fail closed before output is written.
 
 IMPORTANT: This script reads from docs/specifications/api and writes in-place.
 The original specs (specs/original/) are NEVER modified.
@@ -15,55 +13,40 @@ from __future__ import annotations
 
 import argparse
 import json
-import re
 import sys
 from collections import defaultdict
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
-
-if TYPE_CHECKING:
-    from collections.abc import Callable
+from tempfile import TemporaryDirectory
+from typing import Any
 
 import yaml
+from openapi_spec_validator import validate
 from rich.console import Console
 from rich.progress import BarColumn, Progress, SpinnerColumn, TextColumn, TimeElapsedColumn
 from rich.table import Table
 
+from scripts.package_config import load_packaged_yaml
 from scripts.utils.json_writer import write_json_file
+from scripts.utils.source_graph_validator import (
+    select_source_specs,
+    source_spec_files,
+    validate_source_graph,
+)
+from scripts.utils.spec_batch import publish_spec_batch
 
 console = Console()
 
-# Precompiled regex pattern for component ref parsing (Issue #391)
-# This pattern is used in hot paths (called for every $ref in specs - ~5,000 times per pipeline run)
-_COMPONENT_REF_PATTERN = re.compile(r"^#/components/(\w+)/(.+)$")
+# Public for processing APIs and tests; its bytes come only from the packaged YAML.
+DEFAULT_CONFIG = load_packaged_yaml("normalization.yaml")
 
-# Default configuration
-DEFAULT_CONFIG = {
-    "paths": {
-        "enriched": "docs/specifications/api",
-        "normalized": "docs/specifications/api",
-        "reports": "reports",
-    },
-    "normalization": {
-        "fix_orphan_refs": True,
-        "create_missing_components": True,
-        "inline_orphan_request_bodies": True,
-        "remove_empty_objects": True,
-        "detect_circular_refs": True,
-        "type_standardization": True,
-        "remove_orphan_operations": True,
-    },
-    "processing": {
-        "parallel_workers": 4,
-        "continue_on_error": True,
-    },
-    "output": {
-        "json_indent": 2,
-        "sort_keys": False,
-    },
+_CONFIG_SCHEMA = {
+    "paths": frozenset({"enriched", "normalized", "reports"}),
+    "normalization": frozenset({"type_standardization"}),
+    "processing": frozenset({"parallel_workers"}),
+    "output": frozenset({"json_indent", "sort_keys"}),
 }
 
 
@@ -74,10 +57,6 @@ class NormalizationStats:
     files_processed: int = 0
     files_succeeded: int = 0
     files_failed: int = 0
-    orphan_refs_fixed: int = 0
-    empty_operations_removed: int = 0
-    missing_components_created: int = 0
-    circular_refs_broken: int = 0
     types_normalized: int = 0
     errors: list[dict[str, Any]] = field(default_factory=list)
 
@@ -93,12 +72,22 @@ class NormalizationResult:
 
 
 def load_config(config_path: Path | None = None) -> dict:
-    """Load configuration from YAML file or use defaults."""
-    if config_path and config_path.exists():
+    """Load packaged normalization configuration with an optional validated overlay."""
+    canonical = load_packaged_yaml("normalization.yaml")
+    overlay: dict[str, Any] = {}
+    if config_path is not None:
+        if not config_path.is_file():
+            raise FileNotFoundError(f"normalization configuration not found: {config_path}")
         with config_path.open() as f:
-            config = yaml.safe_load(f) or {}
-            return _deep_merge(DEFAULT_CONFIG, config)
-    return DEFAULT_CONFIG
+            document = yaml.safe_load(f)
+        if document is not None:
+            if not isinstance(document, dict):
+                raise TypeError("normalization configuration must be an object")
+            overlay = document
+        _validate_config(overlay)
+    config = _deep_merge(canonical, overlay)
+    _validate_config(config)
+    return config
 
 
 def _deep_merge(base: dict, override: dict) -> dict:
@@ -110,6 +99,26 @@ def _deep_merge(base: dict, override: dict) -> dict:
         else:
             result[key] = value
     return result
+
+
+def _validate_config(config: dict[str, Any]) -> None:
+    """Reject obsolete or misspelled controls instead of silently ignoring them."""
+    if not isinstance(config, dict):
+        raise TypeError("normalization configuration must be an object")
+    unknown_sections = sorted(set(config) - set(_CONFIG_SCHEMA))
+    if unknown_sections:
+        raise ValueError(f"unsupported normalization configuration sections: {unknown_sections}")
+    for section, allowed_keys in _CONFIG_SCHEMA.items():
+        if section not in config:
+            continue
+        section_config = config[section]
+        if not isinstance(section_config, dict):
+            raise TypeError(f"normalization configuration {section!r} must be an object")
+        unknown_keys = sorted(set(section_config) - allowed_keys)
+        if unknown_keys:
+            raise ValueError(
+                f"unsupported normalization configuration keys in {section!r}: {unknown_keys}"
+            )
 
 
 def load_spec(spec_path: Path) -> dict[str, Any]:
@@ -138,256 +147,14 @@ def save_spec(
     )
 
 
-def collect_all_refs(obj: Any, refs: set[str] | None = None, path: str = "") -> set[str]:
-    """Collect all $ref values in a specification."""
-    if refs is None:
-        refs = set()
-
-    if isinstance(obj, dict):
-        if "$ref" in obj and isinstance(obj["$ref"], str):
-            refs.add(obj["$ref"])
-        for key, value in obj.items():
-            collect_all_refs(value, refs, f"{path}/{key}")
-    elif isinstance(obj, list):
-        for i, item in enumerate(obj):
-            collect_all_refs(item, refs, f"{path}[{i}]")
-
-    return refs
-
-
-def get_component_from_ref(ref: str) -> tuple[str, str] | None:
-    """Extract component type and name from a $ref string.
-
-    Returns (component_type, component_name) or None if not a local component ref.
-    """
-    # Match patterns like #/components/schemas/MySchema
-    match = _COMPONENT_REF_PATTERN.match(ref)
-    if match:
-        return match.group(1), match.group(2)
+def _validation_error(spec_file: Path) -> str | None:
+    try:
+        spec = load_spec(spec_file)
+        validate_source_graph(spec)
+        validate(spec)
+    except Exception as error:
+        return f"{spec_file.name}: {error}"
     return None
-
-
-def get_existing_components(spec: dict[str, Any]) -> dict[str, set[str]]:
-    """Get all existing components organized by type."""
-    components = defaultdict(set)
-    spec_components = spec.get("components", {})
-
-    for component_type in [
-        "schemas",
-        "responses",
-        "parameters",
-        "examples",
-        "requestBodies",
-        "headers",
-        "securitySchemes",
-        "links",
-        "callbacks",
-    ]:
-        if component_type in spec_components:
-            components[component_type] = set(spec_components[component_type].keys())
-
-    return components
-
-
-def find_orphan_refs(spec: dict[str, Any]) -> list[tuple[str, str, str]]:
-    """Find all $refs that point to non-existent components.
-
-    Returns list of (ref_string, component_type, component_name).
-    """
-    all_refs = collect_all_refs(spec)
-    existing_components = get_existing_components(spec)
-    orphans = []
-
-    for ref in all_refs:
-        parsed = get_component_from_ref(ref)
-        if parsed:
-            component_type, component_name = parsed
-            if component_name not in existing_components.get(component_type, set()):
-                orphans.append((ref, component_type, component_name))
-
-    return orphans
-
-
-def create_stub_component(component_type: str, component_name: str) -> dict[str, Any]:
-    """Create a stub component definition."""
-
-    def _schema_stub(name: str) -> dict[str, Any]:
-        return {
-            "type": "object",
-            "description": f"Auto-generated stub for {name}",
-            "x-generated": True,
-        }
-
-    def _request_body_stub(name: str) -> dict[str, Any]:
-        return {
-            "description": f"Auto-generated stub for {name}",
-            "content": {
-                "application/json": {
-                    "schema": {
-                        "type": "object",
-                        "description": f"Request body for {name}",
-                    },
-                },
-            },
-            "x-generated": True,
-        }
-
-    def _response_stub(name: str) -> dict[str, Any]:
-        return {
-            "description": f"Auto-generated stub response for {name}",
-            "x-generated": True,
-        }
-
-    def _parameter_stub(name: str) -> dict[str, Any]:
-        return {
-            "name": name,
-            "in": "query",
-            "description": f"Auto-generated stub parameter for {name}",
-            "schema": {"type": "string"},
-            "x-generated": True,
-        }
-
-    def _default_stub(name: str) -> dict[str, Any]:
-        return {
-            "description": f"Auto-generated stub for {name}",
-            "x-generated": True,
-        }
-
-    stub_factories: dict[str, Callable[[str], dict[str, Any]]] = {
-        "schemas": _schema_stub,
-        "requestBodies": _request_body_stub,
-        "responses": _response_stub,
-        "parameters": _parameter_stub,
-    }
-    return stub_factories.get(component_type, _default_stub)(component_name)
-
-
-def fix_orphan_refs(spec: dict[str, Any], config: dict) -> tuple[dict[str, Any], int]:
-    """Fix orphan $ref references by creating missing components.
-
-    Returns (modified_spec, count_of_fixes).
-    """
-    norm_config = config.get("normalization", {})
-    create_missing = norm_config.get("create_missing_components", True)
-
-    orphans = find_orphan_refs(spec)
-    if not orphans:
-        return spec, 0
-
-    fixed_count = 0
-
-    # Ensure components section exists
-    if "components" not in spec:
-        spec["components"] = {}
-
-    for _ref, component_type, component_name in orphans:
-        if create_missing:
-            # Create the missing component
-            if component_type not in spec["components"]:
-                spec["components"][component_type] = {}
-
-            if component_name not in spec["components"][component_type]:
-                spec["components"][component_type][component_name] = create_stub_component(
-                    component_type,
-                    component_name,
-                )
-                fixed_count += 1
-
-    return spec, fixed_count
-
-
-def remove_empty_operations(spec: dict[str, Any]) -> tuple[dict[str, Any], int]:
-    """Remove operations that have empty {} values which break Scalar.
-
-    Returns (modified_spec, count_of_removals).
-    """
-    removed_count = 0
-    paths = spec.get("paths", {})
-    paths_to_remove = []
-
-    for path, path_item in paths.items():
-        if not isinstance(path_item, dict):
-            continue
-
-        methods_to_remove = []
-        for method in ["get", "post", "put", "delete", "patch", "options", "head", "trace"]:
-            if method in path_item:
-                operation = path_item[method]
-                # Check if operation is empty or has empty critical fields
-                is_empty_dict = operation == {}
-                has_no_critical_fields = (
-                    isinstance(operation, dict)
-                    and not operation.get("operationId")
-                    and not operation.get("responses")
-                    and not operation.get("summary")
-                    and not operation.get("description")
-                )
-                if is_empty_dict or has_no_critical_fields:
-                    methods_to_remove.append(method)
-
-        for method in methods_to_remove:
-            del path_item[method]
-            removed_count += 1
-
-        # Mark path for removal if no methods left
-        remaining_methods = [
-            m
-            for m in ["get", "post", "put", "delete", "patch", "options", "head", "trace"]
-            if m in path_item
-        ]
-        if not remaining_methods:
-            paths_to_remove.append(path)
-
-    # Remove empty paths
-    for path in paths_to_remove:
-        del paths[path]
-
-    return spec, removed_count
-
-
-def inline_orphan_request_bodies(spec: dict[str, Any]) -> tuple[dict[str, Any], int]:
-    """Convert orphan requestBody $refs to inline definitions.
-
-    Returns (modified_spec, count_of_inlines).
-    """
-    inlined_count = 0
-    paths = spec.get("paths", {})
-    existing_request_bodies = spec.get("components", {}).get("requestBodies", {})
-
-    for path_item in paths.values():
-        if not isinstance(path_item, dict):
-            continue
-
-        for method in ["get", "post", "put", "delete", "patch"]:
-            if method not in path_item:
-                continue
-
-            operation = path_item[method]
-            if not isinstance(operation, dict):
-                continue
-
-            request_body = operation.get("requestBody")
-            if isinstance(request_body, dict) and "$ref" in request_body:
-                ref = request_body["$ref"]
-                parsed = get_component_from_ref(ref)
-
-                if parsed and parsed[0] == "requestBodies":
-                    component_name = parsed[1]
-                    if component_name not in existing_request_bodies:
-                        # Inline a generic request body
-                        operation["requestBody"] = {
-                            "description": f"Request body (originally referenced {component_name})",
-                            "content": {
-                                "application/json": {
-                                    "schema": {
-                                        "type": "object",
-                                    },
-                                },
-                            },
-                        }
-                        inlined_count += 1
-
-    return spec, inlined_count
 
 
 def normalize_types(spec: dict[str, Any]) -> tuple[dict[str, Any], int]:
@@ -421,53 +188,6 @@ def normalize_types(spec: dict[str, Any]) -> tuple[dict[str, Any], int]:
     return normalize_recursive(spec), normalized_count
 
 
-def detect_and_break_circular_refs(spec: dict[str, Any]) -> tuple[dict[str, Any], int]:
-    """Detect and break circular $ref chains.
-
-    Note: This is a simplified implementation that marks potential circular refs.
-    Full circular reference resolution is complex and may require deeper analysis.
-
-    Returns (modified_spec, count_of_breaks).
-    """
-    # For now, just track that we checked - full implementation would be more complex
-    # This is a placeholder for future enhancement
-    return spec, 0
-
-
-def remove_ref_siblings(spec: dict[str, Any]) -> tuple[dict[str, Any], int]:
-    """Remove properties that are siblings to $ref (violates OpenAPI spec).
-
-    OpenAPI spec requires that $ref MUST NOT have siblings.
-    This function removes all properties next to $ref to comply.
-
-    Returns (modified_spec, count_of_properties_removed).
-    """
-    removed_count = 0
-
-    def clean_recursive(obj: Any) -> Any:
-        nonlocal removed_count
-
-        if isinstance(obj, dict):
-            # If this dict has a $ref, remove all other properties
-            if "$ref" in obj:
-                removed_count += len(obj) - 1  # Count all keys except $ref
-                return {"$ref": obj["$ref"]}
-
-            # Otherwise, recursively clean all values
-            result = {}
-            for key, value in obj.items():
-                result[key] = clean_recursive(value)
-            return result
-
-        if isinstance(obj, list):
-            return [clean_recursive(item) for item in obj]
-
-        return obj
-
-    cleaned_spec = clean_recursive(spec)
-    return cleaned_spec, removed_count
-
-
 def normalize_spec_file(
     spec_path: Path,
     output_path: Path,
@@ -487,48 +207,24 @@ def normalize_spec_file(
     changes = defaultdict(int)
 
     try:
-        # Load specification
+        _validate_config(config)
         spec = load_spec(spec_path)
-        norm_config = config.get("normalization", {})
+        validate_source_graph(spec)
+        validate(spec)
+        norm_config = config["normalization"]
 
-        # Apply normalizations in order
-
-        # 0. Remove properties that are siblings to $ref (OpenAPI compliance)
-        spec, count = remove_ref_siblings(spec)
-        changes["ref_siblings_removed"] = count
-
-        # 1. Fix orphan $refs by creating missing components
-        if norm_config.get("fix_orphan_refs", True):
-            spec, count = fix_orphan_refs(spec, config)
-            changes["orphan_refs_fixed"] = count
-
-        # 2. Inline orphan requestBodies
-        if norm_config.get("inline_orphan_request_bodies", True):
-            spec, count = inline_orphan_request_bodies(spec)
-            changes["request_bodies_inlined"] = count
-
-        # 3. Remove empty operations
-        if norm_config.get("remove_empty_objects", True):
-            spec, count = remove_empty_operations(spec)
-            changes["empty_operations_removed"] = count
-
-        # 4. Normalize types
-        if norm_config.get("type_standardization", True):
+        if norm_config["type_standardization"]:
             spec, count = normalize_types(spec)
             changes["types_normalized"] = count
 
-        # 5. Detect circular refs (placeholder)
-        if norm_config.get("detect_circular_refs", True):
-            spec, count = detect_and_break_circular_refs(spec)
-            changes["circular_refs_broken"] = count
-
-        # Save normalized specification
-        output_config = config.get("output", {})
+        validate_source_graph(spec)
+        validate(spec)
+        output_config = config["output"]
         save_spec(
             spec,
             output_path,
-            indent=output_config.get("json_indent", 2),
-            sort_keys=output_config.get("sort_keys", False),
+            indent=output_config["json_indent"],
+            sort_keys=output_config["sort_keys"],
         )
 
         return NormalizationResult(
@@ -570,82 +266,95 @@ def normalize_all_specs(
     """
     stats = NormalizationStats()
 
-    # Find all JSON spec files
-    spec_files = sorted(input_dir.glob("*.json"))
+    _validate_config(config)
+    selection = select_source_specs(input_dir)
+    spec_files = list(selection.files)
     if not spec_files:
         console.print(f"[yellow]No specification files found in {input_dir}[/yellow]")
         return stats
 
     console.print(f"[blue]Found {len(spec_files)} specification files to normalize[/blue]")
 
-    # Prepare output directory
-    output_dir.mkdir(parents=True, exist_ok=True)
+    output_dir.parent.mkdir(parents=True, exist_ok=True)
 
-    processing_config = config.get("processing", {})
-    workers = processing_config.get("parallel_workers", 4) if parallel else 1
-    continue_on_error = processing_config.get("continue_on_error", True)
+    workers = config["processing"]["parallel_workers"] if parallel else 1
 
-    # Prepare arguments for processing
-    process_args = [(spec_file, output_dir / spec_file.name, config) for spec_file in spec_files]
+    with TemporaryDirectory(
+        prefix=f".{output_dir.name}-staging-", dir=output_dir.parent
+    ) as staging:
+        staging_dir = Path(staging)
+        process_args = [
+            (spec_file, staging_dir / spec_file.name, config) for spec_file in spec_files
+        ]
 
-    with Progress(
-        SpinnerColumn(),
-        TextColumn("[progress.description]{task.description}"),
-        BarColumn(),
-        TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
-        TimeElapsedColumn(),
-        console=console,
-    ) as progress:
-        task = progress.add_task("Normalizing specifications...", total=len(spec_files))
+        with Progress(
+            SpinnerColumn(),
+            TextColumn("[progress.description]{task.description}"),
+            BarColumn(),
+            TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
+            TimeElapsedColumn(),
+            console=console,
+        ) as progress:
+            task = progress.add_task("Normalizing specifications...", total=len(spec_files))
 
-        if parallel and workers > 1:
-            # Parallel processing
-            with ProcessPoolExecutor(max_workers=workers) as executor:
-                futures = {
-                    executor.submit(process_spec_wrapper, args): args[0].name
-                    for args in process_args
-                }
+            if parallel and workers > 1:
+                with ProcessPoolExecutor(max_workers=workers) as executor:
+                    futures = {
+                        executor.submit(process_spec_wrapper, args): args[0].name
+                        for args in process_args
+                    }
 
-                for future in as_completed(futures):
-                    filename = futures[future]
+                    for future in as_completed(futures):
+                        filename = futures[future]
+                        try:
+                            result = future.result()
+                            _update_stats(stats, result)
+                        except Exception as error:
+                            stats.files_failed += 1
+                            stats.errors.append({"file": filename, "error": str(error)})
+
+                        stats.files_processed += 1
+                        progress.update(task, advance=1)
+            else:
+                for args in process_args:
                     try:
-                        result = future.result()
+                        result = process_spec_wrapper(args)
                         _update_stats(stats, result)
-                    except Exception as e:
+                    except Exception as error:
                         stats.files_failed += 1
-                        stats.errors.append({"file": filename, "error": str(e)})
-                        if not continue_on_error:
-                            raise
+                        stats.errors.append({"file": args[0].name, "error": str(error)})
 
                     stats.files_processed += 1
                     progress.update(task, advance=1)
-        else:
-            # Sequential processing
-            for args in process_args:
-                try:
-                    result = process_spec_wrapper(args)
-                    _update_stats(stats, result)
-                except Exception as e:
-                    stats.files_failed += 1
-                    stats.errors.append({"file": args[0].name, "error": str(e)})
-                    if not continue_on_error:
-                        raise
 
-                stats.files_processed += 1
-                progress.update(task, advance=1)
+        if stats.files_failed or stats.errors or stats.files_succeeded != stats.files_processed:
+            _abort_normalization_batch(stats, "one or more specifications failed validation")
+            return stats
+
+        try:
+            publish_spec_batch(staging_dir, output_dir, selection)
+        except Exception as error:
+            stats.errors.append({"file": "<publication>", "error": str(error)})
+            _abort_normalization_batch(stats, "transactional publication failed")
 
     return stats
+
+
+def _abort_normalization_batch(stats: NormalizationStats, reason: str) -> None:
+    """Report a transaction abort without claiming unpublished partial successes."""
+    stats.errors.append(
+        {"file": "<batch>", "error": f"normalization transaction aborted: {reason}"}
+    )
+    stats.files_failed = stats.files_processed
+    stats.files_succeeded = 0
+    stats.types_normalized = 0
 
 
 def _update_stats(stats: NormalizationStats, result: NormalizationResult) -> None:
     """Update statistics from a normalization result."""
     if result.success:
         stats.files_succeeded += 1
-        stats.orphan_refs_fixed += result.changes.get("orphan_refs_fixed", 0)
-        stats.empty_operations_removed += result.changes.get("empty_operations_removed", 0)
-        stats.missing_components_created += result.changes.get("orphan_refs_fixed", 0)
         stats.types_normalized += result.changes.get("types_normalized", 0)
-        stats.circular_refs_broken += result.changes.get("circular_refs_broken", 0)
     else:
         stats.files_failed += 1
         if result.error:
@@ -655,16 +364,12 @@ def _update_stats(stats: NormalizationStats, result: NormalizationResult) -> Non
 def generate_report(stats: NormalizationStats, output_path: Path) -> None:
     """Generate normalization report."""
     report = {
-        "timestamp": datetime.now(tz=timezone.utc).isoformat(),
+        "timestamp": datetime.now(tz=UTC).isoformat(),
         "summary": {
             "files_processed": stats.files_processed,
             "files_succeeded": stats.files_succeeded,
             "files_failed": stats.files_failed,
-            "orphan_refs_fixed": stats.orphan_refs_fixed,
-            "empty_operations_removed": stats.empty_operations_removed,
-            "missing_components_created": stats.missing_components_created,
             "types_normalized": stats.types_normalized,
-            "circular_refs_broken": stats.circular_refs_broken,
         },
         "errors": stats.errors,
     }
@@ -686,9 +391,6 @@ def print_summary(stats: NormalizationStats) -> None:
     table.add_row("Files Processed", str(stats.files_processed))
     table.add_row("Files Succeeded", str(stats.files_succeeded))
     table.add_row("Files Failed", str(stats.files_failed))
-    table.add_row("Orphan $refs Fixed", str(stats.orphan_refs_fixed))
-    table.add_row("Empty Operations Removed", str(stats.empty_operations_removed))
-    table.add_row("Missing Components Created", str(stats.missing_components_created))
     table.add_row("Types Normalized", str(stats.types_normalized))
 
     console.print(table)
@@ -710,8 +412,7 @@ def main() -> int:
     parser.add_argument(
         "--config",
         type=Path,
-        default=Path("config/normalization.yaml"),
-        help="Path to configuration file",
+        help="Path to configuration overlay (default: packaged config/normalization.yaml)",
     )
     parser.add_argument(
         "--input-dir",
@@ -770,18 +471,14 @@ def main() -> int:
         return 1
 
     if args.dry_run:
-        console.print("\n[yellow]DRY RUN - analyzing without writing output[/yellow]")
-        # In dry-run mode, still process but don't save
-        # For now, just list orphan refs
-        spec_files = sorted(input_dir.glob("*.json"))
-        total_orphans = 0
-        for spec_file in spec_files:
-            spec = load_spec(spec_file)
-            orphans = find_orphan_refs(spec)
-            if orphans:
-                console.print(f"[yellow]{spec_file.name}: {len(orphans)} orphan refs[/yellow]")
-                total_orphans += len(orphans)
-        console.print(f"\n[blue]Total orphan refs found: {total_orphans}[/blue]")
+        console.print("\n[yellow]DRY RUN - validating without writing output[/yellow]")
+        spec_files = source_spec_files(input_dir)
+        errors = [error for path in spec_files if (error := _validation_error(path))]
+        for error in errors:
+            console.print(f"[red]{error}[/red]")
+        if not spec_files or errors:
+            return 1
+        console.print(f"\n[green]Validated {len(spec_files)} specifications[/green]")
         return 0
 
     # Run normalization pipeline
@@ -799,10 +496,14 @@ def main() -> int:
     # Print summary
     print_summary(stats)
 
-    # Exit with error if any files failed
-    if stats.files_failed > 0:
-        console.print(f"\n[yellow]Completed with {stats.files_failed} failures[/yellow]")
-        return 1 if not config.get("processing", {}).get("continue_on_error", True) else 0
+    if (
+        stats.files_processed == 0
+        or stats.files_failed > 0
+        or stats.errors
+        or stats.files_succeeded != stats.files_processed
+    ):
+        console.print(f"\n[red]Normalization failed for {stats.files_failed} files[/red]")
+        return 1
 
     console.print(
         f"\n[bold green]Successfully normalized {stats.files_succeeded} specifications![/bold green]",

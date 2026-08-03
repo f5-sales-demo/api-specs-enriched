@@ -4,23 +4,31 @@
 """Catalog Compiler — transforms F5XC OpenAPI specs into xcsh api-catalog.json format.
 
 Usage:
-    python -m scripts.compile_catalog                         # Uses specs/discovered/openapi.json
-    python -m scripts.compile_catalog --input path/to/spec.json
-    python -m scripts.compile_catalog --output release/api-catalog.json
+    python -m scripts.compile_catalog --version 2.1.208
+    python -m scripts.compile_catalog --version 2.1.208 --input path/to/spec.json
+    python -m scripts.compile_catalog --version 2.1.208 --output release/api-catalog.json
 """
 
 import argparse
 import json
-import os
 import re
 import sys
 from pathlib import Path
 from typing import Any
 
-from scripts.utils.version_calculator import get_version_from_tags
+from scripts.utils.extension_constants import X_F5XC_SERVER_DEFAULT_VALUE
+from scripts.utils.resource_contract import build_resource_catalog, validate_openapi_graph
 
-DEFAULT_INPUT = Path("specs/discovered/openapi.json")
+CANONICAL_INPUT = Path("docs/specifications/api/openapi.json")
 DEFAULT_OUTPUT = Path("release/api-catalog.json")
+
+
+def semantic_version(value: str) -> str:
+    """Validate an explicit semantic build version for argparse."""
+    if not re.fullmatch(r"\d+\.\d+\.\d+", value):
+        raise argparse.ArgumentTypeError(f"not a semantic version: {value!r}")
+    return value
+
 
 F5XC_AUTH = {
     "type": "api_token",
@@ -33,40 +41,6 @@ F5XC_AUTH = {
 F5XC_DEFAULTS = {
     "namespace": {"source": "F5XC_NAMESPACE"},
 }
-
-
-def merge_spec_files(dir_path: Path) -> dict[str, Any]:
-    """Read all OpenAPI JSON files in a directory and merge their paths and components."""
-    merged_paths: dict[str, Any] = {}
-    merged_schemas: dict[str, Any] = {}
-
-    for spec_file in sorted(dir_path.glob("*.json")):
-        try:
-            with spec_file.open() as f:
-                spec = json.load(f)
-        except (json.JSONDecodeError, OSError):
-            continue
-
-        paths = spec.get("paths")
-        if not paths or not isinstance(paths, dict):
-            continue
-
-        for path, path_item in paths.items():
-            if not isinstance(path_item, dict):
-                continue
-            if path not in merged_paths:
-                merged_paths[path] = {}
-            merged_paths[path].update(path_item)
-
-        # Merge components.schemas
-        schemas = spec.get("components", {}).get("schemas", {})
-        merged_schemas.update(schemas)
-
-    return {
-        "openapi": "3.0.3",
-        "paths": merged_paths,
-        "components": {"schemas": merged_schemas},
-    }
 
 
 _DANGER_MAP: dict[str, str] = {
@@ -113,38 +87,30 @@ def extract_category_name(path: str) -> str:
     return resource.replace("_", "-")
 
 
-def generate_operation_name(method: str, path: str) -> str:
-    """Generate a snake_case operation name from HTTP method and path.
+def _snake_identifier(value: str) -> str:
+    first = re.sub(r"(.)([A-Z][a-z]+)", r"\1_\2", value)
+    return re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", first).replace("-", "_").lower()
 
-    Rules:
-        GET  /resources        -> list_resources
-        GET  /resources/{name} -> get_resource   (singular)
-        POST /resources        -> create_resource (singular)
-        PUT  /resources/{name} -> replace_resource (singular)
-        PATCH /resources/{name}-> update_resource (singular)
-        DELETE /resources/{name}-> delete_resource (singular)
+
+def generate_operation_name(operation: dict[str, Any]) -> str:
+    """Generate a stable operation name from its authoritative operationId.
+
+    Path singularization is forbidden here. It produced fabricated identities by
+    removing the trailing character from words such as ``status`` and could collapse
+    a CustomAPI endpoint into an unrelated resource. The fully-qualified operationId
+    is already unique and exact.
     """
-    category = extract_category_name(path)
-    resource_snake = category.replace("-", "_")
-    singular = resource_snake.rstrip("s") if resource_snake.endswith("s") else resource_snake
+    operation_id = operation.get("operationId")
+    if not isinstance(operation_id, str):
+        raise TypeError("catalog operation has no operationId")
+    parts = operation_id.split(".")
+    if len(parts) < 6 or parts[:3] != ["ves", "io", "schema"]:
+        raise ValueError(f"catalog operationId is not fully qualified: {operation_id!r}")
 
-    segments = path.rstrip("/").split("/")
-    last_segment = segments[-1] if segments else ""
-    is_item = last_segment.startswith("{") and last_segment.endswith("}")
-
-    method = method.upper()
-    _method_prefix: dict[str, str] = {
-        "POST": "create",
-        "PUT": "replace",
-        "PATCH": "update",
-        "DELETE": "delete",
-    }
-    if method == "GET":
-        return f"list_{resource_snake}" if not is_item else f"get_{singular}"
-    prefix = _method_prefix.get(method)
-    if prefix:
-        return f"{prefix}_{singular}"
-    return f"{method.lower()}_{singular}"
+    identity = [_snake_identifier(part) for part in parts[3:-2]]
+    surface = _snake_identifier(parts[-2])
+    action = _snake_identifier(parts[-1])
+    return "_".join([action, *identity, surface])
 
 
 def extract_parameters(path: str, operation: dict[str, Any]) -> list[dict[str, Any]]:
@@ -200,10 +166,7 @@ def extract_response_schema(
         if not schema or not isinstance(schema, dict):
             continue
 
-        # Resolve $ref if present
-        if "$ref" in schema and components:
-            ref_key = schema["$ref"].split("/")[-1]
-            schema = components.get("schemas", {}).get(ref_key, {})
+        schema = _resolve_schema_ref(schema, components)
 
         if not schema:
             continue
@@ -216,10 +179,7 @@ def extract_response_schema(
             for prop_name, prop_schema in schema["properties"].items():
                 if isinstance(prop_schema, dict):
                     # Resolve nested $ref for property type
-                    resolved_prop = prop_schema
-                    if "$ref" in prop_schema and components:
-                        ref_key = prop_schema["$ref"].split("/")[-1]
-                        resolved_prop = components.get("schemas", {}).get(ref_key, {})
+                    resolved_prop = _resolve_schema_ref(prop_schema, components)
                     if "type" in resolved_prop:
                         simplified["properties"][prop_name] = {"type": resolved_prop["type"]}
         if "required" in schema and isinstance(schema["required"], list):
@@ -262,24 +222,125 @@ def _resolve_body_schema(
     )
     if not body_schema:
         return None
-    if "$ref" in body_schema and components:
-        ref_key = body_schema["$ref"].split("/")[-1]
-        resolved = components.get("schemas", {}).get(ref_key, {})
-        if resolved:
-            return resolved
-    return body_schema
+    return _resolve_schema_ref(body_schema, components)
+
+
+_REFERENCE_WRAPPER_ASSERTIONS = frozenset(
+    {
+        "enum",
+        "exclusiveMaximum",
+        "exclusiveMinimum",
+        "format",
+        "maximum",
+        "maxItems",
+        "maxLength",
+        "maxProperties",
+        "minimum",
+        "minItems",
+        "minLength",
+        "minProperties",
+        "multipleOf",
+        "pattern",
+        "uniqueItems",
+    },
+)
+
+_REFERENCE_WRAPPER_ANNOTATIONS = _REFERENCE_WRAPPER_ASSERTIONS | frozenset(
+    {
+        "default",
+        "deprecated",
+        "description",
+        "example",
+        "readOnly",
+        "title",
+        "writeOnly",
+    }
+)
+
+
+def _reference_wrapper_annotations(
+    schema: dict[str, Any],
+    reference_key: str,
+) -> dict[str, Any]:
+    """Return supported wrapper annotations and reject structural siblings."""
+    siblings = {key: value for key, value in schema.items() if key != reference_key}
+    unsupported = sorted(
+        key
+        for key in siblings
+        if key not in _REFERENCE_WRAPPER_ANNOTATIONS and not key.startswith("x-")
+    )
+    if unsupported:
+        raise ValueError(
+            "schema reference wrapper has unsupported structural sibling(s): "
+            + ", ".join(unsupported)
+        )
+    return siblings
 
 
 def _resolve_schema_ref(
-    schema: dict[str, Any], components: dict[str, Any] | None
+    schema: dict[str, Any],
+    components: dict[str, Any] | None,
+    *,
+    _visited_refs: frozenset[str] | None = None,
 ) -> dict[str, Any]:
-    """Resolve a $ref to its target schema. Returns original if unresolvable."""
-    ref = schema.get("$ref")
-    if not ref or not components:
+    """Resolve deterministic local reference wrappers to their terminal schema.
+
+    The enriched OpenAPI graph represents many request ``spec`` properties as a
+    single-reference ``allOf`` wrapper.  Those wrappers are equivalent to a direct
+    local ``$ref`` for catalog projection.  Composed or malformed ``allOf`` values
+    are not deterministic projections, so fail instead of silently dropping fields.
+    """
+    has_ref = "$ref" in schema
+    has_all_of = "allOf" in schema
+    if has_ref and has_all_of:
+        raise ValueError("schema reference wrapper cannot contain both $ref and allOf")
+    if not has_ref and not has_all_of:
         return schema
-    ref_key = ref.split("/")[-1]
-    resolved = (components.get("schemas") or {}).get(ref_key)
-    return resolved or schema
+
+    if has_all_of:
+        all_of = schema["allOf"]
+        if not isinstance(all_of, list) or len(all_of) != 1:
+            raise ValueError("schema allOf reference wrapper must contain exactly one reference")
+        ref_wrapper = all_of[0]
+        if not isinstance(ref_wrapper, dict) or set(ref_wrapper) != {"$ref"}:
+            raise ValueError("schema allOf reference wrapper must contain only a $ref")
+        ref = ref_wrapper["$ref"]
+        annotations = _reference_wrapper_annotations(schema, "allOf")
+    else:
+        ref = schema["$ref"]
+        annotations = _reference_wrapper_annotations(schema, "$ref")
+
+    if not isinstance(ref, str) or not ref.startswith("#/components/schemas/"):
+        raise ValueError(f"schema has unsupported reference: {ref!r}")
+    if not isinstance(components, dict):
+        raise TypeError(f"cannot resolve schema reference without components: {ref!r}")
+    schemas = components.get("schemas")
+    if not isinstance(schemas, dict):
+        raise TypeError(f"cannot resolve schema reference without components.schemas: {ref!r}")
+    ref_key = ref.rsplit("/", 1)[-1]
+    if ref_key not in schemas or not isinstance(schemas[ref_key], dict):
+        raise ValueError(f"unresolved schema reference: {ref!r}")
+
+    visited_refs = _visited_refs or frozenset()
+    if ref in visited_refs:
+        chain = " -> ".join((*sorted(visited_refs), ref))
+        raise ValueError(f"cyclic schema reference: {chain}")
+    resolved = _resolve_schema_ref(
+        schemas[ref_key],
+        components,
+        _visited_refs=visited_refs | {ref},
+    )
+    conflicting_assertions = sorted(
+        key
+        for key, value in annotations.items()
+        if key in _REFERENCE_WRAPPER_ASSERTIONS and key in resolved and resolved[key] != value
+    )
+    if conflicting_assertions:
+        raise ValueError(
+            "schema reference wrapper has conflicting assertion(s): "
+            + ", ".join(conflicting_assertions)
+        )
+    return {**resolved, **annotations} if annotations else resolved
 
 
 _ENRICHMENT_KEYS = frozenset(
@@ -287,6 +348,7 @@ _ENRICHMENT_KEYS = frozenset(
         "x-f5xc-constraints",
         "x-f5xc-required-for",
         "x-f5xc-server-default",
+        X_F5XC_SERVER_DEFAULT_VALUE,
         "x-f5xc-recommended-value",
         "x-f5xc-conflicts-with",
         "x-f5xc-requires",
@@ -336,7 +398,8 @@ def _extract_field_metadata(
         field_path = f"{prefix}.{prop_name}" if prefix else prop_name
 
         if prop_schema is not prop_resolved:
-            inline_extensions = {k: prop_schema[k] for k in _ENRICHMENT_KEYS if k in prop_schema}
+            inline_keys = _ENRICHMENT_KEYS | {"default"}
+            inline_extensions = {k: prop_schema[k] for k in inline_keys if k in prop_schema}
             if inline_extensions:
                 prop_resolved = {**prop_resolved, **inline_extensions}
 
@@ -358,12 +421,25 @@ def _extract_field_metadata(
             if required_for:
                 entry["required_for"] = required_for
 
-            if prop_resolved.get("x-f5xc-server-default"):
+            server_default = prop_resolved.get("x-f5xc-server-default")
+            if server_default is not None and not isinstance(server_default, bool):
+                raise TypeError(f"{field_path} has a non-boolean x-f5xc-server-default")
+            if server_default is True:
                 entry["serverDefault"] = True
 
-            default_val = prop_resolved.get("default")
-            if default_val is not None:
-                entry["default"] = default_val
+            has_default = "default" in prop_resolved
+            has_typed_default = X_F5XC_SERVER_DEFAULT_VALUE in prop_resolved
+            if has_default and has_typed_default:
+                raise ValueError(
+                    f"{field_path} declares both default and {X_F5XC_SERVER_DEFAULT_VALUE}"
+                )
+            if has_typed_default:
+                typed_default = prop_resolved[X_F5XC_SERVER_DEFAULT_VALUE]
+                if typed_default != {"type": "null", "value": None}:
+                    raise ValueError(f"{field_path} has malformed {X_F5XC_SERVER_DEFAULT_VALUE}")
+                entry["default"] = None
+            elif has_default:
+                entry["default"] = prop_resolved["default"]
 
             recommended = prop_resolved.get("x-f5xc-recommended-value")
             if recommended is not None:
@@ -476,7 +552,6 @@ def _collect_oneof_variants(
 
     result: dict[str, list[str]] = {}
 
-    # Collect x-ves-oneof-field-* extensions from this schema
     # Collect x-ves-oneof-field-* extensions from this schema.
     # Values may be JSON-encoded strings (e.g. '["a","b"]') or native lists.
     for key, val in resolved.items():
@@ -557,16 +632,20 @@ def _build_operation(
     # Extract minimumPayload from x-f5xc-minimum-configuration
     if body_schema and method.upper() in {"POST", "PUT", "PATCH"}:
         min_config = body_schema.get("x-f5xc-minimum-configuration")
+        if min_config is not None and not isinstance(min_config, dict):
+            raise TypeError(f"{op_name} has non-object x-f5xc-minimum-configuration")
         if min_config and min_config.get("example_json"):
             try:
                 parsed_json = json.loads(min_config["example_json"])
-                op["minimumPayload"] = {
-                    "json": parsed_json,
-                    "requiredFields": min_config.get("required_fields", []),
-                    "description": min_config.get("description", ""),
-                }
-            except (json.JSONDecodeError, TypeError):
-                pass  # Skip if example_json is invalid
+            except (json.JSONDecodeError, TypeError) as error:
+                raise ValueError(
+                    f"{op_name} has malformed minimum-configuration example_json"
+                ) from error
+            op["minimumPayload"] = {
+                "json": parsed_json,
+                "requiredFields": min_config.get("required_fields", []),
+                "description": min_config.get("description", ""),
+            }
 
     # Extract fieldMetadata from enriched properties (POST/PUT/PATCH only)
     if body_schema and method.upper() in {"POST", "PUT", "PATCH"}:
@@ -612,29 +691,31 @@ def _build_category_operations(
     operations = []
     seen_op_names: set[str] = set()
     for path, method, operation in sorted(entries, key=lambda e: (e[0], e[1])):
-        op_name = generate_operation_name(method, path)
+        op_name = generate_operation_name(operation)
         if op_name in seen_op_names:
-            continue
+            raise ValueError(f"duplicate catalog operation name {op_name!r}")
         seen_op_names.add(op_name)
         operations.append(_build_operation(path, method, operation, op_name, components))
     return operations
 
 
-def _deduplicate_global_op_names(categories: list[dict[str, Any]]) -> None:
-    """Suffix duplicate operation names across categories with the category name."""
+def _validate_global_op_names(categories: list[dict[str, Any]]) -> None:
+    """Reject duplicate exact operation identities instead of path-derived suffixing."""
     global_seen: dict[str, str] = {}
     for cat in categories:
         for op in cat["operations"]:
             if op["name"] in global_seen:
-                op["name"] = f"{op['name']}_{cat['name'].replace('-', '_')}"
-            else:
-                global_seen[op["name"]] = cat["name"]
+                previous = global_seen[op["name"]]
+                raise ValueError(
+                    f"duplicate catalog operation name {op['name']!r} "
+                    f"in categories {previous!r} and {cat['name']!r}"
+                )
+            global_seen[op["name"]] = cat["name"]
 
 
-def compile_catalog(openapi: dict[str, Any]) -> dict[str, Any]:
+def compile_catalog(openapi: dict[str, Any], version: str) -> dict[str, Any]:
     """Transform an OpenAPI 3.0 spec dict into xcsh api-catalog.json format."""
-    paths = openapi.get("paths", {})
-    components = openapi.get("components")
+    paths, components, _ = validate_openapi_graph(openapi)
     groups = group_paths_by_resource(paths)
 
     categories = []
@@ -649,12 +730,9 @@ def compile_catalog(openapi: dict[str, Any]) -> dict[str, Any]:
                 },
             )
 
-    _deduplicate_global_op_names(categories)
+    _validate_global_op_names(categories)
 
-    env_version = os.environ.get("CATALOG_VERSION", "")
-    tag_version = get_version_from_tags()
-    version = env_version or (tag_version if tag_version != "0.0.0" else "1.0.0")
-
+    resource_catalog = build_resource_catalog(openapi)
     return {
         "service": "f5xc",
         "displayName": "F5 Distributed Cloud",
@@ -662,19 +740,33 @@ def compile_catalog(openapi: dict[str, Any]) -> dict[str, Any]:
         "specSource": "f5-sales-demo/api-specs-enriched",
         "auth": F5XC_AUTH,
         "defaults": F5XC_DEFAULTS,
+        **resource_catalog,
         "categories": categories,
     }
 
 
+def write_catalog(catalog: dict[str, Any], destination: Path) -> None:
+    """Write canonical catalog bytes shared by builds and release recovery."""
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    with destination.open("w", encoding="utf-8") as stream:
+        json.dump(catalog, stream, indent=2, ensure_ascii=False)
+        stream.write("\n")
+
+
 def main() -> int:
-    """CLI entry point: compile OpenAPI spec(s) into xcsh api-catalog.json."""
+    """CLI entry point: compile one canonical OpenAPI graph into api-catalog.json."""
     parser = argparse.ArgumentParser(description="Compile F5XC OpenAPI spec to xcsh catalog JSON")
-    parser.add_argument("--input", type=Path, default=None, help="Single OpenAPI spec input file")
     parser.add_argument(
-        "--input-dir",
+        "--version",
+        required=True,
+        type=semantic_version,
+        help="Explicit semantic build version for the catalog",
+    )
+    parser.add_argument(
+        "--input",
         type=Path,
-        default=None,
-        help="Directory of OpenAPI spec files to merge",
+        default=CANONICAL_INPUT,
+        help=f"Canonical OpenAPI input file (default: {CANONICAL_INPUT})",
     )
     parser.add_argument(
         "--output",
@@ -684,30 +776,15 @@ def main() -> int:
     )
     args = parser.parse_args()
 
-    if args.input_dir:
-        if not args.input_dir.is_dir():
-            print(f"Error: input directory not found: {args.input_dir}", file=sys.stderr)
-            return 1
-        openapi = merge_spec_files(args.input_dir)
-    elif args.input:
-        if not args.input.exists():
-            print(f"Error: input file not found: {args.input}", file=sys.stderr)
-            return 1
-        with args.input.open(encoding="utf-8") as f:
-            openapi = json.load(f)
-    else:
-        if not DEFAULT_INPUT.exists():
-            print(f"Error: default input not found: {DEFAULT_INPUT}", file=sys.stderr)
-            return 1
-        with DEFAULT_INPUT.open(encoding="utf-8") as f:
-            openapi = json.load(f)
+    if not args.input.is_file():
+        print(f"Error: input file not found: {args.input}", file=sys.stderr)
+        return 1
+    with args.input.open(encoding="utf-8") as f:
+        openapi = json.load(f)
 
-    catalog = compile_catalog(openapi)
+    catalog = compile_catalog(openapi, args.version)
 
-    args.output.parent.mkdir(parents=True, exist_ok=True)
-    with args.output.open("w", encoding="utf-8") as f:
-        json.dump(catalog, f, indent=2)
-        f.write("\n")
+    write_catalog(catalog, args.output)
 
     total_ops = sum(len(c["operations"]) for c in catalog["categories"])
     n_cats = len(catalog["categories"])

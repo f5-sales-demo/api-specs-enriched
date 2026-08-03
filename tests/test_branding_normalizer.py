@@ -8,7 +8,39 @@ terminology to current F5 Distributed Cloud API product names:
 - vK8s → Virtual Kubernetes
 """
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+from scripts.utils import technical_text
 from scripts.utils.branding import BrandingNormalizer, BrandingStats
+
+if TYPE_CHECKING:
+    import pytest
+
+
+def test_normalizer_classifies_technical_spans_once(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    calls = 0
+    original = technical_text.immutable_technical_spans
+
+    def count_calls(*args, **kwargs):
+        nonlocal calls
+        calls += 1
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(technical_text, "immutable_technical_spans", count_calls)
+
+    normalized = BrandingNormalizer().normalize_text(
+        "Deploy vK8s beside AppStack; keep x-appstack-managed exact.",
+        field_context="info.description",
+    )
+
+    assert normalized == (
+        "Deploy Virtual Kubernetes beside Managed Kubernetes; keep x-appstack-managed exact."
+    )
+    assert calls == 1
 
 
 class TestBrandingStats:
@@ -212,6 +244,13 @@ class TestEdgeCases:
     def test_text_without_legacy_terms(self) -> None:
         text = "This is a normal description without legacy terms."
         assert BrandingNormalizer().normalize_text(text) == text
+
+    def test_wire_identifier_is_preserved_while_prose_is_normalized(self) -> None:
+        text = "Keep x-appstack-managed exact while AppStack prose is normalized."
+
+        assert BrandingNormalizer().normalize_text(text) == (
+            "Keep x-appstack-managed exact while Managed Kubernetes prose is normalized."
+        )
 
     def test_empty_spec(self) -> None:
         assert BrandingNormalizer().normalize_spec({}) == {}

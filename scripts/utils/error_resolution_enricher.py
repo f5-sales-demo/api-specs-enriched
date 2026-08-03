@@ -20,6 +20,8 @@ from typing import Any
 
 import yaml
 
+from .extension_constants import X_F5XC_ERROR_RESOLUTION
+
 
 @dataclass
 class ErrorResolutionEnrichmentStats:
@@ -246,7 +248,7 @@ class ErrorResolutionEnricher:
             error_resolution["resource_errors"][resource] = [p.to_dict() for p in patterns]
 
         # Apply to index
-        index["x-f5xc-error-resolution"] = error_resolution
+        index[X_F5XC_ERROR_RESOLUTION] = error_resolution
         self.stats.enrichment_applied = True
 
         return index

@@ -7,7 +7,7 @@ Tests cover:
 - Layer 2: Self-referential detection
 - Layer 3: Quality metrics validation
 - Layer 4: Circular definition detection
-- Layer 5: Full check_dry_compliance integration
+- Full structured validation integration
 """
 
 import pytest
@@ -17,14 +17,12 @@ from scripts.generate_descriptions import (
     DOMAIN_SYNONYMS,
     SUCCESSFUL_PATTERNS,
     Violation,
-    check_banned_patterns,
+    build_refinement_prompt,
     check_cross_tier_violations,
     check_domain_name_usage,
-    check_dry_compliance,
     is_circular_definition,
     is_self_referential,
-    run_all_validations_structured,
-    validate_quality_metrics,
+    run_all_validations,
 )
 
 
@@ -79,7 +77,11 @@ class TestBannedPatterns:
     )
     def test_banned_patterns(self, text: str, should_fail: bool) -> None:
         """Test that banned patterns are correctly detected."""
-        violations = check_banned_patterns("short", text)
+        violations = [
+            v
+            for v in run_all_validations("unrelated", {"short": text})
+            if v.layer == "banned_patterns"
+        ]
         if should_fail:
             assert len(violations) > 0, f"Expected violation for: {text}"
         else:
@@ -95,7 +97,11 @@ class TestBannedPatterns:
             "API CONFIGURATION",
         ]
         for text in test_cases:
-            violations = check_banned_patterns("short", text)
+            violations = [
+                v
+                for v in run_all_validations("unrelated", {"short": text})
+                if v.layer == "banned_patterns"
+            ]
             assert len(violations) > 0, f"Should detect API in: {text}"
 
     def test_word_boundaries_prevent_false_positives(self) -> None:
@@ -107,8 +113,10 @@ class TestBannedPatterns:
             "capitalize on opportunities",  # Contains "api" substring
         ]
         for text in safe_texts:
-            violations = check_banned_patterns("short", text)
-            api_violations = [v for v in violations if "api" in v.lower()]
+            violations = run_all_validations("unrelated", {"short": text})
+            api_violations = [
+                v for v in violations if v.layer == "banned_patterns" and "api" in v.message.lower()
+            ]
             assert len(api_violations) == 0, f"False positive for: {text}"
 
 
@@ -150,25 +158,25 @@ class TestQualityMetrics:
     def test_short_description_character_limit(self) -> None:
         """Verify short descriptions are limited to 60 characters."""
         long_text = "A" * 65
-        errors = validate_quality_metrics(long_text, "short")
-        assert any("LENGTH" in e or "exceeds" in e.lower() for e in errors)
+        violations = run_all_validations("unrelated", {"short": long_text})
+        assert any(v.code == "LENGTH" for v in violations)
 
     def test_medium_description_character_limit(self) -> None:
         """Verify medium descriptions are limited to 150 characters."""
         long_text = "A" * 155
-        errors = validate_quality_metrics(long_text, "medium")
-        assert any("LENGTH" in e or "exceeds" in e.lower() for e in errors)
+        violations = run_all_validations("unrelated", {"medium": long_text})
+        assert any(v.code == "LENGTH" for v in violations)
 
     def test_long_description_character_limit(self) -> None:
         """Verify long descriptions are limited to 500 characters."""
         long_text = "A" * 505
-        errors = validate_quality_metrics(long_text, "long")
-        assert any("LENGTH" in e or "exceeds" in e.lower() for e in errors)
+        violations = run_all_validations("unrelated", {"long": long_text})
+        assert any(v.code == "LENGTH" for v in violations)
 
     def test_minimum_word_count(self) -> None:
         """Verify descriptions have at least 3 words."""
-        errors = validate_quality_metrics("Too short", "short")
-        assert any("SPARSE" in e for e in errors)
+        violations = run_all_validations("unrelated", {"short": "Too short"})
+        assert any(v.code == "SPARSE" for v in violations)
 
     def test_quality_metrics_no_style_enforcement(self) -> None:
         """Verify quality metrics no longer enforce style (DRY-compliant).
@@ -179,9 +187,9 @@ class TestQualityMetrics:
         """
         # Quality metrics only checks length and word count now
         text = "Load balancers and routing policies"
-        errors = validate_quality_metrics(text, "short")
-        style_errors = [e for e in errors if "STYLE" in e]
-        assert len(style_errors) == 0, "Quality metrics should not enforce style"
+        violations = run_all_validations("unrelated", {"short": text})
+        style_violations = [v for v in violations if v.code == "STYLE"]
+        assert len(style_violations) == 0, "Valid noun-first text should pass style validation"
 
 
 class TestCircularDefinition:
@@ -229,7 +237,7 @@ class TestCircularDefinition:
         assert not is_circular, "Should ignore short words"
 
 
-class TestCheckDryCompliance:
+class TestRunAllValidationsIntegration:
     """Layer 5: Integration test for complete validation."""
 
     def test_valid_descriptions_pass(self) -> None:
@@ -243,7 +251,7 @@ class TestCheckDryCompliance:
                 "Security policies for WAF and bot protection."
             ),
         }
-        violations = check_dry_compliance("loadbalancing", descriptions)
+        violations = run_all_validations("loadbalancing", descriptions)
         assert len(violations) == 0, f"Unexpected violations: {violations}"
 
     def test_api_in_description_fails(self) -> None:
@@ -253,8 +261,8 @@ class TestCheckDryCompliance:
             "medium": "Token-based authentication methods.",
             "long": "Identity verification and access control.",
         }
-        violations = check_dry_compliance("auth", descriptions)
-        assert any("REDUNDANT" in v and "API" in v for v in violations)
+        violations = run_all_validations("auth", descriptions)
+        assert any(v.code == "REDUNDANT" and v.location == "API" for v in violations)
 
     def test_domain_name_in_description_fails(self) -> None:
         """Verify domain name in description triggers violation."""
@@ -263,8 +271,8 @@ class TestCheckDryCompliance:
             "medium": "Virtual machines and containers.",
             "long": "Virtual infrastructure and scaling.",
         }
-        violations = check_dry_compliance("virtual", descriptions)
-        assert any("domain name" in v.lower() for v in violations)
+        violations = run_all_validations("virtual", descriptions)
+        assert any(v.code == "DOMAIN_NAME" for v in violations)
 
     def test_brand_names_fail(self) -> None:
         """Verify brand names trigger violations."""
@@ -273,8 +281,8 @@ class TestCheckDryCompliance:
             "medium": "XC deployments and infrastructure.",
             "long": "Distributed Cloud infrastructure.",
         }
-        violations = check_dry_compliance("network", descriptions)
-        assert any("BRAND" in v for v in violations)
+        violations = run_all_validations("network", descriptions)
+        assert any(v.code == "BRAND" for v in violations)
 
     def test_cross_tier_repetition_detection(self) -> None:
         """Verify excessive word overlap between tiers is detected.
@@ -290,9 +298,9 @@ class TestCheckDryCompliance:
             "medium": "Orchestrate kubernetes replica upstream downstream clusters. Synchronize stateful workloads.",
             "long": "Orchestrate kubernetes replica upstream downstream clusters. Synchronize stateful workloads across regions. Maintain replica consistency.",
         }
-        violations = check_dry_compliance("orchestration", descriptions)
+        violations = run_all_validations("orchestration", descriptions)
         # Should detect significant overlap (4+ words: kubernetes, replica, upstream, downstream)
-        assert any("Repetition" in v or "overlap" in v.lower() for v in violations)
+        assert any(v.code == "CROSS_TIER_OVERLAP" for v in violations)
 
 
 class TestBannedPatternsCompleteness:
@@ -339,7 +347,7 @@ class TestViolationDataclass:
     """Test the Violation dataclass and its methods."""
 
     def test_violation_str_representation(self) -> None:
-        """Verify string representation for backward compatibility."""
+        """Verify the concise log representation."""
         v = Violation(
             layer="self_referential",
             tier="long",
@@ -348,8 +356,7 @@ class TestViolationDataclass:
             location="observability",
             suggestion="Replace with: monitoring infrastructure",
         )
-        assert "long" in str(v)
-        assert "Contains domain name" in str(v)
+        assert str(v) == "long/DOMAIN_NAME: Contains domain name"
 
     def test_violation_to_feedback_basic(self) -> None:
         """Verify to_feedback() generates actionable feedback."""
@@ -487,8 +494,8 @@ class TestCrossTierViolations:
             assert "→" in overlap_v[0].suggestion or "Replace" in overlap_v[0].suggestion
 
 
-class TestRunAllValidationsStructured:
-    """Test the run_all_validations_structured() function."""
+class TestRunAllValidations:
+    """Test the canonical run_all_validations() function."""
 
     def test_returns_empty_for_valid_descriptions(self) -> None:
         """Verify empty list for compliant descriptions."""
@@ -500,7 +507,7 @@ class TestRunAllValidationsStructured:
                 "Geo-routing, rate limiting, and SSL termination."
             ),
         }
-        violations = run_all_validations_structured("loadbalancing", descriptions)
+        violations = run_all_validations("loadbalancing", descriptions)
         # Filter out any overlap violations (depends on exact wording)
         critical_violations = [v for v in violations if v.code in ("DOMAIN_NAME", "BANNED_PATTERN")]
         assert len(critical_violations) == 0
@@ -512,7 +519,7 @@ class TestRunAllValidationsStructured:
             "medium": "HTTP listeners and routing.",
             "long": "Infrastructure and deployments.",
         }
-        violations = run_all_validations_structured("routing", descriptions)
+        violations = run_all_validations("routing", descriptions)
         assert len(violations) > 0
         assert any(v.code == "REDUNDANT" for v in violations)
 
@@ -523,7 +530,7 @@ class TestRunAllValidationsStructured:
             "medium": "Dashboards for observability data.",
             "long": "Observability infrastructure.",
         }
-        violations = run_all_validations_structured("observability", descriptions)
+        violations = run_all_validations("observability", descriptions)
         assert len(violations) > 0
         domain_violations = [v for v in violations if v.code == "DOMAIN_NAME"]
         assert len(domain_violations) >= 1
@@ -535,12 +542,35 @@ class TestRunAllValidationsStructured:
             "medium": "Various settings are handled.",
             "long": "Robust and seamless integration is provided.",
         }
-        violations = run_all_validations_structured("observability", descriptions)
+        violations = run_all_validations("observability", descriptions)
         for v in violations:
             assert v.layer, "layer should be set"
             assert v.tier, "tier should be set"
             assert v.code, "code should be set"
             assert v.message, "message should be set"
+
+    def test_ignores_non_tier_metadata(self) -> None:
+        """Verify metadata stored beside the tiers is not treated as prose."""
+        descriptions = {
+            "short": "Load balancers and routing policies.",
+            "medium": "HTTP listeners with health checks.",
+            "long": "Application delivery infrastructure with origin pools.",
+            "source_patterns_hash": "api",
+        }
+
+        violations = run_all_validations("loadbalancing", descriptions)
+
+        assert all(v.tier != "source_patterns_hash" for v in violations)
+
+    def test_refinement_prompt_rejects_string_violations(self) -> None:
+        """Verify the refinement boundary accepts only structured violations."""
+        with pytest.raises(TypeError, match="Violation objects"):
+            build_refinement_prompt(
+                "routing",
+                {"domain_title": "Routing"},
+                {"short": "Routing resources."},
+                ["legacy violation"],  # type: ignore[list-item]
+            )
 
 
 class TestDomainSynonymsCompleteness:

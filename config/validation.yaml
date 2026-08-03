@@ -1,3 +1,4 @@
+---
 # API validation configuration for F5 XC API specifications
 
 # API endpoint configuration
@@ -8,17 +9,8 @@ api:
   # Request timeout in seconds
   timeout: 30
 
-  # Maximum retries for failed requests
-  max_retries: 3
-
-  # Delay between retries (seconds)
-  retry_delay: 2
-
 # Authentication (for GitHub Actions, use secrets)
 authentication:
-  # Authentication method: api_token, p12_bundle, or none
-  method: "api_token"
-
   # Environment variable names for credentials (not actual secrets)
   env_vars:
     api_token: "F5XC_API_TOKEN"  # checkov:skip=CKV_SECRET_6:env var name reference
@@ -38,11 +30,8 @@ scope:
     - DELETE
     - PATCH
 
-  # Maximum endpoints to validate per spec
-  max_endpoints_per_spec: 50
-
-  # Sample size for GET request validation
-  sample_size: 5
+  # Stable namespace used to resolve the only safe path placeholder
+  namespace: "shared"
 
 # Endpoint filters
 filters:
@@ -57,26 +46,6 @@ filters:
 
   # Skip endpoints requiring specific namespaces
   skip_namespace_required: false
-
-# Response validation
-response:
-  # Validate response status codes
-  validate_status: true
-
-  # Expected success status codes
-  success_codes:
-    - 200
-    - 201
-    - 204
-
-  # Validate response schema against spec
-  validate_schema: true
-
-  # Allow additional properties not in schema
-  allow_additional_properties: true
-
-  # Validate content type
-  validate_content_type: true
 
 # Reporting
 reporting:
@@ -107,20 +76,3 @@ thresholds:
 concurrency:
   # Number of parallel validation requests
   workers: 10
-
-  # Rate limiting (requests per second)
-  rate_limit: 10
-
-  # Connection pool size
-  pool_size: 20
-
-# Caching
-cache:
-  # Enable response caching for repeated requests
-  enabled: true
-
-  # Cache TTL in seconds
-  ttl: 300
-
-  # Cache directory
-  directory: ".validation_cache"

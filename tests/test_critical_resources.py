@@ -11,38 +11,10 @@ from pathlib import Path
 import pytest
 import yaml
 
-from scripts.merge_specs import DEFAULT_CRITICAL_RESOURCES, load_critical_resources
-
-
-class TestDefaultCriticalResources:
-    """Test default critical resources list."""
-
-    def test_default_resources_not_empty(self) -> None:
-        """Verify default resources list is not empty."""
-        assert len(DEFAULT_CRITICAL_RESOURCES) > 0
-
-    def test_default_resources_contains_core_lb(self) -> None:
-        """Verify default resources includes core load balancing resources."""
-        assert "http_loadbalancer" in DEFAULT_CRITICAL_RESOURCES
-        assert "tcp_loadbalancer" in DEFAULT_CRITICAL_RESOURCES
-        assert "origin_pool" in DEFAULT_CRITICAL_RESOURCES
-
-    def test_default_resources_contains_security(self) -> None:
-        """Verify default resources includes security resources."""
-        assert "app_firewall" in DEFAULT_CRITICAL_RESOURCES
-        assert "service_policy" in DEFAULT_CRITICAL_RESOURCES
-        assert "network_policy" in DEFAULT_CRITICAL_RESOURCES
-
-    def test_default_resources_contains_dns(self) -> None:
-        """Verify default resources includes DNS resources."""
-        assert "dns_zone" in DEFAULT_CRITICAL_RESOURCES
-        assert "dns_load_balancer" in DEFAULT_CRITICAL_RESOURCES
-
-    def test_default_resources_contains_cloud_sites(self) -> None:
-        """Verify default resources includes cloud site resources."""
-        assert "aws_vpc_site" in DEFAULT_CRITICAL_RESOURCES
-        assert "azure_vnet_site" in DEFAULT_CRITICAL_RESOURCES
-        assert "gcp_vpc_site" in DEFAULT_CRITICAL_RESOURCES
+from scripts.utils.critical_resources import (
+    CriticalResourcesConfigError,
+    load_critical_resources,
+)
 
 
 class TestLoadCriticalResources:
@@ -113,17 +85,23 @@ class TestCriticalResourcesConfig:
             config = yaml.safe_load(f)
         assert "description" in config
 
-    def test_config_matches_default_fallback(self, config_path: Path) -> None:
-        """Verify config resources match default fallback for consistency."""
+    def test_loader_matches_the_single_config_contract(self, config_path: Path) -> None:
+        """Verify the loader has no second fallback source of truth."""
         with config_path.open() as f:
             config = yaml.safe_load(f)
+        assert load_critical_resources(config_path) == config["resources"]
 
-        # Config should have same resources as defaults
-        config_resources = set(config["resources"])
-        default_resources = set(DEFAULT_CRITICAL_RESOURCES)
-
-        assert config_resources == default_resources, (
-            f"Config resources differ from defaults. "
-            f"Extra in config: {config_resources - default_resources}, "
-            f"Missing in config: {default_resources - config_resources}"
-        )
+    @pytest.mark.parametrize(
+        "content",
+        [
+            "version: '1'\ndescription: one\nresources: [a]\nresources: [b]\n",
+            "version: '1'\ndescription: one\nresources: []\n",
+            "version: '1'\ndescription: one\nresources: [a, a]\n",
+            "version: '1'\ndescription: one\nresources: [a]\nunknown: true\n",
+        ],
+    )
+    def test_invalid_or_ambiguous_config_fails_closed(self, tmp_path: Path, content: str) -> None:
+        path = tmp_path / "critical_resources.yaml"
+        path.write_text(content)
+        with pytest.raises(CriticalResourcesConfigError):
+            load_critical_resources(path)

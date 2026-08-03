@@ -14,7 +14,7 @@ Usage:
 import re
 from collections import defaultdict
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 
@@ -275,7 +275,7 @@ class ErrorCatalogBuilder:
 
         # Create or update entry
         error_key = (status_code, pattern)
-        now = datetime.now(timezone.utc).isoformat()
+        now = datetime.now(UTC).isoformat()
 
         if error_key in self._errors[endpoint_key]:
             # Update existing entry
@@ -429,7 +429,7 @@ class ErrorCatalogBuilder:
             ErrorCatalog with all recorded errors
         """
         catalog = ErrorCatalog(
-            discovered_at=datetime.now(timezone.utc).isoformat(),
+            discovered_at=datetime.now(UTC).isoformat(),
         )
 
         for endpoint_key, errors in self._errors.items():

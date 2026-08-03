@@ -184,7 +184,7 @@ class ValidationEnricher:
                     result[key] = self._enrich_properties(value)
                 elif key == "schemas" and isinstance(value, dict):
                     result[key] = {
-                        schema_name: self._enrich_schema(schema, schema_name)
+                        schema_name: self._enrich_schema(schema)
                         for schema_name, schema in value.items()
                     }
                 else:
@@ -196,13 +196,11 @@ class ValidationEnricher:
 
         return obj
 
-    def _enrich_schema(self, schema: dict[str, Any], _schema_name: str) -> dict[str, Any]:
+    def _enrich_schema(self, schema: dict[str, Any]) -> dict[str, Any]:
         """Enrich a single schema definition.
 
         Args:
             schema: Schema definition
-            _schema_name: Name of the schema (unused, kept for interface compatibility)
-
         Returns:
             Enriched schema
         """
@@ -265,7 +263,7 @@ class ValidationEnricher:
 
         # Merge with discovery constraints if available
         if self.merge_discovery_constraints:
-            self._merge_discovery_constraints(prop, prop_name)
+            self._merge_discovery_constraints(prop)
 
         # Reconcile any conflicts
         self._reconcile_conflicts(prop)
@@ -326,14 +324,13 @@ class ValidationEnricher:
                     self.stats.patterns_added += 1
                     self.stats.constraints_added += 1
 
-    def _merge_discovery_constraints(self, prop: dict[str, Any], _prop_name: str) -> None:
+    def _merge_discovery_constraints(self, prop: dict[str, Any]) -> None:
         """Merge constraints from discovery data if available.
 
         Discovery constraints are stored in x-f5xc-validation extension.
 
         Args:
             prop: Property definition to update
-            _prop_name: Name of the property (unused, kept for interface compatibility)
         """
         discovery_rules = prop.get(X_F5XC_VALIDATION, {})
         if not discovery_rules:

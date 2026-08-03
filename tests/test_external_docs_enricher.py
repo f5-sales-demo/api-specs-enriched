@@ -6,10 +6,28 @@ Tests the enrichment of OpenAPI specs with externalDocs metadata
 providing links to F5's official documentation.
 """
 
+import json
+from pathlib import Path
+
 import pytest
+import yaml
+from openapi_spec_validator import validate
 
 from scripts.utils.extension_constants import X_F5XC_CLI_DOMAIN
 from scripts.utils.external_docs_enricher import ExternalDocsEnricher, ExternalDocsStats
+
+
+def _valid_config() -> dict:
+    return {
+        "api_reference_base_url": "https://example.com/api-reference",
+        "api_reference_rewrite": {"old_prefix": "https://example.com/upstream/"},
+        "domains": {
+            "other": {
+                "url": "https://example.com/docs",
+                "description": "Example documentation",
+            },
+        },
+    }
 
 
 class TestExternalDocsStats:
@@ -21,7 +39,6 @@ class TestExternalDocsStats:
         assert stats.specs_enriched == 0
         assert stats.docs_added == 0
         assert stats.already_had_docs == 0
-        assert stats.used_default == 0
         assert stats.errors == []
 
     def test_stats_to_dict(self):
@@ -30,13 +47,11 @@ class TestExternalDocsStats:
         stats.specs_enriched = 5
         stats.docs_added = 3
         stats.already_had_docs = 1
-        stats.used_default = 1
 
         result = stats.to_dict()
         assert result["specs_enriched"] == 5
         assert result["docs_added"] == 3
         assert result["already_had_docs"] == 1
-        assert result["used_default"] == 1
         assert "error_count" in result
 
 
@@ -47,10 +62,57 @@ class TestExternalDocsEnricherBasics:
         """Test enricher initializes with config loaded."""
         enricher = ExternalDocsEnricher()
         assert enricher.config is not None
-        assert enricher.default_docs is not None
-        assert "url" in enricher.default_docs
-        assert "description" in enricher.default_docs
         assert enricher.stats is not None
+
+    def test_missing_configuration_fails_closed(self, tmp_path):
+        with pytest.raises(FileNotFoundError, match="configuration not found"):
+            ExternalDocsEnricher(tmp_path / "missing.yaml")
+
+    def test_duplicate_yaml_keys_fail_closed(self, tmp_path):
+        config_path = tmp_path / "external_docs.yaml"
+        config_path.write_text(
+            """
+api_reference_base_url: https://example.com/api-reference
+api_reference_rewrite:
+  old_prefix: https://example.com/upstream/
+domains:
+  other:
+    url: https://example.com/first
+    description: First
+  other:
+    url: https://example.com/second
+    description: Second
+""".lstrip(),
+            encoding="utf-8",
+        )
+
+        with pytest.raises(yaml.constructor.ConstructorError, match="duplicate key 'other'"):
+            ExternalDocsEnricher(config_path)
+
+    @pytest.mark.parametrize(
+        ("location", "invalid_url"),
+        [
+            ("base", "http://example.com/api-reference"),
+            ("rewrite", "not-a-url"),
+            ("domain", "https://user:secret@example.com/docs"),
+            ("domain", "https://:443/docs"),
+            ("domain", "https://example.com:99999/docs"),
+            ("domain", "https://example.com:notaport/docs"),
+        ],
+    )
+    def test_every_configured_url_must_be_https(self, tmp_path, location, invalid_url):
+        config = _valid_config()
+        if location == "base":
+            config["api_reference_base_url"] = invalid_url
+        elif location == "rewrite":
+            config["api_reference_rewrite"]["old_prefix"] = invalid_url
+        else:
+            config["domains"]["other"]["url"] = invalid_url
+        config_path = tmp_path / "external_docs.yaml"
+        config_path.write_text(yaml.safe_dump(config), encoding="utf-8")
+
+        with pytest.raises(ValueError, match="valid HTTPS URL"):
+            ExternalDocsEnricher(config_path)
 
     def test_domain_docs_loaded(self):
         """Test that domain documentation mappings are loaded."""
@@ -70,7 +132,6 @@ class TestExternalDocsEnricherBasics:
         assert "specs_enriched" in stats
         assert "docs_added" in stats
         assert "already_had_docs" in stats
-        assert "used_default" in stats
 
     def test_reset_stats(self):
         """Test reset_stats clears statistics."""
@@ -97,21 +158,19 @@ class TestDocsRetrieval:
         """Test getting docs for WAF domain."""
         enricher = ExternalDocsEnricher()
         docs = enricher.get_docs_for_domain("waf")
-        assert "url" in docs
-        assert "waf" in docs["url"].lower() or "firewall" in docs["url"].lower()
+        assert docs["url"] == ("https://docs.cloud.f5.com/docs-v2/web-app-and-api-protection")
 
     def test_get_docs_for_unknown_domain(self):
-        """Test getting docs for unknown domain returns default."""
+        """Unknown domains fail instead of silently receiving generic docs."""
         enricher = ExternalDocsEnricher()
-        docs = enricher.get_docs_for_domain("unknown_domain_xyz")
-        assert "url" in docs
-        assert docs["url"] == enricher.default_docs["url"]
+        with pytest.raises(KeyError, match="no external docs mapping"):
+            enricher.get_docs_for_domain("unknown_domain_xyz")
 
     def test_get_docs_for_empty_domain(self):
-        """Test getting docs for empty domain returns default."""
+        """An empty domain is not a fallback request."""
         enricher = ExternalDocsEnricher()
-        docs = enricher.get_docs_for_domain("")
-        assert "url" in docs
+        with pytest.raises(KeyError, match="no external docs mapping"):
+            enricher.get_docs_for_domain("")
 
 
 class TestDomainDetection:
@@ -151,18 +210,30 @@ class TestDomainDetection:
             "paths": {},
         }
         domain = enricher._detect_domain(spec, filename=None)
-        # Should detect from title pattern
-        assert domain in ["dns", "other"]
+        assert domain == "dns"
 
     def test_detect_domain_unknown(self):
-        """Test domain detection returns 'other' for unknown."""
+        """Unknown documents cannot silently become the explicit other document."""
         enricher = ExternalDocsEnricher()
         spec = {
             "info": {"title": "Unknown API"},
             "paths": {},
         }
-        domain = enricher._detect_domain(spec, filename="unknown_file.json")
-        assert domain == "other"
+        with pytest.raises(ValueError, match="explicitly mapped external docs domain"):
+            enricher._detect_domain(spec, filename="unknown_file.json")
+
+    def test_unknown_explicit_cli_domain_fails_closed(self):
+        enricher = ExternalDocsEnricher()
+        spec = {
+            "info": {
+                "title": "Unknown API",
+                X_F5XC_CLI_DOMAIN: "unknown_domain_xyz",
+            },
+            "paths": {},
+        }
+
+        with pytest.raises(KeyError, match="no external docs mapping"):
+            enricher.enrich_spec(spec)
 
 
 class TestSpecEnrichment:
@@ -178,9 +249,42 @@ class TestSpecEnrichment:
             "paths": {},
         }
         result = enricher.enrich_spec(spec, filename="http_loadbalancer.json")
-        assert "externalDocs" in result["info"]
-        assert "url" in result["info"]["externalDocs"]
-        assert "description" in result["info"]["externalDocs"]
+        assert "externalDocs" in result
+        assert "externalDocs" not in result["info"]
+        assert "url" in result["externalDocs"]
+        assert "description" in result["externalDocs"]
+
+    def test_root_external_docs_remains_valid_openapi(self):
+        enricher = ExternalDocsEnricher()
+        spec = {
+            "openapi": "3.0.3",
+            "info": {"title": "Test API", "version": "1.0.0"},
+            "paths": {},
+        }
+
+        result = enricher.enrich_spec(spec, filename="openapi.json")
+
+        validate(result)
+        assert "externalDocs" in result
+        assert "externalDocs" not in result["info"]
+
+    def test_legacy_info_external_docs_fails_instead_of_migrating(self):
+        enricher = ExternalDocsEnricher()
+        spec = {
+            "info": {
+                "title": "Test API",
+                "externalDocs": {
+                    "url": "https://example.com/docs",
+                    "description": "Invalid placement",
+                },
+            },
+            "paths": {},
+        }
+
+        with pytest.raises(ValueError, match=r"info\.externalDocs"):
+            enricher.enrich_spec(spec)
+
+        assert "externalDocs" not in spec
 
     def test_enrich_spec_virtual_domain(self):
         """Test enrichment of virtual domain spec."""
@@ -192,11 +296,11 @@ class TestSpecEnrichment:
             },
             "paths": {},
         }
-        result = enricher.enrich_spec(spec)
-        assert "externalDocs" in result["info"]
+        result = enricher.enrich_spec(spec, filename="openapi.json")
+        assert "externalDocs" in result
         assert (
-            "load-balancer" in result["info"]["externalDocs"]["url"].lower()
-            or "http" in result["info"]["externalDocs"]["url"].lower()
+            "load-balancer" in result["externalDocs"]["url"].lower()
+            or "http" in result["externalDocs"]["url"].lower()
         )
         assert enricher.stats.docs_added == 1
 
@@ -211,9 +315,11 @@ class TestSpecEnrichment:
             "paths": {},
         }
         result = enricher.enrich_spec(spec)
-        assert "externalDocs" in result["info"]
-        external_docs = result["info"]["externalDocs"]
-        assert "waf" in external_docs["url"].lower() or "firewall" in external_docs["url"].lower()
+        assert "externalDocs" in result
+        external_docs = result["externalDocs"]
+        assert external_docs["url"] == (
+            "https://docs.cloud.f5.com/docs-v2/web-app-and-api-protection"
+        )
 
     def test_enrich_spec_idempotent(self):
         """Test that enrichment is idempotent."""
@@ -221,17 +327,18 @@ class TestSpecEnrichment:
         spec = {
             "info": {
                 "title": "Some API",
-                "externalDocs": {
-                    "url": "https://example.com/docs",
-                    "description": "Existing docs",
-                },
+                X_F5XC_CLI_DOMAIN: "virtual",
+            },
+            "externalDocs": {
+                "url": "https://example.com/docs",
+                "description": "Existing docs",
             },
             "paths": {},
         }
         result = enricher.enrich_spec(spec)
         # Should preserve existing externalDocs
-        assert result["info"]["externalDocs"]["url"] == "https://example.com/docs"
-        assert result["info"]["externalDocs"]["description"] == "Existing docs"
+        assert result["externalDocs"]["url"] == "https://example.com/docs"
+        assert result["externalDocs"]["description"] == "Existing docs"
         assert enricher.stats.already_had_docs == 1
 
     def test_enrich_spec_preserves_existing_info(self):
@@ -251,7 +358,8 @@ class TestSpecEnrichment:
         assert result["info"]["version"] == "1.0.0"
         assert result["info"]["description"] == "API description"
         assert result["info"][X_F5XC_CLI_DOMAIN] == "virtual"
-        assert "externalDocs" in result["info"]
+        assert "externalDocs" in result
+        assert "externalDocs" not in result["info"]
 
     def test_enrich_spec_creates_info_if_missing(self):
         """Test that enrichment creates info section if missing."""
@@ -259,9 +367,9 @@ class TestSpecEnrichment:
         spec = {
             "paths": {},
         }
-        result = enricher.enrich_spec(spec)
+        result = enricher.enrich_spec(spec, filename="openapi.json")
         assert "info" in result
-        assert "externalDocs" in result["info"]
+        assert "externalDocs" in result
 
     def test_enrich_spec_stats_updated(self):
         """Test that stats are updated after enrichment."""
@@ -272,7 +380,7 @@ class TestSpecEnrichment:
             },
             "paths": {},
         }
-        enricher.enrich_spec(spec)
+        enricher.enrich_spec(spec, filename="openapi.json")
         assert enricher.stats.specs_enriched == 1
 
     def test_enrich_multiple_specs(self):
@@ -294,6 +402,26 @@ class TestSpecEnrichment:
 
 class TestDomainMappings:
     """Test configured domain documentation mappings."""
+
+    def test_all_published_domains_resolve_through_explicit_mappings(self):
+        index_path = Path("docs/specifications/api/index.json")
+        index = json.loads(index_path.read_text(encoding="utf-8"))
+        published_domains = [entry["domain"] for entry in index["specifications"]]
+        assert len(published_domains) == 38
+        assert len(published_domains) == len(set(published_domains))
+
+        enricher = ExternalDocsEnricher()
+        missing = set(published_domains) - set(enricher.domain_docs)
+        assert missing == set()
+        for domain in published_domains:
+            assert enricher.get_docs_for_domain(domain) == enricher.domain_docs[domain]
+
+    def test_production_mappings_use_the_published_docs_v2_routes(self):
+        """Do not reintroduce the retired /docs/how-to routes that return 404."""
+        enricher = ExternalDocsEnricher()
+
+        for domain, external_docs in enricher.domain_docs.items():
+            assert external_docs["url"].startswith("https://docs.cloud.f5.com/docs-v2/"), domain
 
     @pytest.mark.parametrize(
         "domain",
@@ -318,35 +446,36 @@ class TestDomainMappings:
         assert docs["url"].startswith("https://")
 
     @pytest.mark.parametrize(
-        ("domain", "expected_url_part"),
+        ("domain", "expected_url"),
         [
-            ("virtual", "load-balancer"),
-            ("waf", "firewall"),
-            ("dns", "dns"),
-            ("cdn", "cdn"),
-            ("sites", "site"),
-            ("api", "api"),
+            ("virtual", "https://docs.cloud.f5.com/docs-v2/multi-cloud-app-connect"),
+            (
+                "waf",
+                "https://docs.cloud.f5.com/docs-v2/web-app-and-api-protection",
+            ),
+            ("dns", "https://docs.cloud.f5.com/docs-v2/dns-management"),
+            ("cdn", "https://docs.cloud.f5.com/docs-v2/content-delivery-network"),
+            ("sites", "https://docs.cloud.f5.com/docs-v2/multi-cloud-network-connect"),
+            ("api", "https://docs.cloud.f5.com/docs-v2/web-app-and-api-protection"),
         ],
     )
-    def test_domain_url_relevance(self, domain, expected_url_part):
-        """Test that domain URLs contain relevant keywords."""
+    def test_domain_url_relevance(self, domain, expected_url):
+        """Test that key domains resolve to their measured live product page."""
         enricher = ExternalDocsEnricher()
         docs = enricher.get_docs_for_domain(domain)
-        # URL should contain the expected keyword or something related
-        url_lower = docs["url"].lower()
-        assert expected_url_part in url_lower or domain in url_lower
+        assert docs["url"] == expected_url
 
 
 class TestEdgeCases:
     """Test edge cases and error handling."""
 
     def test_enrich_empty_spec(self):
-        """Test enriching an empty specification."""
+        """The explicit master document may have no domain metadata."""
         enricher = ExternalDocsEnricher()
         spec = {}
-        result = enricher.enrich_spec(spec)
+        result = enricher.enrich_spec(spec, filename="openapi.json")
         assert "info" in result
-        assert "externalDocs" in result["info"]
+        assert "externalDocs" in result
 
     def test_enrich_spec_with_empty_info(self):
         """Test enriching spec with empty info section."""
@@ -355,8 +484,8 @@ class TestEdgeCases:
             "info": {},
             "paths": {},
         }
-        result = enricher.enrich_spec(spec)
-        assert "externalDocs" in result["info"]
+        result = enricher.enrich_spec(spec, filename="openapi.json")
+        assert "externalDocs" in result
 
     def test_external_docs_structure(self):
         """Test that externalDocs has required OpenAPI fields."""
@@ -365,8 +494,8 @@ class TestEdgeCases:
             "info": {"title": "Test API"},
             "paths": {},
         }
-        result = enricher.enrich_spec(spec)
-        external_docs = result["info"]["externalDocs"]
+        result = enricher.enrich_spec(spec, filename="openapi.json")
+        external_docs = result["externalDocs"]
         # OpenAPI 3.0 externalDocs requires url and allows description
         assert "url" in external_docs
         assert isinstance(external_docs["url"], str)
@@ -374,16 +503,14 @@ class TestEdgeCases:
         if "description" in external_docs:
             assert isinstance(external_docs["description"], str)
 
-    def test_default_docs_used_for_other(self):
-        """Test that default docs are used for 'other' domain."""
+    def test_explicit_other_mapping_is_used_for_master_document(self):
         enricher = ExternalDocsEnricher()
-        enricher.reset_stats()
         spec = {
             "info": {"title": "Completely Unknown API"},
             "paths": {},
         }
-        enricher.enrich_spec(spec, filename="unknown_xyz.json")
-        assert enricher.stats.used_default >= 0  # May or may not use default
+        result = enricher.enrich_spec(spec, filename="openapi.json")
+        assert result["externalDocs"] == enricher.domain_docs["other"]
 
 
 class TestFilenameBasedDetection:
@@ -425,7 +552,7 @@ class TestIntegrationPatterns:
             "paths": {},
         }
         result = enricher.enrich_spec(spec)
-        assert "externalDocs" in result["info"]
+        assert "externalDocs" in result
         # Should still have other extensions
         assert X_F5XC_CLI_DOMAIN in result["info"]
         assert "x-f5xc-minimum-configuration" in result["info"]
@@ -446,7 +573,7 @@ class TestIntegrationPatterns:
             "paths": {},
         }
         result = enricher.enrich_spec(spec)
-        assert "externalDocs" in result["info"]
+        assert "externalDocs" in result
         assert "x-f5xc-namespace-profile" in result["info"]
 
 
@@ -605,10 +732,10 @@ class TestApiReferenceUrlField:
             "info": {
                 "title": "Virtual API",
                 X_F5XC_CLI_DOMAIN: "virtual",
-                "externalDocs": {
-                    "url": "https://docs.cloud.f5.com/docs/how-to/app-networking/http-load-balancer",
-                    "description": "Existing docs",
-                },
+            },
+            "externalDocs": {
+                "url": "https://docs.cloud.f5.com/docs/how-to/app-networking/http-load-balancer",
+                "description": "Existing docs",
             },
             "paths": {},
         }
@@ -624,11 +751,11 @@ class TestApiReferenceUrlField:
             "info": {
                 "title": "WAF API",
                 X_F5XC_CLI_DOMAIN: "waf",
-                "externalDocs": {
-                    "url": "https://docs.cloud.f5.com/docs/how-to/app-security/web-app-firewall",
-                    "description": "WAF docs",
-                },
                 "x-f5xc-api-reference-url": f"{self.NEW_BASE}/waf/",
+            },
+            "externalDocs": {
+                "url": "https://docs.cloud.f5.com/docs/how-to/app-security/web-app-firewall",
+                "description": "WAF docs",
             },
             "paths": {},
         }

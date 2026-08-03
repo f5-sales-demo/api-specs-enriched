@@ -9,6 +9,8 @@ from typing import Any
 
 import yaml
 
+from scripts.utils.technical_text import replace_many_outside_technical_spans
+
 
 class AcronymNormalizer:
     """Normalizes acronyms to consistent casing in API specification text.
@@ -54,11 +56,19 @@ class AcronymNormalizer:
         # Sort by length (longest first) to handle overlapping patterns
         self._compiled_patterns.sort(key=lambda x: len(x[1]), reverse=True)
 
-    def normalize_text(self, text: str) -> str:
+    def normalize_text(
+        self,
+        text: str,
+        *,
+        path: str = "",
+        container: dict[str, Any] | None = None,
+    ) -> str:
         """Normalize acronyms in a text string.
 
         Args:
             text: Input text with potentially inconsistent acronym casing.
+            path: Structural path of the text field in the OpenAPI document.
+            container: Mapping that owns the text field.
 
         Returns:
             Text with normalized acronym casing.
@@ -66,8 +76,7 @@ class AcronymNormalizer:
         if not text or not isinstance(text, str):
             return text
 
-        result = text
-
+        rules = []
         for pattern, replacement in self._compiled_patterns:
 
             def replace_match(match: re.Match, repl: str = replacement) -> str:
@@ -77,9 +86,14 @@ class AcronymNormalizer:
                     return matched_word
                 return repl
 
-            result = pattern.sub(replace_match, result)
+            rules.append((pattern, replace_match))
 
-        return result
+        return replace_many_outside_technical_spans(
+            text,
+            rules,
+            path=path,
+            container=container,
+        )
 
     def normalize_spec(
         self,
@@ -100,18 +114,31 @@ class AcronymNormalizer:
 
         return self._normalize_recursive(spec, target_fields)
 
-    def _normalize_recursive(self, obj: Any, target_fields: list[str]) -> Any:
+    def _normalize_recursive(
+        self,
+        obj: Any,
+        target_fields: list[str],
+        current_path: str = "",
+    ) -> Any:
         """Recursively process object and normalize text fields."""
         if isinstance(obj, dict):
             result = {}
             for key, value in obj.items():
+                new_path = f"{current_path}.{key}" if current_path else key
                 if key in target_fields and isinstance(value, str):
-                    result[key] = self.normalize_text(value)
+                    result[key] = self.normalize_text(
+                        value,
+                        path=new_path,
+                        container=obj,
+                    )
                 else:
-                    result[key] = self._normalize_recursive(value, target_fields)
+                    result[key] = self._normalize_recursive(value, target_fields, new_path)
             return result
         if isinstance(obj, list):
-            return [self._normalize_recursive(item, target_fields) for item in obj]
+            return [
+                self._normalize_recursive(item, target_fields, f"{current_path}[{index}]")
+                for index, item in enumerate(obj)
+            ]
         return obj
 
     def get_stats(self) -> dict[str, int]:

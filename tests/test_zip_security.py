@@ -48,13 +48,13 @@ class TestPathTraversalProtection:
         # Create malicious ZIP with path traversal
         evil_zip = tmp_path / "evil.zip"
         with zipfile.ZipFile(evil_zip, "w") as zf:
-            zf.writestr("../../../etc/passwd", "malicious content")
+            zf.writestr("../../../etc/passwd.json", "malicious content")
 
         output = tmp_path / "output"
-        files = extract_zip(evil_zip, output, _TEST_CONFIG)
+        with pytest.raises(ValueError, match="Unsafe included archive member"):
+            extract_zip(evil_zip, output, _TEST_CONFIG)
 
-        # Should extract nothing or skip the malicious entry
-        assert len(files) == 0 or not (tmp_path / ".." / ".." / ".." / "etc" / "passwd").exists()
+        assert not (tmp_path / ".." / ".." / ".." / "etc" / "passwd.json").exists()
 
 
 class TestZipBombProtection:
@@ -89,6 +89,34 @@ class TestZipBombProtection:
         is_valid, msg = validate_zip_member_size(info, _TEST_LIMITS)
         assert is_valid
 
+    def test_reject_nonempty_file_with_zero_compressed_size(self):
+        info = zipfile.ZipInfo("invalid.json")
+        info.file_size = 1
+        info.compress_size = 0
+
+        is_valid, msg = validate_zip_member_size(info, _TEST_LIMITS)
+
+        assert not is_valid
+        assert "compressed size" in msg.lower()
+
+    def test_accept_empty_file_with_zero_sizes(self):
+        info = zipfile.ZipInfo("empty.json")
+        info.file_size = 0
+        info.compress_size = 0
+
+        assert validate_zip_member_size(info, _TEST_LIMITS) == (True, "")
+
+    @pytest.mark.parametrize(("file_size", "compress_size"), [(-1, 0), (0, -1), (-1, -1)])
+    def test_reject_negative_archive_sizes(self, file_size, compress_size):
+        info = zipfile.ZipInfo("invalid.json")
+        info.file_size = file_size
+        info.compress_size = compress_size
+
+        is_valid, msg = validate_zip_member_size(info, _TEST_LIMITS)
+
+        assert not is_valid
+        assert "invalid archive size" in msg.lower()
+
 
 class TestSafeExtractionIntegration:
     """Test complete extraction flow with security."""
@@ -117,7 +145,7 @@ class TestSafeExtractionIntegration:
         assert (output / "api3.json").exists()
 
     def test_mixed_safe_and_unsafe_extraction(self, tmp_path):
-        """Test ZIP with both safe and unsafe paths - only safe extracted."""
+        """One unsafe included member rejects the complete candidate."""
         # Create ZIP with mix of safe and unsafe files
         mixed_zip = tmp_path / "mixed.zip"
         with zipfile.ZipFile(mixed_zip, "w") as zf:
@@ -126,17 +154,9 @@ class TestSafeExtractionIntegration:
             zf.writestr("api2.json", '{"test": "safe2"}')
 
         output = tmp_path / "output"
-        files = extract_zip(mixed_zip, output, _TEST_CONFIG)
+        with pytest.raises(ValueError, match="Unsafe included archive member"):
+            extract_zip(mixed_zip, output, _TEST_CONFIG)
 
-        # Should only extract the 2 safe files
-        assert len(files) == 2
-        assert "api1.json" in files
-        assert "api2.json" in files
-        assert "evil.json" not in files
-
-        # Verify only safe files exist
-        assert (output / "api1.json").exists()
-        assert (output / "api2.json").exists()
         assert not (tmp_path / ".." / "evil.json").exists()
 
 

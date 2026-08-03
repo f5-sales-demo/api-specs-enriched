@@ -1,15 +1,10 @@
+---
 # Enrichment configuration for F5 XC API specifications
 # Updated: 2026-01-15 - Triggering v2.0.22 release for downstream projects
 
-# Source configuration
-# Note: Version is now derived from git tags (not .version file) to eliminate race conditions
-source:
-  url: "https://docs.cloud.f5.com/docs-v2/downloads/f5-distributed-cloud-open-api.zip"
-  etag_file: ".etag"
-
 # Paths configuration
 # Simplified two-folder architecture:
-#   specs/original/           - READ-ONLY source from F5
+#   specs/original/           - READ-ONLY corrected api-specs release input
 #   docs/specifications/api/  - Single output folder for all processed specs (served by GitHub Pages)
 paths:
   original: "specs/original"
@@ -17,16 +12,15 @@ paths:
   reports: "reports"
 
 # Branding transformations
-# Synchronized with f5xc-api-mcp project and xcsh CLI tool for compatibility
+# Canonical terminology shared by f5xc-api-mcp and the xcsh CLI
 branding:
-  # Protected patterns - these should NOT be transformed
-  # Used to preserve API URLs, console URLs, and schema references
+  # Protected syntax - these wire/documentation structures are not prose.
+  # Hostnames, protobuf identifiers, qualified label keys, and declared
+  # parameter values are protected structurally by BrandingTransformer.
   protected_patterns:
-    - "https?://[^\\s]*\\.volterra\\.(io|us)"  # API URLs
-    - "console\\.ves\\.volterra\\.io"           # Console URLs
+    - "https?://[^\\s<>\\\"']+"                # Absolute URLs
     - "/api/(config|data)/"                     # API paths
     - "\\$ref"                                  # Schema $ref references
-    - "ves\\.io\\.schema"                       # Schema namespaces
 
   replacements:
     # Company/Product naming
@@ -38,7 +32,7 @@ branding:
       replacement: "F5 Distributed Cloud"
       case_sensitive: false
 
-    # VoltStack transformations (MCP compatibility)
+    # VoltStack transformations for canonical downstream terminology
     - pattern: "\\bVoltStack\\b"
       replacement: "Customer Edge"
       case_sensitive: true
@@ -47,7 +41,11 @@ branding:
       replacement: "customer_edge_site"
       case_sensitive: false
 
-    # VES transformations (MCP compatibility)
+    # VES transformations for canonical downstream terminology
+    - pattern: "\\bves-(?:i/o|io)\\b"
+      replacement: "F5XC"
+      case_sensitive: false
+
     - pattern: "\\bVES Console\\b"
       replacement: "F5XC Console"
       case_sensitive: true
@@ -110,7 +108,7 @@ branding:
       replacement: "XCSH"
       case_sensitive: true
 
-    # Naming convention: my- prefix → example- prefix (MCP compatibility)
+    # Naming convention aligned with canonical downstream examples: my- → example-
     - pattern: "\\bmy-"
       replacement: "example-"
       case_sensitive: true
@@ -225,7 +223,6 @@ target_fields:
   - description
   - summary
   - x-displayname
-  - x-ves-example
 
 # Description structure normalization
 description_structure:
@@ -316,17 +313,6 @@ preserve_fields:
   - externalDocs
   - x-validation-rules
 
-# OpenAPI validation settings
-validation:
-  # Validate enriched specs are valid OpenAPI
-  validate_after_enrichment: true
-
-  # Fail on validation errors
-  fail_on_error: true
-
-  # OpenAPI version to validate against
-  openapi_version: "3.0"
-
 # Diff/changelog settings
 changelog:
   # Generate diff report
@@ -343,8 +329,8 @@ processing:
   # Number of specs to process in parallel
   parallel_workers: 4
 
-  # Continue on individual spec errors
-  continue_on_error: true
+  # Number of specs loaded into each deterministic pipeline batch
+  batch_size: 20
 
   # Log level (DEBUG, INFO, WARNING, ERROR)
   log_level: "INFO"
@@ -359,19 +345,6 @@ output:
 
   # Preserve original file names
   preserve_filenames: true
-
-# Discovery enrichment settings
-# Merges live API discovery data into published specifications
-# Run 'make discover' first to generate discovery data
-discovery_enrichment:
-  # Enable discovery-driven enrichment
-  # Can also be enabled via: python -m scripts.enrich --use-discovery
-  enabled: true
-
-  # Location of discovered specs (from make discover)
-  discovered_specs_dir: "specs/discovered"
-
-  # See config/discovery_enrichment.yaml for detailed configuration
 
 # Deprecated tier transformation settings
 # Pre-release cleanup: transforms deprecated subscription tier values to current equivalents

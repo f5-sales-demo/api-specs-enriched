@@ -15,7 +15,7 @@ import asyncio
 import statistics
 from collections.abc import Callable, Coroutine
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 
@@ -162,7 +162,7 @@ class PercentileCollector:
                 )
                 samples.append(response_time)
                 self.stats.total_samples += 1
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 failed += 1
                 self.stats.failed_samples += 1
             except Exception:
@@ -179,7 +179,7 @@ class PercentileCollector:
             return ResponseTimeStats(
                 endpoint=endpoint,
                 method=method,
-                last_measured=datetime.now(timezone.utc).isoformat(),
+                last_measured=datetime.now(UTC).isoformat(),
             )
 
         # Discard outliers if enabled
@@ -250,7 +250,7 @@ class PercentileCollector:
             mean_ms=mean_ms,
             stdev_ms=stdev_ms,
             sample_count=n,
-            last_measured=datetime.now(timezone.utc).isoformat(),
+            last_measured=datetime.now(UTC).isoformat(),
             endpoint=endpoint,
             method=method,
         )

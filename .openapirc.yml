@@ -1,3 +1,4 @@
+---
 # F5 XC API Specification Linting Rules (Spectral)
 # Custom ruleset for validating OpenAPI specifications
 #
@@ -16,33 +17,33 @@ rules:
   # These are common in auto-generated API specs
 
   # Allow missing operation descriptions (many F5 APIs don't have them)
-  operation-description: off
+  operation-description: "off"
 
   # Allow missing parameter descriptions
-  oas3-parameter-description: off
+  oas3-parameter-description: "off"
 
   # Don't require examples for everything
-  oas3-valid-schema-example: off
+  oas3-valid-schema-example: "off"
 
   # F5 XC API specs have schema properties named "examples" that Spectral
   # incorrectly validates as OpenAPI Example objects. These are schema
   # definitions, not media type examples. Disable to avoid false positives.
-  oas3-valid-media-example: off
-  oas3-examples-value-or-externalValue: off
+  oas3-valid-media-example: "off"
+  oas3-examples-value-or-externalValue: "off"
 
   # Allow missing tags on operations (F5 specs don't always tag)
-  operation-tag-defined: off
+  operation-tag-defined: "off"
 
   # Info section rules - keep but as warnings
   info-contact: warn
   info-description: warn
-  info-license: off
+  info-license: "off"
 
   # Path rules
   # F5 XC API uses Kubernetes-style dotted parameter names
   # (metadata.namespace, metadata.name) which Spectral doesn't handle correctly.
   # This is intentional upstream API design, not a spec error.
-  path-params: off
+  path-params: "off"
   path-declarations-must-exist: error
   path-keys-no-trailing-slash: warn
   path-not-include-query: error
@@ -56,12 +57,12 @@ rules:
   # F5 source specs contain ves.io.schema.rules.* properties (protobuf validation extensions)
   # These are inherited in enriched specs and not OAS3-compliant, but are pre-existing from source
   # Our enrichers only add OAS3-compliant properties (descriptions, examples, x-ves-*, constraints)
-  oas3-unused-component: off
-  oas3-schema: off
+  oas3-unused-component: "off"
+  oas3-schema: "off"
 
   # Security rules
   oas3-api-servers: warn
-  oas3-operation-security-defined: off
+  oas3-operation-security-defined: "off"
 
   # Response rules
   operation-success-response: warn
@@ -77,11 +78,11 @@ overrides:
   - files:
       - "**/*.json"
     rules:
-      operation-description: off
-      oas3-parameter-description: off
-      oas3-schema: off
-      oas3-valid-schema-example: off
-      path-params: off
+      operation-description: "off"
+      oas3-parameter-description: "off"
+      oas3-schema: "off"
+      oas3-valid-schema-example: "off"
+      path-params: "off"
 
 # Functions for custom rules (if needed in future)
 # functionsDir: ./spectral-functions

@@ -12,6 +12,12 @@ from typing import Any
 
 import yaml
 
+from scripts.utils.resource_resolver import (
+    apply_overrides,
+    resolve_resource,
+    validate_resource_mappings,
+)
+
 # Resource metadata cache for per-resource metadata from config/resource_metadata.yaml
 # Uses mutable container pattern to avoid global statement (PLW0603)
 _CACHE: dict[str, Any] = {}
@@ -208,18 +214,6 @@ def get_domain_icon(domain: str) -> dict[str, str]:
     }
 
 
-def get_primary_resources(domain: str) -> list[str]:
-    """Get primary resources for a domain.
-
-    Args:
-        domain: The domain name
-
-    Returns:
-        List of primary resource type names
-    """
-    return DOMAIN_PRIMARY_RESOURCES.get(domain, [])
-
-
 def _load_resource_metadata() -> dict[str, dict[str, Any]]:
     """Load per-resource metadata from config/resource_metadata.yaml.
 
@@ -307,8 +301,8 @@ def get_primary_resources_metadata(
 
     When spec is provided, adds 'schema_components' and 'api_paths' to each
     resource dict by running the heuristic resolver and applying config overrides
-    from resource_metadata.yaml. When spec is None, these keys are absent
-    (backward compatibility for callers without spec data).
+    from resource_metadata.yaml. When spec is omitted, returns the configured
+    resource metadata without resolution fields.
 
     Args:
         domain: The domain name (e.g., 'virtual', 'waf', 'dns')
@@ -317,14 +311,8 @@ def get_primary_resources_metadata(
 
     Returns:
         List of resource metadata dicts. With spec: includes schema_components
-        and api_paths. Without spec: only the original 10 fields.
+        and api_paths. Without spec: includes the configured metadata fields.
     """
-    from scripts.utils.resource_resolver import (  # noqa: PLC0415
-        apply_overrides,
-        resolve_resource,
-        validate_resource_mappings,
-    )
-
     resource_names = DOMAIN_PRIMARY_RESOURCES.get(domain, [])
     resources = [get_resource_metadata(name) for name in resource_names]
 

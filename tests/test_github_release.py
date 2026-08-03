@@ -4,21 +4,35 @@
 """Unit tests for GitHub release utility module."""
 
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from unittest.mock import Mock, patch
 
 import pytest
 import requests
 
 from scripts.utils.github_release import (
-    check_for_updates,
     download_release_asset,
     find_release_asset,
     get_latest_release,
-    get_local_release_version,
+    get_release_by_tag,
     parse_release_version,
+    release_receipt,
+    require_release_asset,
+    resolve_release_receipt,
     save_release_metadata,
+    validate_release_receipt,
 )
+
+_DIGEST = "sha256:" + "a" * 64
+_OTHER_DIGEST = "sha256:" + "b" * 64
+
+
+def _asset(digest: str = _DIGEST) -> dict[str, object]:
+    return {
+        "name": "api-specs-v2026.01.22-2.zip",
+        "size": 5971024,
+        "digest": digest,
+    }
 
 
 class TestParseReleaseVersion:
@@ -38,46 +52,6 @@ class TestParseReleaseVersion:
         assert parse_release_version("1.2.3") == "1.2.3"
 
 
-class TestGetLocalReleaseVersion:
-    """Test reading local release version."""
-
-    def test_file_not_exists(self, tmp_path):
-        """Test when version file doesn't exist."""
-        version_file = tmp_path / ".github_release"
-        result = get_local_release_version(version_file)
-        assert result is None
-
-    def test_valid_version_file(self, tmp_path):
-        """Test reading valid version file."""
-        version_file = tmp_path / ".github_release"
-        metadata = {
-            "version": "2026.01.22-2",
-            "tag_name": "v2026.01.22-2",
-            "published_at": "2026-01-26T10:30:00Z",
-        }
-        version_file.write_text(json.dumps(metadata))
-
-        result = get_local_release_version(version_file)
-        assert result == "2026.01.22-2"
-
-    def test_invalid_json(self, tmp_path):
-        """Test handling of invalid JSON."""
-        version_file = tmp_path / ".github_release"
-        version_file.write_text("invalid json")
-
-        result = get_local_release_version(version_file)
-        assert result is None
-
-    def test_missing_version_field(self, tmp_path):
-        """Test handling of missing version field."""
-        version_file = tmp_path / ".github_release"
-        metadata = {"tag_name": "v2026.01.22-2"}
-        version_file.write_text(json.dumps(metadata))
-
-        result = get_local_release_version(version_file)
-        assert result is None
-
-
 class TestSaveReleaseMetadata:
     """Test saving release metadata."""
 
@@ -93,6 +67,7 @@ class TestSaveReleaseMetadata:
             release_data,
             "api-specs-v2026.01.22-2.zip",
             5971024,
+            _DIGEST,
             version_file,
         )
 
@@ -104,6 +79,7 @@ class TestSaveReleaseMetadata:
         assert metadata["published_at"] == "2026-01-26T10:30:00Z"
         assert metadata["asset_name"] == "api-specs-v2026.01.22-2.zip"
         assert metadata["asset_size"] == 5971024
+        assert metadata["asset_digest"] == _DIGEST
 
         # .github_release is tracked, so a per-run wall-clock stamp made every
         # download dirty the working tree with a change that says nothing about the
@@ -119,6 +95,7 @@ class TestSaveReleaseMetadata:
             "published_at",
             "asset_name",
             "asset_size",
+            "asset_digest",
         }
 
 
@@ -155,6 +132,21 @@ class TestFindReleaseAsset:
         asset = find_release_asset(release_data, "*.zip")
         assert asset is None
 
+    def test_require_release_asset_rejects_multiple_matches(self):
+        release_data = {
+            "assets": [
+                {"name": "api-specs-v2026.01.22-1.zip"},
+                {"name": "api-specs-v2026.01.22-2.zip"},
+            ]
+        }
+
+        with pytest.raises(ValueError, match=r"exactly one.*found 2"):
+            require_release_asset(release_data, "api-specs-v*.zip")
+
+    def test_require_release_asset_rejects_absent_match(self):
+        with pytest.raises(ValueError, match=r"exactly one.*found 0"):
+            require_release_asset({"assets": []}, "api-specs-v*.zip")
+
 
 class TestGetLatestRelease:
     """Test fetching latest release from GitHub API."""
@@ -172,6 +164,7 @@ class TestGetLatestRelease:
             "tag_name": "v2026.01.22-2",
             "published_at": "2026-01-26T10:30:00Z",
             "assets": [{"name": "test.zip"}],
+            "immutable": True,
         }
         mock_get.return_value = mock_response
 
@@ -196,6 +189,147 @@ class TestGetLatestRelease:
         with pytest.raises(ValueError, match="No releases found"):
             get_latest_release("owner", "repo")
 
+
+class TestPinnedReleaseReceipt:
+    """Exact receipts prevent a newer latest release from replacing the trigger input."""
+
+    @patch("scripts.utils.github_release.requests.get")
+    def test_exact_tag_fetch_never_calls_latest(self, mock_get):
+        response = Mock()
+        response.headers = {"X-RateLimit-Remaining": "100", "X-RateLimit-Limit": "5000"}
+        response.json.return_value = {
+            "tag_name": "v2026.01.22-1",
+            "published_at": "2026-01-25T10:30:00Z",
+            "assets": [_asset()],
+            "immutable": True,
+        }
+        mock_get.return_value = response
+
+        release = get_release_by_tag("owner", "repo", "v2026.01.22-1")
+
+        assert release["tag_name"] == "v2026.01.22-1"
+        requested_url = mock_get.call_args.args[0]
+        assert requested_url.endswith("/releases/tags/v2026.01.22-1")
+        assert "/releases/latest" not in requested_url
+
+    @patch("scripts.utils.github_release.get_release_by_tag")
+    def test_dispatch_a_consumes_a_when_newer_b_exists(self, get_by_tag):
+        release_a = {
+            "tag_name": "v2026.01.22-2",
+            "published_at": "2026-01-26T10:30:00Z",
+            "assets": [_asset()],
+            "immutable": True,
+        }
+        receipt_a = release_receipt(release_a, release_a["assets"][0])
+        get_by_tag.return_value = release_a
+
+        selected_release, selected_asset = resolve_release_receipt(
+            "owner", "repo", receipt_a, asset_pattern="api-specs-v*.zip"
+        )
+
+        get_by_tag.assert_called_once_with("owner", "repo", "v2026.01.22-2", token=None)
+        assert selected_release is release_a
+        assert selected_asset["digest"] == receipt_a["asset_digest"]
+
+    @patch("scripts.utils.github_release.get_release_by_tag")
+    def test_exact_receipt_requires_the_named_asset_to_be_the_sole_zip(self, get_by_tag):
+        release = {
+            "tag_name": "v2026.01.22-2",
+            "published_at": "2026-01-26T10:30:00Z",
+            "assets": [
+                _asset(),
+                {
+                    "name": "extra.zip",
+                    "size": 1,
+                    "digest": _OTHER_DIGEST,
+                },
+            ],
+            "immutable": True,
+        }
+        receipt = release_receipt(release, release["assets"][0])
+        get_by_tag.return_value = release
+
+        with pytest.raises(ValueError, match=r"exactly one ZIP asset.*found 2"):
+            resolve_release_receipt(
+                "owner",
+                "repo",
+                receipt,
+                asset_pattern="api-specs-v*.zip",
+            )
+
+    @pytest.mark.parametrize(
+        ("remote_field", "remote_value", "mismatch"),
+        [
+            ("tag_name", "v2026.01.22-3", "tag_name"),
+            ("digest", _OTHER_DIGEST, "asset_digest"),
+        ],
+    )
+    @patch("scripts.utils.github_release.get_release_by_tag")
+    def test_remote_identity_mismatch_is_rejected(
+        self, get_by_tag, remote_field, remote_value, mismatch
+    ):
+        release_a = {
+            "tag_name": "v2026.01.22-2",
+            "published_at": "2026-01-26T10:30:00Z",
+            "assets": [_asset()],
+            "immutable": True,
+        }
+        receipt_a = release_receipt(release_a, release_a["assets"][0])
+        remote = {**release_a, "assets": [{**release_a["assets"][0]}]}
+        if remote_field == "digest":
+            remote["assets"][0][remote_field] = remote_value
+        else:
+            remote[remote_field] = remote_value
+        get_by_tag.return_value = remote
+
+        with pytest.raises(ValueError, match=mismatch):
+            resolve_release_receipt("owner", "repo", receipt_a, asset_pattern="api-specs-v*.zip")
+
+    def test_receipt_contract_rejects_missing_extra_and_wrong_types(self):
+        release = {
+            "tag_name": "v2026.01.22-2",
+            "published_at": "2026-01-26T10:30:00Z",
+            "assets": [_asset()],
+        }
+        receipt = release_receipt(release, release["assets"][0])
+        for invalid in (
+            {key: value for key, value in receipt.items() if key != "asset_digest"},
+            {**receipt, "release_url": "https://example.invalid"},
+            {**receipt, "asset_size": "5971024"},
+            {**receipt, "asset_size": True},
+            {**receipt, "asset_size": 0},
+            {**receipt, "asset_size": -1},
+            {**receipt, "asset_size": 1.5},
+        ):
+            with pytest.raises(ValueError, match=r"release receipt|asset_size"):
+                validate_release_receipt(invalid)
+
+    @pytest.mark.parametrize(
+        ("field", "value", "message"),
+        [
+            ("tag_name", "vv2026.01.22-2", "tag_name"),
+            ("published_at", "not-a-timestamp", "published_at"),
+            ("published_at", "2026-01-26T10:30:00+00:00", "published_at"),
+            ("published_at", "2026-01-26T10:30:00.000Z", "published_at"),
+            ("published_at", "2026-02-30T10:30:00Z", "published_at"),
+        ],
+    )
+    def test_receipt_contract_rejects_noncanonical_identity_fields(
+        self,
+        field,
+        value,
+        message,
+    ):
+        release = {
+            "tag_name": "v2026.01.22-2",
+            "published_at": "2026-01-26T10:30:00Z",
+            "assets": [_asset()],
+        }
+        receipt = release_receipt(release, release["assets"][0])
+
+        with pytest.raises(ValueError, match=message):
+            validate_release_receipt({**receipt, field: value})
+
     @patch("scripts.utils.github_release.requests.get")
     def test_rate_limit_warning(self, mock_get, capsys):
         """Test rate limit warning when approaching limit."""
@@ -204,12 +338,13 @@ class TestGetLatestRelease:
         mock_response.headers = {
             "X-RateLimit-Remaining": "5",
             "X-RateLimit-Limit": "60",
-            "X-RateLimit-Reset": str(int(datetime.now(timezone.utc).timestamp()) + 3600),
+            "X-RateLimit-Reset": str(int(datetime.now(UTC).timestamp()) + 3600),
         }
         mock_response.json.return_value = {
             "tag_name": "v2026.01.22-2",
             "published_at": "2026-01-26T10:30:00Z",
             "assets": [{"name": "test.zip"}],
+            "immutable": True,
         }
         mock_get.return_value = mock_response
 
@@ -232,6 +367,7 @@ class TestGetLatestRelease:
             "tag_name": "v2026.01.22-2",
             "published_at": "2026-01-26T10:30:00Z",
             "assets": [{"name": "test.zip"}],
+            "immutable": True,
         }
         mock_get.return_value = mock_response
 
@@ -242,6 +378,26 @@ class TestGetLatestRelease:
         headers = call_args[1]["headers"]
         assert "Authorization" in headers
         assert headers["Authorization"] == "Bearer test-token"
+
+    @pytest.mark.parametrize("immutable", [False, None])
+    @patch("scripts.utils.github_release.requests.get")
+    def test_mutable_or_unmarked_release_is_rejected(self, mock_get, immutable):
+        mock_response = Mock()
+        mock_response.status_code = 200
+        mock_response.headers = {
+            "X-RateLimit-Remaining": "100",
+            "X-RateLimit-Limit": "5000",
+        }
+        mock_response.json.return_value = {
+            "tag_name": "v2026.01.22-2",
+            "published_at": "2026-01-26T10:30:00Z",
+            "assets": [{"name": "test.zip"}],
+            "immutable": immutable,
+        }
+        mock_get.return_value = mock_response
+
+        with pytest.raises(ValueError, match="is not immutable"):
+            get_latest_release("owner", "repo")
 
 
 class TestDownloadReleaseAsset:
@@ -298,94 +454,3 @@ class TestDownloadReleaseAsset:
 
         assert result is False
         assert not output_path.exists()  # Partial download should be cleaned up
-
-
-class TestCheckForUpdates:
-    """Test checking for release updates."""
-
-    @patch("scripts.utils.github_release.get_latest_release")
-    def test_no_updates_same_version(self, mock_get_release, tmp_path):
-        """Test when local and remote versions match."""
-        version_file = tmp_path / ".github_release"
-        metadata = {
-            "version": "2026.01.22-2",
-            "tag_name": "v2026.01.22-2",
-        }
-        version_file.write_text(json.dumps(metadata))
-
-        mock_get_release.return_value = {
-            "tag_name": "v2026.01.22-2",
-            "published_at": "2026-01-26T10:30:00Z",
-            "assets": [],
-        }
-
-        has_updates, release_data = check_for_updates(
-            "owner",
-            "repo",
-            version_file,
-        )
-
-        assert has_updates is False
-        assert release_data is not None
-
-    @patch("scripts.utils.github_release.get_latest_release")
-    def test_updates_available(self, mock_get_release, tmp_path):
-        """Test when newer version is available."""
-        version_file = tmp_path / ".github_release"
-        metadata = {
-            "version": "2026.01.22-1",
-            "tag_name": "v2026.01.22-1",
-        }
-        version_file.write_text(json.dumps(metadata))
-
-        mock_get_release.return_value = {
-            "tag_name": "v2026.01.22-2",
-            "published_at": "2026-01-26T10:30:00Z",
-            "assets": [],
-        }
-
-        has_updates, release_data = check_for_updates(
-            "owner",
-            "repo",
-            version_file,
-        )
-
-        assert has_updates is True
-        assert release_data["tag_name"] == "v2026.01.22-2"
-
-    @patch("scripts.utils.github_release.get_latest_release")
-    def test_first_download(self, mock_get_release, tmp_path):
-        """Test when no local version exists."""
-        version_file = tmp_path / ".github_release"
-        # File doesn't exist
-
-        mock_get_release.return_value = {
-            "tag_name": "v2026.01.22-2",
-            "published_at": "2026-01-26T10:30:00Z",
-            "assets": [],
-        }
-
-        has_updates, release_data = check_for_updates(
-            "owner",
-            "repo",
-            version_file,
-        )
-
-        assert has_updates is True
-        assert release_data["tag_name"] == "v2026.01.22-2"
-
-    @patch("scripts.utils.github_release.get_latest_release")
-    def test_api_error_assumes_update_needed(self, mock_get_release, tmp_path):
-        """Test that API errors assume update is needed."""
-        version_file = tmp_path / ".github_release"
-
-        mock_get_release.side_effect = requests.RequestException("API error")
-
-        has_updates, release_data = check_for_updates(
-            "owner",
-            "repo",
-            version_file,
-        )
-
-        assert has_updates is True  # Assume update needed on error
-        assert release_data is None

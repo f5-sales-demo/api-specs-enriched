@@ -21,7 +21,7 @@ Enriched OpenAPI 3.0.3 specifications for F5 Distributed Cloud (XC) platform.
 └── domains/            # Individual domain specifications
     ├── api_security.json
     ├── applications.json
-    └── ... (23 domain specs)
+    └── ... ({DOMAIN_COUNT} domain specs)
 ```
 
 ## Quick Start

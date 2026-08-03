@@ -223,7 +223,13 @@ class TestIdempotency:
     def test_idempotency_skips_enrichment(self, enricher):
         """Test that existing uniqueness metadata is not overwritten"""
         spec = {
-            "info": {"title": "Test"},
+            "info": {
+                "title": "Test",
+                "x-f5xc-namespace-profile": {
+                    "constraint": {"allowed": ["system", "shared", "custom"]},
+                    "recommendation": {"primary": "custom"},
+                },
+            },
             "components": {
                 "schemas": {
                     "Resource": {
@@ -295,25 +301,45 @@ class TestStatistics:
 class TestEdgeCases:
     """Test edge cases and error handling"""
 
-    def test_missing_namespace_profile_defaults_to_any(self, enricher):
-        """Test behavior when namespace profile is missing (defaults to 'any')"""
+    @pytest.mark.parametrize("profile", [None, "shared", ["shared"], 1])
+    def test_non_object_namespace_profile_is_rejected(self, enricher, profile):
+        """Reject every non-object namespace profile without a scope fallback."""
+        with pytest.raises(TypeError, match="must be a structured object"):
+            enricher._extract_scope_from_profile(profile)
+
+    def test_missing_namespace_profile_fails_enrichment(self, enricher):
+        """Propagate a missing namespace-profile contract failure."""
         spec = {
             "info": {"title": "Test"},  # No x-f5xc-namespace-profile
             "components": {"schemas": {"Resource": {"type": "object"}}},
         }
-        result = enricher.enrich_spec(spec)
-        uniqueness = result["components"]["schemas"]["Resource"]["x-f5xc-uniqueness"]
 
-        # Should default to 'any' → namespace scope
-        assert uniqueness["scope"] == "namespace"
-        assert uniqueness["within"] == ["namespace"]
+        with pytest.raises(TypeError, match="must be a structured object"):
+            enricher.enrich_spec(spec)
 
     def test_empty_spec(self, enricher):
-        """Test enriching an empty spec"""
-        spec = {}
-        result = enricher.enrich_spec(spec)
-        assert result == {}
+        """Reject an empty specification that lacks the required profile."""
+        with pytest.raises(TypeError, match="must be a structured object"):
+            enricher.enrich_spec({})
         assert enricher.stats.schemas_enriched == 0
+
+    def test_schema_enrichment_failure_is_recorded_and_propagated(self, enricher):
+        """Never continue after a schema fails uniqueness enrichment."""
+        spec = {
+            "info": {
+                "title": "Test",
+                "x-f5xc-namespace-profile": {
+                    "constraint": {"allowed": ["shared"]},
+                    "recommendation": {"primary": "shared"},
+                },
+            },
+            "components": {"schemas": {"Broken": None}},
+        }
+
+        with pytest.raises(TypeError):
+            enricher.enrich_spec(spec)
+
+        assert enricher.get_stats()["error_count"] == 1
 
     def test_spec_without_schemas(self, enricher):
         """Test spec without components.schemas"""

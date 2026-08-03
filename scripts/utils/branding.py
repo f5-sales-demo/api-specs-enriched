@@ -16,6 +16,7 @@ Version: v4.0.0 - Removes XCKS/XCCS, uses current API product names
 """
 
 import re
+from collections.abc import Set
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, ClassVar
@@ -23,6 +24,93 @@ from typing import Any, ClassVar
 import yaml
 
 from scripts.utils.extension_constants import X_F5XC_GLOSSARY
+from scripts.utils.technical_text import (
+    TextRule,
+    immutable_technical_spans,
+    replace_many_outside_technical_spans,
+)
+
+
+class BrandingConfigError(ValueError):
+    """Raised when branding configuration is missing or structurally invalid."""
+
+
+class _StrictSafeLoader(yaml.SafeLoader):
+    """Safe YAML loader that rejects duplicate mapping keys."""
+
+
+def _construct_unique_mapping(
+    loader: _StrictSafeLoader,
+    node: yaml.MappingNode,
+    deep: bool = False,
+) -> dict[Any, Any]:
+    """Construct a mapping without last-key-wins behavior."""
+    loader.flatten_mapping(node)
+    mapping: dict[Any, Any] = {}
+    for key_node, value_node in node.value:
+        key = loader.construct_object(key_node, deep=deep)
+        try:
+            duplicate = key in mapping
+        except TypeError as exc:
+            raise yaml.constructor.ConstructorError(
+                "while constructing a mapping",
+                node.start_mark,
+                "found an unhashable mapping key",
+                key_node.start_mark,
+            ) from exc
+        if duplicate:
+            raise yaml.constructor.ConstructorError(
+                "while constructing a mapping",
+                node.start_mark,
+                f"found duplicate key {key!r}",
+                key_node.start_mark,
+            )
+        mapping[key] = loader.construct_object(value_node, deep=deep)
+    return mapping
+
+
+_StrictSafeLoader.add_constructor(
+    yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG,
+    _construct_unique_mapping,
+)
+
+
+def _load_yaml_mapping(config_path: Path, config_name: str) -> dict[str, Any]:
+    """Load a required YAML mapping with contextual errors."""
+    try:
+        text = config_path.read_text()
+    except OSError as exc:
+        raise BrandingConfigError(
+            f"{config_name} configuration {config_path} cannot be read: {exc}",
+        ) from exc
+    loader = _StrictSafeLoader(text)
+    try:
+        document = loader.get_single_data()
+    except yaml.YAMLError as exc:
+        raise BrandingConfigError(
+            f"{config_name} configuration {config_path} contains malformed YAML: {exc}",
+        ) from exc
+    finally:
+        loader.dispose()
+    if not isinstance(document, dict):
+        raise BrandingConfigError(
+            f"{config_name} configuration {config_path} must contain a YAML mapping",
+        )
+    return document
+
+
+def _require_known_keys(
+    value: dict[str, Any],
+    *,
+    required: Set[str],
+    optional: Set[str] = frozenset(),
+    context: str,
+) -> None:
+    """Reject missing and unknown mapping keys."""
+    missing = sorted(required - value.keys())
+    unknown = sorted(value.keys() - required - optional)
+    if missing or unknown:
+        raise BrandingConfigError(f"{context} has missing={missing}, unknown={unknown}")
 
 
 @dataclass
@@ -65,165 +153,137 @@ class BrandingTransformer:
         if config_path is None:
             config_path = Path(__file__).parent.parent.parent / "config" / "enrichment.yaml"
 
-        self.replacements: list[dict[str, Any]] = []
-        self._compiled_patterns: list[tuple[re.Pattern, str, str | None]] = []
-        self._protected_patterns: list[re.Pattern] = []
-        self._preserve_fields: set[str] = set()
-
-        self._load_config(config_path)
-        self._compile_patterns()
-
-    def _load_config(self, config_path: Path) -> None:
-        """Load branding rules from YAML config."""
-        if not config_path.exists():
-            # Use default rules if config doesn't exist
-            self.replacements = [
-                {
-                    "pattern": r"\bVolterra\b",
-                    "replacement": "F5 Distributed Cloud",
-                    "case_sensitive": True,
-                },
-                {
-                    "pattern": r"\bvolterra\b",
-                    "replacement": "F5 Distributed Cloud",
-                    "case_sensitive": False,
-                },
-                {
-                    "pattern": r"\bves\.io\b",
-                    "replacement": "F5 XC",
-                    "case_sensitive": False,
-                    "context": "description",
-                },
-            ]
-            self._preserve_fields = {
-                "operationId",
-                "$ref",
-                "x-ves-proto-rpc",
-                "x-ves-proto-service",
-            }
-            return
-
-        with config_path.open() as f:
-            config = yaml.safe_load(f) or {}
-
-        branding = config.get("branding", {})
-        self.replacements = branding.get("replacements", [])
-        self._preserve_fields = set(config.get("preserve_fields", []))
-
-        # Load protected patterns (URLs, schema refs that should not be transformed)
-        protected = branding.get("protected_patterns", [])
-        self._protected_patterns = self._compile_protected_patterns(protected)
+        (
+            replacements,
+            compiled_patterns,
+            protected_patterns,
+            preserve_fields,
+        ) = self._load_config(config_path)
+        self.replacements = replacements
+        self._compiled_patterns = compiled_patterns
+        self._protected_patterns = protected_patterns
+        self._preserve_fields = preserve_fields
 
     @staticmethod
-    def _try_compile_pattern(pattern_str: str) -> re.Pattern[str] | None:
-        """Try to compile a regex pattern, returning None on failure.
+    def _load_config(
+        config_path: Path,
+    ) -> tuple[
+        list[dict[str, Any]],
+        list[tuple[re.Pattern[str], str, str | None]],
+        list[re.Pattern[str]],
+        set[str],
+    ]:
+        """Load and atomically compile strict enrichment branding rules."""
+        config = _load_yaml_mapping(config_path, "branding transformer")
+        _require_known_keys(
+            config,
+            required={"branding", "preserve_fields"},
+            optional={
+                "changelog",
+                "consistency_validation",
+                "deprecated_tiers",
+                "description_structure",
+                "description_validation",
+                "discovery_enrichment",
+                "grammar",
+                "output",
+                "paths",
+                "processing",
+                "schema_fixes",
+                "source",
+                "tags",
+                "target_fields",
+            },
+            context=f"branding transformer configuration {config_path}",
+        )
 
-        Args:
-            pattern_str: Regex pattern string to compile.
+        branding = config["branding"]
+        if not isinstance(branding, dict):
+            raise BrandingConfigError("branding section must be a mapping")
+        _require_known_keys(
+            branding,
+            required={"protected_patterns", "replacements"},
+            context="branding section",
+        )
 
-        Returns:
-            Compiled pattern or None if invalid.
-        """
-        try:
-            return re.compile(pattern_str)
-        except re.error:
-            return None
+        protected = branding["protected_patterns"]
+        if not isinstance(protected, list) or not protected:
+            raise BrandingConfigError("branding.protected_patterns must be a non-empty list")
+        compiled_protected: list[re.Pattern[str]] = []
+        for index, pattern_str in enumerate(protected):
+            if not isinstance(pattern_str, str) or not pattern_str:
+                raise BrandingConfigError(
+                    f"branding.protected_patterns[{index}] must be a non-empty string",
+                )
+            try:
+                compiled_protected.append(re.compile(pattern_str))
+            except re.error as exc:
+                raise BrandingConfigError(
+                    f"branding.protected_patterns[{index}] has invalid regex "
+                    f"{pattern_str!r}: {exc}",
+                ) from exc
 
-    def _compile_protected_patterns(
-        self,
-        patterns: list[str],
-    ) -> list[re.Pattern[str]]:
-        """Compile protected pattern strings to regex patterns.
-
-        Args:
-            patterns: List of regex pattern strings.
-
-        Returns:
-            List of compiled regex patterns (invalid patterns are skipped).
-        """
-        compiled = [self._try_compile_pattern(p) for p in patterns]
-        return [p for p in compiled if p is not None]
-
-    def _compile_patterns(self) -> None:
-        """Pre-compile regex patterns for efficient matching."""
-        for rule in self.replacements:
-            pattern_str = rule.get("pattern", "")
-            replacement = rule.get("replacement", "")
-            context = rule.get("context")
-            case_sensitive = rule.get("case_sensitive", True)
-
+        replacements = branding["replacements"]
+        if not isinstance(replacements, list) or not replacements:
+            raise BrandingConfigError("branding.replacements must be a non-empty list")
+        compiled_replacements: list[tuple[re.Pattern[str], str, str | None]] = []
+        for index, rule in enumerate(replacements):
+            context = f"branding.replacements[{index}]"
+            if not isinstance(rule, dict):
+                raise BrandingConfigError(f"{context} must be a mapping")
+            _require_known_keys(
+                rule,
+                required={"case_sensitive", "pattern", "replacement"},
+                optional={"context"},
+                context=context,
+            )
+            pattern_str = rule["pattern"]
+            replacement = rule["replacement"]
+            case_sensitive = rule["case_sensitive"]
+            field_context = rule.get("context")
+            if not isinstance(pattern_str, str) or not pattern_str:
+                raise BrandingConfigError(f"{context}.pattern must be a non-empty string")
+            if not isinstance(replacement, str):
+                raise BrandingConfigError(f"{context}.replacement must be a string")
+            if not isinstance(case_sensitive, bool):
+                raise BrandingConfigError(f"{context}.case_sensitive must be a boolean")
+            if field_context is not None and (
+                not isinstance(field_context, str) or not field_context
+            ):
+                raise BrandingConfigError(f"{context}.context must be a non-empty string")
             flags = 0 if case_sensitive else re.IGNORECASE
-
             try:
                 pattern = re.compile(pattern_str, flags)
-                self._compiled_patterns.append((pattern, replacement, context))
-            except re.error:
-                # Skip invalid patterns
-                continue
+                pattern.sub(replacement, "")
+            except re.error as exc:
+                raise BrandingConfigError(
+                    f"{context} has invalid regex or replacement: {exc}",
+                ) from exc
+            compiled_replacements.append((pattern, replacement, field_context))
 
-    def _contains_protected_pattern(self, text: str) -> bool:
-        """Check if text contains any protected pattern.
+        preserve_fields = config["preserve_fields"]
+        if not isinstance(preserve_fields, list) or not preserve_fields:
+            raise BrandingConfigError("preserve_fields must be a non-empty list")
+        if any(not isinstance(field, str) or not field for field in preserve_fields):
+            raise BrandingConfigError("preserve_fields entries must be non-empty strings")
+        if len(set(preserve_fields)) != len(preserve_fields):
+            raise BrandingConfigError("preserve_fields must not contain duplicates")
 
-        Args:
-            text: Text to check.
+        return (
+            replacements,
+            compiled_replacements,
+            compiled_protected,
+            set(preserve_fields),
+        )
 
-        Returns:
-            True if text contains a protected pattern that should not be transformed.
-        """
-        return any(pattern.search(text) for pattern in self._protected_patterns)
-
-    def _apply_with_protection(
+    def transform_text(
         self,
         text: str,
-        pattern: re.Pattern,
-        replacement: str,
+        field_name: str | None = None,
+        *,
+        path: str = "",
+        container: dict[str, Any] | None = None,
     ) -> str:
-        """Apply replacement while protecting certain patterns.
-
-        Splits text on protected patterns, applies replacement only to
-        unprotected segments, then rejoins.
-
-        Args:
-            text: Input text.
-            pattern: Compiled regex pattern to apply.
-            replacement: Replacement string.
-
-        Returns:
-            Text with replacement applied to unprotected segments.
-        """
-        if not self._protected_patterns:
-            return pattern.sub(replacement, text)
-
-        # Build a combined pattern for all protected segments
-        # NOTE: Don't wrap each pattern in () here - line 165 adds the single outer ()
-        # needed for re.split() to keep delimiters. Inner () would create nested groups
-        # causing re.split() to duplicate matches (each group level = one copy).
-        protected_combined = "|".join(p.pattern for p in self._protected_patterns)
-
-        try:
-            split_pattern = re.compile(f"({protected_combined})")
-        except re.error:
-            # If combined pattern is invalid, fall back to simple replacement
-            return pattern.sub(replacement, text)
-
-        # Split on protected patterns, keeping the delimiters
-        parts = split_pattern.split(text)
-
-        # Apply replacement only to non-protected parts
-        result_parts = []
-        for part in parts:
-            if part is None:
-                continue
-            # Check if this part matches any protected pattern
-            is_protected = any(p.fullmatch(part) for p in self._protected_patterns)
-            if is_protected:
-                result_parts.append(part)
-            else:
-                result_parts.append(pattern.sub(replacement, part))
-
-        return "".join(result_parts)
-
-    def transform_text(self, text: str, field_name: str | None = None) -> str:
         """Apply branding transformations to a text string.
 
         Respects protected patterns (URLs, schema refs) that should not be modified.
@@ -231,6 +291,8 @@ class BrandingTransformer:
         Args:
             text: Input text with legacy branding.
             field_name: Name of the field being transformed (for context filtering).
+            path: Structural path of the text field in the OpenAPI document.
+            container: Mapping that owns the text field.
 
         Returns:
             Text with updated branding.
@@ -238,20 +300,21 @@ class BrandingTransformer:
         if not text or not isinstance(text, str):
             return text
 
-        result = text
+        rules = [
+            (pattern, replacement)
+            for pattern, replacement, context in self._compiled_patterns
+            if context is None or field_name is None or field_name == context
+        ]
+        if not any(pattern.search(text) for pattern, _ in rules):
+            return text
 
-        for pattern, replacement, context in self._compiled_patterns:
-            # Skip if context is specified and doesn't match field name
-            if context is not None and field_name is not None and field_name != context:
-                continue
-
-            # Apply replacement with protection for special patterns
-            if self._protected_patterns and self._contains_protected_pattern(result):
-                result = self._apply_with_protection(result, pattern, replacement)
-            else:
-                result = pattern.sub(replacement, result)
-
-        return result
+        return replace_many_outside_technical_spans(
+            text,
+            rules,
+            path=path,
+            container=container,
+            additional_protected_patterns=self._protected_patterns,
+        )
 
     def transform_spec(
         self,
@@ -290,12 +353,20 @@ class BrandingTransformer:
                 new_path = f"{current_path}.{key}" if current_path else key
 
                 if key in target_fields and isinstance(value, str):
-                    result[key] = self.transform_text(value, field_name=key)
+                    result[key] = self.transform_text(
+                        value,
+                        field_name=key,
+                        path=new_path,
+                        container=obj,
+                    )
                 else:
                     result[key] = self._transform_recursive(value, target_fields, new_path)
             return result
         if isinstance(obj, list):
-            return [self._transform_recursive(item, target_fields, current_path) for item in obj]
+            return [
+                self._transform_recursive(item, target_fields, f"{current_path}[{index}]")
+                for index, item in enumerate(obj)
+            ]
         return obj
 
     def get_stats(self) -> dict[str, int]:
@@ -316,7 +387,6 @@ class BrandingValidator:
 
     # Terms that should not appear after branding transformation
     LEGACY_TERMS: ClassVar[list[str]] = [
-        r"\bVolterra\b",
         r"\bvolterra\b",
         r"\bves\.io\b",
         r"\bVES\b",
@@ -328,11 +398,19 @@ class BrandingValidator:
             re.compile(pattern, re.IGNORECASE) for pattern in self.LEGACY_TERMS
         ]
 
-    def validate_text(self, text: str) -> list[dict[str, Any]]:
+    def validate_text(
+        self,
+        text: str,
+        *,
+        path: str = "",
+        container: dict[str, Any] | None = None,
+    ) -> list[dict[str, Any]]:
         """Check text for remaining legacy branding terms.
 
         Args:
             text: Text to validate.
+            path: Structural path of the text field in the OpenAPI document.
+            container: Mapping that owns the text field.
 
         Returns:
             List of found legacy terms with positions.
@@ -340,15 +418,40 @@ class BrandingValidator:
         if not text or not isinstance(text, str):
             return []
 
-        findings: list[dict[str, Any]] = []
-        for pattern in self._legacy_patterns:
-            findings.extend(
-                {
-                    "term": match.group(0),
-                    "position": match.start(),
-                    "context": text[max(0, match.start() - 20) : match.end() + 20],
-                }
+        protected = immutable_technical_spans(text, path=path, container=container)
+        candidates = sorted(
+            [
+                (
+                    match.start(),
+                    match.end(),
+                    match.group(0),
+                )
+                for pattern in self._legacy_patterns
                 for match in pattern.finditer(text)
+            ],
+            key=lambda item: (item[0], -(item[1] - item[0]), item[2].casefold()),
+        )
+
+        findings: list[dict[str, Any]] = []
+        accepted_spans: list[tuple[int, int]] = []
+        for start, end, term in candidates:
+            if any(
+                start < protected_end and end > protected_start
+                for protected_start, protected_end in protected
+            ):
+                continue
+            if any(
+                start < accepted_end and end > accepted_start
+                for accepted_start, accepted_end in accepted_spans
+            ):
+                continue
+            accepted_spans.append((start, end))
+            findings.append(
+                {
+                    "term": term,
+                    "position": start,
+                    "context": text[max(0, start - 20) : end + 20],
+                },
             )
 
         return findings
@@ -386,7 +489,11 @@ class BrandingValidator:
             for key, value in obj.items():
                 new_path = f"{path}.{key}" if path else key
                 if key in target_fields and isinstance(value, str):
-                    field_findings = self.validate_text(value)
+                    field_findings = self.validate_text(
+                        value,
+                        path=new_path,
+                        container=obj,
+                    )
                     for finding in field_findings:
                         finding["path"] = new_path
                         findings.append(finding)
@@ -418,118 +525,245 @@ class BrandingNormalizer:
             config_path = Path(__file__).parent.parent.parent / "config" / "branding.yaml"
 
         self.config_path = config_path
-        self.canonical: dict[str, Any] = {}
-        self.transformations: list[dict[str, Any]] = []
-        self.glossary: dict[str, Any] = {}
-        self.domain_branding: dict[str, Any] = {}
-        self._compiled_patterns: list[tuple[re.Pattern, str, list[str], str]] = []
         self.stats = BrandingStats()
+        (
+            self.canonical,
+            self.transformations,
+            self.glossary,
+            self.domain_branding,
+            self._compiled_patterns,
+        ) = self._load_config()
 
-        self._load_config()
-
-    def _load_config(self) -> None:
-        """Load branding configuration from YAML file."""
-        if not self.config_path.exists():
-            # Use built-in defaults if config doesn't exist
-            self._use_default_config()
-            return
-
-        try:
-            with self.config_path.open() as f:
-                config = yaml.safe_load(f) or {}
-
-            self.canonical = config.get("canonical", {})
-            self.transformations = config.get("transformations", [])
-            self.glossary = config.get("glossary", {})
-            self.domain_branding = config.get("domain_branding", {})
-
-            self._compile_patterns()
-        except Exception:
-            # Fall back to defaults on any config error
-            self._use_default_config()
-
-    def _use_default_config(self) -> None:
-        """Use built-in default branding rules with current API product names."""
-        self.canonical = {
-            "managed_kubernetes": {
-                "long_form": "Managed Kubernetes",
-                "legacy_names": ["AppStack", "VoltStack", "voltstack_site"],
-                "comparable_to": ["AWS EKS", "Azure AKS", "Google GKE"],
+    def _load_config(
+        self,
+    ) -> tuple[
+        dict[str, Any],
+        list[dict[str, Any]],
+        dict[str, Any],
+        dict[str, Any],
+        list[tuple[re.Pattern[str], str, list[str], str]],
+    ]:
+        """Load, validate, and atomically compile branding normalization rules."""
+        config = _load_yaml_mapping(self.config_path, "branding normalizer")
+        required_sections = {
+            "canonical",
+            "deprecations",
+            "description",
+            "domain_branding",
+            "glossary",
+            "transformations",
+            "version",
+        }
+        _require_known_keys(
+            config,
+            required=required_sections,
+            context=f"branding normalizer configuration {self.config_path}",
+        )
+        version = config["version"]
+        if not isinstance(version, str) or not re.fullmatch(r"\d+\.\d+\.\d+", version):
+            raise BrandingConfigError("branding normalizer version must be a semantic version")
+        if not isinstance(config["description"], str) or not config["description"].strip():
+            raise BrandingConfigError("branding normalizer description must be a non-empty string")
+        deprecations = config["deprecations"]
+        if not isinstance(deprecations, dict) or not deprecations:
+            raise BrandingConfigError(
+                "branding normalizer deprecations must be a non-empty mapping"
+            )
+        deprecation_entry_keys = {
+            "api_documentation": {"canonical", "deprecated"},
+            "api_endpoint": {"canonical", "deprecated"},
+            "cli": {"canonical", "deprecated"},
+            "documentation": {"canonical", "deprecated"},
+            "product_brand": {"canonical", "deprecated"},
+            "terraform_provider": {"canonical", "deprecated", "required_providers_block"},
+        }
+        deprecation_side_keys = {
+            ("api_documentation", "canonical"): {"note", "url"},
+            ("api_documentation", "deprecated"): {"note", "url"},
+            ("api_endpoint", "canonical"): {"note"},
+            ("api_endpoint", "deprecated"): {"url"},
+            ("cli", "canonical"): {"command", "note"},
+            ("cli", "deprecated"): {"command", "note", "status"},
+            ("documentation", "canonical"): {"url"},
+            ("documentation", "deprecated"): {"note"},
+            ("product_brand", "canonical"): {"name", "note"},
+            ("product_brand", "deprecated"): {"name", "note"},
+            ("terraform_provider", "canonical"): {
+                "docs",
+                "github",
+                "llms_txt",
+                "registry",
+                "source",
             },
-            "virtual_kubernetes": {
-                "long_form": "Virtual Kubernetes",
-                "legacy_names": ["vK8s", "virtual_k8s"],
-                "comparable_to": ["AWS ECS", "Azure Container Services", "Cloud Run"],
+            ("terraform_provider", "deprecated"): {
+                "downloads",
+                "github",
+                "last_version",
+                "note",
+                "registry",
+                "source",
+                "status",
             },
         }
+        _require_known_keys(
+            deprecations,
+            required=set(deprecation_entry_keys),
+            context="deprecations",
+        )
+        for name, required_keys in deprecation_entry_keys.items():
+            entry = deprecations[name]
+            if not isinstance(entry, dict):
+                raise BrandingConfigError(f"deprecations.{name} must be a mapping")
+            _require_known_keys(
+                entry,
+                required=required_keys,
+                context=f"deprecations.{name}",
+            )
+            for side in ("canonical", "deprecated"):
+                side_value = entry[side]
+                if not isinstance(side_value, dict):
+                    raise BrandingConfigError(f"deprecations.{name}.{side} must be a mapping")
+                _require_known_keys(
+                    side_value,
+                    required=deprecation_side_keys[(name, side)],
+                    context=f"deprecations.{name}.{side}",
+                )
+                if any(
+                    not isinstance(value, str) or not value.strip() for value in side_value.values()
+                ):
+                    raise BrandingConfigError(
+                        f"deprecations.{name}.{side} fields must be non-empty strings",
+                    )
+            for scalar_key in required_keys - {"canonical", "deprecated"}:
+                scalar = entry[scalar_key]
+                if not isinstance(scalar, str) or not scalar.strip():
+                    raise BrandingConfigError(
+                        f"deprecations.{name}.{scalar_key} must be a non-empty string",
+                    )
 
-        self.transformations = [
-            {
-                "pattern": r"\bvK8s\b",
-                "replacement": "Virtual Kubernetes",
-                "context": ["info.description", "operation.description", "schema.description"],
-                "case_sensitive": True,
-            },
-            {
-                "pattern": r"\bAppStack\b",
-                "replacement": "Managed Kubernetes",
-                "context": ["info.description", "operation.description", "schema.description"],
-                "case_sensitive": False,
-            },
-            {
-                "pattern": r"\bVoltStack\b",
-                "replacement": "Managed Kubernetes",
-                "context": ["info.description", "operation.description", "schema.description"],
-                "case_sensitive": False,
-            },
-        ]
+        canonical = config["canonical"]
+        if not isinstance(canonical, dict) or not canonical:
+            raise BrandingConfigError("canonical must be a non-empty mapping")
+        for name, entry in canonical.items():
+            context = f"canonical.{name}"
+            if not isinstance(name, str) or not name or not isinstance(entry, dict):
+                raise BrandingConfigError(f"{context} must be a named mapping")
+            _require_known_keys(
+                entry,
+                required={"comparable_to", "description", "legacy_names", "long_form"},
+                context=context,
+            )
+            if not isinstance(entry["long_form"], str) or not entry["long_form"].strip():
+                raise BrandingConfigError(f"{context}.long_form must be a non-empty string")
+            if not isinstance(entry["description"], str) or not entry["description"].strip():
+                raise BrandingConfigError(f"{context}.description must be a non-empty string")
+            for field_name in ("legacy_names", "comparable_to"):
+                values = entry[field_name]
+                if (
+                    not isinstance(values, list)
+                    or not values
+                    or any(not isinstance(value, str) or not value for value in values)
+                ):
+                    raise BrandingConfigError(
+                        f"{context}.{field_name} must be a non-empty list of strings",
+                    )
 
-        self.glossary = {
-            "CE": {
-                "term": "Customer Edge",
-                "definition": "F5 XC edge deployment infrastructure for distributed applications",
-            },
-            "RE": {
-                "term": "Regional Edge",
-                "definition": "F5 XC globally distributed edge network infrastructure",
-            },
-        }
-
-        self._compile_patterns()
-
-    def _compile_patterns(self) -> None:
-        """Pre-compile regex patterns for efficient matching."""
-        self._compiled_patterns = []
-
-        for rule in self.transformations:
-            pattern_str = rule.get("pattern", "")
-            replacement = rule.get("replacement", "")
-            context = rule.get("context", [])
-            case_sensitive = rule.get("case_sensitive", True)
+        transformations = config["transformations"]
+        if not isinstance(transformations, list) or not transformations:
+            raise BrandingConfigError("transformations must be a non-empty list")
+        compiled_patterns: list[tuple[re.Pattern[str], str, list[str], str]] = []
+        for index, rule in enumerate(transformations):
+            context = f"transformations[{index}]"
+            if not isinstance(rule, dict):
+                raise BrandingConfigError(f"{context} must be a mapping")
+            _require_known_keys(
+                rule,
+                required={"case_sensitive", "context", "pattern", "replacement"},
+                optional={"type"},
+                context=context,
+            )
+            pattern_str = rule["pattern"]
+            replacement = rule["replacement"]
+            contexts = rule["context"]
+            case_sensitive = rule["case_sensitive"]
+            transformation_type = rule.get("type")
+            if not isinstance(pattern_str, str) or not pattern_str:
+                raise BrandingConfigError(f"{context}.pattern must be a non-empty string")
+            if not isinstance(replacement, str):
+                raise BrandingConfigError(f"{context}.replacement must be a string")
+            if not isinstance(case_sensitive, bool):
+                raise BrandingConfigError(f"{context}.case_sensitive must be a boolean")
+            if (
+                not isinstance(contexts, list)
+                or not contexts
+                or any(not isinstance(item, str) or not item for item in contexts)
+            ):
+                raise BrandingConfigError(f"{context}.context must be a non-empty list of strings")
+            if transformation_type is not None and (
+                not isinstance(transformation_type, str) or not transformation_type
+            ):
+                raise BrandingConfigError(f"{context}.type must be a non-empty string")
 
             flags = 0 if case_sensitive else re.IGNORECASE
-
             try:
                 pattern = re.compile(pattern_str, flags)
-                # Determine transformation type for stats tracking
-                trans_type = rule.get("type") or (
-                    "virtual_k8s"
-                    if "Virtual Kubernetes" in replacement
-                    else "managed_k8s"
-                    if "Managed Kubernetes" in replacement
-                    else "other"
-                )
-                self._compiled_patterns.append((pattern, replacement, context, trans_type))
-            except re.error:
-                # Skip invalid patterns
-                continue
+                pattern.sub(replacement, "")
+            except re.error as exc:
+                raise BrandingConfigError(
+                    f"{context} has invalid regex or replacement: {exc}",
+                ) from exc
+            trans_type = transformation_type or (
+                "virtual_k8s"
+                if "Virtual Kubernetes" in replacement
+                else "managed_k8s"
+                if "Managed Kubernetes" in replacement
+                else "other"
+            )
+            compiled_patterns.append((pattern, replacement, contexts, trans_type))
 
-    def normalize_text(self, text: str, field_context: str = "") -> str:
+        glossary = config["glossary"]
+        if not isinstance(glossary, dict) or not glossary:
+            raise BrandingConfigError("glossary must be a non-empty mapping")
+        for name, entry in glossary.items():
+            context = f"glossary.{name}"
+            if not isinstance(name, str) or not name or not isinstance(entry, dict):
+                raise BrandingConfigError(f"{context} must be a named mapping")
+            _require_known_keys(entry, required={"definition", "term"}, context=context)
+            if any(
+                not isinstance(entry[field], str) or not entry[field].strip()
+                for field in ("definition", "term")
+            ):
+                raise BrandingConfigError(f"{context} fields must be non-empty strings")
+
+        domain_branding = config["domain_branding"]
+        if not isinstance(domain_branding, dict) or not domain_branding:
+            raise BrandingConfigError("domain_branding must be a non-empty mapping")
+        for name, entry in domain_branding.items():
+            context = f"domain_branding.{name}"
+            if not isinstance(name, str) or not name or not isinstance(entry, dict):
+                raise BrandingConfigError(f"{context} must be a named mapping")
+            _require_known_keys(entry, required={"description", "title"}, context=context)
+            if any(
+                not isinstance(entry[field], str) or not entry[field].strip()
+                for field in ("description", "title")
+            ):
+                raise BrandingConfigError(f"{context} fields must be non-empty strings")
+
+        return canonical, transformations, glossary, domain_branding, compiled_patterns
+
+    def normalize_text(
+        self,
+        text: str,
+        field_context: str = "",
+        *,
+        container: dict[str, Any] | None = None,
+    ) -> str:
         """Apply product name normalization to text.
 
         Args:
             text: Input text with legacy terminology.
             field_context: Field path context for selective application.
+            container: Mapping that owns the text field.
 
         Returns:
             Text with normalized terminology.
@@ -537,54 +771,70 @@ class BrandingNormalizer:
         if not text or not isinstance(text, str):
             return text
 
-        result = text
+        def _matches(ctx: str, path: str) -> bool:
+            """Return whether a configured semantic context applies to a path."""
+            if ctx in path:
+                return True
+            ctx_parts = ctx.split(".")
+            path_parts = path.split(".")
+            if ctx_parts[-1] != path_parts[-1]:
+                return False
+            ancestor_key = ctx_parts[0] if len(ctx_parts) > 1 else ""
+            if ancestor_key == "operation":
+                http_methods = {
+                    "get",
+                    "post",
+                    "put",
+                    "delete",
+                    "patch",
+                    "options",
+                    "head",
+                }
+                return any(part in http_methods for part in path_parts[:-1])
+            return not ancestor_key or any(ancestor_key in part for part in path_parts[:-1])
 
-        for pattern, replacement, contexts, trans_type in self._compiled_patterns:
-            # Check if this transformation applies to the current context
-            if contexts and field_context:
-                # Check if any context pattern matches the field path.
-                # Supports substring match (e.g. "info.description" in "info.description")
-                # and semantic suffix match (e.g. "schema.description" matches any path
-                # ending in ".description" that passes through a schemas node).
-                def _matches(ctx: str, path: str) -> bool:
-                    if ctx in path:
-                        return True
-                    ctx_parts = ctx.split(".")
-                    path_parts = path.split(".")
-                    if ctx_parts[-1] == path_parts[-1]:
-                        ancestor_key = ctx_parts[0] if len(ctx_parts) > 1 else ""
-                        if ancestor_key == "operation":
-                            http_methods = {
-                                "get",
-                                "post",
-                                "put",
-                                "delete",
-                                "patch",
-                                "options",
-                                "head",
-                            }
-                            return any(p in http_methods for p in path_parts[:-1])
-                        return not ancestor_key or any(ancestor_key in p for p in path_parts[:-1])
-                    return False
+        applicable = [
+            (pattern, replacement, trans_type)
+            for pattern, replacement, contexts, trans_type in self._compiled_patterns
+            if not contexts
+            or not field_context
+            or any(_matches(ctx, field_context) for ctx in contexts)
+        ]
+        if not any(pattern.search(text) for pattern, _, _ in applicable):
+            return text
 
-                matches_context = any(_matches(ctx, field_context) for ctx in contexts)
-                if not matches_context:
-                    continue
+        changed = [False] * len(applicable)
+        rules: list[TextRule] = []
+        for index, (pattern, replacement, _) in enumerate(applicable):
 
-            # Check if pattern matches and apply replacement
-            if pattern.search(result):
-                new_result = pattern.sub(replacement, result)
-                if new_result != result:
-                    # Track statistics
-                    if trans_type == "virtual_k8s":
-                        self.stats.virtual_k8s_transformations += 1
-                    elif trans_type == "managed_k8s":
-                        self.stats.managed_k8s_transformations += 1
+            def replace(
+                match: re.Match[str],
+                replacement: str = replacement,
+                index: int = index,
+            ) -> str:
+                expanded = match.expand(replacement)
+                if expanded != match.group(0):
+                    changed[index] = True
+                return expanded
 
-                    self.stats.transformations_by_type[trans_type] = (
-                        self.stats.transformations_by_type.get(trans_type, 0) + 1
-                    )
-                    result = new_result
+            rules.append((pattern, replace))
+
+        result = replace_many_outside_technical_spans(
+            text,
+            rules,
+            path=field_context,
+            container=container,
+        )
+        for was_changed, (_, _, trans_type) in zip(changed, applicable, strict=True):
+            if not was_changed:
+                continue
+            if trans_type == "virtual_k8s":
+                self.stats.virtual_k8s_transformations += 1
+            elif trans_type == "managed_k8s":
+                self.stats.managed_k8s_transformations += 1
+            self.stats.transformations_by_type[trans_type] = (
+                self.stats.transformations_by_type.get(trans_type, 0) + 1
+            )
 
         return result
 
@@ -627,7 +877,11 @@ class BrandingNormalizer:
                 new_path = f"{current_path}.{key}" if current_path else key
 
                 if key in target_fields and isinstance(value, str):
-                    result[key] = self.normalize_text(value, field_context=new_path)
+                    result[key] = self.normalize_text(
+                        value,
+                        field_context=new_path,
+                        container=obj,
+                    )
                 else:
                     result[key] = self._normalize_recursive(value, target_fields, new_path)
             return result

@@ -30,6 +30,30 @@ def test_general_enrichment_does_not_rewrite_example_metadata() -> None:
     config = load_config(Path("config/enrichment.yaml"))
 
     assert "x-f5xc-example" not in config["target_fields"]
+    assert "x-ves-example" not in config["target_fields"]
+
+
+def test_acronym_normalization_does_not_rewrite_api_shaped_examples() -> None:
+    spec = {
+        "openapi": "3.0.0",
+        "info": {"title": "Example", "version": "1.0.0"},
+        "paths": {},
+        "components": {
+            "schemas": {
+                "Example": {
+                    "type": "object",
+                    "x-ves-example": "f5-nginx-cdn-crl-html",
+                    "x-f5xc-example": "f5-nginx-cdn-crl-html",
+                },
+            },
+        },
+    }
+
+    result, _ = enrich_spec(spec, load_config(Path("config/enrichment.yaml")))
+    example = result["components"]["schemas"]["Example"]
+
+    assert example["x-ves-example"] == "f5-nginx-cdn-crl-html"
+    assert example["x-f5xc-example"] == "f5-nginx-cdn-crl-html"
 
 
 def test_example_metadata_uses_reserved_values() -> None:

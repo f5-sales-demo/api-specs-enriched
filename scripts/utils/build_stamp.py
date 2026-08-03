@@ -29,9 +29,11 @@ from __future__ import annotations
 
 import json
 import logging
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from functools import lru_cache
 from pathlib import Path
+
+from scripts.utils.raw_manifest import RawManifestError, validate_raw_manifest
 
 logger = logging.getLogger(__name__)
 
@@ -43,9 +45,8 @@ def artifact_timestamp() -> str:
     """ISO-8601 timestamp for a value written into a committed artifact.
 
     Derived from the upstream seed so the same seed always yields the same output.
-    Falls back to the current time only when the seed carries no manifest, which
-    means the specs were not downloaded through ``scripts.download``; that case is
-    logged, because it silently reintroduces per-run churn.
+    A missing, malformed, or incomplete manifest fails closed because there is no
+    reproducible timestamp in that state.
     """
     remedy = "Run `make download-force` to refresh specs/original/."
 
@@ -57,24 +58,14 @@ def artifact_timestamp() -> str:
     except json.JSONDecodeError as exc:
         raise RuntimeError(f"{_MANIFEST} is unreadable ({exc}). {remedy}") from exc
 
-    published = manifest.get("release_published_at")
-    if not published:
-        raise RuntimeError(
-            f"{_MANIFEST} has no release_published_at. Its `timestamp` field records when "
-            f"THIS machine downloaded, so deriving the stamp from it makes every generated "
-            f"spec differ between a local rebuild and CI's. {remedy}",
-        )
-
     try:
-        # Normalise so the value is stable regardless of how the manifest spells its
-        # timezone.
-        parsed = datetime.fromisoformat(str(published).replace("Z", "+00:00"))
-    except (ValueError, TypeError) as exc:
+        contract = validate_raw_manifest(manifest, source_dir=_MANIFEST.parent)
+    except RawManifestError as exc:
         raise RuntimeError(
-            f"{_MANIFEST} has an unparseable release_published_at ({exc}). {remedy}"
+            f"{_MANIFEST} violates the source provenance contract ({exc}). {remedy}"
         ) from exc
-
-    return parsed.astimezone(timezone.utc).isoformat()
+    published = contract.release_receipt["published_at"]
+    return datetime.fromisoformat(published).astimezone(UTC).isoformat()
 
 
 def reset_cache() -> None:

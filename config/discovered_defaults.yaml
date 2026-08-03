@@ -1,3 +1,4 @@
+---
 version: "1.0.0"
 description: "Server-applied default values discovered through API testing"
 
@@ -74,8 +75,6 @@ resources:
     schema_pattern: "healthcheck.*SpecType"
     # Top-level spec defaults (verified via case study 2026-01-17)
     defaults:
-      # Jitter value for health check timing randomization (absolute)
-      jitter: 0
       # Jitter percentage for health check timing randomization
       jitter_percent: 0
     # Recommended values for required fields (used by UI/CLI/AI assistants)
@@ -142,10 +141,8 @@ resources:
 
   rate_limiter:
     description: "Rate limiter server-applied defaults"
-    schema_pattern: "rate_limiter.*SpecType"
+    schema_pattern: "^rate_limiter(?:Create|Get|Replace)SpecType$"
     defaults:
-      # Rate limit rules (empty array initialized)
-      rules: []
       # User identification methods
       user_identification: []
 
@@ -158,7 +155,6 @@ resources:
     schema_pattern: "api_definition.*SpecType"
     defaults:
       swagger_specs: []
-      default_api_groups_builders: []
       api_inventory_inclusion_list: []
       api_inventory_exclusion_list: []
       non_api_endpoints: []
@@ -177,8 +173,6 @@ resources:
         defaults:
           discovery_rules: []
           inclusive: {}
-        oneof_recommended:
-          discovery_scope: "inclusive"
   # ============================================================================
   # Origin Pools (Enhanced 2026-01-17 with all 15 UI options)
   # ============================================================================
@@ -206,8 +200,6 @@ resources:
     # These match F5 XC web interface pre-populated values for consistency
     recommended:
       port: 443
-      connection_timeout: 2000
-      http_idle_timeout: 300000
 
     # =========================================================================
     # Nested defaults for advanced_options (via $ref resolution)
@@ -229,8 +221,6 @@ resources:
           disable_subsets: {}
           # HTTP protocol
           auto_http_config: {}
-          # Header transformation
-          header_transformation_type: null
           # Request limits
           no_request_limit_per_connection: {}
         # Recommended values for UI/CLI/AI assistants
@@ -247,7 +237,6 @@ resources:
           subset_choice: "disable_subsets"
           http_protocol_type: "auto_http_config"
           proxy_protocol_choice: "disable_proxy_protocol"
-          lb_source_ip_persistance_choice: "disable_lb_source_ip_persistance"
         nested:
           enable_subsets:
             oneof_recommended:
@@ -255,45 +244,41 @@ resources:
       upstream_conn_pool_reuse_type:
         oneof_recommended:
           map_downstream_to_upstream_conn_pool_type: "enable_conn_pool_reuse"
-      public_name:
-        defaults:
-          refresh_interval: 0
-      public_ip:
-        # No additional server defaults beyond labels: {}
-        defaults: {}
-      private_name:
-        # Requires site_locator (400 without). site_locator requires oneOf: site|virtual_site (verified 2026-05-10)
-        defaults:
-          refresh_interval: 0
-          inside_network: {}
-          snat_pool: null
-        oneof_recommended:
-          network_choice: "inside_network"
-      private_ip:
-        # Requires site_locator (400 without) (verified 2026-05-10)
-        defaults:
-          inside_network: {}
-          snat_pool: null
-        oneof_recommended:
-          network_choice: "inside_network"
-      k8s_service:
-        # Requires site_locator (400 without) (verified 2026-05-10)
-        defaults:
-          protocol: "PROTOCOL_TCP"
-          inside_network: {}
-          snat_pool: null
-        oneof_recommended:
-          network_choice: "inside_network"
-      consul_service:
-        # Requires site_locator (400 without) (verified 2026-05-10)
-        defaults:
-          inside_network: {}
-          snat_pool: null
-        oneof_recommended:
-          network_choice: "inside_network"
-      custom_endpoint_object:
-        # No site_locator needed. Server fills in tenant automatically.
-        defaults: {}
+      origin_servers:
+        nested:
+          public_name:
+            defaults:
+              refresh_interval: 0
+          public_ip:
+            defaults: {}
+          private_name:
+            defaults:
+              refresh_interval: 0
+              inside_network: {}
+              snat_pool: null
+            oneof_recommended:
+              network_choice: "inside_network"
+          private_ip:
+            defaults:
+              inside_network: {}
+              snat_pool: null
+            oneof_recommended:
+              network_choice: "inside_network"
+          k8s_service:
+            defaults:
+              protocol: "PROTOCOL_TCP"
+              inside_network: {}
+              snat_pool: null
+            oneof_recommended:
+              network_choice: "inside_network"
+          consul_service:
+            defaults:
+              inside_network: {}
+              snat_pool: null
+            oneof_recommended:
+              network_choice: "inside_network"
+          custom_endpoint_object:
+            defaults: {}
       use_tls:
         # Server-applied defaults when use_tls: {"tls_config": {}} is sent (verified 2026-05-10)
         # NOTE: tls_config is REQUIRED within use_tls (400 without)
@@ -310,23 +295,19 @@ resources:
           default_session_key_caching: {}
         oneof_recommended:
           sni_choice: "use_host_header_as_sni"
-          security_level: "default_security"
-          trusted_ca: "volterra_trusted_ca"
           mtls_choice: "no_mtls"
-          session_key_caching: "default_session_key_caching"
           max_session_keys_type: "default_session_key_caching"
           server_validation_choice: "volterra_trusted_ca"
         nested:
-          custom_security:
-            # Triple-nested defaults within use_tls.tls_config.custom_security (verified 2026-05-10)
-            defaults:
-              min_version: "TLS_AUTO"
-              max_version: "TLS_AUTO"
-              cipher_suites: []
-
           tls_config:
             oneof_recommended:
               choice: "default_security"
+            nested:
+              custom_security:
+                defaults:
+                  min_version: "TLS_AUTO"
+                  max_version: "TLS_AUTO"
+                  cipher_suites: []
           use_server_verification:
             oneof_recommended:
               trusted_ca_choice: "trusted_ca"
@@ -338,26 +319,10 @@ resources:
     oneof_recommended:
       # UI Option 1: Port Configuration
       port_choice: "port"  # Most common is explicit port
-      # UI Option 2: Connection Pool Reuse
-      upstream_conn_pool_reuse: "enable_conn_pool_reuse"
       # UI Option 3: Health Check Port
       health_check_port_choice: "same_as_endpoint_port"
       # UI Option 6: TLS to Origin
       tls_choice: "no_tls"
-      # UI Option 9: Circuit Breaker
-      circuit_breaker_choice: "default_circuit_breaker"
-      # UI Option 10: Outlier Detection
-      outlier_detection_choice: "disable_outlier_detection"
-      # UI Option 11: Panic Threshold
-      panic_threshold_type: "no_panic_threshold"
-      # UI Option 12: Subset Load Balancing
-      subset_choice: "disable_subsets"
-      # UI Option 13: HTTP Protocol
-      http_protocol_type: "auto_http_config"
-      # NOTE: These are NOT advanced_options server defaults (not in API readback)
-      # They exist as oneof recommendations for documentation only:
-      proxy_protocol_choice: "disable_proxy_protocol"
-      lb_source_ip_persistence_choice: "disable_lb_source_ip_persistance"
 
     # =========================================================================
     # Constrained value definitions for CLI tooling
@@ -477,12 +442,6 @@ resources:
   # API Security - API Definitions
   # ============================================================================
 
-  api_definition_views:
-    description: "API definition server-applied defaults"
-    schema_pattern: "api_definition.*SpecType"
-    oneof_recommended:
-      schema_updates_strategy: "mixed_schema_origin"
-
   # ============================================================================
   # Rate Limiting
   # ============================================================================
@@ -491,27 +450,29 @@ resources:
     description: "Rate limiter policy server-applied defaults (verified 2026-05-10)"
     schema_pattern: "rate_limiter_policy.*SpecType"
     # NOTE: burst_size and committed_information_rate accepted in POST but stripped from GET readback
+    defaults:
+      rules: []
     oneof_recommended:
       server_choice: "any_server"
     nested:
-      rules_spec:
-        # Server-applied defaults within each rules[].spec (verified 2026-05-10)
-        defaults:
-          any_country: {}
-          http_method: null
-          domain_matcher: null
-          path: null
-          headers: []
-          segment_policy: null
-        oneof_recommended:
-          rate_limiter_choice: "apply_rate_limiter"
-          ip_choice: "any_ip"
-          country_choice: "any_country"
-      ip_prefix_list:
-        defaults:
-          ip_prefixes: []
-          ipv6_prefixes: []
-          invert_match: false
+      rules:
+        nested:
+          spec:
+            defaults:
+              any_country: {}
+              http_method: null
+              domain_matcher: null
+              path: null
+              headers: []
+              segment_policy: null
+            oneof_recommended:
+              ip_choice: "any_ip"
+              country_choice: "any_country"
+            nested:
+              ip_prefix_list:
+                defaults:
+                  ip_prefixes: []
+                  invert_match: false
   # Alias for enricher schema matching (policerCreateSpecType)
   policer:
     description: "Rate limiter policy server-applied defaults (schema alias)"
@@ -519,8 +480,6 @@ resources:
     defaults:
       policer_type: "POLICER_SINGLE_RATE_TWO_COLOR"
       policer_mode: "POLICER_MODE_NOT_SHARED"
-    oneof_recommended:
-      server_choice: "any_server"
 
   # ============================================================================
   # Network Security - Service Policies
@@ -528,65 +487,32 @@ resources:
 
   service_policy:
     description: "Service policy server-applied defaults (verified 2026-05-10)"
-    schema_pattern: "service_policy.*SpecType"
+    schema_pattern: "^schemaservice_policy(?:Create|Get|Replace)SpecType$"
     # Top-level spec defaults
     defaults:
-      algo: "FIRST_MATCH"
       any_server: {}
+    oneof_recommended:
+      rule_choice: "allow_all_requests"
+      server_choice: "any_server"
+
+  service_policy_rule:
+    description: "Service policy rule defaults measured on direct rule schemas"
+    schema_pattern: "service_policy_rule.*SpecType"
+    defaults:
       port_matcher: null
-      rules: []
-      simple_rules: []
+      any_client: {}
+      any_ip: {}
+      any_asn: {}
+      log_rule_evaluation: false
+      headers: []
+      query_params: []
+      arg_matchers: []
+      cookie_matchers: []
+      jwt_claims: []
     oneof_recommended:
-      rule_choice: "allow_all_requests"
-      server_choice: "any_server"
-    nested:
-      rule_list_rule_spec:
-        # Server-applied defaults within each rule_list.rules[].spec (verified 2026-05-10)
-        # NOTE: waf_action is REQUIRED (not a default — 400 if omitted)
-        defaults:
-          any_client: {}
-          any_ip: {}
-          any_asn: {}
-          challenge_action: "DEFAULT_CHALLENGE"
-          origin_server_subsets_action: {}
-          log_rule_evaluation: false
-          headers: []
-          query_params: []
-          additional_api_group_matchers: []
-          rate_limiter: []
-          forwarding_class: []
-          scheme: []
-          goto_policy: []
-          arg_matchers: []
-          cookie_matchers: []
-          jwt_claims: []
-        oneof_recommended:
-          client_choice: "any_client"
-          ip_choice: "any_ip"
-          asn_choice: "any_asn"
-          waf_action_choice: "none"
-
-  # Alias for enricher schema matching
-  service_policy_views:
-    description: "Service policy views (alias for service_policy)"
-    schema_pattern: "service_policy.*SpecType"
-    oneof_recommended:
-      rule_choice: "allow_all_requests"
-      server_choice: "any_server"
-
-  # ============================================================================
-  # Certificates
-  # ============================================================================
-
-  certificate_views:
-    description: "Certificate server-applied defaults"
-    schema_pattern: "certificate.*SpecType"
-    oneof_recommended:
-      ocsp_stapling_choice: "use_system_defaults"
-    nested:
-      private_key:
-        oneof_recommended:
-          secret_info_oneof: "clear_secret_info"
+      client_choice: "any_client"
+      ip_choice: "any_ip"
+      asn_choice: "any_asn"
 
   # ============================================================================
   # Protocol Inspection
@@ -598,9 +524,6 @@ resources:
     defaults:
       # Server overrides disable_signatures with enable_signature on creation
       action: "ALLOW"
-    oneof_recommended:
-      enable_disable_signatures: "enable_signature"
-      enable_disable_compliance_checks: "disable_compliance_checks"
 
 
   # ============================================================================
@@ -644,14 +567,11 @@ resources:
           add_hsts: false
           connection_idle_timeout: 0
         oneof_recommended:
-          coalescing_choice: "default_coalescing"
           default_lb_choice: "default_loadbalancer"
-          http_protocol_choice: "http_protocol_enable_v1_v2"
           mtls_choice: "no_mtls"
           path_normalize_choice: "enable_path_normalize"
           port_choice: "port"
           server_header_choice: "default_header"
-          tls_config_choice: "default_security"
         nested:
           tls_config:
             oneof_recommended:
@@ -669,9 +589,7 @@ resources:
               xfcc_header: "xfcc_disabled"
       https:
         oneof_recommended:
-          coalescing_choice: "default_coalescing"
           default_lb_choice: "default_loadbalancer"
-          http_protocol_choice: "http_protocol_enable_v1_v2"
           path_normalize_choice: "enable_path_normalize"
           port_choice: "port"
           server_header_choice: "default_header"
@@ -698,7 +616,6 @@ resources:
             oneof_recommended:
               circuit_breaker_choice: "default_circuit_breaker"
               http_protocol_type: "auto_http_config"
-              lb_source_ip_persistance_choice: "disable_lb_source_ip_persistance"
               outlier_detection_choice: "disable_outlier_detection"
               panic_threshold_type: "no_panic_threshold"
               proxy_protocol_choice: "disable_proxy_protocol"
@@ -821,15 +738,10 @@ resources:
           token_location:
             oneof_recommended:
               token_location: "bearer_token"
-      enable_ai_enhancements:
-        oneof_recommended:
-          risk_score_action_choice: "mitigate_high_medium_risk_action"
       routes:
         # Routes-level defaults (on the route wrapper object)
         defaults:
           route_state_enabled: {}
-        oneof_recommended:
-          route_state_choice: "route_state_enabled"
         nested:
           simple_route:
             # Server-applied defaults within simple_route (verified 2026-05-10)
@@ -839,8 +751,6 @@ resources:
               incoming_port: null
               advanced_options: null
               query_params: null
-            oneof_recommended:
-              host_rewrite_choice: "auto_host_rewrite"
           redirect_route:
             defaults:
               http_method: "ANY"
@@ -850,7 +760,6 @@ resources:
               route_redirect:
                 defaults:
                   host_redirect: ""
-                  port_redirect: 0
                   response_code: 0
           direct_response_route:
             defaults:
@@ -859,10 +768,8 @@ resources:
               incoming_port: null
       advertise_custom:
         # Server default per advertise_where entry
-        oneof_recommended:
-          choice: "virtual_site"
         nested:
-          advertise_where_entry:
+          advertise_where:
             defaults:
               use_default_port: {}
             oneof_recommended:
@@ -879,8 +786,6 @@ resources:
       challenge_type: "no_challenge"
       # rate_limit
       rate_limit_choice: "disable_rate_limit"
-      # user_identification
-      user_identification_choice: "user_id_client_ip"
       # lb_algorithm
       hash_policy_choice: "round_robin"
       # service_policies
@@ -932,8 +837,6 @@ resources:
     description: "User identification server-applied defaults (verified 2026-05-10)"
     schema_pattern: "user_identification.*SpecType"
     # Minimal resource — no additional server defaults beyond what is sent
-    oneof_recommended:
-      identification_type: "client_ip"
 
   # ============================================================================
   # Malicious User Mitigation
@@ -957,24 +860,16 @@ resources:
       disabled_predefined_data_types: []
       custom_data_types: []
 
-# Documentation for adding new defaults:
-# 1. Create resource in F5 XC with minimal/empty spec via API
-# 2. Read back the created resource to see server-applied values
-# 3. Document defaults in this file under the resource section
-# 4. Run pipeline to apply defaults to OpenAPI specs
-#
-# Note: For origin_pool, additional nested defaults exist:
-# - origin_servers[].labels: {} (empty labels)
-# - origin_servers[].public_name.refresh_interval: 0 (use system default)
-#
-# TODO: Site-dependent nested configurations for origin_pool
-# These require completion after "site" development sprint:
-# - private_ip: ip, site_locator, network_choice, snat_pool
-# - private_name: dns_name, site_locator, network_choice, snat_pool
-# - k8s_service: service_name, site_locator, network_choice
-# - consul_service: service_name, site_locator, network_choice
-
-
+  # Documentation for adding new defaults:
+  # 1. Create resource in F5 XC with minimal/empty spec via API
+  # 2. Read back the created resource to see server-applied values
+  # 3. Document defaults in this file under the resource section
+  # 4. Run pipeline to apply defaults to OpenAPI specs
+  #
+  # Note: For origin_pool, additional nested defaults exist:
+  # - origin_servers[].labels: {} (empty labels)
+  # - origin_servers[].public_name.refresh_interval: 0 (use system default)
+  #
   securemesh_site_v2:
     description: "SecureMesh Site v2 server-applied defaults (verified 2026-06-05)"
     schema_pattern: "securemesh_site_v2.*SpecType"
@@ -995,27 +890,21 @@ resources:
     defaults:
       machine_type: ""
       disk_size: 0
-      volterra_software_version: ""
-      operating_system_version: ""
       tags: {}
       no_worker_nodes: {}
       block_all_services: {}
       logs_streaming_disabled: {}
-    oneof_recommended:
-      deployment: "ingress_gw"
-      vnet_choice: "new_vnet"
-      worker_nodes_choice: "no_worker_nodes"
-      allowed_services_choice: "block_all_services"
-      logs_streaming_choice: "logs_streaming_disabled"
     nested:
+      sw:
+        defaults:
+          volterra_software_version: ""
+      os:
+        defaults:
+          operating_system_version: ""
       ingress_gw:
         defaults:
           accelerated_networking: null
           performance_enhancement_mode: null
-        nested:
-          az_nodes:
-            defaults:
-              disk_size: 0
 
   # ============================================================================
   # TCP Load Balancer
@@ -1038,11 +927,6 @@ resources:
       idle_timeout: 0
     oneof_recommended:
       port_choice: "listen_port"
-      advertising: "do_not_advertise"
-      hash_policy: "hash_policy_choice_round_robin"
-      protocol: "tcp"
-      sni: "no_sni"
-      service_policies: "service_policies_from_namespace"
       advertise_choice: "do_not_advertise"
       cluster_retract_choice: "retract_cluster"
       hash_policy_choice: "hash_policy_choice_round_robin"
@@ -1080,14 +964,9 @@ resources:
       legacy_rules:
         ingress_rules: []
         egress_rules: []
-    oneof_recommended:
-      endpoint_choice: "any"
-
   forward_proxy_policy:
     description: "Forward proxy policy server-applied defaults (verified 2026-05-10)"
     schema_pattern: "forward_proxy_policy.*SpecType"
-    defaults:
-      segment_policy: null
     oneof_recommended:
       proxy_choice: "drp_http_connect"
       rule_choice: "allow_all"
@@ -1104,20 +983,22 @@ resources:
 
   certificate:
     description: "Certificate server-applied defaults (verified 2026-05-13)"
-    schema_pattern: "certificate.*SpecType"
+    schema_pattern: "^certificate(?:Create|Get|Replace)SpecType$"
     defaults:
       certificate_chain: null
       http_loadbalancers: []
       tcp_loadbalancers: []
+    oneof_recommended:
+      ocsp_stapling_choice: "use_system_defaults"
     nested:
       private_key:
-        secret_encoding_type: "EncodingNone"
-        blindfold_secret_info_internal: null
+        oneof_recommended:
+          secret_info_oneof: "clear_secret_info"
     notes:
       - "spec.certificate_url REQUIRED (min 1 byte, must be valid PEM)"
       - "spec.private_key REQUIRED (clear_secret_info.url + provider)"
       - "Server parses cert and populates infos[] (CN, SANs, expiry, issuer, algorithm)"
-      - "Server default: secret_encoding_type=EncodingNone"
+      - "Readback measured private-key secret_encoding_type=EncodingNone, but that field is absent from every published schema and cannot be enriched"
 
   global_log_receiver:
     description: "Global log receiver server-applied defaults (verified 2026-05-20)"
@@ -1126,7 +1007,8 @@ resources:
       ns_current: {}
     nested:
       request_logs:
-        sampled: {}
+        defaults:
+          sampled: {}
     notes:
       - "spec.log_type REQUIRED: oneOf request_logs, dns_logs, audit_logs, security_events"
       - "spec.receiver_choice REQUIRED: oneOf http_receiver, s3_receiver, kafka_receiver, splunk_receiver, datadog_receiver, new_relic_receiver, sumo_logic_receiver, qradar_receiver, aws_cloud_watch_receiver, azure_event_hubs_receiver, azure_receiver, gcp_bucket_receiver"

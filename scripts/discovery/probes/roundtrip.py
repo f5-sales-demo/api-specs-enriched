@@ -9,6 +9,8 @@ import uuid
 from dataclasses import dataclass
 from typing import Any
 
+import httpx
+
 logger = logging.getLogger(__name__)
 
 
@@ -102,8 +104,6 @@ class RoundtripProbe:
 
     async def run(self, base_payload: dict, rate_limiter: Any) -> RoundtripResult:
         """Execute the full POST+GET+DELETE roundtrip."""
-        import httpx
-
         resource_name = f"audit-{self.resource_type}-{uuid.uuid4().hex[:8]}"
         payload = copy.deepcopy(base_payload)
         payload.setdefault("metadata", {})["name"] = resource_name

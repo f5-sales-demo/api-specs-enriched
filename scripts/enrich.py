@@ -8,12 +8,14 @@ to all OpenAPI specification files. Fully automated - no manual intervention req
 """
 
 import argparse
+import hashlib
 import json
 import sys
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
+from tempfile import TemporaryDirectory
 from typing import Any
 
 import yaml
@@ -23,6 +25,7 @@ from rich.console import Console
 from rich.progress import BarColumn, Progress, SpinnerColumn, TextColumn, TimeElapsedColumn
 from rich.table import Table
 
+from scripts.package_config import load_packaged_yaml, packaged_config_path
 from scripts.utils import (
     AcronymNormalizer,
     BrandingNormalizer,
@@ -45,47 +48,134 @@ from scripts.utils import (
 )
 from scripts.utils.console_ui_enricher import ConsoleUIEnricher
 from scripts.utils.json_writer import write_json_file
+from scripts.utils.source_graph_validator import (
+    select_source_specs,
+    source_spec_files,
+    validate_source_graph,
+)
+from scripts.utils.spec_batch import publish_spec_batch
+from scripts.utils.technical_text import prose_target_fields
 
 console = Console()
 
 
-# Default configuration
-DEFAULT_CONFIG = {
-    "paths": {
-        "original": "specs/original",
-        "enriched": "docs/specifications/api",
-        "reports": "reports",
-        "discovered": "specs/discovered",
-    },
-    "target_fields": ["description", "summary", "title", "x-displayname"],
-    "preserve_fields": ["operationId", "$ref", "x-ves-proto-rpc", "x-ves-proto-service"],
-    "grammar": {
-        "capitalize_sentences": True,
-        "ensure_punctuation": True,
-        "normalize_whitespace": True,
-        "fix_double_spaces": True,
-        "trim_whitespace": True,
-    },
-    "validation": {
-        "validate_after_enrichment": True,
-        "fail_on_error": False,
-    },
-    "processing": {
-        "parallel_workers": 4,
-        "continue_on_error": True,
-    },
-    "output": {
-        "json_indent": 2,
-        "sort_keys": False,
-    },
-    "discovery_enrichment": {
-        "enabled": False,
-        "discovered_specs_dir": "specs/discovered",
-    },
+def _packaged_enrichment_config() -> dict[str, Any]:
+    """Compose standalone enrichment with packaged opt-in discovery controls."""
+    config = load_packaged_yaml("enrichment.yaml")
+    discovery = load_packaged_yaml("discovery_enrichment.yaml")
+    execution = discovery["discovery_enrichment"]
+    config["discovery_enrichment"] = {
+        "enabled": execution["enabled"],
+        "discovered_specs_dir": execution["discovered_specs_dir"],
+    }
+    return config
+
+
+# Public for processing APIs and tests; its bytes come only from the packaged YAML.
+DEFAULT_CONFIG = _packaged_enrichment_config()
+
+
+def require_noncanonical_discovery_output(
+    output_dir: Path,
+    canonical_output_dir: Path,
+    *,
+    explicitly_selected: bool,
+) -> None:
+    """Keep live discovery evidence outside the publishable generated tree."""
+    if not explicitly_selected:
+        raise ValueError("discovery enrichment requires an explicit noncanonical --output-dir")
+    output = output_dir.resolve()
+    canonical = canonical_output_dir.resolve()
+    if output == canonical or canonical in output.parents:
+        raise ValueError("discovery enrichment cannot write canonical publishable output")
+
+
+_ALLOWED_CONFIG_SECTIONS = frozenset(
+    {
+        "branding",
+        "changelog",
+        "consistency_validation",
+        "deprecated_tiers",
+        "description_structure",
+        "description_validation",
+        "discovery_enrichment",
+        "grammar",
+        "output",
+        "paths",
+        "preserve_fields",
+        "processing",
+        "schema_fixes",
+        "tags",
+        "target_fields",
+    }
+)
+_STRICT_CONFIG_SECTIONS = {
+    "paths": frozenset({"original", "enriched", "reports", "discovered"}),
+    "branding": frozenset({"protected_patterns", "replacements"}),
+    "grammar": frozenset(
+        {
+            "capitalize_sentences",
+            "ensure_punctuation",
+            "normalize_whitespace",
+            "fix_double_spaces",
+            "trim_whitespace",
+        }
+    ),
+    "description_structure": frozenset(
+        {
+            "normalize_leading_spaces",
+            "preserve_bullet_indentation",
+            "extract_examples",
+            "remove_extracted_examples",
+            "extract_validation_rules",
+            "remove_extracted_validation",
+            "extract_required",
+            "remove_extracted_required",
+        }
+    ),
+    "schema_fixes": frozenset(
+        {"fix_format_without_type", "format_type_mapping", "rename_properties"}
+    ),
+    "tags": frozenset({"generate_metadata", "assign_to_operations"}),
+    "description_validation": frozenset(
+        {
+            "auto_generate_operation_descriptions",
+            "auto_generate_schema_descriptions",
+            "description_prefix",
+        }
+    ),
+    "consistency_validation": frozenset(
+        {
+            "validate_parameters",
+            "validate_schemas",
+            "validate_operation_ids",
+            "severity_threshold",
+        }
+    ),
+    "changelog": frozenset({"generate_diff", "diff_format", "detailed_changes"}),
+    "processing": frozenset({"parallel_workers", "batch_size", "log_level"}),
+    "output": frozenset({"json_indent", "sort_keys", "preserve_filenames"}),
+    "discovery_enrichment": frozenset({"enabled", "discovered_specs_dir"}),
+    "deprecated_tiers": frozenset({"enabled", "patterns", "transformations", "valid_tiers"}),
 }
+_OBSOLETE_CONFIG_KEYS = frozenset(
+    {
+        "continue_on_error",
+        "create_missing_components",
+        "create_stub_component",
+        "fail_on_error",
+        "fix_orphan_refs",
+        "inline_orphan_request_bodies",
+        "remove_empty_operations",
+        "remove_orphan_operations",
+        "remove_ref_siblings",
+        "validate_after_enrichment",
+    }
+)
 
 # Cache for discovery enricher singleton (loaded once, reused)
-_DISCOVERY_CACHE: dict[str, Any] = {"enricher": None, "config": None}
+_DISCOVERY_CACHE: dict[str, Any] = {"enricher": None, "config": None, "signature": None}
+_DISCOVERY_INPUT_NAMES = ("openapi.json", "session.json")
 
 
 @dataclass
@@ -120,13 +210,22 @@ class EnrichmentResult:
 
 
 def load_config(config_path: Path | None = None) -> dict:
-    """Load configuration from YAML file or use defaults."""
-    if config_path and config_path.exists():
+    """Load packaged enrichment configuration with an optional validated overlay."""
+    canonical = _packaged_enrichment_config()
+    overlay: dict[str, Any] = {}
+    if config_path is not None:
+        if not config_path.is_file():
+            raise FileNotFoundError(f"enrichment configuration not found: {config_path}")
         with config_path.open() as f:
-            config = yaml.safe_load(f) or {}
-            # Deep merge with defaults
-            return _deep_merge(DEFAULT_CONFIG, config)
-    return DEFAULT_CONFIG
+            document = yaml.safe_load(f)
+        if document is not None:
+            if not isinstance(document, dict):
+                raise TypeError("enrichment configuration must be an object")
+            overlay = document
+        _validate_config(overlay)
+    config = _deep_merge(canonical, overlay)
+    _validate_config(config)
+    return config
 
 
 def _deep_merge(base: dict, override: dict) -> dict:
@@ -140,6 +239,42 @@ def _deep_merge(base: dict, override: dict) -> dict:
     return result
 
 
+def _validate_config(config: dict[str, Any]) -> None:
+    """Reject unsupported execution controls instead of silently ignoring them."""
+    if not isinstance(config, dict):
+        raise TypeError("enrichment configuration must be an object")
+    unknown_sections = sorted(set(config) - _ALLOWED_CONFIG_SECTIONS)
+    if unknown_sections:
+        raise ValueError(f"unsupported enrichment configuration sections: {unknown_sections}")
+
+    def reject_obsolete(value: Any, location: str) -> None:
+        if isinstance(value, dict):
+            obsolete = sorted(set(value) & _OBSOLETE_CONFIG_KEYS)
+            if obsolete:
+                raise ValueError(
+                    f"obsolete enrichment configuration keys at {location}: {obsolete}"
+                )
+            for key, child in value.items():
+                reject_obsolete(child, f"{location}.{key}")
+        elif isinstance(value, list):
+            for index, child in enumerate(value):
+                reject_obsolete(child, f"{location}[{index}]")
+
+    reject_obsolete(config, "config")
+
+    for section, allowed_keys in _STRICT_CONFIG_SECTIONS.items():
+        if section not in config:
+            continue
+        section_config = config[section]
+        if not isinstance(section_config, dict):
+            raise TypeError(f"enrichment configuration {section!r} must be an object")
+        unknown_keys = sorted(set(section_config) - allowed_keys)
+        if unknown_keys:
+            raise ValueError(
+                f"unsupported enrichment configuration keys in {section!r}: {unknown_keys}"
+            )
+
+
 def load_discovery_enricher(config: dict) -> DiscoveryEnricher | None:
     """Load discovery enricher with discovery data.
 
@@ -147,45 +282,62 @@ def load_discovery_enricher(config: dict) -> DiscoveryEnricher | None:
         config: Enrichment configuration
 
     Returns:
-        Initialized DiscoveryEnricher or None if disabled/unavailable
+        Initialized DiscoveryEnricher, or ``None`` only when explicitly disabled.
     """
-    discovery_config = config.get("discovery_enrichment", {})
-    if not discovery_config.get("enabled", False):
+    discovery_config = config["discovery_enrichment"]
+    if not discovery_config["enabled"]:
         return None
 
-    # Return cached enricher if config hasn't changed
-    if _DISCOVERY_CACHE["enricher"] is not None and _DISCOVERY_CACHE["config"] == discovery_config:
-        return _DISCOVERY_CACHE["enricher"]
+    discovered_dir = Path(discovery_config["discovered_specs_dir"])
 
-    discovered_dir = Path(
-        discovery_config.get("discovered_specs_dir", "specs/discovered"),
-    )
-
-    if not discovered_dir.exists():
-        console.print(
-            f"[yellow]Discovery data not found: {discovered_dir}[/yellow]",
+    if not discovered_dir.is_dir():
+        raise FileNotFoundError(
+            f"discovery enrichment is enabled but data is missing: {discovered_dir}"
         )
-        console.print("[yellow]Run 'make discover' to generate discovery data[/yellow]")
-        return None
 
     # Load discovery enrichment config from separate file if exists
-    discovery_config_path = Path("config/discovery_enrichment.yaml")
-    if discovery_config_path.exists():
-        with discovery_config_path.open() as f:
-            full_discovery_config = yaml.safe_load(f) or {}
-            discovery_config = _deep_merge(discovery_config, full_discovery_config)
+    document = load_packaged_yaml("discovery_enrichment.yaml")
+    detailed_config = document["discovery_enrichment"]
+    if not isinstance(detailed_config, dict):
+        raise TypeError(
+            "config/discovery_enrichment.yaml must define discovery_enrichment as an object"
+        )
+    discovery_config = _deep_merge(detailed_config, discovery_config)
+
+    signature = _discovery_data_signature(discovered_dir)
+    if (
+        _DISCOVERY_CACHE["enricher"] is not None
+        and _DISCOVERY_CACHE["config"] == discovery_config
+        and _DISCOVERY_CACHE["signature"] == signature
+    ):
+        return _DISCOVERY_CACHE["enricher"]
 
     enricher = DiscoveryEnricher(discovery_config)
 
     try:
         enricher.load_discovery_data(discovered_dir)
-        console.print(f"[green]Loaded discovery data from {discovered_dir}[/green]")
-        _DISCOVERY_CACHE["enricher"] = enricher
-        _DISCOVERY_CACHE["config"] = discovery_config
-        return enricher
-    except Exception as e:
-        console.print(f"[red]Failed to load discovery data: {e}[/red]")
-        return None
+    except Exception as error:
+        raise RuntimeError(f"failed to load required discovery data: {error}") from error
+    console.print(f"[green]Loaded discovery data from {discovered_dir}[/green]")
+    _DISCOVERY_CACHE["enricher"] = enricher
+    _DISCOVERY_CACHE["config"] = discovery_config
+    _DISCOVERY_CACHE["signature"] = signature
+    return enricher
+
+
+def _discovery_data_signature(discovered_dir: Path) -> str:
+    """Hash the exact required discovery inputs for the in-process cache."""
+    digest = hashlib.sha256()
+    paths = [discovered_dir / name for name in _DISCOVERY_INPUT_NAMES]
+    missing = [path.name for path in paths if not path.is_file()]
+    if missing:
+        raise FileNotFoundError(f"required discovery inputs are missing: {missing}")
+    for path in paths:
+        digest.update(path.name.encode())
+        digest.update(b"\0")
+        digest.update(path.read_bytes())
+        digest.update(b"\0")
+    return digest.hexdigest()
 
 
 def load_spec(spec_path: Path) -> dict[str, Any]:
@@ -210,6 +362,8 @@ def save_spec(
     satisfies Super-Linter's BIOME_FORMAT check at commit time.
     """
     spec = SchemaFixer().inject_max_items(spec)
+    validate_source_graph(spec)
+    validate(spec)
     write_json_file(
         spec,
         output_path,
@@ -250,6 +404,27 @@ def count_text_fields(spec: dict[str, Any], target_fields: list[str]) -> int:
     return count
 
 
+def _findings_error(label: str, findings: list[dict[str, Any]]) -> ValueError:
+    """Build a deterministic actionable error for validator findings."""
+    sample = json.dumps(findings[:5], sort_keys=True, ensure_ascii=False)
+    return ValueError(f"{label} found {len(findings)} issue(s); first findings: {sample}")
+
+
+def _validate_enrichment_findings(
+    spec: dict[str, Any],
+    target_fields: list[str],
+    consistency_validator: ConsistencyValidator,
+) -> None:
+    """Make every configured consistency and branding finding release-blocking."""
+    consistency_findings = consistency_validator.validate(spec)
+    if consistency_findings:
+        raise _findings_error("consistency validation", consistency_findings)
+
+    legacy_findings = BrandingValidator().validate_spec(spec, target_fields)
+    if legacy_findings:
+        raise _findings_error("branding validation", legacy_findings)
+
+
 def enrich_spec_file(
     spec_path: Path,
     output_path: Path,
@@ -266,11 +441,15 @@ def enrich_spec_file(
         EnrichmentResult with processing details.
     """
     filename = spec_path.name
-
     try:
-        # Load specification
+        _validate_config(config)
         spec = load_spec(spec_path)
-        original_field_count = count_text_fields(spec, config.get("target_fields", []))
+        validate_source_graph(spec)
+        validate(spec)
+        original_field_count = count_text_fields(
+            spec,
+            prose_target_fields(config["target_fields"]),
+        )
 
         # Initialize enrichment utilities
         acronym_normalizer = AcronymNormalizer()
@@ -282,24 +461,20 @@ def enrich_spec_file(
         minimum_configuration_enricher = MinimumConfigurationEnricher()
         description_validator = DescriptionValidator()
         consistency_validator = ConsistencyValidator()
-        constraint_enricher = ConstraintEnricher(
-            config_path=Path("config/constraint_patterns.yaml"),
-        )
+        with packaged_config_path("constraint_patterns.yaml") as constraint_config_path:
+            constraint_enricher = ConstraintEnricher(config_path=constraint_config_path)
 
-        grammar_config = config.get("grammar", {})
+        grammar_config = config["grammar"]
         grammar_improver = GrammarImprover(
-            capitalize_sentences=grammar_config.get("capitalize_sentences", True),
-            ensure_punctuation=grammar_config.get("ensure_punctuation", True),
-            normalize_whitespace=grammar_config.get("normalize_whitespace", True),
-            fix_double_spaces=grammar_config.get("fix_double_spaces", True),
-            trim_whitespace=grammar_config.get("trim_whitespace", True),
-            use_language_tool=True,
+            capitalize_sentences=grammar_config["capitalize_sentences"],
+            ensure_punctuation=grammar_config["ensure_punctuation"],
+            normalize_whitespace=grammar_config["normalize_whitespace"],
+            fix_double_spaces=grammar_config["fix_double_spaces"],
+            trim_whitespace=grammar_config["trim_whitespace"],
         )
 
-        target_fields = config.get(
-            "target_fields",
-            ["description", "summary", "title", "x-displayname"],
-        )
+        target_fields = config["target_fields"]
+        prose_fields = prose_target_fields(target_fields)
 
         # Initialize XKS/XCS branding normalizer
         branding_normalizer = BrandingNormalizer()
@@ -310,12 +485,12 @@ def enrich_spec_file(
 
         # 1. Branding transformations first (most specific)
         # 1a. Legacy Volterra→F5 branding
-        spec = branding_transformer.transform_spec(spec, target_fields)
+        spec = branding_transformer.transform_spec(spec, prose_fields)
         # 1b. Industry-standard XKS/XCS terminology normalization
-        spec = branding_normalizer.normalize_spec(spec, target_fields)
+        spec = branding_normalizer.normalize_spec(spec, prose_fields)
 
         # 2. Description structure normalization (extract examples, validation rules, X-required)
-        spec = description_structure_transformer.transform_spec(spec, target_fields)
+        spec = description_structure_transformer.transform_spec(spec, prose_fields)
 
         # 3. Schema fixes (add missing type field where format exists)
         spec = schema_fixer.fix_spec(spec)
@@ -350,10 +525,10 @@ def enrich_spec_file(
         spec = constraint_enricher.enrich_spec(spec)
 
         # 5. Acronym normalization
-        spec = acronym_normalizer.normalize_spec(spec, target_fields)
+        spec = acronym_normalizer.normalize_spec(spec, prose_fields)
 
         # 6. Grammar improvements
-        spec = grammar_improver.improve_spec(spec, target_fields)
+        spec = grammar_improver.improve_spec(spec, prose_fields)
 
         # 7. Description validation and generation (auto-generate missing descriptions)
         spec = description_validator.validate_and_generate(spec)
@@ -366,31 +541,21 @@ def enrich_spec_file(
             discovery_stats = discovery_enricher.get_stats()
             discovery_enrichments = discovery_stats.get("fields_enriched", 0)
 
-        # Close grammar improver resources
-        grammar_improver.close()
+        # Normalize descriptions produced by late enrichers before the final
+        # fail-closed validators. Acronym normalization runs first so direct
+        # source forms and any normalized VES-I/O prose reach the branding pass.
+        spec = acronym_normalizer.normalize_spec(spec, prose_fields)
+        spec = branding_normalizer.normalize_spec(spec, prose_fields)
+        spec = branding_transformer.transform_spec(spec, prose_fields)
 
-        # Run consistency validation (read-only, generates report)
-        consistency_validator.validate(spec)
+        _validate_enrichment_findings(spec, prose_fields, consistency_validator)
 
-        # Validate branding was applied correctly
-        branding_validator = BrandingValidator()
-        legacy_findings = branding_validator.validate_spec(spec, target_fields)
-
-        # Validate enriched spec
-        validation_config = config.get("validation", {})
-        validation_passed = True
-        validation_error = None
-
-        if validation_config.get("validate_after_enrichment", True):
-            validation_passed, validation_error = validate_spec(spec)
-
-        # Save enriched specification
-        output_config = config.get("output", {})
+        output_config = config["output"]
         save_spec(
             spec,
             output_path,
-            indent=output_config.get("json_indent", 2),
-            sort_keys=output_config.get("sort_keys", False),
+            indent=output_config["json_indent"],
+            sort_keys=output_config["sort_keys"],
         )
 
         # Collect stats from all transformers
@@ -409,7 +574,7 @@ def enrich_spec_file(
             success=True,
             changes={
                 "text_fields_processed": original_field_count,
-                "legacy_branding_remaining": len(legacy_findings),
+                "legacy_branding_remaining": 0,
                 "deprecated_tiers_transformed": deprecated_tier_stats.get(
                     "values_transformed",
                     0,
@@ -432,15 +597,14 @@ def enrich_spec_file(
                 "constraint_pattern_matches": constraint_stats.get("pattern_matches", 0),
                 "constraint_avg_confidence": constraint_stats.get("average_confidence", 0),
             },
-            validation_passed=validation_passed,
-            error=validation_error if not validation_passed else None,
+            validation_passed=True,
         )
 
-    except Exception as e:
+    except Exception as error:
         return EnrichmentResult(
             filename=filename,
             success=False,
-            error=str(e),
+            error=str(error),
             validation_passed=False,
         )
 
@@ -470,77 +634,119 @@ def enrich_all_specs(
     """
     stats = EnrichmentStats()
 
-    # Find all JSON spec files
-    spec_files = sorted(input_dir.glob("*.json"))
+    _validate_config(config)
+    selection = select_source_specs(input_dir)
+    spec_files = list(selection.files)
     if not spec_files:
         console.print(f"[yellow]No specification files found in {input_dir}[/yellow]")
         return stats
 
     console.print(f"[blue]Found {len(spec_files)} specification files to enrich[/blue]")
 
-    # Prepare output directory
-    output_dir.mkdir(parents=True, exist_ok=True)
+    if config["discovery_enrichment"]["enabled"]:
+        try:
+            load_discovery_enricher(config)
+        except Exception as error:
+            stats.files_processed = len(spec_files)
+            stats.errors.append({"file": "<discovery>", "error": str(error)})
+            _abort_enrichment_batch(stats, "required discovery data could not be loaded")
+            return stats
 
-    processing_config = config.get("processing", {})
-    workers = processing_config.get("parallel_workers", 4) if parallel else 1
-    continue_on_error = processing_config.get("continue_on_error", True)
+    output_dir.parent.mkdir(parents=True, exist_ok=True)
 
-    # Prepare arguments for processing
-    process_args = [(spec_file, output_dir / spec_file.name, config) for spec_file in spec_files]
+    workers = config["processing"]["parallel_workers"] if parallel else 1
 
-    with Progress(
-        SpinnerColumn(),
-        TextColumn("[progress.description]{task.description}"),
-        BarColumn(),
-        TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
-        TimeElapsedColumn(),
-        console=console,
-    ) as progress:
-        task = progress.add_task("Enriching specifications...", total=len(spec_files))
+    with TemporaryDirectory(
+        prefix=f".{output_dir.name}-staging-", dir=output_dir.parent
+    ) as staging:
+        staging_dir = Path(staging)
+        process_args = [
+            (spec_file, staging_dir / spec_file.name, config) for spec_file in spec_files
+        ]
 
-        if parallel and workers > 1:
-            # Parallel processing
-            with ProcessPoolExecutor(max_workers=workers) as executor:
-                futures = {
-                    executor.submit(process_spec_wrapper, args): args[0].name
-                    for args in process_args
-                }
+        with Progress(
+            SpinnerColumn(),
+            TextColumn("[progress.description]{task.description}"),
+            BarColumn(),
+            TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
+            TimeElapsedColumn(),
+            console=console,
+        ) as progress:
+            task = progress.add_task("Enriching specifications...", total=len(spec_files))
 
-                for future in as_completed(futures):
-                    filename = futures[future]
+            if parallel and workers > 1:
+                with ProcessPoolExecutor(max_workers=workers) as executor:
+                    futures = {
+                        executor.submit(process_spec_wrapper, args): args[0].name
+                        for args in process_args
+                    }
+
+                    for future in as_completed(futures):
+                        filename = futures[future]
+                        try:
+                            result = future.result()
+                            _update_stats(stats, result)
+                        except Exception as error:
+                            stats.files_failed += 1
+                            stats.errors.append({"file": filename, "error": str(error)})
+
+                        stats.files_processed += 1
+                        progress.update(task, advance=1)
+            else:
+                for args in process_args:
                     try:
-                        result = future.result()
+                        result = process_spec_wrapper(args)
                         _update_stats(stats, result)
-                    except Exception as e:
+                    except Exception as error:
                         stats.files_failed += 1
-                        stats.errors.append({"file": filename, "error": str(e)})
-                        if not continue_on_error:
-                            raise
+                        stats.errors.append({"file": args[0].name, "error": str(error)})
 
                     stats.files_processed += 1
                     progress.update(task, advance=1)
-        else:
-            # Sequential processing
-            for args in process_args:
-                try:
-                    result = process_spec_wrapper(args)
-                    _update_stats(stats, result)
-                except Exception as e:
-                    stats.files_failed += 1
-                    stats.errors.append({"file": args[0].name, "error": str(e)})
-                    if not continue_on_error:
-                        raise
 
-                stats.files_processed += 1
-                progress.update(task, advance=1)
+        if (
+            stats.files_failed
+            or stats.validation_failed
+            or stats.errors
+            or stats.files_succeeded != stats.files_processed
+        ):
+            _abort_enrichment_batch(stats, "one or more specifications failed validation")
+            return stats
+
+        try:
+            publish_spec_batch(staging_dir, output_dir, selection)
+        except Exception as error:
+            stats.errors.append({"file": "<publication>", "error": str(error)})
+            _abort_enrichment_batch(stats, "transactional publication failed")
 
     return stats
+
+
+def _abort_enrichment_batch(stats: EnrichmentStats, reason: str) -> None:
+    """Report a transaction abort without claiming unpublished partial successes."""
+    stats.errors.append({"file": "<batch>", "error": f"enrichment transaction aborted: {reason}"})
+    stats.files_failed = stats.files_processed
+    stats.files_succeeded = 0
+    stats.validation_failed = stats.files_processed
+    stats.validation_passed = 0
+    stats.acronyms_normalized = 0
+    stats.grammar_improved = 0
+    stats.branding_transformed = 0
+    stats.schemas_fixed = 0
+    stats.descriptions_generated = 0
+    stats.required_fields_extracted = 0
+    stats.consistency_issues = 0
+    stats.discovery_enrichments = 0
 
 
 def _update_stats(stats: EnrichmentStats, result: EnrichmentResult) -> None:
     """Update statistics from an enrichment result."""
     if result.success:
         stats.files_succeeded += 1
+        stats.schemas_fixed += result.changes.get("schemas_fixed", 0)
+        stats.descriptions_generated += result.changes.get("descriptions_generated", 0)
+        stats.consistency_issues += result.changes.get("consistency_issues", 0)
+        stats.discovery_enrichments += result.changes.get("discovery_enrichments", 0)
         if result.validation_passed:
             stats.validation_passed += 1
         else:
@@ -549,6 +755,8 @@ def _update_stats(stats: EnrichmentStats, result: EnrichmentResult) -> None:
                 stats.errors.append({"file": result.filename, "error": result.error})
     else:
         stats.files_failed += 1
+        if not result.validation_passed:
+            stats.validation_failed += 1
         if result.error:
             stats.errors.append({"file": result.filename, "error": result.error})
 
@@ -556,7 +764,7 @@ def _update_stats(stats: EnrichmentStats, result: EnrichmentResult) -> None:
 def generate_report(stats: EnrichmentStats, output_path: Path) -> None:
     """Generate enrichment report."""
     report = {
-        "timestamp": datetime.now(tz=timezone.utc).isoformat(),
+        "timestamp": datetime.now(tz=UTC).isoformat(),
         "summary": {
             "files_processed": stats.files_processed,
             "files_succeeded": stats.files_succeeded,
@@ -601,6 +809,7 @@ def _validate_single_spec_file(spec_file: Path) -> tuple[bool, str]:
     """Validate a single spec file and return result with error message if any."""
     try:
         spec = load_spec(spec_file)
+        validate_source_graph(spec)
         valid, error = validate_spec(spec)
         if valid:
             return True, ""
@@ -618,8 +827,7 @@ def main() -> int:
     parser.add_argument(
         "--config",
         type=Path,
-        default=Path("config/enrichment.yaml"),
-        help="Path to configuration file",
+        help="Path to configuration file (default: packaged config/enrichment.yaml)",
     )
     parser.add_argument(
         "--input-dir",
@@ -664,7 +872,8 @@ def main() -> int:
 
     # Determine directories
     input_dir = args.input_dir or Path(config["paths"]["original"])
-    output_dir = args.output_dir or Path(config["paths"]["enriched"])
+    canonical_output_dir = Path(config["paths"]["enriched"])
+    output_dir = args.output_dir or canonical_output_dir
     report_dir = args.report_dir or Path(config["paths"]["reports"])
 
     # Override workers if specified
@@ -673,28 +882,34 @@ def main() -> int:
 
     # Enable discovery enrichment if requested
     if args.use_discovery:
-        if "discovery_enrichment" not in config:
-            config["discovery_enrichment"] = {}
         config["discovery_enrichment"]["enabled"] = True
 
     console.print("[bold blue]F5 XC API Specification Enrichment[/bold blue]")
     console.print(f"  Input:  {input_dir}")
     console.print(f"  Output: {output_dir}")
 
-    if config.get("discovery_enrichment", {}).get("enabled", False):
+    if config["discovery_enrichment"]["enabled"]:
+        try:
+            require_noncanonical_discovery_output(
+                output_dir,
+                canonical_output_dir,
+                explicitly_selected=args.output_dir is not None,
+            )
+        except ValueError as exc:
+            console.print(f"[red]{exc}[/red]")
+            return 2
         console.print("  [green]Discovery enrichment: enabled[/green]")
-
-    if not input_dir.exists():
-        console.print(f"[red]Input directory not found: {input_dir}[/red]")
-        console.print(
-            "[yellow]Run 'python scripts/download.py' first to download specifications[/yellow]",
-        )
-        return 1
 
     if args.validate_only:
         # Just validate existing enriched specs
         console.print("\n[blue]Validating existing enriched specifications...[/blue]")
-        spec_files = sorted(output_dir.glob("*.json"))
+        if not output_dir.exists():
+            console.print(f"[red]Enriched specification directory not found: {output_dir}[/red]")
+            return 1
+        spec_files = source_spec_files(output_dir)
+        if not spec_files:
+            console.print(f"[red]No OpenAPI specifications found in {output_dir}[/red]")
+            return 1
         passed = 0
         failed = 0
         for spec_file in spec_files:
@@ -706,6 +921,13 @@ def main() -> int:
                 console.print(f"[red]{error_msg}[/red]")
         console.print(f"\n[green]Passed: {passed}[/green], [red]Failed: {failed}[/red]")
         return 0 if failed == 0 else 1
+
+    if not input_dir.exists():
+        console.print(f"[red]Input directory not found: {input_dir}[/red]")
+        console.print(
+            "[yellow]Run 'python scripts/download.py' first to download specifications[/yellow]",
+        )
+        return 1
 
     # Run enrichment pipeline
     stats = enrich_all_specs(
@@ -722,10 +944,15 @@ def main() -> int:
     # Print summary
     print_summary(stats)
 
-    # Exit with error if any files failed
-    if stats.files_failed > 0:
-        console.print(f"\n[yellow]Completed with {stats.files_failed} failures[/yellow]")
-        return 1 if not config.get("processing", {}).get("continue_on_error", True) else 0
+    if (
+        stats.files_processed == 0
+        or stats.files_failed > 0
+        or stats.validation_failed > 0
+        or stats.errors
+        or stats.files_succeeded != stats.files_processed
+    ):
+        console.print(f"\n[red]Enrichment failed for {stats.files_failed} files[/red]")
+        return 1
 
     console.print(
         f"\n[bold green]Successfully enriched {stats.files_succeeded} specifications![/bold green]",

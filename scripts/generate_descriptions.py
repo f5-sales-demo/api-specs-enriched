@@ -27,7 +27,7 @@ import re
 import subprocess
 import sys
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -61,8 +61,8 @@ class Violation:
     examples: list[str] = field(default_factory=list)  # Good alternatives
 
     def __str__(self) -> str:
-        """Return string representation for backward compatibility."""
-        return f"{self.tier}: {self.message}"
+        """Return a concise representation suitable for logs."""
+        return f"{self.tier}/{self.code}: {self.message}"
 
     def to_feedback(self) -> str:
         """Generate specific, actionable feedback for the LLM."""
@@ -223,7 +223,7 @@ def load_config() -> dict[str, Any]:
 
 def save_config(config: dict[str, Any]) -> None:
     """Save domain descriptions config."""
-    config["generated_at"] = datetime.now(tz=timezone.utc).isoformat()
+    config["generated_at"] = datetime.now(tz=UTC).isoformat()
 
     with CONFIG_PATH.open("w") as f:
         yaml.dump(config, f, default_flow_style=False, sort_keys=False, allow_unicode=True)
@@ -894,49 +894,6 @@ BAD_STARTERS = [
     "automate",
 ]
 
-# Action verbs for short descriptions (positive pattern)
-ACTION_VERBS = [
-    # Core management verbs
-    "manage",
-    "configure",
-    "monitor",
-    "secure",
-    "control",
-    "analyze",
-    "protect",
-    "deploy",
-    "automate",
-    "enable",
-    # Creation verbs
-    "create",
-    "define",
-    "set",
-    "establish",
-    "build",
-    # Traffic/routing verbs
-    "route",
-    "balance",
-    "distribute",
-    "cache",
-    "filter",
-    # Security verbs
-    "detect",
-    "block",
-    "mitigate",
-    "enforce",
-    "validate",
-    # Discovery/access verbs (valid for short descriptions)
-    "discover",
-    "connect",
-    "access",
-    "track",
-    "inspect",
-    "integrate",
-    "orchestrate",
-    "provision",
-    "generate",
-]
-
 
 def is_self_referential(domain: str, desc: str) -> tuple[bool, str]:
     """Layer 2: Check if description merely restates domain + generic suffix.
@@ -960,39 +917,6 @@ def is_self_referential(domain: str, desc: str) -> tuple[bool, str]:
             return True, f"LAZY: '{desc}' just restates domain name + '{suffix}s'"
 
     return False, ""
-
-
-def validate_quality_metrics(desc: str, desc_type: str) -> list[str]:
-    """Layer 3: Enforce character limits and quality standards.
-
-    Args:
-        desc: Description text to validate
-        desc_type: One of 'short', 'medium', 'long'
-
-    Returns:
-        List of violation messages (empty if compliant)
-    """
-    errors: list[str] = []
-    limits = {"short": MAX_SHORT, "medium": MAX_MEDIUM, "long": MAX_LONG}
-
-    # Character limit check
-    limit = limits.get(desc_type, MAX_LONG)
-    if len(desc) > limit:
-        errors.append(
-            f"LENGTH: {len(desc)} chars exceeds {desc_type} limit of {limit}",
-        )
-
-    # Minimum content check (at least 3 words)
-    word_count = len(desc.split())
-    if word_count < 3:
-        errors.append(f"SPARSE: Only {word_count} word(s) - needs at least 3")
-
-    # NOTE: Action verb first check REMOVED (DRY-compliant)
-    # CRUD verbs like Configure/Manage/Deploy are now BANNED because
-    # they're implied in a CRUD API context. Descriptions should start
-    # with nouns/concepts, not action verbs.
-
-    return errors
 
 
 def is_circular_definition(desc: str, tier: str = "long") -> tuple[bool, str]:
@@ -1249,84 +1173,10 @@ def _get_synonym_hints(words: list[str]) -> str:
 MAX_RETRIES = 5  # Increased from 3 for better self-refine success rate
 
 
-def check_banned_patterns(tier: str, text: str) -> list[str]:
-    """Layer 1: Check for banned patterns using regex word boundaries.
-
-    Args:
-        tier: Description tier ('short', 'medium', 'long')
-        text: Description text to check
-
-    Returns:
-        List of violation messages
-    """
-    violations: list[str] = []
-
-    for pattern, error_msg in BANNED_PATTERNS:
-        if re.search(pattern, text, re.IGNORECASE):
-            # Find the actual matched text for better error reporting
-            match = re.search(pattern, text, re.IGNORECASE)
-            matched_text = match.group() if match else pattern
-            violations.append(f"{tier}: {error_msg} (found: '{matched_text}')")
-
-    return violations
-
-
-def check_dry_compliance(domain: str, descriptions: dict[str, str]) -> list[str]:
-    """Check for DRY violations in descriptions using 5-layer validation.
-
-    Layers:
-        1. Banned patterns (regex word boundaries)
-        2. Self-referential detection (domain + suffix)
-        3. Quality metrics (character limits, action verbs)
-        4. Circular definitions
-        5. Style compliance (bad starters)
-
-    Args:
-        domain: Domain name to check against
-        descriptions: Dictionary with short/medium/long descriptions
-
-    Returns:
-        List of violation messages (empty if compliant)
-    """
-    violations: list[str] = []
-
-    for tier, text in descriptions.items():
-        if tier not in VALID_TIERS:
-            continue  # Skip non-tier keys like source_patterns_hash
-        # Layer 1: Check banned patterns with regex
-        violations.extend(check_banned_patterns(tier, text))
-
-        # Layer 2: Check self-referential patterns
-        is_lazy, lazy_msg = is_self_referential(domain, text)
-        if is_lazy:
-            violations.append(f"{tier}: {lazy_msg}")
-
-        # Layer 3: Quality metrics (character limits, action verbs)
-        quality_errors = validate_quality_metrics(text, tier)
-        violations.extend(f"{tier}: {err}" for err in quality_errors)
-
-        # Layer 4: Circular definitions (tier-aware thresholds)
-        is_circular, circular_msg = is_circular_definition(text, tier)
-        if is_circular:
-            violations.append(f"{tier}: {circular_msg}")
-
-        # Check domain name (avoid self-reference) using structured check
-        domain_violation = check_domain_name_usage(domain, text, tier)
-        if domain_violation:
-            violations.append(f"{tier}: Contains domain name '{domain}'")
-
-    # Check cross-tier repetition using structured check
-    cross_tier_violations = check_cross_tier_violations(descriptions)
-    # Convert to string format for backward compatibility using extend
-    violations.extend(f"Repetition: {v.message}: {{{v.location}}}" for v in cross_tier_violations)
-
-    return violations
-
-
-def run_all_validations_structured(domain: str, descriptions: dict[str, str]) -> list[Violation]:
+def run_all_validations(domain: str, descriptions: dict[str, str]) -> list[Violation]:
     """Run all validation checks and return structured Violation objects.
 
-    This is the new structured validation function that provides:
+    Each violation provides:
     - Exact location of problems
     - Specific fix suggestions
     - Concrete examples of correct alternatives
@@ -1341,6 +1191,9 @@ def run_all_validations_structured(domain: str, descriptions: dict[str, str]) ->
     violations: list[Violation] = []
 
     for tier, text in descriptions.items():
+        if tier not in VALID_TIERS:
+            continue
+
         # Layer 1: Check banned patterns
         for pattern, error_msg in BANNED_PATTERNS:
             match = re.search(pattern, text, re.IGNORECASE)
@@ -1446,9 +1299,26 @@ def run_all_validations_structured(domain: str, descriptions: dict[str, str]) ->
         if domain_violation:
             violations.append(domain_violation)
 
-        # Layer 5: Complete thought validation (new)
+        # Layer 5: Complete thought validation
         complete_thought_violations = check_complete_thought(text, tier)
         violations.extend(complete_thought_violations)
+
+        # Style validation: descriptions start with a specific noun or concept.
+        text_lower = text.lower().strip()
+        for starter in BAD_STARTERS:
+            if text_lower.startswith(starter):
+                violations.append(
+                    Violation(
+                        layer="style",
+                        tier=tier,
+                        code="STYLE",
+                        message=f"Starts with '{starter}' instead of a specific noun or concept",
+                        location=text[: len(starter)],
+                        suggestion="Start with the resource, capability, or concept being described",
+                        examples=["HTTP load balancing with health checks."],
+                    ),
+                )
+                break
 
     # Check cross-tier repetition
     cross_tier_violations = check_cross_tier_violations(descriptions)
@@ -1674,97 +1544,11 @@ def _extract_significant_words(text: str) -> list[str]:
     return [w.strip(".,;:!?()[]{}\"'") for w in words if len(w) > 4 and w.lower() not in stop_words]
 
 
-def check_character_limits(descriptions: dict[str, str]) -> list[str]:
-    """Check character limits without truncation.
-
-    Args:
-        descriptions: Dictionary with short/medium/long descriptions
-
-    Returns:
-        List of violation messages (empty if compliant)
-    """
-    violations = []
-    limits = {"short": MAX_SHORT, "medium": MAX_MEDIUM, "long": MAX_LONG}
-
-    for tier, limit in limits.items():
-        text = descriptions.get(tier, "")
-        if len(text) > limit:
-            violations.append(f"{tier}: Exceeds {limit} chars ({len(text)} chars)")
-
-    return violations
-
-
-def check_style_compliance(descriptions: dict[str, str]) -> list[str]:
-    """Check style compliance (active voice, verb-first, no bad starters).
-
-    Args:
-        descriptions: Dictionary with short/medium/long descriptions
-
-    Returns:
-        List of violation messages (empty if compliant)
-    """
-    violations = []
-
-    for tier, text in descriptions.items():
-        if tier not in VALID_TIERS:
-            continue  # Skip non-tier keys like source_patterns_hash
-        text_lower = text.lower().strip()
-
-        # Check bad starters
-        for starter in BAD_STARTERS:
-            if text_lower.startswith(starter):
-                violations.append(
-                    f"{tier}: Starts with '{starter}' - should start with action verb",
-                )
-                break
-
-    return violations
-
-
-def check_complete_thought_string(descriptions: dict[str, str]) -> list[str]:
-    """Check for complete thought violations, returning string messages.
-
-    This is the string-format version of check_complete_thought() for
-    backward compatibility with run_all_validations().
-
-    Args:
-        descriptions: Dictionary with short/medium/long descriptions
-
-    Returns:
-        List of violation messages (empty if compliant)
-    """
-    violations: list[str] = []
-    for tier, text in descriptions.items():
-        if tier not in VALID_TIERS:
-            continue  # Skip non-tier keys like source_patterns_hash
-        tier_violations = check_complete_thought(text, tier)
-        violations.extend(f"{tier}: {v.message}" for v in tier_violations)
-    return violations
-
-
-def run_all_validations(domain: str, descriptions: dict[str, str]) -> list[str]:
-    """Run all validation checks on descriptions.
-
-    Args:
-        domain: Domain name
-        descriptions: Dictionary with short/medium/long descriptions
-
-    Returns:
-        Combined list of all violations
-    """
-    violations = []
-    violations.extend(check_dry_compliance(domain, descriptions))
-    violations.extend(check_character_limits(descriptions))
-    violations.extend(check_style_compliance(descriptions))
-    violations.extend(check_complete_thought_string(descriptions))
-    return violations
-
-
 def build_refinement_prompt(
     domain: str,
     context: dict[str, Any],
     previous_response: dict[str, str],
-    violations: list[str] | list[Violation],
+    violations: list[Violation],
 ) -> str:
     """Build a refinement prompt with specific, actionable feedback.
 
@@ -1781,78 +1565,16 @@ def build_refinement_prompt(
         domain: Domain name being processed
         context: Domain context dictionary
         previous_response: The descriptions that failed validation
-        violations: List of Violation objects OR legacy string messages
+        violations: Structured validation failures
 
     Returns:
         Refined prompt with specific feedback
     """
-    # Handle both structured Violation objects and legacy string format
     feedback_items = []
-    limits = {"short": MAX_SHORT, "medium": MAX_MEDIUM, "long": MAX_LONG}
-
     for violation in violations:
-        if isinstance(violation, Violation):
-            # Use structured violation data for precise feedback
-            feedback_items.append(violation.to_feedback())
-        else:
-            # Legacy string handling for backward compatibility
-            v_lower = violation.lower()
-            tier = violation.split(":")[0].lower() if ":" in violation else ""
-
-            if "exceeds" in v_lower:
-                try:
-                    current_chars = int(violation.split("(")[1].split()[0])
-                    max_chars = limits.get(tier, 500)
-                    reduction = current_chars - max_chars
-                    pct = (reduction * 100) // current_chars
-                    feedback_items.append(
-                        f"❌ {tier.upper()}: {current_chars} chars → max {max_chars}. "
-                        f"REMOVE {reduction} chars ({pct}% reduction). "
-                        f"Cut phrases like 'and policies', 'for distribution', etc.",
-                    )
-                except (IndexError, ValueError):
-                    feedback_items.append(f"❌ {violation} - SHORTEN this tier")
-            elif "banned term" in v_lower:
-                try:
-                    term = violation.split("'")[1]
-                    alternatives = {
-                        "comprehensive": "broad",
-                        "complete": "full-featured",
-                        "extensive": "wide-ranging",
-                        "specifications": "definitions",
-                        "spec": "definition",
-                        "api": "interface",
-                        "endpoint": "path",
-                    }
-                    alt = alternatives.get(term.lower(), "(remove entirely)")
-                    feedback_items.append(
-                        f"❌ {tier.upper()}: Remove banned term '{term}'. Alternative: {alt}",
-                    )
-                except IndexError:
-                    feedback_items.append(f"❌ {violation}")
-            elif "domain name" in v_lower:
-                # Get domain synonyms for better suggestions
-                synonyms = DOMAIN_SYNONYMS.get(domain, ["infrastructure", "systems", "services"])
-                feedback_items.append(
-                    f"❌ {tier.upper()}: Contains domain name '{domain}'. "
-                    f"Replace with: {', '.join(synonyms[:3])}",
-                )
-            elif "starts with" in v_lower:
-                try:
-                    starter = violation.split("'")[1]
-                    feedback_items.append(
-                        f"❌ {tier.upper()}: Starts with '{starter}'. "
-                        f"MUST start with NOUN/CONCEPT (not CRUD verbs). "
-                        f"Example: 'HTTP load balancing...' not 'Configure load balancing...'",
-                    )
-                except IndexError:
-                    feedback_items.append(f"❌ {violation}")
-            elif "repetition" in v_lower or "overlap" in v_lower:
-                feedback_items.append(
-                    f"❌ {violation}. Use DIFFERENT vocabulary in each tier.",
-                )
-            else:
-                feedback_items.append(f"❌ {violation}")
+        if not isinstance(violation, Violation):
+            raise TypeError("violations must contain only Violation objects")
+        feedback_items.append(violation.to_feedback())
 
     feedback_str = "\n".join(feedback_items)
     prev_json = json.dumps(previous_response, indent=2)
@@ -1927,7 +1649,7 @@ Do not use any tools. Generate corrected output based on the feedback."""
 
 def create_violation_issue(
     domain: str,
-    violations: list[str],
+    violations: list[Violation],
     prompt: str,
     response: str,
 ) -> bool:
@@ -1935,14 +1657,14 @@ def create_violation_issue(
 
     Args:
         domain: Domain that failed validation
-        violations: List of violation messages
+        violations: Structured validation failures
         prompt: The prompt that was used
         response: The response that was generated
 
     Returns:
         True if issue was created successfully
     """
-    timestamp = datetime.now(tz=timezone.utc).isoformat()
+    timestamp = datetime.now(tz=UTC).isoformat()
     violations_list = "\n".join(f"- {v}" for v in violations)
 
     # Truncate prompt for readability (keep first 2000 chars)
@@ -2083,7 +1805,7 @@ def generate_for_domain(
     # Research shows self-refine achieves 85-95% compliance vs ~50% for blind retries
     last_descriptions = None
     last_response = ""
-    violations = []
+    violations: list[Violation] = []
     current_prompt = prompt  # Start with initial prompt, switch to refinement on retry
 
     for attempt in range(1, MAX_RETRIES + 1):

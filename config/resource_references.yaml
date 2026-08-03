@@ -1,3 +1,4 @@
+---
 # Copyright (c) 2026 Robin Mordasiewicz. MIT License.
 #
 # Curated referred-kind map for ObjectRefType reference fields.
@@ -44,7 +45,7 @@ references:
   "viewsOriginPoolListType.pools": origin_pool
   "viewsDefaultRoutePoolAdvanced.pool": origin_pool
 
-# Site/virtual-site selectors (RefSelector — WHERE to deploy, not a single resource)
+  # Site/virtual-site selectors (RefSelector — WHERE to deploy, not a single resource)
   "advertise_policyCreateSpecType.where": virtual_site
   "bgpCreateSpecType.where": site
   "discoveryCreateSpecType.where": site
@@ -165,12 +166,11 @@ field_defaults:
   # System-internal (excluded from CRUD dependency graph — not stamped)
   # owner_view: (system read-only ref × 435 — not a CRUD dep, intentionally null)
 
-# Remaining: platform-internal or uncommon references (resource_kind: null until curated)
-_needs_review:
-  # - "addon_subscriptionCreateSpecType.addon_service"         # addon_service (platform-internal)
-  # - "infraprotect_asn_prefixCreateSpecType.asn"              # infraprotect ASN
-  # - "infraprotect_tunnelCreateSpecType.firewall_rule_group"  # infraprotect firewall rules
-  # - "k8s_clusterCreateSpecType.use_custom_pod_security_admission"  # PSA config
-  # - "tenant_managementchild_tenantCreateSpecType.child_tenant_manager"  # tenant mgmt
-  # - "tenant_managementchild_tenant_managerCreateSpecType.tenant_owner_group"  # tenant mgmt
-  # - "tenant_profileCreateSpecType.plan"                      # tenant plan
+# Remaining platform-internal or uncommon references to curate:
+# - "addon_subscriptionCreateSpecType.addon_service"         # addon_service (platform-internal)
+# - "infraprotect_asn_prefixCreateSpecType.asn"              # infraprotect ASN
+# - "infraprotect_tunnelCreateSpecType.firewall_rule_group"  # infraprotect firewall rules
+# - "k8s_clusterCreateSpecType.use_custom_pod_security_admission"  # PSA config
+# - "tenant_managementchild_tenantCreateSpecType.child_tenant_manager"  # tenant mgmt
+# - "tenant_managementchild_tenant_managerCreateSpecType.tenant_owner_group"  # tenant mgmt
+# - "tenant_profileCreateSpecType.plan"                      # tenant plan

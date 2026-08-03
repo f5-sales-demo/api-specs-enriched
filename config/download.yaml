@@ -1,7 +1,8 @@
+---
 # Download Configuration
 #
-# Controls how API specifications are downloaded from source.
-# Two source types supported: github_release (default) and http_download (legacy).
+# Controls how API specifications are downloaded from the immutable api-specs
+# GitHub release. No mutable HTTP or rollback source is supported.
 
 source:
   # Primary source: GitHub Releases (f5-sales-demo/api-specs)
@@ -20,17 +21,11 @@ source:
   # - Authenticated: 5000 requests/hour
   # - CI/CD: Uses secrets.GITHUB_TOKEN automatically
 
-  # Legacy HTTP download (for rollback if needed)
-  # Uncomment to revert to docs.cloud.f5.com source:
-  # type: http_download
-  # url: https://docs.cloud.f5.com/docs-v2/downloads/f5-distributed-cloud-open-api.zip
-  # etag_file: .etag
-
 paths:
   # Output directory for extracted specifications
   original: specs/original
 
-  # Version tracking file (replaces .etag for GitHub Releases)
+  # Validated release receipt: tag, asset name, and SHA-256 digest.
   version_file: .github_release
 
 extraction:
@@ -54,13 +49,12 @@ extraction:
 schema:
   source:
     type:
-      enum: [github_release, http_download]
+      const: github_release
       required: true
     repository:
       owner: {type: string, required_if: "type=github_release"}
       name: {type: string, required_if: "type=github_release"}
     asset_pattern: {type: string, default: "*.zip"}
-    url: {type: string, required_if: "type=http_download"}
   paths:
     original: {type: string, required: true}
     version_file: {type: string, default: ".github_release"}

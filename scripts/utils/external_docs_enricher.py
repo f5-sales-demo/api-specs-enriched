@@ -5,7 +5,7 @@
 This enricher adds externalDocs metadata to OpenAPI specs,
 providing direct links to F5's official documentation.
 
-Adds the standard OpenAPI externalDocs field to the info section with:
+Adds the standard OpenAPI root-level externalDocs field with:
 - url: Link to relevant F5 XC documentation
 - description: Brief description of the documentation
 
@@ -16,13 +16,58 @@ import logging
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlsplit
 
 import yaml
+from yaml.constructor import ConstructorError
+from yaml.nodes import MappingNode
+from yaml.resolver import BaseResolver
 
 from scripts.utils.domain_categorizer import categorize_spec
 from scripts.utils.extension_constants import X_F5XC_API_REFERENCE_URL, X_F5XC_CLI_DOMAIN
 
 logger = logging.getLogger(__name__)
+
+_EXPLICIT_OTHER_DOCUMENTS = frozenset({"openapi.json", "other.json"})
+
+
+class _UniqueKeySafeLoader(yaml.SafeLoader):
+    """Safe YAML loader that rejects duplicate mapping keys."""
+
+
+def _construct_unique_mapping(
+    loader: _UniqueKeySafeLoader,
+    node: MappingNode,
+    deep: bool = False,
+) -> dict[Any, Any]:
+    loader.flatten_mapping(node)
+    mapping: dict[Any, Any] = {}
+    for key_node, value_node in node.value:
+        key = loader.construct_object(key_node, deep=deep)
+        try:
+            duplicate = key in mapping
+        except TypeError as error:
+            raise ConstructorError(
+                "while constructing a mapping",
+                node.start_mark,
+                "found an unhashable mapping key",
+                key_node.start_mark,
+            ) from error
+        if duplicate:
+            raise ConstructorError(
+                "while constructing a mapping",
+                node.start_mark,
+                f"found duplicate key {key!r}",
+                key_node.start_mark,
+            )
+        mapping[key] = loader.construct_object(value_node, deep=deep)
+    return mapping
+
+
+_UniqueKeySafeLoader.add_constructor(
+    BaseResolver.DEFAULT_MAPPING_TAG,
+    _construct_unique_mapping,
+)
 
 
 @dataclass
@@ -32,7 +77,6 @@ class ExternalDocsStats:
     specs_enriched: int = 0
     docs_added: int = 0
     already_had_docs: int = 0
-    used_default: int = 0
     api_links_rewritten: int = 0
     errors: list[dict[str, Any]] = field(default_factory=list)
 
@@ -42,7 +86,6 @@ class ExternalDocsStats:
             "specs_enriched": self.specs_enriched,
             "docs_added": self.docs_added,
             "already_had_docs": self.already_had_docs,
-            "used_default": self.used_default,
             "api_links_rewritten": self.api_links_rewritten,
             "error_count": len(self.errors),
             "errors": self.errors,
@@ -52,7 +95,7 @@ class ExternalDocsStats:
 class ExternalDocsEnricher:
     """Enrich OpenAPI specs with external documentation links.
 
-    Adds standard OpenAPI externalDocs field to the spec's info section,
+    Adds the standard OpenAPI externalDocs field at the document root,
     providing direct links to F5's official documentation based on
     the spec's domain categorization.
 
@@ -71,7 +114,6 @@ class ExternalDocsEnricher:
         )
         self.config: dict[str, Any] = {}
         self.domain_docs: dict[str, dict[str, str]] = {}
-        self.default_docs: dict[str, str] = {}
         self.api_reference_base_url: str = ""
         self.api_reference_old_prefix: str = ""
         self.stats = ExternalDocsStats()
@@ -79,51 +121,84 @@ class ExternalDocsEnricher:
         self._load_config()
 
     def _load_config(self) -> None:
-        """Load configuration from YAML file."""
+        """Load and strictly validate the required YAML configuration."""
+        if not self.config_path.is_file():
+            raise FileNotFoundError(f"external docs configuration not found: {self.config_path}")
+        with self.config_path.open(encoding="utf-8") as config_file:
+            loader = _UniqueKeySafeLoader(config_file)
+            try:
+                config = loader.get_single_data()
+            finally:
+                loader.dispose()
+        self.config = self._validate_config(config)
+
+        for domain, doc_info in self.config["domains"].items():
+            self.domain_docs[domain] = {
+                "url": doc_info["url"],
+                "description": doc_info["description"],
+            }
+
+        self.api_reference_base_url = self.config["api_reference_base_url"]
+        self.api_reference_old_prefix = self.config["api_reference_rewrite"]["old_prefix"]
+
+        logger.info("Loaded external_docs config from %s", self.config_path)
+        logger.info("Found %d domain documentation mappings", len(self.domain_docs))
+        if self.api_reference_base_url and self.api_reference_old_prefix:
+            logger.info(
+                "API reference rewrite enabled: %s -> %s/{domain}/",
+                self.api_reference_old_prefix,
+                self.api_reference_base_url,
+            )
+
+    @staticmethod
+    def _validate_config(config: Any) -> dict[str, Any]:
+        """Reject incomplete or ignored external-documentation configuration."""
+        required = {
+            "api_reference_base_url",
+            "api_reference_rewrite",
+            "domains",
+        }
+        if not isinstance(config, dict) or set(config) != required:
+            raise ValueError(f"external docs configuration must contain exactly {sorted(required)}")
+        base_url = config["api_reference_base_url"]
+        ExternalDocsEnricher._validate_https_url(base_url, "api_reference_base_url")
+        rewrite = config["api_reference_rewrite"]
+        if not isinstance(rewrite, dict) or set(rewrite) != {"old_prefix"}:
+            raise ValueError("external docs api_reference_rewrite must contain only old_prefix")
+        ExternalDocsEnricher._validate_https_url(
+            rewrite["old_prefix"],
+            "api_reference_rewrite.old_prefix",
+        )
+        if not isinstance(config["domains"], dict) or not config["domains"]:
+            raise ValueError("external docs domains must be a non-empty object")
+        for domain, entry in config["domains"].items():
+            if not isinstance(domain, str) or not domain:
+                raise ValueError("external docs domain names must be non-empty strings")
+            ExternalDocsEnricher._validate_doc_entry(entry, f"domains.{domain}")
+        return config
+
+    @staticmethod
+    def _validate_doc_entry(entry: Any, location: str) -> None:
+        if not isinstance(entry, dict) or set(entry) != {"url", "description"}:
+            raise ValueError(f"external docs {location} must contain only url and description")
+        if any(not isinstance(value, str) or not value.strip() for value in entry.values()):
+            raise ValueError(f"external docs {location} values must be non-empty strings")
+        ExternalDocsEnricher._validate_https_url(entry["url"], f"{location}.url")
+
+    @staticmethod
+    def _validate_https_url(value: Any, location: str) -> None:
+        if not isinstance(value, str) or not value or any(char.isspace() for char in value):
+            raise ValueError(f"external docs {location} must be a valid HTTPS URL")
         try:
-            with self.config_path.open() as f:
-                self.config = yaml.safe_load(f) or {}
-
-                # Load default documentation
-                self.default_docs = self.config.get(
-                    "default",
-                    {
-                        "url": "https://docs.cloud.f5.com/docs",
-                        "description": "F5 Distributed Cloud Documentation",
-                    },
-                )
-
-                # Load domain-specific documentation mappings
-                domains = self.config.get("domains", {})
-                for domain, doc_info in domains.items():
-                    if isinstance(doc_info, dict) and "url" in doc_info:
-                        self.domain_docs[domain] = {
-                            "url": doc_info["url"],
-                            "description": doc_info.get(
-                                "description",
-                                f"F5 XC Documentation - {domain}",
-                            ),
-                        }
-
-                self.api_reference_base_url = self.config.get("api_reference_base_url", "")
-                rewrite = self.config.get("api_reference_rewrite", {})
-                self.api_reference_old_prefix = rewrite.get("old_prefix", "")
-
-                logger.info("Loaded external_docs config from %s", self.config_path)
-                logger.info("Found %d domain documentation mappings", len(self.domain_docs))
-                if self.api_reference_base_url and self.api_reference_old_prefix:
-                    logger.info(
-                        "API reference rewrite enabled: %s -> %s/{domain}/",
-                        self.api_reference_old_prefix,
-                        self.api_reference_base_url,
-                    )
-
-        except FileNotFoundError:
-            logger.warning("Configuration file not found: %s", self.config_path)
-            self.config = {}
-        except yaml.YAMLError:
-            logger.exception("Error parsing configuration")
-            self.config = {}
+            parsed = urlsplit(value)
+            port = parsed.port
+        except ValueError as error:
+            raise ValueError(f"external docs {location} must be a valid HTTPS URL") from error
+        has_https_host = parsed.scheme == "https" and bool(parsed.hostname)
+        has_credentials = parsed.username is not None or parsed.password is not None
+        has_valid_port = port is None or 1 <= port <= 65535
+        if not has_https_host or has_credentials or not has_valid_port:
+            raise ValueError(f"external docs {location} must be a valid HTTPS URL")
 
     def enrich_spec(
         self,
@@ -132,7 +207,7 @@ class ExternalDocsEnricher:
     ) -> dict[str, Any]:
         """Enrich OpenAPI specification with external documentation link.
 
-        Adds externalDocs to the spec's info section based on
+        Adds externalDocs to the document root based on
         the domain detected from the spec title or filename.
 
         Args:
@@ -142,54 +217,31 @@ class ExternalDocsEnricher:
         Returns:
             Enriched specification
         """
-        try:
-            info = spec.get("info", {})
+        if not isinstance(spec, dict):
+            raise TypeError("OpenAPI specification must be an object")
+        info = spec.setdefault("info", {})
+        if not isinstance(info, dict):
+            raise TypeError("OpenAPI info must be an object")
+        if "externalDocs" in info:
+            raise ValueError("invalid info.externalDocs placement; externalDocs must be root-level")
 
-            # Check if already enriched (idempotent)
-            if "externalDocs" in info:
-                self.stats.already_had_docs += 1
-                self.stats.specs_enriched += 1
-                if X_F5XC_API_REFERENCE_URL not in info:
-                    domain = self._detect_domain(spec, filename)
-                    api_ref_url = self._get_api_reference_url(domain)
-                    if api_ref_url:
-                        spec["info"][X_F5XC_API_REFERENCE_URL] = api_ref_url
-                return spec
-
-            # Detect domain from filename or spec
-            domain = self._detect_domain(spec, filename)
+        domain = self._detect_domain(spec, filename)
+        if "externalDocs" in spec:
+            self._validate_doc_entry(spec["externalDocs"], "document externalDocs")
+            self.stats.already_had_docs += 1
+            self.stats.specs_enriched += 1
+        else:
             external_docs = self._get_docs_for_domain(domain)
-
-            # Add externalDocs to info section
-            if "info" not in spec:
-                spec["info"] = {}
-            spec["info"]["externalDocs"] = external_docs
-
-            api_ref_url = self._get_api_reference_url(domain)
-            if api_ref_url:
-                spec["info"][X_F5XC_API_REFERENCE_URL] = api_ref_url
-
-            # Update stats
+            spec["externalDocs"] = external_docs
             self.stats.specs_enriched += 1
             self.stats.docs_added += 1
+            logger.debug("Added externalDocs for domain '%s': %s", domain, external_docs["url"])
 
-            logger.debug(
-                "Added externalDocs for domain '%s': %s",
-                domain,
-                external_docs["url"],
-            )
+        api_ref_url = self._get_api_reference_url(domain)
+        if api_ref_url:
+            info[X_F5XC_API_REFERENCE_URL] = api_ref_url
 
-            self._rewrite_operation_docs(spec, domain)
-
-        except Exception as e:
-            logger.exception("Error enriching spec with external docs")
-            self.stats.errors.append(
-                {
-                    "error": str(e),
-                    "spec_title": spec.get("info", {}).get("title", "unknown"),
-                    "filename": filename,
-                },
-            )
+        self._rewrite_operation_docs(spec, domain)
 
         return spec
 
@@ -250,9 +302,15 @@ class ExternalDocsEnricher:
 
         Returns:
             Detected domain name
+
+        Raises:
+            ValueError: If the document is neither explicitly ``other`` nor
+                categorizable to a mapped domain.
         """
         # Strategy 1: Use filename with DomainCategorizer
         if filename:
+            if Path(filename).name in _EXPLICIT_OTHER_DOCUMENTS:
+                return "other"
             domain = categorize_spec(filename)
             if domain and domain != "other":
                 return domain
@@ -272,7 +330,10 @@ class ExternalDocsEnricher:
             if domain and domain != "other":
                 return domain
 
-        return "other"
+        raise ValueError(
+            "unable to detect an explicitly mapped external docs domain"
+            + (f" for {filename!r}" if filename else "")
+        )
 
     def _get_docs_for_domain(self, domain: str) -> dict[str, str]:
         """Get external docs configuration for a domain.
@@ -285,10 +346,7 @@ class ExternalDocsEnricher:
         """
         if domain in self.domain_docs:
             return self.domain_docs[domain].copy()
-
-        # Use default docs
-        self.stats.used_default += 1
-        return self.default_docs.copy()
+        raise KeyError(f"no external docs mapping for domain {domain!r}")
 
     def get_docs_for_domain(self, domain: str) -> dict[str, str]:
         """Get external docs for a specific domain.

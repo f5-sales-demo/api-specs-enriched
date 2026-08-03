@@ -18,34 +18,37 @@ on:
     paths:
       - 'scripts/**'
       - 'config/**'
-      - 'requirements.txt'
+      - 'pyproject.toml'
+      - 'uv.lock'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'release/README.md'
       - '.github/workflows/sync-and-enrich.yml'
       - 'docs/**/*.html'
   workflow_dispatch:
 
-# Read-only default; each job declares what it consumes. Traced per write:
-#   sync-and-enrich  contents: write   `gh release create` runs as GITHUB_TOKEN
-#   deploy-docs      pages + id-token  actions/deploy-pages
-#   monitor-failures issues: write     opens/updates the failure issue as GITHUB_TOKEN
-# Two of the previous workflow-wide scopes had no GITHUB_TOKEN consumer at all and
-# are gone rather than pushed down: `pull-requests: write`, because every `gh pr`
-# call authenticates with VERSION_BUMP_PAT (as do the pushes, via an explicit
-# remote URL), and `actions: read`, because nothing reads the Actions API.
+# Read-only default. Release-branch pushes and pull-request operations authenticate
+# with VERSION_BUMP_PAT. Tagging, asset publication, Pages, and downstream dispatch
+# are owned by publish-release.yml after the release PR has merged.
 permissions:
   contents: read
 
+defaults:
+  run:
+    shell: bash
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 env:
-  PYTHON_VERSION: '3.13'
-  # Biome is installed via biomejs/setup-biome@version:latest, mirroring
-  # docs-control's super-linter.yml (docs-control#385). The version
-  # resolved at install time is captured into steps.biome.outputs.version
-  # and used as a cache-key suffix so that a Biome upgrade busts the
-  # enriched-output cache and forces the generator to re-emit JSON
-  # formatted by the new Biome release.
+  BUILDER_IMAGE: python:3.13.14-bookworm@sha256:353cf2106d143e1d28f5d7c10c5f5c0387085bba22ef0f7f7e52c2c330fb1779
+  PYTHON_VERSION: '3.13.14'
+  PYTHONHASHSEED: '0'
+  PYTHONUTF8: '1'
+  TZ: UTC
+  LC_ALL: C
+  LANG: C
 
 jobs:
   check-updates:
@@ -53,7 +56,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       has_updates: ${{ steps.check.outputs.updated }}
-      etag: ${{ steps.check.outputs.etag }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
@@ -62,61 +64,82 @@ jobs:
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-          cache: 'pip'
+
+      - name: Setup frozen Python package manager
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: '0.12.1'
+          enable-cache: true
+          cache-dependency-glob: uv.lock
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
-
-      - name: Log upstream release trigger
-        if: github.event_name == 'repository_dispatch'
-        env:
-          # client_payload is attacker-influenceable in principle, so it is read
-          # through the environment and never interpolated into this run: body.
-          # It is logged only -- nothing downstream branches on it.
-          UPSTREAM_TAG: ${{ github.event.client_payload.release_tag }}
-          UPSTREAM_SOURCE: ${{ github.event.client_payload.trigger_source }}
         run: |
-          echo "::notice::Triggered by upstream release ${UPSTREAM_TAG:-unknown} from ${UPSTREAM_SOURCE:-unknown}"
+          uv sync --frozen
+          echo "$PWD/.venv/bin" >> "$GITHUB_PATH"
 
-      - name: Check for GitHub Release updates
+      - name: Pin the exact upstream release event
         id: check
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           EVENT_NAME: ${{ github.event_name }}
+          EVENT_PATH: ${{ github.event_path }}
+          PINNED_RECEIPT: ${{ runner.temp }}/api-specs-release-receipt.json
+          REPOSITORY: ${{ github.repository }}
+          # The safety-net dispatch is a repository write and therefore uses the
+          # existing cross-workflow PAT. The actual release read is exact-tag-only.
+          GH_TOKEN: ${{ secrets.VERSION_BUMP_PAT }}
+          GITHUB_TOKEN: ${{ secrets.VERSION_BUMP_PAT }}
         run: |
-          # Force download on push, manual dispatch and upstream release
-          # dispatch; check-only on schedule.
-          #
-          # repository_dispatch must force: it only ever arrives because
-          # api-specs just published a release, and taking the --check-only
-          # ETag short-circuit here would let the trigger fire and change
-          # nothing -- automation that looks wired up and is not.
-          if [ "$EVENT_NAME" = "push" ] || \
-            [ "$EVENT_NAME" = "workflow_dispatch" ] || \
-            [ "$EVENT_NAME" = "repository_dispatch" ]; then
-            echo "updated=true" >> "$GITHUB_OUTPUT"
-            echo "Event '$EVENT_NAME' - forcing download"
-          else
-            # Run check-only and capture exit code
-            # Exit code 1 = updates available (success for our purposes)
-            # Exit code 0 = no updates (also success)
-            # Other codes = actual error
-            set +e
-            python -m scripts.download --check-only
-            EXIT_CODE=$?
-            set -e
+          set -euo pipefail
+          if [ "$EVENT_NAME" = "repository_dispatch" ]; then
+            python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
 
-            if [ $EXIT_CODE -eq 1 ]; then
-              echo "updated=true" >> "$GITHUB_OUTPUT"
-              echo "Updates detected - will proceed with download"
-              exit 0
-            elif [ $EXIT_CODE -eq 0 ]; then
-              echo "No updates detected"
-              exit 0
-            else
-              echo "::error::Download check failed with exit code $EXIT_CODE"
-              exit $EXIT_CODE
-            fi
+          from scripts.release.upstream_receipt import require_receipt_progression
+          from scripts.utils.github_release import (
+              load_release_receipt,
+              validate_release_receipt,
+              write_release_receipt,
+          )
+
+          event = json.loads(Path(os.environ["EVENT_PATH"]).read_text())
+          payload = event.get("client_payload")
+          if not isinstance(payload, dict):
+              raise ValueError("repository_dispatch client_payload must be an object")
+          if payload.get("trigger_source") != "f5-sales-demo/api-specs":
+              raise ValueError("repository_dispatch trigger_source is not f5-sales-demo/api-specs")
+          receipt = require_receipt_progression(
+              load_release_receipt(Path(".github_release")),
+              validate_release_receipt(payload.get("release_receipt")),
+          )
+          write_release_receipt(Path(os.environ["PINNED_RECEIPT"]), receipt)
+          print(f"Pinned upstream event {json.dumps(receipt['tag_name'])}")
+          PY
+            echo "updated=true" >> "$GITHUB_OUTPUT"
+          elif [ "$EVENT_NAME" = "push" ]; then
+            python - <<'PY'
+          from pathlib import Path
+
+          from scripts.utils.github_release import load_release_receipt
+
+          load_release_receipt(Path(".github_release"))
+          PY
+            echo "updated=true" >> "$GITHUB_OUTPUT"
+          elif [ "$EVENT_NAME" = "schedule" ] || [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            # Discovery of "latest" is isolated here. It creates a new pinned
+            # repository_dispatch event; this run never consumes mutable latest.
+            python -m scripts.download --resolve-latest-receipt "$PINNED_RECEIPT"
+            jq -n --slurpfile receipt "$PINNED_RECEIPT" \
+              '{event_type:"upstream-specs-released",client_payload:{trigger_source:"f5-sales-demo/api-specs",release_receipt:$receipt[0]}}' \
+              > "$RUNNER_TEMP/pinned-upstream-event.json"
+            gh api --method POST "repos/${REPOSITORY}/dispatches" \
+              --input "$RUNNER_TEMP/pinned-upstream-event.json"
+            echo "updated=false" >> "$GITHUB_OUTPUT"
+            echo "Created a pinned upstream release event; this discovery run will not build"
+          else
+            echo "::error::Unsupported event: $EVENT_NAME"
+            exit 1
           fi
 
   sync-and-enrich:
@@ -124,11 +147,10 @@ jobs:
     needs: check-updates
     if: needs.check-updates.outputs.has_updates == 'true'
     runs-on: ubuntu-latest
-    # `gh release create` runs as GITHUB_TOKEN and needs contents: write. The
-    # branch pushes, PR create/merge/close and tag push all authenticate with
-    # VERSION_BUMP_PAT instead, so no pull-requests scope is required here.
+    container:
+      image: python:3.13.14-bookworm@sha256:353cf2106d143e1d28f5d7c10c5f5c0387085bba22ef0f7f7e52c2c330fb1779
     permissions:
-      contents: write
+      contents: read
     outputs:
       version: ${{ steps.version.outputs.new_version }}
       has_changes: ${{ steps.detect.outputs.has_changes }}
@@ -140,165 +162,167 @@ jobs:
           fetch-tags: true  # Explicitly fetch tags for version calculation
           token: ${{ secrets.VERSION_BUMP_PAT }}  # Use admin PAT for bypass permissions
 
+      - name: Install exact workflow CLIs
+        run: |
+          curl --fail --silent --show-error --location \
+            --output /tmp/gh.tar.gz \
+            https://github.com/cli/cli/releases/download/v2.97.0/gh_2.97.0_linux_amd64.tar.gz
+          echo "a2c9b8497e1f85b1ad0dfcb78b5a622e098801b8e461e459e88e1ee12f018112  /tmp/gh.tar.gz" \
+            | sha256sum --check --strict
+          tar --extract --gzip --file /tmp/gh.tar.gz --directory /tmp
+          install -m 0755 /tmp/gh_2.97.0_linux_amd64/bin/gh /usr/local/bin/gh
+          curl --fail --silent --show-error --location \
+            --output /tmp/jq \
+            https://github.com/jqlang/jq/releases/download/jq-1.8.2/jq-linux-amd64
+          echo "b1c22172dd303f3be49e935aa56aa48a8b7a46e0bc838b4997d3bb451495870f  /tmp/jq" \
+            | sha256sum --check --strict
+          install -m 0755 /tmp/jq /usr/local/bin/jq
+
       - name: Setup Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-          cache: 'pip'
+
+      - name: Setup frozen Python package manager
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: '0.12.1'
+          enable-cache: true
+          cache-dependency-glob: uv.lock
 
       - name: Install Python dependencies
-        run: pip install -r requirements.txt
-
-      - name: Read release tag for cache key
-        id: release-info
         run: |
-          if [ -f .github_release ]; then
-            TAG=$(jq -r '.tag_name // "unknown"' .github_release)
-          else
-            TAG="unknown"
-          fi
-          echo "release_tag=$TAG" >> "$GITHUB_OUTPUT"
+          uv sync --frozen
+          echo "$PWD/.venv/bin" >> "$GITHUB_PATH"
 
-      - name: Restore specs cache
-        if: github.event_name == 'push'
-        id: specs-cache
-        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
-        with:
-          path: specs/original
-          key: specs-original-${{ steps.release-info.outputs.release_tag }}
-
-      - name: Download specifications from GitHub Releases
-        if: steps.specs-cache.outputs.cache-hit != 'true'
+      - name: Download the exact pinned api-specs release
         env:
+          EVENT_NAME: ${{ github.event_name }}
+          EVENT_PATH: ${{ github.event_path }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python -m scripts.download --force
-
-      - name: Save specs cache
-        if: steps.specs-cache.outputs.cache-hit != 'true' && github.event_name == 'push'
-        uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
-        with:
-          path: specs/original
-          key: specs-original-${{ steps.release-info.outputs.release_tag }}
-
-      - name: Compute specs fingerprint
-        id: specs-fingerprint
+          PINNED_RECEIPT: ${{ runner.temp }}/api-specs-release-receipt.json
         run: |
-          HASH=$(find specs/original -name '*.json' -type f -exec sha256sum {} + | sort | sha256sum | cut -d' ' -f1)
-          echo "hash=$HASH" >> "$GITHUB_OUTPUT"
+          set -euo pipefail
+          if [ "$EVENT_NAME" = "repository_dispatch" ]; then
+            python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
 
-      - name: Compute pipeline code fingerprint
-        id: pipeline-fingerprint
-        run: |
-          HASH=$({
-            cat \
-              scripts/pipeline.py \
-              scripts/merge_specs.py \
-              scripts/enrich.py \
-              scripts/normalize.py \
-              requirements.txt
-            find scripts/utils scripts/discovery config -type f 2>/dev/null \
-              | sort | xargs cat
-          } | sha256sum | cut -d' ' -f1)
-          echo "hash=$HASH" >> "$GITHUB_OUTPUT"
+          from scripts.release.upstream_receipt import require_receipt_progression
+          from scripts.utils.github_release import (
+              load_release_receipt,
+              validate_release_receipt,
+              write_release_receipt,
+          )
+
+          event = json.loads(Path(os.environ["EVENT_PATH"]).read_text())
+          payload = event.get("client_payload")
+          if not isinstance(payload, dict):
+              raise ValueError("repository_dispatch client_payload must be an object")
+          if payload.get("trigger_source") != "f5-sales-demo/api-specs":
+              raise ValueError("repository_dispatch trigger_source is not f5-sales-demo/api-specs")
+          receipt = require_receipt_progression(
+              load_release_receipt(Path(".github_release")),
+              validate_release_receipt(payload.get("release_receipt")),
+          )
+          write_release_receipt(Path(os.environ["PINNED_RECEIPT"]), receipt)
+          PY
+          elif [ "$EVENT_NAME" = "push" ]; then
+            cp .github_release "$PINNED_RECEIPT"
+          else
+            echo "::error::Production build requires a push or pinned repository_dispatch event"
+            exit 1
+          fi
+          python -m scripts.download --receipt "$PINNED_RECEIPT" --force
 
       - name: Setup Biome
         uses: biomejs/setup-biome@4c91541eaada48f67d7dbd7833600ce162b68f51  # v2.7.1 — matches docs-control super-linter.yml
         with:
-          version: latest
-
-      - name: Capture Biome version
-        id: biome
-        run: |
-          version=$(biome --version | awk '{print $2}')
-          echo "version=${version}" >> "$GITHUB_OUTPUT"
-          echo "Biome ${version} installed (matches docs-control's setup-biome pin)"
-
-      - name: Restore enriched output cache
-        if: github.event_name != 'workflow_dispatch'
-        id: enriched-cache
-        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
-        with:
-          path: docs/specifications/api
-          key: enriched-${{ steps.specs-fingerprint.outputs.hash }}-${{ steps.pipeline-fingerprint.outputs.hash }}-biome-${{ steps.biome.outputs.version }}
-
-      - name: Install Java (for LanguageTool)
-        if: steps.enriched-cache.outputs.cache-hit != 'true'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y default-jre
+          version: 2.5.6
 
       - name: Setup Node.js for Spectral
         uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
-          node-version: '22'
+          node-version: '22.23.2'
+          cache: npm
+          cache-dependency-path: package-lock.json
 
-      - name: Install Spectral CLI
-        # Pinned: an unpinned `npm install -g` takes whatever was published at run
-        # time, which is the supply-chain exposure zizmor's adhoc-packages audit
-        # flags. Pre-existing; surfaced when a workflow file was next staged.
-        # zizmor: ignore[adhoc-packages] — a global CLI with no project lockfile to
-        # install from; pinning the version is the available mitigation.
-        run: npm install -g @stoplight/spectral-cli@6.16.2
-
-      - name: Check for Discovery Data
-        id: check-discovery
+      - name: Install locked Spectral CLI
         run: |
-          # Check for session.json (metadata) since openapi.json is gitignored due to size
-          if [ -f "specs/discovered/session.json" ]; then
-            echo "has_discovery=true" >> "$GITHUB_OUTPUT"
-            echo "::notice::Discovery session found - discovery enrichment available locally"
-          else
-            echo "has_discovery=false" >> "$GITHUB_OUTPUT"
-            echo "No discovery data - running standard enrichment"
-          fi
-          # Check for full openapi.json (required for constraint analysis)
-          # This is gitignored due to 26MB size, only available when run locally
-          if [ -f "specs/discovered/openapi.json" ]; then
-            echo "has_full_discovery=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "has_full_discovery=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::Full discovery openapi.json not available - constraint analysis skipped"
-          fi
+          npm ci --ignore-scripts --no-audit --no-fund
+          echo "$PWD/node_modules/.bin" >> "$GITHUB_PATH"
 
-      - name: Run enrichment pipeline
-        if: steps.enriched-cache.outputs.cache-hit != 'true'
-        run: python -m scripts.pipeline
+      - name: Resolve committed build version
+        id: build-version
+        run: echo "version=$(python -m scripts.utils.version_calculator)" >> "$GITHUB_OUTPUT"
+
+      - name: Build current-version candidate with the canonical entry point
         env:
-          DISCOVERY_ENRICHMENT_ENABLED: ${{ steps.check-discovery.outputs.has_discovery }}
-
-      - name: Generate constraint analysis report
-        if: steps.check-discovery.outputs.has_full_discovery == 'true' && steps.enriched-cache.outputs.cache-hit != 'true'
-        run: python -m scripts.analyze_constraints
-
-      - name: Compile API catalog
-        run: python -m scripts.compile_catalog --input-dir docs/specifications/api --output release/api-catalog.json
-
-      - name: Save enriched output cache
-        if: steps.enriched-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
-        with:
-          path: docs/specifications/api
-          key: enriched-${{ steps.specs-fingerprint.outputs.hash }}-${{ steps.pipeline-fingerprint.outputs.hash }}-biome-${{ steps.biome.outputs.version }}
-
-      - name: Generate API viewer pages
-        run: python -m scripts.generate_api_viewer
+          BUILD_VERSION: ${{ steps.build-version.outputs.version }}
+        run: >-
+          python -m scripts.release.build_release_tree
+          --version "$BUILD_VERSION"
+          --root .
+          --input-dir specs/original
+          --biome biome
 
       - name: Lint specifications with Spectral
         run: python scripts/lint.py --input-dir docs/specifications/api --fail-on-error --fail-on-warning
 
       - name: Validate specifications
-        continue-on-error: true
+        id: validation
         env:
           F5XC_API_TOKEN: ${{ secrets.F5XC_API_TOKEN }}
           F5XC_API_URL: ${{ secrets.F5XC_API_URL }}
-        run: python -m scripts.validate --dry-run
+        run: |
+          mkdir -p reports
+          set +e
+          python -m scripts.validate 2>&1 | tee reports/validation-console.log
+          status=${PIPESTATUS[0]}
+          set -e
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+
+      - name: Sanitize validation evidence
+        id: sanitize_evidence
+        if: always()
+        env:
+          F5XC_API_TOKEN: ${{ secrets.F5XC_API_TOKEN }}
+          F5XC_API_URL: ${{ secrets.F5XC_API_URL }}
+        run: >-
+          python -m scripts.sanitize_validation_evidence
+          --required reports/validation-console.log
+          --output-dir reports/sanitized-validation-evidence
+          reports/validation-report.json reports/validation-report.md
+
+      - name: Upload validation evidence
+        if: always() && steps.sanitize_evidence.outcome == 'success'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: validation-evidence
+          path: reports/sanitized-validation-evidence/
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Enforce validation result
+        if: always()
+        env:
+          VALIDATION_STATUS: ${{ steps.validation.outputs.status }}
+        run: |
+          if ! [[ "$VALIDATION_STATUS" =~ ^[0-9]+$ ]]; then
+            echo "::error::Validation did not produce an exit status"
+            exit 1
+          fi
+          exit "$VALIDATION_STATUS"
 
       - name: Detect release-worthy changes
         id: detect
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DETECT_RELEASE_BASE: >-
+            ${{ github.event_name == 'push' && github.event.before || github.sha }}
         # Output-driven gate: compares the generated, tracked output in the
-        # working tree against HEAD. Lives in a script so it can be unit
+        # working tree against this trigger's immutable base. Lives in a script so it can be unit
         # tested (tests/shell/test_detect_release_changes.py) — the inline
         # block it replaces was untestable, which is how #1094 survived.
         run: bash scripts/release/detect-release-changes.sh
@@ -309,16 +333,14 @@ jobs:
         env:
           CHANGE_TYPE: ${{ steps.detect.outputs.change_type }}
         run: |
-          # Get current version from git tags (eliminates race conditions from file-based versioning)
-          CURRENT_VERSION=$(git describe --tags --abbrev=0 2>/dev/null | sed 's/^v//' || echo "0.0.0")
+          # A tag is a publication receipt and can lag the committed artifact
+          # after a recoverable publication interruption. Allocate from the
+          # greater identity so a missing tag can never reuse an existing
+          # committed version.
+          TAG_VERSION=$(git describe --tags --abbrev=0 | sed 's/^v//')
+          CURRENT_VERSION=$(python -m scripts.utils.version_calculator --max-with "$TAG_VERSION")
 
-          # Validate version format
-          if ! [[ "$CURRENT_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "::warning::Invalid tag format, starting at 1.0.0"
-            CURRENT_VERSION="0.0.0"
-          fi
-
-          echo "✅ Current version from tags: $CURRENT_VERSION"
+          echo "✅ Current committed/tag version: $CURRENT_VERSION"
           echo "current_version=$CURRENT_VERSION" >> "$GITHUB_OUTPUT"
 
           # Parse version components
@@ -326,8 +348,11 @@ jobs:
 
           # Check for major bump via commit message (highest priority)
           # For merge commits, also check the commits that were merged (HEAD^2)
-          COMMIT_MSG=$(git log -1 --pretty=%B 2>/dev/null || echo "")
-          MERGED_MSG=$(git log -1 HEAD^2 --pretty=%B 2>/dev/null || echo "")
+          COMMIT_MSG=$(git log -1 --pretty=%B)
+          MERGED_MSG=""
+          if git rev-parse --verify HEAD^2 >/dev/null 2>&1; then
+            MERGED_MSG=$(git log -1 HEAD^2 --pretty=%B)
+          fi
           COMBINED_MSG="$COMMIT_MSG $MERGED_MSG"
 
           if [[ "$COMBINED_MSG" == *"[major]"* ]] || \
@@ -336,10 +361,11 @@ jobs:
             BUMP_TYPE="major"
           elif [ "$CHANGE_TYPE" = "source" ]; then
             # Source spec changes → check for new domains (minor) or patch
-            PREV_COUNT=$(git show HEAD:docs/specifications/api/index.json 2>/dev/null | \
-              jq '.specifications | length' 2>/dev/null || echo "0")
-            CURR_COUNT=$(jq '.specifications | length' \
-              docs/specifications/api/index.json 2>/dev/null || echo "0")
+            PREV_COUNT=$(git show HEAD:docs/specifications/api/index.json | \
+              jq -er '.specifications | if type == "array" then length else error("invalid specifications") end')
+            CURR_COUNT=$(jq -er \
+              '.specifications | if type == "array" then length else error("invalid specifications") end' \
+              docs/specifications/api/index.json)
 
             if [ "$CURR_COUNT" -gt "$PREV_COUNT" ]; then
               NEW_VERSION="${MAJOR}.$((MINOR + 1)).0"
@@ -354,10 +380,8 @@ jobs:
             BUMP_TYPE="patch"
             echo "::notice::Pipeline changes detected - patch bump"
           else
-            # Fallback for unknown change types
-            NEW_VERSION="${MAJOR}.${MINOR}.$((PATCH + 1))"
-            BUMP_TYPE="patch"
-            echo "::warning::Unknown change type - defaulting to patch bump"
+            echo "::error::Unsupported change type: $CHANGE_TYPE"
+            exit 1
           fi
 
           echo "new_version=$NEW_VERSION" >> "$GITHUB_OUTPUT"
@@ -365,95 +389,52 @@ jobs:
 
           echo "::notice::Version: $CURRENT_VERSION -> $NEW_VERSION ($BUMP_TYPE)"
 
-      - name: Update version in specs
+      - name: Rebuild exact release version with the canonical entry point
         if: steps.detect.outputs.has_changes == 'true'
         env:
           VERSION: ${{ steps.version.outputs.new_version }}
-        run: |
-          echo "Updating specs to version: $VERSION"
-
-          # OpenAPI documents use info.version; auxiliary build artifacts use a
-          # top-level version; self-describing $schema artifacts keep their own
-          # format version. Keep this aligned with the contract-diff gate.
-          python -m scripts.stamp_release_version \
-            docs/specifications/api \
-            --version "$VERSION"
-
-          echo "Updated all specs to version $VERSION"
-
-      - name: Verify version consistency
-        if: steps.detect.outputs.has_changes == 'true'
-        env:
-          EXPECTED_VERSION: ${{ steps.version.outputs.new_version }}
-        run: |
-          INDEX_VERSION=$(jq -r '.version' docs/specifications/api/index.json)
-
-          if [ "$EXPECTED_VERSION" != "$INDEX_VERSION" ]; then
-            echo "::error::Version mismatch! Expected=$EXPECTED_VERSION but index.json=$INDEX_VERSION"
-            exit 1
-          fi
-
-          echo "Version consistent: $INDEX_VERSION"
-
-      - name: Align catalog version with release
-        if: steps.detect.outputs.has_changes == 'true'
-        env:
-          VERSION: ${{ steps.version.outputs.new_version }}
-        run: |
-          if [ -f release/api-catalog.json ]; then
-            jq --arg v "$VERSION" '.version = $v' release/api-catalog.json > /tmp/catalog.json
-            mv /tmp/catalog.json release/api-catalog.json
-            echo "Catalog version aligned to $VERSION"
-          fi
-
-      - name: Generate discovery summary
-        id: discovery-summary
-        if: steps.check-discovery.outputs.has_discovery == 'true'
-        run: |
-          if [ -f "specs/discovered/session.json" ]; then
-            ENDPOINTS=$(jq -r '.statistics.endpoints_total // 0' specs/discovered/session.json)
-            SUCCESS=$(jq -r '.statistics.endpoints_successful // 0' specs/discovered/session.json)
-            TIMESTAMP=$(jq -r '.started_at // "unknown"' specs/discovered/session.json)
-            {
-              echo "endpoints_total=$ENDPOINTS"
-              echo "endpoints_success=$SUCCESS"
-              echo "discovery_timestamp=$TIMESTAMP"
-            } >> "$GITHUB_OUTPUT"
-            echo "::notice::Discovery: ${SUCCESS}/${ENDPOINTS} endpoints discovered at ${TIMESTAMP}"
-          fi
+        run: >-
+          python -m scripts.release.build_release_tree
+          --version "$VERSION"
+          --root .
+          --input-dir specs/original
+          --biome biome
 
       - name: Generate changelog
         if: steps.detect.outputs.has_changes == 'true'
         env:
           VERSION: ${{ steps.version.outputs.new_version }}
           BUMP_TYPE: ${{ steps.version.outputs.bump_type }}
-          HAS_DISCOVERY: ${{ steps.check-discovery.outputs.has_discovery }}
-          DISCOVERY_ENDPOINTS: ${{ steps.discovery-summary.outputs.endpoints_total }}
-          DISCOVERY_SUCCESS: ${{ steps.discovery-summary.outputs.endpoints_success }}
-          DISCOVERY_TIMESTAMP: ${{ steps.discovery-summary.outputs.discovery_timestamp }}
         run: |
-          DATE=$(date -u +"%Y-%m-%d")
+          # Changelog content must be a function of the release input, not the
+          # date a retry happens to run.
+          DATE=$(jq -er '.published_at[0:10]' .github_release)
 
-          # Extract upstream info from index.json
-          UPSTREAM_TS=$(jq -r '."x-upstream-timestamp" // "unknown"' docs/specifications/api/index.json)
-          UPSTREAM_ETAG=$(jq -r '."x-upstream-etag" // "unknown"' docs/specifications/api/index.json)
-          ENRICHED_VER=$(jq -r '."x-enriched-version" // "'"$VERSION"'"' docs/specifications/api/index.json)
-          FULL_VERSION=$(jq -r '.version' docs/specifications/api/index.json)
-
-          # Discovery info (if available) arrives via env — see the step's env block.
+          # `.github_release` is the validated upstream receipt. The generated
+          # index deliberately contains only this repository's build identity.
+          UPSTREAM_VERSION=$(jq -er '.version' .github_release)
+          UPSTREAM_TAG=$(jq -er '.tag_name' .github_release)
+          UPSTREAM_PUBLISHED_AT=$(jq -er '.published_at' .github_release)
+          UPSTREAM_ASSET=$(jq -er '.asset_name' .github_release)
+          UPSTREAM_DIGEST=$(jq -er '.asset_digest' .github_release)
+          FULL_VERSION=$(jq -er '.version' docs/specifications/api/index.json)
 
           # Preserve existing changelog entries (prepend-only strategy to avoid merge conflicts)
           EXISTING_ENTRIES=""
           if [ -f CHANGELOG.md ]; then
-            # Extract everything after the first "## Version" header (skip header + first entry)
-            EXISTING_ENTRIES=$(awk '/^## Version/{if(++c==2)found=1}found' CHANGELOG.md || echo "")
+            # Preserve every prior release entry while replacing only the title.
+            EXISTING_ENTRIES=$(sed -n '/^## Version /,$p' CHANGELOG.md)
           fi
 
           # Calculate statistics
-          ORIG_SPECS=$(find specs/original -name '*.json' 2>/dev/null | wc -l | xargs)
-          DOMAIN_COUNT=$(jq '.specifications | length' docs/specifications/api/index.json)
-          PATH_COUNT=$(jq '[.specifications[].path_count] | add' docs/specifications/api/index.json)
-          SCHEMA_COUNT=$(jq '[.specifications[].schema_count] | add' docs/specifications/api/index.json)
+          if [ ! -d specs/original ]; then
+            echo "::error::Downloaded source specification directory is missing"
+            exit 1
+          fi
+          ORIG_SPECS=$(find specs/original -name '*.json' -type f | wc -l | xargs)
+          DOMAIN_COUNT=$(jq -er '.specifications | if type == "array" then length else error("invalid specifications") end' docs/specifications/api/index.json)
+          PATH_COUNT=$(jq -er '[.specifications[].path_count] | add' docs/specifications/api/index.json)
+          SCHEMA_COUNT=$(jq -er '[.specifications[].schema_count] | add' docs/specifications/api/index.json)
 
           # Write changelog directly to avoid heredoc YAML parsing issues
           {
@@ -463,22 +444,24 @@ jobs:
             echo ""
             echo "### Version Information"
             echo "- **Full Version**: $FULL_VERSION"
-            echo "- **Upstream Timestamp**: $UPSTREAM_TS"
-            echo "- **Upstream ETag**: $UPSTREAM_ETAG"
-            echo "- **Enriched Version**: $ENRICHED_VER"
+            echo "- **Upstream Version**: $UPSTREAM_VERSION"
+            echo "- **Upstream Tag**: $UPSTREAM_TAG"
+            echo "- **Upstream Published At**: $UPSTREAM_PUBLISHED_AT"
+            echo "- **Upstream Asset**: $UPSTREAM_ASSET"
+            echo "- **Upstream SHA-256**: $UPSTREAM_DIGEST"
             echo ""
             echo "### Release Type"
             echo "- **$BUMP_TYPE** release"
             echo ""
             echo "### Changes"
-            echo "- Updated API specifications from F5 Distributed Cloud"
+            echo "- Consumed corrected API specifications from f5-sales-demo/api-specs release $UPSTREAM_TAG"
             echo "- Applied enrichment pipeline:"
             echo "  - Acronym normalization (100+ terms)"
             echo "  - Grammar improvements"
             echo "  - Branding updates (Volterra → F5 Distributed Cloud)"
             echo "- Applied normalization pipeline:"
-            echo "  - Fixed orphan \$ref references"
-            echo "  - Removed empty operations"
+            echo "  - Rejected invalid source graphs instead of fabricating missing contracts"
+            echo "  - Canonicalized shared components deterministically"
             echo "  - Type standardization"
             echo "- Validated with Spectral OpenAPI linter"
             echo "- Merged specifications by domain"
@@ -488,16 +471,6 @@ jobs:
             echo "- Domains: $DOMAIN_COUNT"
             echo "- Total paths: $PATH_COUNT"
             echo "- Total schemas: $SCHEMA_COUNT"
-
-            # Add discovery section if available
-            if [ "$HAS_DISCOVERY" = "true" ] && [ -n "$DISCOVERY_ENDPOINTS" ]; then
-              echo ""
-              echo "### API Discovery Enrichment"
-              echo "- Discovery timestamp: $DISCOVERY_TIMESTAMP"
-              echo "- Endpoints explored: $DISCOVERY_SUCCESS / $DISCOVERY_ENDPOINTS"
-              echo "- Applied x-discovered-* extensions from live API exploration"
-              echo "- See \\\`reports/constraint-analysis.md\\\` for detailed comparison"
-            fi
 
             echo ""
             echo "### Output Structure"
@@ -509,11 +482,11 @@ jobs:
             echo "\\\`\\\`\\\`"
             echo ""
             echo "### Download"
-            echo "- ZIP Package: F5xc-api-(${UPSTREAM_TS}-${ENRICHED_VER}).zip"
+            echo "- ZIP Package: f5xc-api-specs-v${VERSION}.zip"
             echo ""
             echo "### Source"
-            echo "- Source: F5 Distributed Cloud OpenAPI specifications"
-            echo "- Upstream: $UPSTREAM_TS (ETag: $UPSTREAM_ETAG)"
+            echo "- Corrected source: f5-sales-demo/api-specs immutable release asset"
+            echo "- Receipt: $UPSTREAM_TAG ($UPSTREAM_ASSET, $UPSTREAM_DIGEST)"
             echo ""
 
             # Append existing entries
@@ -522,319 +495,112 @@ jobs:
             fi
           } > CHANGELOG.md
 
-      - name: Upload docs artifact for deployment
-        if: steps.detect.outputs.has_changes == 'true'
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: docs-site
-          path: docs
-          retention-days: 1
-
-      - name: Biome-format generated JSON for release PR
-        if: steps.detect.outputs.has_changes == 'true'
-        run: |
-          # Re-run biome format on all generated output as a single batch.
-          # json_writer.py already formats per-file during the pipeline, but
-          # biome ci (run by Super-Linter on the release PR) checks all files
-          # in batch mode. Per-file and batch formatting can diverge across
-          # Biome versions. This final batch pass guarantees the committed
-          # files match exactly what biome ci will check.
-          # Files exceeding biome.json maxSize (5 MB) are silently skipped
-          # by both this step and the Super-Linter check.
-          biome format --write docs/specifications/api/ docs/api-reference/ || true
-
       - name: Commit and tag release
         if: steps.detect.outputs.has_changes == 'true'
         env:
           GH_TOKEN: ${{ secrets.VERSION_BUMP_PAT }}
           VERSION: ${{ steps.version.outputs.new_version }}
           BUMP_TYPE: ${{ steps.version.outputs.bump_type }}
+          REPOSITORY: ${{ github.repository }}
         run: |
-          set -e
+          set -euo pipefail
 
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
 
           # Configure git to use VERSION_BUMP_PAT for authentication
-          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git"
+          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${REPOSITORY}.git"
 
           BRANCH="release/v${VERSION}"
 
-          # Pre-clean: if a prior run left behind a stale release PR + branch
-          # (auto-merge timeout, push rejection, Super-Linter failure, etc.),
-          # the next run hits `! [rejected] ... (non-fast-forward)` on push.
-          # This workflow owns the `release/v${VERSION}` branch name, so
-          # force-cleanup is safe — no other producer ever pushes here.
-          STALE_PR=$(gh pr list --state open --head "$BRANCH" --json number --jq '.[0].number // empty' 2>/dev/null || true)
-          if [ -n "$STALE_PR" ]; then
-            echo "Found stale PR #${STALE_PR} on ${BRANCH}; closing with --delete-branch"
-            gh pr close "$STALE_PR" --delete-branch --comment "Superseded by sync-and-enrich run ${GITHUB_RUN_ID}" || true
-          else
-            # No stale PR, but the branch may still linger (e.g. the push
-            # succeeded but PR creation or auto-merge failed later).
-            git push origin ":$BRANCH" 2>/dev/null || true
-          fi
-
-          # Create release branch from current state
-          git checkout -b "$BRANCH"
-
           # Stage enriched outputs
-          # Use -f to add docs/specifications/api/ and docs/api-reference/ which are in .gitignore
-          git add -f CHANGELOG.md .github_release docs/specifications/api/ docs/api-reference/
+          # Use -f for ignored generated trees; list the tracked plugin config
+          # explicitly so every output of generate_api_viewer is promoted.
+          git add -f \
+            CHANGELOG.md \
+            .github_release \
+            release/api-catalog.json \
+            docs/specifications/api/ \
+            docs/api-reference/ \
+            docs/openapi-specs-config.json
 
           if ! git diff --staged --quiet; then
-            # No [skip ci]: Super-Linter is a required check on main and
-            # is only triggered by pull_request events that do NOT carry a
-            # [skip ci] marker. The push trigger's paths: filter above
-            # (scripts/**, config/**, requirements.txt, this workflow file,
-            # docs/**/*.html) already excludes every path the release
-            # commit touches — CHANGELOG.md, .github_release, the
-            # docs/specifications/api/** and docs/api-reference/** trees —
-            # so the merge commit will NOT re-trigger this workflow.
-            git commit -m "chore: release v${VERSION} (${BUMP_TYPE})"
+            EXISTING_PR=$(gh pr list --state open --head "$BRANCH" --json number --jq '.[0].number // empty')
+            if [ -n "$EXISTING_PR" ]; then
+              git fetch origin "$BRANCH"
+              if ! git diff --cached --quiet "origin/${BRANCH}" -- \
+                CHANGELOG.md .github_release release/api-catalog.json \
+                docs/specifications/api/ docs/api-reference/ \
+                docs/openapi-specs-config.json; then
+                echo "::error::Open release PR #${EXISTING_PR} has different content; refusing to replace it"
+                exit 1
+              fi
+              echo "::notice::Reusing identical open release PR #${EXISTING_PR}"
+              gh pr merge "$BRANCH" --squash --auto --delete-branch
+              exit 0
+            fi
+            if git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null 2>&1; then
+              git fetch origin "$BRANCH"
+              if ! git diff --cached --quiet "origin/${BRANCH}" -- \
+                CHANGELOG.md .github_release release/api-catalog.json \
+                docs/specifications/api/ docs/api-reference/ \
+                docs/openapi-specs-config.json; then
+                echo "::error::Stranded release branch ${BRANCH} has different content"
+                exit 1
+              fi
+              echo "::notice::Reusing identical stranded release branch ${BRANCH}"
+            else
+              git checkout -b "$BRANCH"
+              # No [skip ci]: required pull-request checks must run on every
+              # generated release commit.
+              git commit -m "chore: release v${VERSION} (${BUMP_TYPE})"
+              git push origin "$BRANCH"
+            fi
 
-            # Push release branch
-            git push origin "$BRANCH"
+            ISSUE_TITLE="release: publish v${VERSION}"
+            ISSUE_MATCHES=$(gh issue list --state all --limit 100 \
+              --json number,state,title \
+              --jq ".[] | select(.title == \"${ISSUE_TITLE}\") | [.number, .state] | @tsv")
+            ISSUE_COUNT=$(printf '%s\n' "$ISSUE_MATCHES" | awk 'NF { count++ } END { print count + 0 }')
+            if [ "$ISSUE_COUNT" -gt 1 ]; then
+              echo "::error::Multiple release issues exist for v${VERSION}"
+              exit 1
+            fi
+            if [ "$ISSUE_COUNT" -eq 1 ]; then
+              RELEASE_ISSUE=$(printf '%s\n' "$ISSUE_MATCHES" | cut -f1)
+              ISSUE_STATE=$(printf '%s\n' "$ISSUE_MATCHES" | cut -f2)
+              if [ "$ISSUE_STATE" != "OPEN" ]; then
+                echo "::error::Release issue #${RELEASE_ISSUE} is not open"
+                exit 1
+              fi
+            else
+              ISSUE_URL=$(gh issue create \
+                --title "$ISSUE_TITLE" \
+                --body "Publish the exact generated v${VERSION} release candidate after every required check and artifact verification succeeds.")
+              RELEASE_ISSUE=${ISSUE_URL##*/}
+            fi
+            if ! [[ "$RELEASE_ISSUE" =~ ^[0-9]+$ ]]; then
+              echo "::error::Could not resolve the exact linked release issue"
+              exit 1
+            fi
 
-            # Create PR (release/* branches are excluded from linked-issue check)
+            PR_BODY=$(printf '%s\n\n%s\n' \
+              "Closes #${RELEASE_ISSUE}" \
+              "Automated release v${VERSION} (${BUMP_TYPE}). Created by the sync-and-enrich workflow from the exact committed upstream receipt.")
             PR_URL=$(gh pr create \
               --base main \
               --head "$BRANCH" \
               --title "chore: release v${VERSION} (${BUMP_TYPE})" \
-              --body "Automated release v${VERSION} (${BUMP_TYPE}). Created by the sync-and-enrich workflow.")
+              --body "$PR_BODY")
 
             echo "Created release PR: ${PR_URL}"
 
             # Enable auto-merge (squash) — merges when required checks pass
             gh pr merge "$BRANCH" --squash --auto --delete-branch
-
-            # Wait for PR to merge with exponential backoff (60 s warm-up + up
-            # to 30 min total). The 30-min ceiling accommodates the enforcing
-            # Contract-diff gate which runs the full enrichment pipeline
-            # (~21 min) as the long-pole check. Replaces a prior hardcoded
-            # 30×10 s loop that timed out whenever Super-Linter ran longer
-            # than 5 min, leaving the release PR orphaned. Exits non-zero on
-            # CLOSED-without-merge or on timeout; emits diagnostic JSON to
-            # stderr on failure.
-            WAIT_FOR_MERGE_MAX_TOTAL=1800 bash scripts/release/wait-for-merge.sh "$BRANCH"
-
-            # Switch back to main and pull the merge commit
-            git checkout main
-            git pull origin main
-
-            # Create annotated tag on the merge commit
-            git tag -a "v${VERSION}" -m "Release v${VERSION} (${BUMP_TYPE})"
-            git push origin "v${VERSION}"
-
-            echo "::notice::Released v${VERSION} via PR merge + tag"
+            echo "::notice::Release PR created; publication reconciles after merge"
           else
             echo "No changes to commit"
           fi
-
-      - name: Create release package
-        if: steps.detect.outputs.has_changes == 'true'
-        env:
-          VERSION: ${{ steps.version.outputs.new_version }}
-        run: |
-          RELEASE_DIR="release-package"
-          DATE=$(date -u +"%Y-%m-%d")
-
-          # Extract upstream info from index.json
-          UPSTREAM_TS=$(jq -r '."x-upstream-timestamp" // "unknown"' docs/specifications/api/index.json)
-          ENRICHED_VER=$(jq -r '."x-enriched-version" // "'"$VERSION"'"' docs/specifications/api/index.json)
-
-          # Create ZIP filename
-          ZIP_NAME="f5xc-api-specs-v${VERSION}.zip"
-
-          echo "::notice::Creating release package: ${ZIP_NAME}"
-
-          # Create release directory structure
-          mkdir -p "$RELEASE_DIR/domains"
-
-          # Copy master specification
-          cp docs/specifications/api/openapi.json "$RELEASE_DIR/"
-
-          # Convert JSON to YAML format
-          python3 -c "
-          import json
-          import yaml
-
-          with open('docs/specifications/api/openapi.json', 'r') as f:
-              spec = json.load(f)
-
-          with open('$RELEASE_DIR/openapi.yaml', 'w') as f:
-              yaml.dump(spec, f, default_flow_style=False, allow_unicode=True, sort_keys=False)
-
-          print('Created openapi.yaml')
-          "
-
-          # Copy domain specifications to domains/ subdirectory
-          for spec_file in docs/specifications/api/*.json; do
-            basename_f=$(basename "$spec_file")
-            if [ "$basename_f" != "openapi.json" ] && [ "$basename_f" != "index.json" ] \
-               && [ "$basename_f" != "minimal-export-defaults.json" ]; then
-              cp "$spec_file" "$RELEASE_DIR/domains/"
-              echo "Copied domain: $basename_f"
-            fi
-          done
-
-          # Copy metadata index
-          cp docs/specifications/api/index.json "$RELEASE_DIR/"
-
-          # Copy changelog
-          cp CHANGELOG.md "$RELEASE_DIR/"
-
-          # Process README template with placeholder substitution
-          sed "s/{VERSION}/${UPSTREAM_TS}-${ENRICHED_VER}/g; s/{DATE}/${DATE}/g" \
-            release/README.md > "$RELEASE_DIR/README.md"
-
-          # Show package contents
-          echo "::group::Package contents"
-          find "$RELEASE_DIR" -type f | sort
-          echo "::endgroup::"
-
-          # Create ZIP package
-          cd "$RELEASE_DIR"
-          zip -r "../${ZIP_NAME}" .
-          cd ..
-
-          echo "zip_name=${ZIP_NAME}" >> "$GITHUB_ENV"
-          echo "::notice::Package created: ${ZIP_NAME}"
-
-      - name: Create release
-        if: steps.detect.outputs.has_changes == 'true'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VERSION: ${{ steps.version.outputs.new_version }}
-        run: |
-          # Check if release already exists
-          if gh release view "v$VERSION" >/dev/null 2>&1; then
-            echo "Release v$VERSION already exists, skipping"
-            exit 0
-          fi
-
-          # Create release with ZIP package
-          gh release create "v$VERSION" \
-            --title "API Specs v$VERSION" \
-            --notes-file CHANGELOG.md \
-            "${zip_name}" \
-            docs/specifications/api/openapi.json \
-            docs/specifications/api/index.json \
-            docs/specifications/api/minimal-export-defaults.json \
-            release/api-catalog.json
-
-          echo "::notice::Created release: v$VERSION"
-
-  deploy-docs:
-    name: Deploy Documentation
-    needs: sync-and-enrich
-    if: needs.sync-and-enrich.outputs.has_changes == 'true'
-    runs-on: ubuntu-latest
-    # actions/deploy-pages needs both of these; id-token is for its OIDC exchange.
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Download docs artifact
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
-        with:
-          name: docs-site
-          path: docs
-
-      - name: Setup Pages
-        uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4.0.0
-        with:
-          path: docs
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5
-
-  # ==========================================================================
-  # NOTIFY DOWNSTREAM REPOSITORIES
-  # Reads config/downstream_repos.yaml and dispatches to enabled repos only.
-  # ==========================================================================
-  build-downstream-matrix:
-    name: Build Downstream Matrix
-    needs: [sync-and-enrich]
-    if: needs.sync-and-enrich.outputs.has_changes == 'true'
-    runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.matrix.outputs.result }}
-      has_targets: ${{ steps.matrix.outputs.has_targets }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
-
-      - name: Install PyYAML
-        run: pip install pyyaml
-
-      - name: Build matrix from config
-        id: matrix
-        run: |
-          # Parse downstream_repos.yaml and filter to enabled repos
-          MATRIX=$(python3 -c "
-          import json, yaml, sys
-          with open('config/downstream_repos.yaml') as f:
-              cfg = yaml.safe_load(f)
-          repos = cfg.get('downstream_repositories', [])
-          enabled = [
-              {'owner': r['owner'], 'repo': r['repo'], 'event_type': r['event_type']}
-              for r in repos if r.get('enabled', False)
-          ]
-          print(json.dumps({'downstream': enabled}))
-          ")
-          echo "result=${MATRIX}" >> "$GITHUB_OUTPUT"
-          # Check if there are any targets
-          COUNT=$(echo "${MATRIX}" | python3 -c "import json,sys; d=json.load(sys.stdin); print(len(d['downstream']))")
-          if [ "${COUNT}" -gt 0 ]; then
-            echo "has_targets=true" >> "$GITHUB_OUTPUT"
-            echo "::notice::Found ${COUNT} enabled downstream repo(s)"
-          else
-            echo "has_targets=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::No enabled downstream repos found - skipping dispatch"
-          fi
-
-  notify-downstream:
-    name: Notify Downstream Repositories
-    needs: [sync-and-enrich, build-downstream-matrix]
-    if: needs.build-downstream-matrix.outputs.has_targets == 'true'
-    runs-on: ubuntu-latest
-    strategy:
-      matrix: ${{ fromJSON(needs.build-downstream-matrix.outputs.matrix) }}
-      fail-fast: false
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
-
-      - name: Dispatch to ${{ matrix.downstream.repo }}
-        env:
-          GH_TOKEN: ${{ secrets.DOWNSTREAM_DISPATCH_TOKEN }}
-          TARGET_OWNER: ${{ matrix.downstream.owner }}
-          TARGET_REPO: ${{ matrix.downstream.repo }}
-          EVENT_TYPE: ${{ matrix.downstream.event_type }}
-          VERSION: ${{ needs.sync-and-enrich.outputs.version }}
-          SOURCE_REPOSITORY: ${{ github.repository }}
-          SOURCE_UPDATED_AT: ${{ github.event.repository.updated_at }}
-          SOURCE_RUN_ID: ${{ github.run_id }}
-        run: bash scripts/release/dispatch-downstream.sh
-
-      - name: Log dispatch result
-        env:
-          DS_OWNER: ${{ matrix.downstream.owner }}
-          DS_REPO: ${{ matrix.downstream.repo }}
-          DS_EVENT: ${{ matrix.downstream.event_type }}
-          DS_VERSION: ${{ needs.sync-and-enrich.outputs.version }}
-        run: |
-          echo "::notice::Dispatched '${DS_EVENT}' to ${DS_OWNER}/${DS_REPO}"
-          echo "Version: ${DS_VERSION}"
 
   # ==========================================================================
   # WORKFLOW MONITORING - Create issues for failures
@@ -842,58 +608,41 @@ jobs:
   monitor-failures:
     name: Monitor Workflow Failures
     runs-on: ubuntu-latest
-    needs: [check-updates, sync-and-enrich, deploy-docs, build-downstream-matrix, notify-downstream]
+    needs: [check-updates, sync-and-enrich]
     if: always()
     # Ensures the monitoring labels exist and opens or updates the failure issue,
     # both as GITHUB_TOKEN.
     permissions:
+      actions: read # inspect this workflow run when filing a failure
       contents: read
-      issues: write
+      issues: write # create or update the deterministic failure issue
     steps:
-      - name: Check for failures
-        id: check_failure
-        run: |
-          # Check if any job failed or was cancelled
-          if [ "${{ needs.check-updates.result }}" = "failure" ] || \
-            [ "${{ needs.sync-and-enrich.result }}" = "failure" ] || \
-            [ "${{ needs.deploy-docs.result }}" = "failure" ] || \
-            [ "${{ needs.build-downstream-matrix.result }}" = "failure" ] || \
-            [ "${{ needs.notify-downstream.result }}" = "failure" ] || \
-            [ "${{ needs.check-updates.result }}" = "cancelled" ] || \
-            [ "${{ needs.sync-and-enrich.result }}" = "cancelled" ] || \
-            [ "${{ needs.deploy-docs.result }}" = "cancelled" ] || \
-            [ "${{ needs.build-downstream-matrix.result }}" = "cancelled" ] || \
-            [ "${{ needs.notify-downstream.result }}" = "cancelled" ]; then
-            echo "has_failure=true" >> "$GITHUB_OUTPUT"
-            echo "::warning::Workflow failure detected - will create issue"
-          else
-            echo "has_failure=false" >> "$GITHUB_OUTPUT"
-            echo "All jobs completed successfully"
-          fi
-
       - name: Checkout repository
-        if: steps.check_failure.outputs.has_failure == 'true'
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
 
       - name: Setup Python
-        if: steps.check_failure.outputs.has_failure == 'true'
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-          cache: 'pip'
+
+      - name: Setup frozen Python package manager
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: '0.12.1'
+          enable-cache: true
+          cache-dependency-glob: uv.lock
 
       - name: Install dependencies
-        if: steps.check_failure.outputs.has_failure == 'true'
-        run: pip install -r requirements.txt
+        run: |
+          uv sync --frozen
+          echo "$PWD/.venv/bin" >> "$GITHUB_PATH"
 
       - name: Ensure monitoring labels exist
-        if: steps.check_failure.outputs.has_failure == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python scripts/ensure_labels.py
 
       - name: Analyze failures and create/update issues
-        if: steps.check_failure.outputs.has_failure == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RUN_ID: ${{ github.run_id }}
@@ -904,9 +653,10 @@ jobs:
           ACTOR: ${{ github.actor }}
           JOB_CHECK_UPDATES: ${{ needs.check-updates.result }}
           JOB_SYNC_ENRICH: ${{ needs.sync-and-enrich.result }}
-          JOB_DEPLOY: ${{ needs.deploy-docs.result }}
-          JOB_BUILD_MATRIX: ${{ needs.build-downstream-matrix.result }}
-          JOB_NOTIFY_DOWNSTREAM: ${{ needs.notify-downstream.result }}
+          EXPECTED_SKIPPED_JOBS: >-
+            ${{ needs.check-updates.result == 'success' &&
+                needs.check-updates.outputs.has_updates != 'true' &&
+                'JOB_SYNC_ENRICH' || '' }}
         run: |
           python scripts/monitor_workflow.py \
             --run-id "$RUN_ID" \

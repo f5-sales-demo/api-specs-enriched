@@ -21,6 +21,8 @@ from typing import Any
 
 import yaml
 
+from .extension_constants import X_F5XC_OPERATION_METADATA
+
 
 @dataclass
 class OperationEnrichmentStats:
@@ -44,11 +46,9 @@ class OperationEnrichmentStats:
 class OperationMetadataEnricher:
     """Add operation-level metadata for API operations.
 
-    Enriches operations with:
-    - x-f5xc-required-fields: List of required field paths
-    - x-f5xc-danger-level: low/medium/high risk classification
-    - x-f5xc-confirmation-required: Boolean for dangerous operations
-    - x-f5xc-side-effects: Create/modify/delete effects
+    Enriches operations with the single ``x-f5xc-operation-metadata`` contract.
+    Required fields, danger level, confirmation requirement, and side effects
+    are members of that object rather than parallel operation extensions.
 
     Configuration-driven from operation_metadata.yaml.
     """
@@ -66,7 +66,8 @@ class OperationMetadataEnricher:
         self.config_path = config_path
         self.danger_levels: dict[str, Any] = {}
         self.required_fields_config: dict[str, Any] = {}
-        self.extension_prefix = "x-f5xc"
+        self.side_effects_config: dict[str, Any] = {}
+        self._escalation_patterns: list[tuple[re.Pattern[str], str]] = []
         self.stats = OperationEnrichmentStats()
 
         self._load_config()
@@ -74,55 +75,81 @@ class OperationMetadataEnricher:
     def _load_config(self) -> None:
         """Load operation metadata configuration from YAML config."""
         if not self.config_path.exists():
-            self._use_default_config()
-            return
+            raise FileNotFoundError(f"operation metadata config not found: {self.config_path}")
 
-        try:
-            with self.config_path.open() as f:
-                config = yaml.safe_load(f) or {}
+        with self.config_path.open() as f:
+            config = yaml.safe_load(f)
+        if not isinstance(config, dict):
+            raise TypeError("operation metadata config must be a mapping")
 
-            self.danger_levels = config.get("danger_levels", {})
-            self.required_fields_config = config.get("required_fields", {})
-            self.extension_prefix = config.get("extension_prefix", "x-f5xc")
-        except Exception:
-            self._use_default_config()
+        expected_keys = {"danger_levels", "required_fields", "side_effects"}
+        unknown_keys = sorted(set(config) - expected_keys)
+        missing_keys = sorted(expected_keys - set(config))
+        if unknown_keys:
+            raise ValueError(f"unknown operation metadata config keys: {unknown_keys}")
+        if missing_keys:
+            raise ValueError(f"missing operation metadata config keys: {missing_keys}")
 
-    def _use_default_config(self) -> None:
-        """Use built-in default operation metadata rules."""
-        self.danger_levels = {
-            "method_base_levels": {
-                "GET": "low",
-                "HEAD": "low",
-                "OPTIONS": "low",
-                "POST": "medium",
-                "PUT": "medium",
-                "PATCH": "medium",
-                "DELETE": "high",
-            },
-            "escalation_patterns": [
-                {
-                    "pattern": r"DELETE.*/namespace",
-                    "level": "high",
-                    "reason": "Deletes entire namespace",
-                },
-                {
-                    "pattern": r"DELETE.*/(security|firewall|policy)",
-                    "level": "high",
-                    "reason": "Security-critical deletion",
-                },
-                {
-                    "pattern": r"POST.*/(system|global)_",
-                    "level": "medium",
-                    "reason": "System-level operation",
-                },
-            ],
-        }
+        self.danger_levels = self._require_mapping(config["danger_levels"], "danger_levels")
+        self.required_fields_config = self._require_mapping(
+            config["required_fields"],
+            "required_fields",
+        )
+        self.side_effects_config = self._require_mapping(config["side_effects"], "side_effects")
+        self._validate_config()
 
-        self.required_fields_config = {
-            "standard_create_fields": ["metadata.name", "metadata.namespace"],
-        }
+    @staticmethod
+    def _require_mapping(value: Any, path: str) -> dict[str, Any]:
+        if not isinstance(value, dict):
+            raise TypeError(f"operation metadata {path} must be a mapping")
+        return value
 
-        self.extension_prefix = "x-f5xc"
+    def _validate_config(self) -> None:
+        allowed_levels = {"low", "medium", "high"}
+        method_levels = self._require_mapping(
+            self.danger_levels.get("method_base_levels"),
+            "danger_levels.method_base_levels",
+        )
+        if not method_levels or any(
+            level not in allowed_levels for level in method_levels.values()
+        ):
+            raise ValueError("operation metadata method danger levels must be low, medium, or high")
+
+        escalation_patterns = self.danger_levels.get("escalation_patterns")
+        if not isinstance(escalation_patterns, list):
+            raise TypeError("operation metadata danger_levels.escalation_patterns must be a list")
+        for index, entry in enumerate(escalation_patterns):
+            mapping = self._require_mapping(
+                entry,
+                f"danger_levels.escalation_patterns[{index}]",
+            )
+            pattern = mapping.get("pattern")
+            level = mapping.get("level")
+            if not isinstance(pattern, str) or level not in allowed_levels:
+                raise ValueError(f"invalid operation metadata escalation entry at index {index}")
+            try:
+                compiled = re.compile(pattern)
+            except re.error as exc:
+                raise ValueError(
+                    f"invalid operation metadata escalation regex at index {index}",
+                ) from exc
+            self._escalation_patterns.append((compiled, level))
+
+        standard_fields = self.required_fields_config.get("standard_create_fields")
+        if not isinstance(standard_fields, list) or any(
+            not isinstance(field, str) or not field for field in standard_fields
+        ):
+            raise ValueError("operation metadata standard_create_fields must be non-empty strings")
+
+        method_effects = self._require_mapping(
+            self.side_effects_config.get("method_effects"),
+            "side_effects.method_effects",
+        )
+        allowed_effects = {"creates", "modifies", "deletes"}
+        if any(effect not in allowed_effects for effect in method_effects.values()):
+            raise ValueError(
+                "operation metadata method effects must be creates, modifies, or deletes"
+            )
 
     def enrich_spec(self, spec: dict[str, Any]) -> dict[str, Any]:
         """Enrich OpenAPI specification with operation metadata.
@@ -181,28 +208,21 @@ class OperationMetadataEnricher:
         """
         self.stats.operations_enriched += 1
 
-        # Extract and add required fields
+        # Extract required fields for the comprehensive metadata object.
         required_fields = self._extract_required_fields(operation, method)
         if required_fields:
-            operation[f"{self.extension_prefix}-required-fields"] = required_fields
             self.stats.required_fields_added += 1
 
-        # Calculate and assign danger level
+        # Calculate the danger level for the comprehensive metadata object.
         danger_level = self._calculate_danger_level(method, path, operation)
-        operation[f"{self.extension_prefix}-danger-level"] = danger_level
         self.stats.danger_levels_assigned += 1
 
-        # Add confirmation requirement for dangerous operations
-        if danger_level == "high":
-            operation[f"{self.extension_prefix}-confirmation-required"] = True
-
-        # Determine and add side effects
+        # Determine side effects for the comprehensive metadata object.
         side_effects = self._determine_side_effects(method, path, operation)
         if side_effects:
-            operation[f"{self.extension_prefix}-side-effects"] = side_effects
             self.stats.side_effects_documented += 1
 
-        # Build and add comprehensive metadata (dual-format approach)
+        # Build and add the sole operation-metadata contract.
         comprehensive_metadata = self._build_comprehensive_metadata(
             method,
             path,
@@ -212,7 +232,7 @@ class OperationMetadataEnricher:
             side_effects,
         )
         if comprehensive_metadata:
-            operation[f"{self.extension_prefix}-operation-metadata"] = comprehensive_metadata
+            operation[X_F5XC_OPERATION_METADATA] = comprehensive_metadata
 
     def _build_comprehensive_metadata(
         self,
@@ -248,7 +268,7 @@ class OperationMetadataEnricher:
         performance_impact = self._assess_performance_impact(method, path, operation)
 
         # PRESERVE existing purpose from OperationDescriptionEnricher if present
-        existing_metadata = operation.get(f"{self.extension_prefix}-operation-metadata", {})
+        existing_metadata = operation.get(X_F5XC_OPERATION_METADATA, {})
         existing_purpose = existing_metadata.get("purpose")
         purpose = existing_purpose or self._generate_purpose(method, path, resource_type)
 
@@ -590,13 +610,9 @@ class OperationMetadataEnricher:
         # Check for escalation patterns
         path_method_str = f"{method} {path}"
 
-        for escalation in self.danger_levels.get("escalation_patterns", []):
-            pattern_str = escalation.get("pattern", "")
-            try:
-                if re.search(pattern_str, path_method_str):
-                    return escalation.get("level", "high")
-            except re.error:
-                continue
+        for pattern, level in self._escalation_patterns:
+            if pattern.search(path_method_str):
+                return level
 
         # Check for force/cascade flags in parameters
         has_dangerous_param = False
@@ -640,12 +656,9 @@ class OperationMetadataEnricher:
         # Infer from HTTP method and path
         resource_type = self._extract_resource_type(path)
 
-        if method == "POST":
-            side_effects["creates"].append(resource_type)
-        elif method in ["PUT", "PATCH"]:
-            side_effects["modifies"].append(resource_type)
-        elif method == "DELETE":
-            side_effects["deletes"].append(resource_type)
+        effect = self.side_effects_config["method_effects"].get(method)
+        if effect:
+            side_effects[effect].append(resource_type)
 
         # Check for related resources affected
         if "namespace" in path and method == "DELETE":

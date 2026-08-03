@@ -16,8 +16,18 @@ concurrency:
 permissions:
   contents: read
 
+defaults:
+  run:
+    shell: bash
+
 env:
-  PYTHON_VERSION: '3.13'
+  BUILDER_IMAGE: python:3.13.14-bookworm@sha256:353cf2106d143e1d28f5d7c10c5f5c0387085bba22ef0f7f7e52c2c330fb1779
+  PYTHON_VERSION: '3.13.14'
+  PYTHONHASHSEED: '0'
+  PYTHONUTF8: '1'
+  TZ: UTC
+  LC_ALL: C
+  LANG: C
 
 jobs:
   pytest:
@@ -33,10 +43,18 @@ jobs:
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-          cache: 'pip'
+
+      - name: Setup frozen Python package manager
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: '0.12.1'
+          enable-cache: true
+          cache-dependency-glob: uv.lock
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: |
+          uv sync --frozen --extra dev
+          echo "$PWD/.venv/bin" >> "$GITHUB_PATH"
 
       - name: Verify no governed files touched
         if: github.event_name == 'pull_request'
@@ -45,6 +63,17 @@ jobs:
         run: |
           git fetch origin "$BASE_REF" --depth=50
           python -m scripts.verify_governance --base "origin/$BASE_REF" --head HEAD
+
+      - name: Verify generated-output ownership
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_REF: ${{ github.base_ref }}
+          HEAD_REF: ${{ github.head_ref }}
+        run: |
+          bash scripts/release/verify-generated-ownership.sh \
+            --base "origin/$BASE_REF" \
+            --head HEAD \
+            --branch "$HEAD_REF"
 
       - name: Seed specs/original/ from upstream releases
         # Pulls the latest f5-sales-demo/api-specs release into
@@ -61,15 +90,15 @@ jobs:
   contract-diff:
     name: Contract-diff gate
     needs: pytest
-    # Release PRs ship the pipeline's regenerated docs — they are
-    # snapshots, not contract-drifting changes. Skipping here avoids
-    # a spurious gate failure from the "Seed specs/original/ from
-    # upstream" step which can't resolve inputs on release branches.
-    if: ${{ !startsWith(github.head_ref, 'release/') }}
+    # Every PR, including the exact semantic release PR, independently rebuilds
+    # and verifies the candidate. Producer success is not a substitute for the
+    # required merge gate on the bytes that will actually enter main.
     runs-on: ubuntu-latest
+    container:
+      image: python:3.13.14-bookworm@sha256:353cf2106d143e1d28f5d7c10c5f5c0387085bba22ef0f7f7e52c2c330fb1779
     permissions:
       contents: read
-      pull-requests: write
+      pull-requests: write # publish the contract-diff report on the pull request
     steps:
       - name: Checkout repository
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
@@ -78,132 +107,83 @@ jobs:
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-          cache: 'pip'
+
+      - name: Setup frozen Python package manager
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: '0.12.1'
+          enable-cache: true
+          cache-dependency-glob: uv.lock
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: |
+          uv sync --frozen --extra dev
+          echo "$PWD/.venv/bin" >> "$GITHUB_PATH"
+
+      - name: Setup Biome
+        uses: biomejs/setup-biome@4c91541eaada48f67d7dbd7833600ce162b68f51 # v2.7.1
+        with:
+          version: 2.5.6
+
+      - name: Setup Node.js for Spectral
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version: '22.23.2'
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install locked Spectral CLI
+        run: |
+          npm ci --ignore-scripts --no-audit --no-fund
+          echo "$PWD/node_modules/.bin" >> "$GITHUB_PATH"
 
       - name: Seed specs/original/ from upstream releases
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        # --force: .etag tracks version but specs/original/ is gitignored
-        # and absent in CI. Without --force, download skips with 'No updates'.
+        # specs/original/ is gitignored and absent in CI. Force a fresh download
+        # and digest verification even when .github_release is already tracked.
         run: python -m scripts.download --force
 
-      - name: Run enrichment pipeline
-        # Override Makefile's PYTHON=.venv/bin/python since CI installs
-        # deps into the system Python via setup-python + pip install.
-        # API_SPECS_SKIP_BIOME=1 — the pipeline would otherwise reformat
-        # generated JSON via `biome format --write`, which is only
-        # cosmetic and not installed in this job. The contract-diff gate
-        # compares semantic shape (deepdiff with ignore_order=True), so
-        # JSON formatting does not affect the outcome. The sync-and-
-        # enrich workflow installs and pins biome for the release path.
-        env:
-          API_SPECS_SKIP_BIOME: "1"
-        run: make pipeline PYTHON=python
-
-      # #1152: the pipeline just rebuilt every spec from the freshly downloaded
-      # upstream seed, so this is the cheapest possible place to answer "is the
-      # committed tree what the pipeline produces?" — a question that had no answer
-      # while 43 files carried a per-run wall-clock timestamp.
-      #
-      # It matters because an unanswerable version of this question is how a stale
-      # local seed came to silently revert the upstream misspelled-`persistence`
-      # rename that the F5 server depends on (api-specs#686 — emitting the corrected
-      # spelling makes F5 discard the field), and how index.json came to report
-      # 2.1.200 while namespace_profiles.json reported 2.1.199.
-      #
-      # Two consecutive local rebuilds were verified byte-identical before this step
-      # was added, so a diff here means the committed tree is stale — never that the
-      # pipeline is nondeterministic.
-      #
-      # Compared semantically, not byte-wise: this job runs with
-      # API_SPECS_SKIP_BIOME=1, so its JSON formatting differs from the committed
-      # (biome-formatted) tree. Installing biome here to allow a byte comparison is
-      # the better check and is the follow-up; parsed-equality already catches
-      # content drift, which is what reverted the rename.
-      - name: Verify the committed specs match a clean rebuild
+      - name: Build release twice and verify byte reproducibility
+        # Source/config PRs must prove that one frozen input and formatter
+        # produce byte-identical release output before semantic contract diff.
         run: |
-          python - <<'EOF'
-          import json, pathlib, subprocess, sys
+          set -euo pipefail
+          version=$(python -m scripts.utils.version_calculator)
+          UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/api-specs-build-env-1" \
+            uv sync --frozen --no-cache
+          UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/api-specs-build-env-2" \
+            uv sync --frozen --no-cache
+          verify_args=(
+            --version "$version"
+            --input-dir specs/original
+            --first-root "$RUNNER_TEMP/api-specs-candidate"
+            --second-root "$RUNNER_TEMP/api-specs-rebuild"
+            --first-python "$RUNNER_TEMP/api-specs-build-env-1/bin/python"
+            --second-python "$RUNNER_TEMP/api-specs-build-env-2/bin/python"
+            --manifest "$RUNNER_TEMP/reproducibility-manifest.json"
+          )
+          if [[ "$HEAD_REF" =~ ^release/v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            verify_args+=(--committed-root "$GITHUB_WORKSPACE")
+          elif [[ "$HEAD_REF" == release/* ]]; then
+            echo "::error::Release branch is not an exact semantic release branch: $HEAD_REF"
+            exit 1
+          fi
+          python -m scripts.release.verify_reproducible_build "${verify_args[@]}"
+        env:
+          HEAD_REF: ${{ github.head_ref }}
 
-          # The repo's own release version is stamped into every spec — `info.version`
-          # in each domain file and a top-level `version` in the index. It comes from
-          # `git describe --tags`, so it is a property of the BUILD, not of the content:
-          #
-          #   * this job checks out shallow and without tags, so `git describe` fails
-          #     and the version becomes the "0.0.0" fallback, while a developer's tree
-          #     carries a real tag — all 41 files then differ on that field alone;
-          #   * a release is cut on every merge, so even with tags fetched, the value
-          #     advances and the committed tree would go stale the instant a release
-          #     lands, failing the NEXT pull request for something it did not do.
-          #
-          # This check exists to catch CONTENT drift — the stale seed that silently
-          # reverted the upstream misspelled-`persistence` rename the F5 server depends
-          # on (api-specs#686). So compare content and normalise the build identity out.
-          # validation.json is not an OpenAPI document — it is a self-describing
-          # artifact carrying its own `$schema` and its own format version (2.1.0,
-          # against the repo's 2.1.201). That version is content, not build identity,
-          # so leave it alone.
-          def carries_build_version(doc):
-              return isinstance(doc, dict) and "$schema" not in doc
+      - name: Lint isolated release candidate
+        run: >-
+          python scripts/lint.py
+          --input-dir "$RUNNER_TEMP/api-specs-candidate/docs/specifications/api"
+          --fail-on-error
+          --fail-on-warning
 
-          def strip_build_identity(doc):
-              if not carries_build_version(doc):
-                  return doc
-              doc = dict(doc)
-              doc.pop("version", None)
-              info = doc.get("info")
-              if isinstance(info, dict):
-                  info = dict(info)
-                  info.pop("version", None)
-                  doc["info"] = info
-              return doc
-
-          spec_dir = pathlib.Path("docs/specifications/api")
-          drifted = []
-          rebuilt_versions = {}
-          for path in sorted(spec_dir.glob("*.json")):
-              committed = subprocess.run(
-                  ["git", "show", f"HEAD:{path}"],
-                  capture_output=True, text=True, check=False,
-              )
-              if committed.returncode != 0:
-                  drifted.append(f"{path} (not in HEAD)")
-                  continue
-              try:
-                  rebuilt = json.loads(path.read_text())
-                  if strip_build_identity(json.loads(committed.stdout)) != strip_build_identity(rebuilt):
-                      drifted.append(str(path))
-              except json.JSONDecodeError as exc:
-                  drifted.append(f"{path} (unparseable: {exc})")
-                  continue
-              if carries_build_version(rebuilt):
-                  stamped = rebuilt.get("version") or (rebuilt.get("info") or {}).get("version")
-                  if stamped:
-                      rebuilt_versions.setdefault(str(stamped), []).append(path.name)
-
-          if drifted:
-              print("::error::The committed specs differ from a clean rebuild.")
-              print("Run `make download-force && make pipeline` and commit the result.")
-              print("Files that differ:")
-              for name in drifted:
-                  print(f"  - {name}")
-              sys.exit(1)
-
-          # The version is not compared against the committed tree, but it must still be
-          # CONSISTENT across a single build. Skew is a real defect this repo has had:
-          # index.json reported 2.1.200 while namespace_profiles.json reported 2.1.199.
-          if len(rebuilt_versions) > 1:
-              print("::error::One rebuild produced more than one version stamp.")
-              for value, files in sorted(rebuilt_versions.items()):
-                  print(f"  {value}: {len(files)} file(s), e.g. {files[0]}")
-              sys.exit(1)
-
-          print(f"All {len(list(spec_dir.glob('*.json')))} specs match a clean rebuild.")
-          print(f"Single consistent version stamp: {next(iter(rebuilt_versions), 'none')}")
-          EOF
+      - name: Verify extension registry against isolated release candidate
+        env:
+          API_SPECS_ENRICHED_DIR: ${{ runner.temp }}/api-specs-candidate/docs/specifications/api
+        run: python -m pytest --no-cov -q tests/candidate_extension_registry.py
 
       - name: Run contract-diff gate
         id: contract_diff
@@ -211,7 +191,7 @@ jobs:
           mkdir -p reports
           python -m scripts.contract_diff \
             --input specs/original \
-            --output docs/specifications/api \
+            --output "$RUNNER_TEMP/api-specs-candidate/docs/specifications/api" \
             --report reports/contract_diff.json \
             --markdown reports/contract_diff.md
 
@@ -220,7 +200,9 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: contract-diff
-          path: reports/contract_diff.*
+          path: |
+            reports/contract_diff.*
+            ${{ runner.temp }}/reproducibility-manifest.json
           retention-days: 14
 
       - name: Post violations to PR

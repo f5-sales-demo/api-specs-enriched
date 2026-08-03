@@ -1,84 +1,98 @@
 # Copyright (c) 2026 Robin Mordasiewicz. MIT License.
 
-"""Tag-based version calculation utility.
+"""Resolve the deterministic build version from the committed artifact tree."""
 
-Eliminates file-based versioning race conditions by deriving version from git tags.
-This is the single source of truth for version calculation across all scripts.
-"""
+from __future__ import annotations
 
+import argparse
+import json
 import re
 import subprocess
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+_INDEX_PATH = "docs/specifications/api/index.json"
+_SEMVER = re.compile(r"^\d+\.\d+\.\d+$")
+_RELEASE_BRANCH = re.compile(r"^release/v(?P<version>\d+\.\d+\.\d+)$")
 
 
-def get_version_from_tags() -> str:
-    """Calculate version from latest git tag.
-
-    Returns the semantic version from the most recent git tag,
-    stripping the 'v' prefix if present.
-
-    Returns:
-        Version string in semver format (e.g., "2.0.38").
-        Returns "0.0.0" if no tags exist or git fails.
-    """
+def _git_output(*args: str) -> str:
+    """Return one Git command's standard output or fail closed."""
     try:
         result = subprocess.run(
-            ["git", "describe", "--tags", "--abbrev=0"],
+            ["git", *args],
             capture_output=True,
             text=True,
             check=True,
             timeout=10,
         )
-        tag = result.stdout.strip()
-        # Strip 'v' prefix: v2.0.38 -> 2.0.38
-        return tag.lstrip("v") if tag.startswith("v") else tag
-    except (subprocess.CalledProcessError, subprocess.TimeoutExpired, FileNotFoundError):
-        return "0.0.0"
+    except (subprocess.CalledProcessError, subprocess.TimeoutExpired, FileNotFoundError) as exc:
+        message = f"cannot resolve committed build version: git {' '.join(args)} failed"
+        raise RuntimeError(message) from exc
+    return result.stdout.strip()
 
 
-def calculate_next_version(current: str, bump_type: str) -> str:
-    """Calculate next semantic version based on bump type.
+def get_build_version() -> str:
+    """Return the build identity committed in the generated index.
 
-    Args:
-        current: Current version string (e.g., "2.0.38").
-        bump_type: One of "major", "minor", or "patch".
-
-    Returns:
-        Next version string according to semver rules.
-        Returns "1.0.0" if current version is invalid.
+    The generated tree is the release candidate, so its committed index is the
+    authority. Tags are publication receipts and may legitimately lag while an
+    automated release is still being reconciled; using them as generator input
+    silently downgraded every artifact on release branches.
     """
-    match = re.match(r"^(\d+)\.(\d+)\.(\d+)$", current)
-    if not match:
-        return "1.0.0"
+    try:
+        document = json.loads(_git_output("show", f"HEAD:{_INDEX_PATH}"))
+    except json.JSONDecodeError as exc:
+        message = "committed build version is unavailable: index.json is not valid JSON"
+        raise RuntimeError(message) from exc
 
-    major, minor, patch = map(int, match.groups())
+    version = document.get("version") if isinstance(document, dict) else None
+    if not isinstance(version, str) or not _SEMVER.fullmatch(version) or version == "0.0.0":
+        message = "committed build version is missing or is not a release semantic version"
+        raise RuntimeError(message)
 
-    if bump_type == "major":
-        return f"{major + 1}.0.0"
-    if bump_type == "minor":
-        return f"{major}.{minor + 1}.0"
-    # Default: patch bump
-    return f"{major}.{minor}.{patch + 1}"
+    branch = _git_output("branch", "--show-current")
+    if branch.startswith("release/"):
+        match = _RELEASE_BRANCH.fullmatch(branch)
+        if match is None:
+            message = f"release branch {branch!r} does not encode a semantic version"
+            raise RuntimeError(message)
+        branch_version = match.group("version")
+        if branch_version != version:
+            message = (
+                f"release branch version {branch_version} disagrees with committed artifact "
+                f"version {version}"
+            )
+            raise RuntimeError(message)
+    return version
 
 
-def is_valid_semver(version: str) -> bool:
-    """Check if a version string is valid semver format.
-
-    Args:
-        version: Version string to validate.
-
-    Returns:
-        True if valid semver (X.Y.Z where X, Y, Z are integers).
-    """
-    return bool(re.match(r"^\d+\.\d+\.\d+$", version))
+def highest_version(first: str, second: str) -> str:
+    """Return the greater of two strict semantic versions."""
+    for value in (first, second):
+        if not _SEMVER.fullmatch(value):
+            message = f"invalid semantic version: {value!r}"
+            raise ValueError(message)
+    return max((first, second), key=lambda value: tuple(map(int, value.split("."))))
 
 
-def get_version() -> str:
-    """Get current version - alias for get_version_from_tags.
+def main(argv: Sequence[str] | None = None) -> int:
+    """Print the committed version, optionally bounded by a published tag."""
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--max-with", metavar="VERSION")
+    args = parser.parse_args(argv)
 
-    This function provides backward compatibility for scripts that
-    previously read from .version file.
+    committed_version = get_build_version()
+    version = (
+        highest_version(committed_version, args.max_with)
+        if args.max_with is not None
+        else committed_version
+    )
+    print(version)
+    return 0
 
-    Returns:
-        Current version from git tags.
-    """
-    return get_version_from_tags()
+
+if __name__ == "__main__":
+    raise SystemExit(main())

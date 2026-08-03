@@ -10,7 +10,7 @@ import gc
 import json
 import tracemalloc
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -29,7 +29,7 @@ class MemoryCheckpoint:
     name: str
     current_mb: float
     peak_mb: float
-    timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
 
 @dataclass
@@ -68,7 +68,7 @@ class MemoryProfiler:
     def __init__(self) -> None:
         """Initialize memory profiler."""
         self.stats = MemoryStats(
-            started_at=datetime.now(timezone.utc).isoformat(),
+            started_at=datetime.now(UTC).isoformat(),
         )
         self._tracking = False
 
@@ -91,7 +91,7 @@ class MemoryProfiler:
     def stop(self) -> None:
         """Stop memory tracking."""
         if self._tracking:
-            self.stats.completed_at = datetime.now(timezone.utc).isoformat()
+            self.stats.completed_at = datetime.now(UTC).isoformat()
             tracemalloc.stop()
             self._tracking = False
 
@@ -265,7 +265,7 @@ def save_memory_report(
     peak_mb = max((cp.peak_mb for cp in checkpoints), default=0.0)
 
     report = {
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
         "peak_memory_mb": round(peak_mb, 2),
         "checkpoints": [
             {

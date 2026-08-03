@@ -35,6 +35,8 @@ from typing import Any
 
 import yaml
 
+from .extension_constants import X_F5XC_OPERATION_METADATA
+
 
 @dataclass
 class OperationDescriptionStats:
@@ -258,10 +260,10 @@ class OperationDescriptionEnricher:
                 self.stats.operations_processed += 1
 
                 # Get or create x-f5xc-operation-metadata
-                if "x-f5xc-operation-metadata" not in operation:
-                    operation["x-f5xc-operation-metadata"] = {}
+                if X_F5XC_OPERATION_METADATA not in operation:
+                    operation[X_F5XC_OPERATION_METADATA] = {}
 
-                metadata = operation["x-f5xc-operation-metadata"]
+                metadata = operation[X_F5XC_OPERATION_METADATA]
 
                 # Get description using matching strategy (use 'short' tier for purpose)
                 description = self.get_description(resource_type, method, tier="short")

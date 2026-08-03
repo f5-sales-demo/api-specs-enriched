@@ -27,30 +27,32 @@ are resolved so nested object fields are reached.
 
 from __future__ import annotations
 
+import copy
 import logging
-import re
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-import yaml
-
+from scripts.utils.default_value_enricher import (
+    DefaultValueConfigError,
+    DefaultValueEnricher,
+    exact_json_value_equal,
+)
 from scripts.utils.extension_constants import (
     X_F5XC_CONFLICTS_WITH,
     X_F5XC_REQUIRED_FOR,
     X_F5XC_SERVER_DEFAULT,
+    X_F5XC_SERVER_DEFAULT_VALUE,
 )
 from scripts.utils.json_writer import write_json_file
 
 if TYPE_CHECKING:
+    import re
     from collections.abc import Iterable
 
 logger = logging.getLogger(__name__)
 
 # Bound recursion into nested object schemas; mirrors DefaultValueEnricher.
 _MAX_DEPTH = 5
-
-# Prefer the canonical full-spec schema when several SpecTypes match a pattern.
-_SCHEMA_PREFERENCE = ("GlobalSpecType", "CreateSpecType", "ReplaceSpecType", "GetSpecType")
 
 
 class MinimalDefaultsExporter:
@@ -66,20 +68,9 @@ class MinimalDefaultsExporter:
         self._load_patterns()
 
     def _load_patterns(self) -> None:
-        try:
-            with self.config_path.open() as f:
-                config = yaml.safe_load(f) or {}
-        except FileNotFoundError:
-            logger.warning("discovered_defaults config not found: %s", self.config_path)
-            return
-        for name, cfg in (config.get("resources") or {}).items():
-            pattern = (cfg or {}).get("schema_pattern")
-            if not pattern:
-                continue
-            try:
-                self._patterns[name] = re.compile(pattern)
-            except re.error as exc:
-                logger.warning("Invalid schema_pattern for %s: %s (%s)", name, pattern, exc)
+        """Reuse the enricher's strict, atomic configuration contract."""
+        enricher = DefaultValueEnricher(config_path=self.config_path)
+        self._patterns = enricher.compiled_patterns
 
     # -- schema resolution --------------------------------------------------
 
@@ -97,16 +88,30 @@ class MinimalDefaultsExporter:
         is ``None`` for inline objects, and ``(None, None)`` on cycles or when no
         object schema is reachable.
         """
-        if "properties" in node:
-            return node, None
-        ref = node.get("$ref")
-        if not ref:
-            for item in node.get("allOf", []):
-                if isinstance(item, dict) and "$ref" in item:
-                    ref = item["$ref"]
-                    break
-        if not ref:
+        schema_node = node
+        if node.get("type") == "array" and isinstance(node.get("items"), dict):
+            schema_node = node["items"]
+        if "properties" in schema_node:
+            return schema_node, None
+        references: list[Any] = []
+        if "$ref" in schema_node:
+            references.append(schema_node["$ref"])
+        all_of = schema_node.get("allOf", [])
+        if not isinstance(all_of, list):
+            raise DefaultValueConfigError("export schema allOf must be an array")
+        references.extend(
+            item["$ref"] for item in all_of if isinstance(item, dict) and "$ref" in item
+        )
+        if any(not isinstance(ref, str) or not ref for ref in references):
+            raise DefaultValueConfigError("export schema references must be non-empty strings")
+        unique_references = sorted(set(references))
+        if len(unique_references) > 1:
+            raise DefaultValueConfigError(
+                f"export schema has ambiguous reference targets: {unique_references}"
+            )
+        if not unique_references:
             return None, None
+        ref = unique_references[0]
         name = self._ref_name(ref)
         if name in seen:
             return None, None
@@ -114,16 +119,6 @@ class MinimalDefaultsExporter:
         if not isinstance(target, dict):
             return None, None
         return target, name
-
-    def _select_schema(self, schemas: Iterable[str]) -> str | None:
-        matches = list(schemas)
-        if not matches:
-            return None
-        for marker in _SCHEMA_PREFERENCE:
-            preferred = sorted(n for n in matches if marker in n)
-            if preferred:
-                return preferred[0]
-        return sorted(matches)[0]
 
     # -- marker collection --------------------------------------------------
 
@@ -151,6 +146,8 @@ class MinimalDefaultsExporter:
                 out["serverDefaultFields"].append(path)
                 if "default" in prop:
                     out["fieldDefaults"][path] = prop["default"]
+                elif prop.get(X_F5XC_SERVER_DEFAULT_VALUE) == {"type": "null", "value": None}:
+                    out["fieldDefaults"][path] = None
 
             required_for = prop.get(X_F5XC_REQUIRED_FOR)
             if isinstance(required_for, dict) and required_for.get("minimum_config") is True:
@@ -158,7 +155,7 @@ class MinimalDefaultsExporter:
 
             conflicts = prop.get(X_F5XC_CONFLICTS_WITH)
             if isinstance(conflicts, list) and conflicts:
-                out["fieldConflicts"][path] = list(conflicts)
+                out["fieldConflicts"][path] = sorted(set(conflicts))
 
             nested, ref_name = self._resolve_nested(prop, schemas, seen)
             if nested is not None:
@@ -187,13 +184,47 @@ class MinimalDefaultsExporter:
         """Build the artifact dict from a flat component-schemas map."""
         resources: dict[str, Any] = {}
         for kind, pattern in self._patterns.items():
-            chosen = self._select_schema(n for n in schemas if pattern.search(n))
-            if not chosen:
-                continue
-            entry = self._build_resource(schemas[chosen], schemas)
-            if entry is not None:
-                resources[kind] = entry
+            matches = sorted(name for name in schemas if pattern.search(name))
+            if not matches:
+                raise DefaultValueConfigError(
+                    f"resource {kind!r} schema_pattern matches no published schema",
+                )
+            entries = [
+                entry
+                for schema_name in matches
+                if (entry := self._build_resource(schemas[schema_name], schemas)) is not None
+            ]
+            if entries:
+                resources[kind] = self._merge_resource_entries(kind, entries)
         return {"version": version, "resources": dict(sorted(resources.items()))}
+
+    @staticmethod
+    def _merge_resource_entries(kind: str, entries: list[dict[str, Any]]) -> dict[str, Any]:
+        """Union matching SpecType outputs and reject inconsistent field metadata."""
+        merged: dict[str, Any] = {
+            "serverDefaultFields": [],
+            "fieldDefaults": {},
+            "minimumConfigFields": [],
+            "fieldConflicts": {},
+        }
+        for entry in entries:
+            merged["serverDefaultFields"].extend(entry["serverDefaultFields"])
+            merged["minimumConfigFields"].extend(entry["minimumConfigFields"])
+            for path, value in entry["fieldDefaults"].items():
+                if path in merged["fieldDefaults"] and not exact_json_value_equal(
+                    merged["fieldDefaults"][path], value
+                ):
+                    raise ValueError(
+                        f"resource {kind!r} has conflicting fieldDefaults values for {path!r}",
+                    )
+                merged["fieldDefaults"][path] = value
+            for path, conflicts in entry["fieldConflicts"].items():
+                merged["fieldConflicts"][path] = sorted(
+                    set(merged["fieldConflicts"].get(path, [])) | set(conflicts)
+                )
+        merged["serverDefaultFields"] = sorted(set(merged["serverDefaultFields"]))
+        merged["minimumConfigFields"] = sorted(set(merged["minimumConfigFields"]))
+        return merged
 
     def export(
         self, schemas: dict[str, Any], output_path: Path, version: str = "unknown"
@@ -206,9 +237,17 @@ class MinimalDefaultsExporter:
 
     @staticmethod
     def collect_schemas(specs: Iterable[dict[str, Any]]) -> dict[str, Any]:
-        """Merge ``components.schemas`` across one or more specs into one map."""
+        """Merge exact ``components.schemas`` without last-writer behavior."""
         merged: dict[str, Any] = {}
         for spec in specs:
             schemas = (spec.get("components") or {}).get("schemas") or {}
-            merged.update(schemas)
-        return merged
+            if not isinstance(schemas, dict):
+                raise TypeError("components.schemas must be a mapping")
+            for name, schema in schemas.items():
+                if name in merged and not exact_json_value_equal(merged[name], schema):
+                    raise DefaultValueConfigError(
+                        f"conflicting collected schema values for {name!r}"
+                    )
+                if name not in merged:
+                    merged[name] = copy.deepcopy(schema)
+        return dict(sorted(merged.items()))

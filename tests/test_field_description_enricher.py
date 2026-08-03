@@ -108,49 +108,42 @@ class TestExampleGeneration:
 
     def test_name_example_generation(self, enricher):
         """Test that name field gets realistic example."""
-        prop = {"type": "string"}
-        example = enricher._generate_example("name", prop)
+        example = enricher._generate_example("name")
         assert example is not None
         assert isinstance(example, str)
         assert len(example) <= 63
 
     def test_email_example_generation(self, enricher):
         """Test that email field gets email example."""
-        prop = {"type": "string"}
-        example = enricher._generate_example("email", prop)
+        example = enricher._generate_example("email")
         assert example == "user@example.com"
 
     def test_ipv4_example_generation(self, enricher):
         """Test that ipv4 field gets IP example."""
-        prop = {"type": "string"}
-        example = enricher._generate_example("ipv4", prop)
+        example = enricher._generate_example("ipv4")
         assert example == "192.0.2.1"
 
     def test_port_example_generation(self, enricher):
         """Test that port field gets valid port example."""
-        prop = {"type": "integer"}
-        example = enricher._generate_example("port", prop)
+        example = enricher._generate_example("port")
         assert example == 8080
         assert 1 <= example <= 65535
 
     def test_uuid_example_generation(self, enricher):
         """Test that uuid field gets valid UUID example."""
-        prop = {"type": "string"}
-        example = enricher._generate_example("uuid", prop)
+        example = enricher._generate_example("uuid")
         assert example == "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
 
     def test_timestamp_example_generation(self, enricher):
         """Test that timestamp field gets ISO 8601 example."""
-        prop = {"type": "string"}
-        example = enricher._generate_example("timestamp", prop)
+        example = enricher._generate_example("timestamp")
         assert example is not None
         assert "T" in example  # ISO 8601 format indicator
         assert "Z" in example  # UTC timezone
 
     def test_no_match_no_example(self, enricher):
         """Test that unmatched fields don't get examples."""
-        prop = {"type": "string"}
-        example = enricher._generate_example("arbitrary_field", prop)
+        example = enricher._generate_example("arbitrary_field")
         assert example is None
 
 
@@ -160,7 +153,7 @@ class TestPropertyEnrichment:
     def test_property_with_no_description(self, enricher):
         """Test enriching property with no existing description."""
         prop = {"type": "string"}
-        enricher._enrich_property(prop, "name", "TestSchema")
+        enricher._enrich_property(prop, "name")
 
         assert "description" in prop
         assert prop["description"] == "Human-readable name for the resource"
@@ -170,7 +163,7 @@ class TestPropertyEnrichment:
         """Test that existing descriptions are preserved."""
         existing_desc = "Custom description for this field"
         prop = {"type": "string", "description": existing_desc}
-        enricher._enrich_property(prop, "name", "TestSchema")
+        enricher._enrich_property(prop, "name")
 
         # Description should remain unchanged
         assert prop["description"] == existing_desc
@@ -179,7 +172,7 @@ class TestPropertyEnrichment:
         """Test that existing examples are preserved."""
         prop = {"type": "string", "example": "custom-value"}
         original_example = prop["example"]
-        enricher._enrich_property(prop, "name", "TestSchema")
+        enricher._enrich_property(prop, "name")
 
         # Example should remain unchanged
         assert prop["example"] == original_example
@@ -188,7 +181,7 @@ class TestPropertyEnrichment:
     def test_stats_incremented_on_enrichment(self, enricher):
         """Test that stats are updated during enrichment."""
         prop = {"type": "string"}
-        enricher._enrich_property(prop, "email", "TestSchema")
+        enricher._enrich_property(prop, "email")
 
         stats = enricher.get_stats()
         assert stats["descriptions_added"] >= 1
@@ -382,7 +375,7 @@ class TestExampleStringConversion:
     def test_example_is_always_string_type_for_numeric(self, enricher):
         """Verify x-f5xc-example is string even for numeric values (port: 8080)."""
         prop = {"type": "integer"}
-        enricher._enrich_property(prop, "port", "TestSchema")
+        enricher._enrich_property(prop, "port")
 
         assert "x-f5xc-example" in prop
         assert isinstance(prop["x-f5xc-example"], str), "x-f5xc-example must be string type"
@@ -391,7 +384,7 @@ class TestExampleStringConversion:
     def test_example_is_always_string_type_for_boolean(self, enricher):
         """Verify x-f5xc-example is string for boolean values."""
         prop = {"type": "boolean"}
-        enricher._enrich_property(prop, "enabled", "TestSchema")
+        enricher._enrich_property(prop, "enabled")
 
         # Note: boolean fields don't currently have examples in default config
         # but this test ensures if they did, they'd be strings
@@ -401,21 +394,10 @@ class TestExampleStringConversion:
     def test_example_is_always_string_type_for_uuid(self, enricher):
         """Verify x-f5xc-example is string for UUID values."""
         prop = {"type": "string", "format": "uuid"}
-        enricher._enrich_property(prop, "uuid", "TestSchema")
+        enricher._enrich_property(prop, "uuid")
 
         assert "x-f5xc-example" in prop
         assert isinstance(prop["x-f5xc-example"], str), "x-f5xc-example must be string type"
-
-
-class TestResourceTypeInference:
-    """Test resource type inference."""
-
-    def test_resource_type_inference(self, enricher):
-        """Test inferring resource type from property context."""
-        # Current implementation returns generic placeholder
-        # Future implementation may extract from schema name
-        resource_type = enricher._infer_resource_type("user_name")
-        assert resource_type == "resource"
 
 
 if __name__ == "__main__":

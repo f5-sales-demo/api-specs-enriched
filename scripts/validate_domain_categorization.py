@@ -21,7 +21,7 @@ from __future__ import annotations
 
 import json
 import re
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, NamedTuple
 
@@ -311,7 +311,7 @@ def generate_report(results: list[ValidationResult], output_path: Path) -> dict[
     lines = [
         "# Domain Categorization Validation Report",
         "",
-        f"Generated: {datetime.now(tz=timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}",
+        f"Generated: {datetime.now(tz=UTC).strftime('%Y-%m-%d %H:%M:%S UTC')}",
         "",
         "## Summary",
         "",

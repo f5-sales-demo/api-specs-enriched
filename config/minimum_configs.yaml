@@ -1,3 +1,4 @@
+---
 version: "1.0.0"
 description: "Minimum configuration definitions for F5 XC resources"
 
@@ -494,7 +495,7 @@ resources:
         prerequisites:
           virtual_site:
             api_path: "virtual_sites"
-            namespace: "user_namespace"
+            namespace: "EXAMPLE_NAMESPACE"
             payload: '{"metadata":{"name":"{{name}}","namespace":"{{namespace}}"},"spec":{"site_type":"CUSTOMER_EDGE","site_selector":{"expressions":["ves.io/siteName in (TARGET_SITE_NAME)"]}}}'
 
       advertise_custom_virtual_site_sli:
@@ -2220,7 +2221,7 @@ resources:
         prerequisites:
           global_log_receiver:
             api_path: "global_log_receivers"
-            namespace: "user_namespace"
+            namespace: "EXAMPLE_NAMESPACE"
             payload: '{"metadata":{"name":"{{name}}","namespace":"{{namespace}}"},"spec":{"request_logs":{},"http_receiver":{"uri":"http://logs.example.com:8080/logs","no_tls":{},"disable_authentication":{}}}}'
 
       # Group 8: s2s_connectivity_sli

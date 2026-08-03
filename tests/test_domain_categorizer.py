@@ -351,7 +351,7 @@ class TestPatternValidation:
         for domain, pattern in all_patterns:
             try:
                 re.compile(pattern)
-            except re.error as e:  # noqa: PERF203
+            except re.error as e:
                 invalid_patterns.append((domain, pattern, str(e)))
 
         if invalid_patterns:

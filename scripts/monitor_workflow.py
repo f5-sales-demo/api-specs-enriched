@@ -19,7 +19,7 @@ import re
 import subprocess
 import sys
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -38,7 +38,7 @@ class WorkflowFailure:
     workflow: str
     branch: str
     commit: str
-    timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
     @property
     def fingerprint(self) -> str:
@@ -124,8 +124,9 @@ def run_gh_command(args: list[str], *, check: bool = True) -> subprocess.Complet
     cmd = ["gh", *args]
     result = subprocess.run(cmd, capture_output=True, text=True, check=False)
     if check and result.returncode != 0:
-        print(f"Error running gh command: {' '.join(cmd)}", file=sys.stderr)
-        print(f"stderr: {result.stderr}", file=sys.stderr)
+        raise RuntimeError(
+            f"GitHub API command failed ({result.returncode}): {' '.join(cmd)}\n{result.stderr}"
+        )
     return result
 
 
@@ -133,7 +134,7 @@ def get_workflow_run_details(run_id: str) -> dict[str, Any] | None:
     """Fetch workflow run details via gh CLI."""
     result = run_gh_command(
         ["run", "view", run_id, "--json", "jobs,conclusion,status,url"],
-        check=False,
+        check=True,
     )
     if result.returncode != 0:
         return None
@@ -198,15 +199,13 @@ def search_existing_issue(fingerprint: str) -> dict[str, Any] | None:
         ],
         check=False,
     )
-    if result.returncode != 0:
-        return None
     try:
         issues = json.loads(result.stdout)
-        for issue in issues:
-            if fingerprint in issue.get("body", ""):
-                return issue
-    except json.JSONDecodeError:
-        pass
+    except json.JSONDecodeError as exc:
+        raise RuntimeError("GitHub issue search returned invalid JSON") from exc
+    for issue in issues:
+        if fingerprint in issue.get("body", ""):
+            return issue
     return None
 
 
@@ -262,23 +261,20 @@ def create_issue(failure: WorkflowFailure) -> str | None:
 
     result = run_gh_command(
         ["issue", "create", "--title", title, "--body", body, "--label", ",".join(labels)],
-        check=False,
+        check=True,
     )
-
-    if result.returncode == 0:
-        # Extract issue URL from output
-        url = result.stdout.strip()
-        print(f"Created issue: {url}")
-        return url
-    print(f"Failed to create issue: {result.stderr}", file=sys.stderr)
-    return None
+    url = result.stdout.strip()
+    if not url:
+        raise RuntimeError("GitHub reported issue creation success without an issue URL")
+    print(f"Created issue: {url}")
+    return url
 
 
 def update_issue(issue: dict[str, Any], failure: WorkflowFailure) -> bool:
     """Update existing issue with new occurrence."""
     issue_number = issue.get("number")
     if not issue_number:
-        return False
+        raise RuntimeError("existing issue response has no issue number")
 
     comment = f"""## New Occurrence
 
@@ -293,13 +289,58 @@ def update_issue(issue: dict[str, Any], failure: WorkflowFailure) -> bool:
 ```
 """
 
-    result = run_gh_command(["issue", "comment", str(issue_number), "--body", comment], check=False)
+    run_gh_command(["issue", "comment", str(issue_number), "--body", comment], check=True)
+    print(f"Updated issue #{issue_number} with new occurrence")
+    return True
 
-    if result.returncode == 0:
-        print(f"Updated issue #{issue_number} with new occurrence")
-        return True
-    print(f"Failed to update issue: {result.stderr}", file=sys.stderr)
-    return False
+
+def failures_from_job_results(
+    env_vars: dict[str, str],
+    args: argparse.Namespace,
+    expected_skipped_jobs: frozenset[str] = frozenset(),
+    failure_details: dict[str, str] | None = None,
+) -> list[WorkflowFailure]:
+    """Build measured failures from the workflow's explicit ``needs`` results."""
+    unknown_expected = sorted(expected_skipped_jobs - set(env_vars))
+    if unknown_expected:
+        raise RuntimeError(f"expected skipped jobs are not measured: {unknown_expected}")
+    details = failure_details or {}
+    unknown_details = sorted(set(details) - set(env_vars))
+    if unknown_details:
+        raise RuntimeError(f"failure details name unmeasured jobs: {unknown_details}")
+    if any(not value.strip() or len(value) > 4096 for value in details.values()):
+        raise RuntimeError("failure details must contain 1 to 4096 characters")
+    failures: list[WorkflowFailure] = []
+    for variable, value in sorted(env_vars.items()):
+        if not variable.startswith("JOB_"):
+            continue
+        job_name = variable.removeprefix("JOB_").replace("_", " ").title()
+        if value == "success" or (value == "skipped" and variable in expected_skipped_jobs):
+            continue
+        if value not in {"failure", "cancelled", "skipped"}:
+            conclusion = "failure"
+            error_message = f"Job '{job_name}' returned unsupported result {value!r}"
+        elif value == "skipped":
+            conclusion = value
+            error_message = f"Job '{job_name}' was unexpectedly skipped"
+        else:
+            conclusion = value
+            error_message = f"Job '{job_name}' {value}"
+        if variable in details:
+            error_message = f"{error_message}: {details[variable]}"
+        failures.append(
+            WorkflowFailure(
+                job_name=job_name,
+                step_name=None,
+                conclusion=conclusion,
+                error_message=error_message,
+                run_id=args.run_id,
+                workflow=args.workflow,
+                branch=args.branch,
+                commit=args.commit,
+            )
+        )
+    return failures
 
 
 def get_remediation_suggestion(failure: WorkflowFailure) -> str:
@@ -307,7 +348,7 @@ def get_remediation_suggestion(failure: WorkflowFailure) -> str:
     suggestions = {
         "download": """
 - Check if F5 API endpoint is accessible
-- Verify ETag caching is working correctly
+- Verify the api-specs release tag, asset name, and SHA-256 receipt
 - Check network connectivity and rate limits
 - Try `make download-force` to bypass cache
 """,
@@ -327,7 +368,7 @@ def get_remediation_suggestion(failure: WorkflowFailure) -> str:
 - Check for merge conflicts
 - Verify branch protection rules
 - Ensure GITHUB_TOKEN has sufficient permissions
-- Check if `.version` or `.etag` have conflicts
+- Check if the committed `.github_release` receipt has conflicts
 """,
         "release": """
 - Verify version bumping logic
@@ -380,33 +421,32 @@ def main() -> int:
         "COMMIT_SHA": args.commit,
     }
 
-    # Get workflow run details
-    print(f"Fetching workflow run details for {args.run_id}...")
-    run_details = get_workflow_run_details(args.run_id)
-
-    if not run_details:
-        # Fall back to environment variables for job results
-        print("Could not fetch run details, using environment variables...")
-        failures = []
-        for job_var, job_name in [
-            ("JOB_CHECK_UPDATES", "Check for Updates"),
-            ("JOB_SYNC_ENRICH", "Sync and Enrich"),
-            ("JOB_DEPLOY", "Deploy Documentation"),
-        ]:
-            result = os.environ.get(job_var, "success")
-            if result in ("failure", "cancelled"):
-                failure = WorkflowFailure(
-                    job_name=job_name,
-                    step_name=None,
-                    conclusion=result,
-                    error_message=f"Job '{job_name}' {result}",
-                    run_id=args.run_id,
-                    workflow=args.workflow,
-                    branch=args.branch,
-                    commit=args.commit,
-                )
-                failures.append(failure)
+    explicit_results = {key: value for key, value in os.environ.items() if key.startswith("JOB_")}
+    if explicit_results:
+        print("Using explicit workflow job results")
+        expected_raw = os.environ.get("EXPECTED_SKIPPED_JOBS", "")
+        expected_items = expected_raw.split(",") if expected_raw else []
+        if any(not re.fullmatch(r"JOB_[A-Z0-9_]+", item) for item in expected_items) or len(
+            set(expected_items)
+        ) != len(expected_items):
+            raise RuntimeError("EXPECTED_SKIPPED_JOBS is malformed")
+        failures = failures_from_job_results(
+            explicit_results,
+            args,
+            frozenset(expected_items),
+            failure_details=(
+                {"JOB_AUDIT_DOWNSTREAM": os.environ["AUDIT_FAILURE_DETAIL"]}
+                if os.environ.get("AUDIT_FAILURE_DETAIL")
+                else None
+            ),
+        )
     else:
+        print(f"Fetching workflow run details for {args.run_id}...")
+        run_details = get_workflow_run_details(args.run_id)
+        if not run_details:
+            raise RuntimeError(
+                "could not fetch workflow results and no JOB_* fallback was provided"
+            )
         failures = parse_failures(run_details, env_vars)
 
     if not failures:
@@ -440,7 +480,7 @@ def main() -> int:
                 issues_created += 1
 
     print(f"\nSummary: {issues_created} issues created, {issues_updated} issues updated")
-    return 0
+    return 1
 
 
 if __name__ == "__main__":

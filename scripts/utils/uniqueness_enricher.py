@@ -128,30 +128,22 @@ class UniquenessEnricher:
         Returns:
             Enriched specification
         """
-        try:
-            # Get namespace scope from the structured namespace profile
-            namespace_scope = self._extract_scope_from_profile(
-                spec.get("info", {}).get(X_F5XC_NAMESPACE_PROFILE)
-            )
+        # Validate the profile before the recoverable schema-enrichment boundary.
+        # A missing or scalar profile is a contract failure, not a default scope.
+        namespace_scope = self._extract_scope_from_profile(
+            spec.get("info", {}).get(X_F5XC_NAMESPACE_PROFILE)
+        )
 
-            # Enrich each schema
-            schemas = spec.get("components", {}).get("schemas", {})
-            for schema_name, schema in schemas.items():
-                self._enrich_schema(schema, schema_name, namespace_scope)
-
-        except Exception as e:
-            logger.exception("Error enriching spec with uniqueness metadata")
-            self.stats.errors.append(
-                {
-                    "error": str(e),
-                    "spec_title": spec.get("info", {}).get("title", "unknown"),
-                },
-            )
+        # Enrich each schema. Per-schema failures are recorded and re-raised by
+        # _enrich_schema so callers never receive a partially enriched result.
+        schemas = spec.get("components", {}).get("schemas", {})
+        for schema_name, schema in schemas.items():
+            self._enrich_schema(schema, schema_name, namespace_scope)
 
         return spec
 
     @staticmethod
-    def _extract_scope_from_profile(profile: Any) -> str:
+    def _extract_scope_from_profile(profile: object) -> str:
         """Extract a namespace scope string from the structured namespace profile.
 
         The namespace profile is a structured object with constraint, recommendation,
@@ -160,33 +152,29 @@ class UniquenessEnricher:
         namespace in constraint.allowed.
 
         Args:
-            profile: The x-f5xc-namespace-profile value (dict or legacy string).
+            profile: The structured x-f5xc-namespace-profile value.
 
         Returns:
             One of "system", "shared", or "any".
         """
-        if profile is None:
-            return "any"
+        if not isinstance(profile, dict):
+            type_name = type(profile).__name__
+            raise TypeError(
+                f"{X_F5XC_NAMESPACE_PROFILE} must be a structured object, got {type_name}"
+            )
 
-        # Legacy string support (backward compatibility)
-        if isinstance(profile, str):
-            return profile
+        primary_ns = profile.get("recommendation", {}).get("primary", "")
+        if primary_ns == "system":
+            return "system"
+        if primary_ns == "shared":
+            return "shared"
 
-        if isinstance(profile, dict):
-            primary_ns = profile.get("recommendation", {}).get("primary", "")
-            if primary_ns == "system":
-                return "system"
-            if primary_ns == "shared":
-                return "shared"
-
-            # Fallback: if only one allowed namespace in constraint.allowed
-            allowed = profile.get("constraint", {}).get("allowed", [])
-            if allowed == ["system"]:
-                return "system"
-            if allowed == ["shared"]:
-                return "shared"
-
-            return "any"
+        # Fallback: if only one allowed namespace in constraint.allowed
+        allowed = profile.get("constraint", {}).get("allowed", [])
+        if allowed == ["system"]:
+            return "system"
+        if allowed == ["shared"]:
+            return "shared"
 
         return "any"
 
@@ -250,6 +238,7 @@ class UniquenessEnricher:
                     "schema_name": schema_name,
                 },
             )
+            raise
 
     def _schema_name_to_resource_type(self, schema_name: str) -> str:
         """Convert PascalCase schema name to snake_case resource type.

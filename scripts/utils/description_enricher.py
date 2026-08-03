@@ -24,7 +24,7 @@ from typing import Any
 
 import yaml
 
-from .extension_constants import X_F5XC_CLI_DOMAIN, X_F5XC_DESCRIPTION_LONG
+from .extension_constants import X_F5XC_CLI_DOMAIN, X_F5XC_DESCRIPTION_LONG, X_F5XC_SUMMARY
 
 
 @dataclass
@@ -180,7 +180,7 @@ class DescriptionEnricher:
 
         # Apply medium description as x-f5xc-summary (OAS 3.0 info object has no summary field)
         if medium_description:
-            spec["info"]["x-f5xc-summary"] = medium_description
+            spec["info"][X_F5XC_SUMMARY] = medium_description
 
         self.stats.descriptions_applied += 1
 

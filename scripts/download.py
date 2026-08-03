@@ -4,23 +4,20 @@
 """Download and extract F5 XC API specifications from GitHub Releases.
 
 This script downloads pre-validated API specifications from the api-specs
-repository's GitHub releases. It uses release version-based caching to avoid
-unnecessary downloads.
+repository's GitHub releases. It compares the selected asset's tag, name, and
+SHA-256 digest to avoid both unnecessary downloads and stale same-tag content.
 
 Architecture:
     Source: GitHub Releases (f5-sales-demo/api-specs)
     Format: ZIP archive with domains/*.json files
-    Caching: .github_release version tracking (replaces ETag)
+    Caching: .github_release asset digest tracking
     Extraction: Secure ZIP processing with validation
 
 Usage:
-    # Check for updates without downloading
-    python -m scripts.download --check-only
-
-    # Download latest release (uses cache)
+    # Download the exact committed receipt (uses cache)
     python -m scripts.download
 
-    # Force download (bypass cache)
+    # Force exact receipt download and digest verification
     python -m scripts.download --force
 
 Environment:
@@ -32,54 +29,69 @@ import argparse
 import fnmatch
 import json
 import os
+import shutil
+import stat
 import sys
 import tempfile
 import zipfile
-from datetime import datetime, timezone
-from pathlib import Path
+from contextlib import suppress
+from pathlib import Path, PurePosixPath
 
+import requests
 import yaml
 from rich.console import Console
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
+from scripts.package_config import load_packaged_yaml
 from scripts.utils.github_release import (
-    check_for_updates,
     download_release_asset,
-    find_release_asset,
+    file_sha256_digest,
+    get_latest_release,
+    load_release_receipt,
     parse_release_version,
+    release_receipt,
+    require_release_asset,
+    resolve_release_receipt,
     save_release_metadata,
+    write_release_receipt,
 )
-from scripts.utils.version_calculator import get_version_from_tags
+from scripts.utils.raw_manifest import (
+    RawManifestError,
+    create_raw_manifest,
+    validate_raw_manifest,
+)
 
 console = Console()
 
-# Default configuration (fallback if config file not found)
-DEFAULT_CONFIG = {
-    "source": {
-        "type": "github_release",
-        "repository": {
-            "owner": "f5-sales-demo",
-            "name": "api-specs",
-        },
-        "asset_pattern": "api-specs-v*.zip",
-    },
-    "paths": {
-        "original": "specs/original",
-        "version_file": ".github_release",
-    },
-    "extraction": {
-        "include_patterns": ["domains/*.json"],
-        "exclude_patterns": ["openapi.json", "openapi.yaml"],
-        "max_file_size": 10 * 1024 * 1024,  # 10 MB
-        "max_total_size": 500 * 1024 * 1024,  # 500 MB
-        "max_compression_ratio": 100,
-        "max_file_count": 1000,
-    },
-}
+_MANIFEST_NAME = "manifest.json"
+
+
+def _validate_download_config(config: dict, canonical_source: object) -> None:
+    """Fail closed unless config preserves the sole correction-layer source."""
+    for section in ("source", "paths", "extraction"):
+        if not isinstance(config.get(section), dict):
+            raise TypeError(f"download configuration requires a {section!r} mapping")
+    if config["source"] != canonical_source:
+        raise ValueError(
+            "download source must exactly match config/download.yaml "
+            "(f5-sales-demo/api-specs immutable releases)"
+        )
+    for field in ("original", "version_file"):
+        if not isinstance(config["paths"].get(field), str) or not config["paths"][field]:
+            raise ValueError(f"download paths.{field} must be a non-empty string")
+    extraction = config["extraction"]
+    for field in ("include_patterns", "exclude_patterns"):
+        value = extraction.get(field)
+        if not isinstance(value, list) or not all(isinstance(item, str) for item in value):
+            raise ValueError(f"download extraction.{field} must be an array of strings")
+    for field in ("max_file_size", "max_total_size", "max_compression_ratio", "max_file_count"):
+        value = extraction.get(field)
+        if not isinstance(value, int) or isinstance(value, bool) or value <= 0:
+            raise ValueError(f"download extraction.{field} must be a positive integer")
 
 
 def load_config(config_path: Path | None = None) -> dict:
-    """Load configuration from YAML file or use defaults.
+    """Load explicit YAML or the configuration shipped with the package.
 
     Args:
         config_path: Path to download.yaml configuration file.
@@ -87,30 +99,22 @@ def load_config(config_path: Path | None = None) -> dict:
     Returns:
         Configuration dictionary with source, paths, and extraction settings.
     """
-    if config_path and config_path.exists():
+    canonical = load_packaged_yaml("download.yaml")
+    if config_path is None:
+        config = canonical
+    else:
+        if not config_path.is_file():
+            raise FileNotFoundError(f"download configuration not found: {config_path}")
         with config_path.open() as f:
             config = yaml.safe_load(f)
-            # Merge with defaults for missing keys
-            for key, value in DEFAULT_CONFIG.items():
-                if key not in config:
-                    config[key] = value
-                elif isinstance(value, dict):
-                    for subkey, subvalue in value.items():
-                        if subkey not in config[key]:
-                            config[key][subkey] = subvalue
-            return config
-    return DEFAULT_CONFIG
+        if not isinstance(config, dict):
+            raise TypeError("download configuration must be an object")
 
-
-def get_version() -> str:
-    """Get version from git tags.
-
-    Uses tag-based versioning to eliminate race conditions from file-based versioning.
-
-    Returns:
-        Version string in semver format (e.g., "2.0.38").
-    """
-    return get_version_from_tags()
+    canonical_source = canonical.get("source")
+    if not isinstance(canonical_source, dict):
+        raise TypeError("packaged config/download.yaml has no canonical source mapping")
+    _validate_download_config(config, canonical_source)
+    return config
 
 
 def validate_zip_member_path(member_name: str) -> bool:
@@ -127,16 +131,18 @@ def validate_zip_member_path(member_name: str) -> bool:
     Returns:
         True if path is safe, False otherwise.
     """
-    # Reject absolute paths
-    if member_name.startswith("/"):
+    if not member_name or "\x00" in member_name or "\\" in member_name:
         return False
 
-    # Reject path traversal attempts
-    if ".." in member_name.split("/"):
+    # ZIP member names are POSIX paths regardless of the host platform. Reject
+    # aliases as well as direct traversal so two names cannot flatten onto the
+    # same destination through path normalisation.
+    path = PurePosixPath(member_name)
+    if path.is_absolute() or member_name.startswith("/"):
         return False
-
-    # Reject paths starting with traversal
-    return not member_name.startswith("../")
+    if any(part in {"", ".", ".."} for part in member_name.split("/")):
+        return False
+    return not (path.parts and path.parts[0].endswith(":"))
 
 
 def validate_zip_member_size(info: zipfile.ZipInfo, limits: dict) -> tuple[bool, str]:
@@ -156,11 +162,18 @@ def validate_zip_member_size(info: zipfile.ZipInfo, limits: dict) -> tuple[bool,
     if info.file_size > max_file_size:
         return False, f"File too large: {info.filename} ({info.file_size} bytes)"
 
+    if info.file_size < 0 or info.compress_size < 0:
+        return False, f"Invalid archive size metadata: {info.filename}"
+
+    if info.file_size == 0:
+        return True, ""
+
     # Check compression ratio (zip bomb detection)
-    if info.file_size > 0 and info.compress_size > 0:
-        ratio = info.file_size / info.compress_size
-        if ratio > max_compression_ratio:
-            return False, f"Suspicious compression ratio: {info.filename} ({ratio:.0f}:1)"
+    if info.compress_size == 0:
+        return False, f"Invalid compressed size: {info.filename}"
+    ratio = info.file_size / info.compress_size
+    if ratio > max_compression_ratio:
+        return False, f"Suspicious compression ratio: {info.filename} ({ratio:.0f}:1)"
 
     return True, ""
 
@@ -202,10 +215,8 @@ def extract_zip(zip_path: Path, output_dir: Path, config: dict) -> list[str]:
     max_file_count = extraction_config.get("max_file_count", 1000)
 
     output_dir.mkdir(parents=True, exist_ok=True)
-
-    # Clear existing files
-    for existing_file in output_dir.glob("*.json"):
-        existing_file.unlink()
+    if any(output_dir.iterdir()):
+        raise ValueError(f"Extraction target must be empty: {output_dir}")
 
     extracted_files: list[str] = []
 
@@ -219,7 +230,9 @@ def extract_zip(zip_path: Path, output_dir: Path, config: dict) -> list[str]:
         with zipfile.ZipFile(zip_path, "r") as zf:
             total_size = 0  # Track cumulative size
 
-            for member in zf.namelist():
+            seen_targets: set[str] = set()
+            for info in zf.infolist():
+                member = info.filename
                 # Apply inclusion patterns
                 if not matches_pattern(member, include_patterns):
                     continue
@@ -228,21 +241,25 @@ def extract_zip(zip_path: Path, output_dir: Path, config: dict) -> list[str]:
                 if matches_pattern(member, exclude_patterns):
                     continue
 
-                # Only extract JSON files
-                if not member.endswith(".json"):
-                    continue
-
-                # Security: Validate path for traversal attempts
                 if not validate_zip_member_path(member):
-                    console.print(f"[yellow]⚠️  Skipping suspicious path: {member}[/yellow]")
-                    continue
+                    raise ValueError(f"Unsafe included archive member: {member}")
+
+                # An included member is part of the asserted input set. Invalid
+                # members fail the whole candidate instead of silently yielding
+                # a partial source tree.
+                if info.is_dir() or not member.endswith(".json"):
+                    raise ValueError(f"Invalid included archive member: {member}")
+                unix_mode = info.external_attr >> 16
+                file_type = stat.S_IFMT(unix_mode)
+                if file_type not in {0, stat.S_IFREG}:
+                    raise ValueError(f"Included archive member is not a regular file: {member}")
+                if info.flag_bits & 0x1:
+                    raise ValueError(f"Encrypted archive member is not supported: {member}")
 
                 # Security: Validate file size and compression ratio
-                info = zf.getinfo(member)
                 is_valid, error_msg = validate_zip_member_size(info, extraction_config)
                 if not is_valid:
-                    console.print(f"[yellow]⚠️  {error_msg}[/yellow]")
-                    continue
+                    raise ValueError(error_msg)
 
                 # Security: Check total extracted size
                 total_size += info.file_size
@@ -255,12 +272,25 @@ def extract_zip(zip_path: Path, output_dir: Path, config: dict) -> list[str]:
                 if len(extracted_files) >= max_file_count:
                     raise ValueError(f"File count exceeds limit: {max_file_count}")
 
-                # Extract directly to output dir (flatten structure)
                 filename = Path(member).name
+                if filename == _MANIFEST_NAME:
+                    raise ValueError(f"Archive member collides with generated manifest: {member}")
+                if filename in seen_targets:
+                    raise ValueError(f"Archive members flatten to duplicate filename: {filename}")
+                seen_targets.add(filename)
                 target_path = output_dir / filename
 
                 with zf.open(member) as source, target_path.open("wb") as target:
-                    target.write(source.read())
+                    written = 0
+                    while chunk := source.read(1024 * 1024):
+                        written += len(chunk)
+                        if written > info.file_size:
+                            raise ValueError(f"Archive member exceeded declared size: {member}")
+                        target.write(chunk)
+                    if written != info.file_size:
+                        raise ValueError(
+                            f"Archive member size mismatch: {member} ({written} != {info.file_size})",
+                        )
 
                 extracted_files.append(filename)
 
@@ -273,38 +303,103 @@ def extract_zip(zip_path: Path, output_dir: Path, config: dict) -> list[str]:
     return extracted_files
 
 
+def _assert_no_unknown_destination_files(output_dir: Path) -> dict | None:
+    """Refuse unknown files and return the validated existing-tree receipt."""
+    if output_dir.is_symlink():
+        raise ValueError(f"Managed output path must not be a symlink: {output_dir}")
+    if not output_dir.exists():
+        return None
+    if not output_dir.is_dir():
+        raise ValueError(f"Managed output path is not a directory: {output_dir}")
+
+    entries = list(output_dir.iterdir())
+    if not entries:
+        return None
+
+    manifest_path = output_dir / _MANIFEST_NAME
+    if manifest_path.is_symlink() or not manifest_path.is_file():
+        raise ValueError(
+            f"Refusing to replace non-empty output without a regular {_MANIFEST_NAME}",
+        )
+    try:
+        manifest = json.loads(manifest_path.read_text())
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ValueError(f"Cannot establish managed output ownership: {exc}") from exc
+    try:
+        contract = validate_raw_manifest(manifest, source_dir=output_dir)
+    except RawManifestError as exc:
+        raise ValueError(f"Cannot establish managed output ownership: {exc}") from exc
+    managed = set(contract.files) | {_MANIFEST_NAME}
+    unknown = sorted(path.name for path in entries if path.name not in managed)
+    if unknown:
+        raise ValueError(f"Refusing to delete unknown output files: {', '.join(unknown)}")
+    invalid = sorted(path.name for path in entries if path.is_symlink() or not path.is_file())
+    if invalid:
+        raise ValueError(f"Managed output contains non-regular files: {', '.join(invalid)}")
+    return contract.release_receipt
+
+
+def validate_staged_tree(output_dir: Path, files: list[str]) -> None:
+    """Validate that a staged source tree is complete and internally consistent."""
+    managed_files = sorted(files)
+    expected = set(managed_files) | {_MANIFEST_NAME}
+    entries = list(output_dir.iterdir())
+    actual = {path.name for path in entries}
+    if actual != expected:
+        missing = sorted(expected - actual)
+        unexpected = sorted(actual - expected)
+        raise ValueError(
+            f"Staged source tree is incomplete (missing={missing}, unexpected={unexpected})",
+        )
+
+    for path in entries:
+        if path.is_symlink() or not path.is_file():
+            raise ValueError(f"Staged source tree contains non-regular file: {path.name}")
+
+    for filename in managed_files:
+        path = output_dir / filename
+        try:
+            document = json.loads(path.read_text())
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+            raise ValueError(f"Extracted specification is not valid JSON: {filename}") from exc
+        if not isinstance(document, dict):
+            raise TypeError(f"Extracted specification is not a JSON object: {filename}")
+
+    try:
+        manifest = json.loads((output_dir / _MANIFEST_NAME).read_text())
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ValueError("Generated manifest is not valid JSON") from exc
+    try:
+        contract = validate_raw_manifest(manifest, source_dir=output_dir)
+    except RawManifestError as exc:
+        raise ValueError(f"Generated manifest violates the raw contract: {exc}") from exc
+    if contract.files != tuple(managed_files):
+        raise ValueError("Generated manifest does not describe the staged files")
+
+
+def _require_extracted_files(files: list[str]) -> None:
+    """Fail a candidate that contains no selected specifications."""
+    if not files:
+        raise ValueError("No specifications were extracted")
+
+
 def generate_manifest(
     output_dir: Path,
     files: list[str],
-    version: str,
-    release_version: str,
-    release_published_at: str,
+    receipt: dict,
 ) -> None:
-    """Generate manifest file with metadata about extracted specs.
+    """Generate the exact upstream receipt and per-file byte manifest.
 
     Args:
         output_dir: Directory containing extracted specs.
         files: List of extracted filenames.
-        version: Git-based version from tags (e.g., "2.0.38").
-        release_version: GitHub release version (e.g., "2026.01.22-2").
-        release_published_at: When the upstream release was published (e.g.,
-            "2026-07-30T08:27:17Z"). Committed artifacts are stamped from this, so it
-            must describe the RELEASE and never this download.
+        receipt: Validated six-field identity of the immutable api-specs asset.
     """
-    manifest = {
-        "version": version,
-        "release_version": release_version,
-        # When THIS machine downloaded — informational only. Nothing derived from it
-        # may reach a committed artifact: two machines fetching the same release get
-        # different values, which is how every generated spec came to differ between
-        # a local rebuild and CI's (#1156). See scripts/utils/build_stamp.py.
-        "timestamp": datetime.now(tz=timezone.utc).isoformat(),
-        # When the upstream release was published — a property of the INPUT, and the
-        # same value for everyone who downloads it. This is what artifacts stamp.
-        "release_published_at": release_published_at,
-        "file_count": len(files),
-        "files": sorted(files),
-    }
+    manifest = create_raw_manifest(
+        release_receipt=receipt,
+        source_dir=output_dir,
+        files=files,
+    ).as_document()
 
     manifest_path = output_dir / "manifest.json"
     with manifest_path.open("w") as f:
@@ -314,12 +409,115 @@ def generate_manifest(
     console.print(f"[green]✅ Generated manifest: {manifest_path}[/green]")
 
 
-def download_from_github_release(config: dict, force: bool = False) -> tuple[bool, dict | None]:
+def _reserve_sibling_path(parent: Path, prefix: str) -> Path:
+    """Reserve a unique non-existent path on *parent*'s filesystem."""
+    reserved = Path(tempfile.mkdtemp(prefix=prefix, dir=parent))
+    reserved.rmdir()
+    return reserved
+
+
+def _replace_path(source: Path, destination: Path) -> None:
+    """Replace one path atomically; isolated as a failure-injection seam."""
+    source.replace(destination)
+
+
+def _prepare_release_metadata(
+    release_data: dict,
+    asset: dict,
+    asset_digest: str,
+    version_file: Path,
+) -> Path:
+    """Write and sync release metadata beside its final destination."""
+    version_file.parent.mkdir(parents=True, exist_ok=True)
+    descriptor, temporary_name = tempfile.mkstemp(
+        prefix=f".{version_file.name}.",
+        suffix=".tmp",
+        dir=version_file.parent,
+    )
+    os.close(descriptor)
+    temporary = Path(temporary_name)
+    try:
+        save_release_metadata(
+            release_data,
+            asset["name"],
+            asset["size"],
+            asset_digest,
+            temporary,
+        )
+        mode = stat.S_IMODE(version_file.stat().st_mode) if version_file.exists() else 0o644
+        temporary.chmod(mode)
+        with temporary.open("rb") as stream:
+            os.fsync(stream.fileno())
+    except Exception:
+        temporary.unlink(missing_ok=True)
+        raise
+    return temporary
+
+
+def _promote_tree_and_metadata(
+    staged_dir: Path,
+    output_dir: Path,
+    staged_metadata: Path,
+    version_file: Path,
+) -> None:
+    """Promote a validated tree, then its metadata, rolling back on failure."""
+    output_dir.parent.mkdir(parents=True, exist_ok=True)
+    _assert_no_unknown_destination_files(output_dir)
+
+    if output_dir.exists():
+        staged_dir.chmod(stat.S_IMODE(output_dir.stat().st_mode))
+    else:
+        staged_dir.chmod(0o755)
+
+    backup = _reserve_sibling_path(output_dir.parent, f".{output_dir.name}.backup-")
+    rejected = _reserve_sibling_path(output_dir.parent, f".{output_dir.name}.rejected-")
+    had_previous_tree = output_dir.exists()
+    previous_tree_moved = False
+    candidate_moved = False
+
+    try:
+        if had_previous_tree:
+            _replace_path(output_dir, backup)
+            previous_tree_moved = True
+        _replace_path(staged_dir, output_dir)
+        candidate_moved = True
+        _replace_path(staged_metadata, version_file)
+    except Exception:
+        rollback_error: Exception | None = None
+        try:
+            if candidate_moved and output_dir.exists():
+                _replace_path(output_dir, rejected)
+            if previous_tree_moved and backup.exists():
+                _replace_path(backup, output_dir)
+        except Exception as exc:  # pragma: no cover - catastrophic filesystem failure
+            rollback_error = exc
+        if rejected.exists():
+            shutil.rmtree(rejected, ignore_errors=True)
+        if rollback_error is not None:
+            raise RuntimeError(
+                "Download promotion failed and rollback was incomplete"
+            ) from rollback_error
+        raise
+
+    if backup.exists():
+        try:
+            shutil.rmtree(backup)
+        except OSError as exc:  # The promoted tree and metadata are already committed.
+            console.print(f"[yellow]⚠️  Could not remove old source-tree backup: {exc}[/yellow]")
+
+
+def download_from_github_release(
+    config: dict,
+    force: bool = False,
+    receipt_path: Path | None = None,
+) -> tuple[bool, dict | None]:
     """Download specifications from GitHub releases.
 
     Args:
         config: Configuration dict with source and paths.
         force: Force download even if no updates detected.
+        receipt_path: Exact upstream receipt to consume. Defaults to the
+            repository's committed ``.github_release`` receipt.
 
     Returns:
         Tuple of (success, release_data).
@@ -331,89 +529,121 @@ def download_from_github_release(config: dict, force: bool = False) -> tuple[boo
     repo_name = source_config["repository"]["name"]
     asset_pattern = source_config.get("asset_pattern", "*.zip")
     version_file = Path(paths_config["version_file"])
+    output_dir = Path(paths_config["original"])
+
+    try:
+        tree_receipt = _assert_no_unknown_destination_files(output_dir)
+    except (OSError, TypeError, ValueError) as exc:
+        console.print(f"[red]❌ Refusing unsafe source-tree replacement: {exc}[/red]")
+        return False, None
 
     # Get GitHub token from environment (optional)
     github_token = os.getenv("GITHUB_TOKEN")
     if github_token:
         console.print("[blue]🔑 Using GITHUB_TOKEN for authentication[/blue]")
 
-    # Check for updates
-    has_updates, release_data = check_for_updates(
-        repo_owner,
-        repo_name,
-        version_file,
-        token=github_token,
-    )
+    selected_receipt_path = receipt_path or version_file
+    try:
+        selected_receipt = load_release_receipt(selected_receipt_path)
+        release_data, asset = resolve_release_receipt(
+            repo_owner,
+            repo_name,
+            selected_receipt,
+            token=github_token,
+            asset_pattern=asset_pattern,
+        )
+    except (OSError, TypeError, ValueError, requests.RequestException) as exc:
+        console.print(f"[red]❌ Exact release receipt failed validation: {exc}[/red]")
+        return False, None
 
-    if not has_updates and not force:
-        console.print("[blue]✅ No updates needed. Use --force to download anyway.[/blue]")
+    local_receipt = None
+    with suppress(ValueError):
+        local_receipt = load_release_receipt(version_file)
+    if local_receipt == selected_receipt and tree_receipt == selected_receipt and not force:
+        console.print("[blue]✅ Exact release receipt is already materialized.[/blue]")
         return True, release_data
-
-    if not release_data:
-        console.print("[red]❌ Could not fetch release data[/red]")
-        return False, None
-
-    # Find matching asset
-    asset = find_release_asset(release_data, asset_pattern)
-    if not asset:
-        console.print(f"[red]❌ No asset matching '{asset_pattern}' found in release[/red]")
-        return False, None
 
     console.print(
         f"[green]📦 Found asset: {asset['name']} ({asset['size'] / 1024 / 1024:.1f} MB)[/green]",
     )
 
-    # Download asset
-    temp_zip = Path(tempfile.gettempdir()) / "f5xc-api-specs-github.zip"
-    success = download_release_asset(
-        asset["browser_download_url"],
-        temp_zip,
-        token=github_token,
-    )
+    remote_digest = selected_receipt["asset_digest"]
 
-    if not success:
-        return False, None
-
-    # Extract
-    output_dir = Path(paths_config["original"])
+    # Download asset. The unique temporary file is always removed, including
+    # downloader failures before archive validation begins.
+    with tempfile.NamedTemporaryFile(prefix="f5xc-api-specs-", suffix=".zip", delete=False) as tmp:
+        temp_zip = Path(tmp.name)
+    staging_dir: Path | None = None
+    staged_metadata: Path | None = None
     try:
-        extracted_files = extract_zip(temp_zip, output_dir, config)
-
-        if not extracted_files:
-            console.print("[red]❌ No files were extracted![/red]")
+        success = download_release_asset(
+            asset["browser_download_url"],
+            temp_zip,
+            token=github_token,
+        )
+        if not success:
             return False, None
 
-        # Save release metadata
-        save_release_metadata(
-            release_data,
-            asset["name"],
-            asset["size"],
-            version_file,
-        )
+        downloaded_digest = file_sha256_digest(temp_zip)
+        if downloaded_digest != remote_digest:
+            console.print(
+                f"[red]❌ Downloaded asset digest mismatch: expected {remote_digest}, "
+                f"found {downloaded_digest}[/red]",
+            )
+            return False, None
 
-        # Generate manifest
-        version = get_version()
+        downloaded_size = temp_zip.stat().st_size
+        expected_size = selected_receipt["asset_size"]
+        if downloaded_size != expected_size:
+            console.print(
+                f"[red]❌ Downloaded asset size mismatch: expected {expected_size}, "
+                f"found {downloaded_size}[/red]",
+            )
+            return False, None
+
+        output_dir.parent.mkdir(parents=True, exist_ok=True)
+        staging_dir = Path(
+            tempfile.mkdtemp(prefix=f".{output_dir.name}.staging-", dir=output_dir.parent),
+        )
+        extracted_files = extract_zip(temp_zip, staging_dir, config)
+        _require_extracted_files(extracted_files)
+
         release_version = parse_release_version(release_data["tag_name"])
         generate_manifest(
-            output_dir,
+            staging_dir,
             extracted_files,
-            version,
-            release_version,
-            release_data["published_at"],
+            selected_receipt,
         )
+        validate_staged_tree(staging_dir, extracted_files)
+
+        # Metadata is fully prepared before promotion but becomes authoritative
+        # only after the validated tree is active.
+        staged_metadata = _prepare_release_metadata(
+            release_data,
+            asset,
+            remote_digest,
+            version_file,
+        )
+        _promote_tree_and_metadata(staging_dir, output_dir, staged_metadata, version_file)
 
         console.print(
             f"\n[bold green]✅ Successfully downloaded {len(extracted_files)} specs![/bold green]",
         )
-        console.print(f"  Version: {version}")
         console.print(f"  Release: {release_version}")
         console.print(f"  Output:  {output_dir}")
 
         return True, release_data
 
+    except (OSError, RuntimeError, TypeError, ValueError, zipfile.BadZipFile) as exc:
+        console.print(f"[red]❌ Downloaded release failed validation: {exc}[/red]")
+        return False, None
+
     finally:
-        # Cleanup temp file
         temp_zip.unlink(missing_ok=True)
+        if staging_dir is not None and staging_dir.exists():
+            shutil.rmtree(staging_dir, ignore_errors=True)
+        if staged_metadata is not None:
+            staged_metadata.unlink(missing_ok=True)
 
 
 def main() -> int:
@@ -423,10 +653,7 @@ def main() -> int:
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-    # Check for updates without downloading
-    python -m scripts.download --check-only
-
-    # Download latest release (uses cache)
+    # Download the exact committed receipt (uses cache)
     python -m scripts.download
 
     # Force download (bypass cache)
@@ -439,18 +666,23 @@ Environment Variables:
     parser.add_argument(
         "--config",
         type=Path,
-        default=Path("config/download.yaml"),
-        help="Path to configuration file (default: config/download.yaml)",
-    )
-    parser.add_argument(
-        "--check-only",
-        action="store_true",
-        help="Only check for updates, don't download",
+        help="Path to configuration file (default: packaged config/download.yaml)",
     )
     parser.add_argument(
         "--force",
         action="store_true",
         help="Force download even if no updates detected",
+    )
+    parser.add_argument(
+        "--receipt",
+        type=Path,
+        help="Exact release receipt to consume (default: configured .github_release)",
+    )
+    parser.add_argument(
+        "--resolve-latest-receipt",
+        type=Path,
+        metavar="PATH",
+        help="Resolve latest once and write a pinned receipt; do not download specs",
     )
     parser.add_argument(
         "--output-dir",
@@ -470,39 +702,39 @@ Environment Variables:
     # Get GitHub token (optional)
     github_token = os.getenv("GITHUB_TOKEN")
 
-    # Check-only mode
-    if args.check_only:
+    if args.resolve_latest_receipt:
+        if args.receipt or args.output_dir or args.force:
+            parser.error("--resolve-latest-receipt cannot be combined with download options")
         source_config = config["source"]
-        if source_config["type"] != "github_release":
-            console.print(
-                f"[yellow]⚠️  Source type '{source_config['type']}' not supported for check-only[/yellow]",
+        repository = source_config["repository"]
+        try:
+            latest = get_latest_release(
+                repository["owner"],
+                repository["name"],
+                token=github_token,
             )
+            asset = require_release_asset(
+                latest,
+                source_config.get("asset_pattern", "*.zip"),
+            )
+            write_release_receipt(args.resolve_latest_receipt, release_receipt(latest, asset))
+        except (OSError, TypeError, ValueError, requests.RequestException) as exc:
+            console.print(f"[red]❌ Could not resolve latest immutable receipt: {exc}[/red]")
             return 1
-
-        repo_owner = source_config["repository"]["owner"]
-        repo_name = source_config["repository"]["name"]
-        version_file = Path(config["paths"]["version_file"])
-
-        has_updates, _ = check_for_updates(
-            repo_owner,
-            repo_name,
-            version_file,
-            token=github_token,
+        console.print(
+            f"[green]✅ Wrote pinned release receipt: {args.resolve_latest_receipt}[/green]"
         )
-
-        # Set GitHub Actions output
-        github_output = os.environ.get("GITHUB_OUTPUT")
-        if github_output:
-            with Path(github_output).open("a") as f:
-                f.write(f"updated={'true' if has_updates or args.force else 'false'}\n")
-
-        return 0 if not has_updates else 1
+        return 0
 
     # Download
     source_type = config["source"]["type"]
 
     if source_type == "github_release":
-        success, release_data = download_from_github_release(config, force=args.force)
+        success, release_data = download_from_github_release(
+            config,
+            force=args.force,
+            receipt_path=args.receipt,
+        )
 
         # Set GitHub Actions output
         github_output = os.environ.get("GITHUB_OUTPUT")

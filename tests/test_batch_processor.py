@@ -13,7 +13,7 @@ from unittest.mock import patch
 
 import pytest
 
-from scripts.utils.batch_processor import BatchSpecProcessor
+from scripts.utils.batch_processor import BatchProcessingError, BatchSpecProcessor
 
 
 @pytest.fixture
@@ -78,6 +78,12 @@ class TestBatchProcessorInitialization:
         processor = BatchSpecProcessor(batch_size=10)
 
         assert processor.batch_size == 10
+
+    @pytest.mark.parametrize("batch_size", [True, 0, -1, 1.5, "1"])
+    def test_invalid_batch_size_is_rejected(self, batch_size):
+        """Batch size must be a positive, non-boolean integer."""
+        with pytest.raises(ValueError, match="positive integer"):
+            BatchSpecProcessor(batch_size=batch_size)
 
     def test_default_cache_directories_are_isolated(self):
         """Concurrent processors must never delete each other's cached specs."""
@@ -198,15 +204,16 @@ class TestBatchProcessing:
         assert cached_spec["x-enriched"] is True
         assert cached_spec["x-normalized"] is True
 
-    def test_error_handling_continues_processing(
+    def test_enrichment_failure_stops_before_later_inputs(
         self,
         temp_spec_dir,
         mock_normalize_func,
     ):
-        """Verify processing continues after errors."""
+        """An enrichment failure is contextual and no later source is processed."""
+        processed_titles = []
 
         def failing_enrich(spec: dict, config: dict) -> tuple[dict, dict]:
-            # Fail on spec_2.json
+            processed_titles.append(spec["info"]["title"])
             if "Spec 2" in spec["info"]["title"]:
                 raise ValueError("Simulated enrichment error")
             spec["x-enriched"] = True
@@ -216,16 +223,92 @@ class TestBatchProcessing:
         spec_files = sorted(temp_spec_dir.glob("*.json"))
         config = {}
 
-        cache_paths = processor.process_batch(
-            spec_files,
-            failing_enrich,
-            mock_normalize_func,
-            config,
-        )
+        with pytest.raises(
+            BatchProcessingError,
+            match=r"enrichment failed for .*spec_2\.json: Simulated enrichment error",
+        ):
+            processor.process_batch(
+                spec_files,
+                failing_enrich,
+                mock_normalize_func,
+                config,
+            )
 
-        # Should process 4 out of 5 specs (excluding failing one)
-        assert len(cache_paths) == 4
-        assert processor.stats["specs_processed"] == 4
+        assert processed_titles == ["Test Spec 0", "Test Spec 1", "Test Spec 2"]
+        assert processor.stats["specs_processed"] == 2
+        assert processor._get_cache_path(spec_files[0]).exists()
+        assert processor._get_cache_path(spec_files[1]).exists()
+        assert not processor._get_cache_path(spec_files[2]).exists()
+        assert not processor._get_cache_path(spec_files[3]).exists()
+        assert not processor._get_cache_path(spec_files[4]).exists()
+
+    def test_load_failure_stops_before_later_inputs(self, temp_spec_dir, mock_normalize_func):
+        spec_files = sorted(temp_spec_dir.glob("*.json"))
+        spec_files[2].write_text("not json", encoding="utf-8")
+        processed_titles = []
+
+        def tracking_enrich(spec: dict, config: dict) -> tuple[dict, dict]:
+            processed_titles.append(spec["info"]["title"])
+            return spec, {}
+
+        processor = BatchSpecProcessor(batch_size=10)
+        with pytest.raises(BatchProcessingError, match=r"load failed for .*spec_2\.json"):
+            processor.process_batch(spec_files, tracking_enrich, mock_normalize_func, {})
+
+        assert processed_titles == ["Test Spec 0", "Test Spec 1"]
+        assert processor.stats["specs_processed"] == 2
+
+    def test_normalization_failure_stops_before_later_inputs(self, temp_spec_dir, mock_enrich_func):
+        spec_files = sorted(temp_spec_dir.glob("*.json"))
+        normalized_titles = []
+
+        def failing_normalize(spec: dict, config: dict) -> tuple[dict, dict]:
+            normalized_titles.append(spec["info"]["title"])
+            if "Spec 2" in spec["info"]["title"]:
+                raise ValueError("Simulated normalization error")
+            return spec, {}
+
+        processor = BatchSpecProcessor(batch_size=10)
+        with pytest.raises(
+            BatchProcessingError,
+            match=r"normalization failed for .*spec_2\.json: Simulated normalization error",
+        ):
+            processor.process_batch(spec_files, mock_enrich_func, failing_normalize, {})
+
+        assert normalized_titles == ["Test Spec 0", "Test Spec 1", "Test Spec 2"]
+        assert processor.stats["specs_processed"] == 2
+
+    def test_cache_write_failure_stops_before_later_inputs(
+        self,
+        temp_spec_dir,
+        mock_enrich_func,
+        mock_normalize_func,
+        monkeypatch,
+    ):
+        spec_files = sorted(temp_spec_dir.glob("*.json"))
+        processor = BatchSpecProcessor(batch_size=10)
+        real_write = processor._write_json_atomically
+        attempted = []
+
+        def failing_write(spec: dict, path: Path) -> None:
+            attempted.append(path.name)
+            if path.name == "spec_2_processed.json":
+                raise OSError("Simulated cache failure")
+            real_write(spec, path)
+
+        monkeypatch.setattr(processor, "_write_json_atomically", failing_write)
+        with pytest.raises(
+            BatchProcessingError,
+            match=r"cache write failed for .*spec_2\.json: Simulated cache failure",
+        ):
+            processor.process_batch(spec_files, mock_enrich_func, mock_normalize_func, {})
+
+        assert attempted == [
+            "spec_0_processed.json",
+            "spec_1_processed.json",
+            "spec_2_processed.json",
+        ]
+        assert processor.stats["specs_processed"] == 2
 
     def test_cache_path_generation(self, temp_spec_dir):
         """Verify cache paths are generated correctly."""
@@ -304,6 +387,17 @@ class TestCacheOperations:
         processor.cleanup_cache()
 
         assert not processor.cache_dir.exists()
+
+    def test_atomic_cache_write_preserves_existing_file_on_serialization_failure(self):
+        processor = BatchSpecProcessor()
+        cache_path = processor.cache_dir / "existing.json"
+        cache_path.write_text('{"preserve": true}\n', encoding="utf-8")
+
+        with pytest.raises(TypeError):
+            processor._write_json_atomically({"invalid": object()}, cache_path)
+
+        assert cache_path.read_text(encoding="utf-8") == '{"preserve": true}\n'
+        assert list(processor.cache_dir.glob("*.tmp")) == []
 
 
 class TestStatistics:
@@ -611,7 +705,7 @@ class TestDiscoveryReconciliationBatch:
             assert spec["x-reconciled"] is True
 
     def test_no_functions_provided(self, temp_spec_dir, mock_enrich_func, mock_normalize_func):
-        """Verify handling when no functions are provided."""
+        """Reject invoking a discovery/reconciliation stage with no work."""
         processor = BatchSpecProcessor(batch_size=2)
         spec_files = sorted(temp_spec_dir.glob("*.json"))
         config = {}
@@ -624,18 +718,17 @@ class TestDiscoveryReconciliationBatch:
             config,
         )
 
-        # Call with no functions (should skip processing)
-        final_paths = processor.process_discovery_reconciliation_batch(
-            cache_paths,
-            discovery_func=None,
-            reconcile_func=None,
-        )
+        with pytest.raises(ValueError, match="requires at least one processing function"):
+            processor.process_discovery_reconciliation_batch(
+                cache_paths,
+                discovery_func=None,
+                reconcile_func=None,
+            )
 
-        # Should return same paths unchanged
-        assert final_paths == cache_paths
-
-    def test_error_handling_continues(self, temp_spec_dir, mock_enrich_func, mock_normalize_func):
-        """Verify processing continues after errors."""
+    def test_discovery_failure_stops_and_preserves_unprocessed_cache(
+        self, temp_spec_dir, mock_enrich_func, mock_normalize_func
+    ):
+        """Discovery failure cannot return or overwrite an unprocessed cache path."""
         processor = BatchSpecProcessor(batch_size=2)
         spec_files = sorted(temp_spec_dir.glob("*.json"))
         config = {}
@@ -648,28 +741,117 @@ class TestDiscoveryReconciliationBatch:
             config,
         )
 
-        # Discovery function fails on spec_2.json
-        call_count = [0]
+        original_cache = {
+            filename: path.read_text(encoding="utf-8") for filename, path in cache_paths.items()
+        }
+        processed_titles = []
 
         def failing_discovery(spec: dict) -> dict:
-            call_count[0] += 1
+            processed_titles.append(spec["info"]["title"])
             if "Spec 2" in spec["info"]["title"]:
                 raise ValueError("Simulated discovery error")
             spec["x-discovery-enriched"] = True
             return spec
 
-        # Process with failing function
-        final_paths = processor.process_discovery_reconciliation_batch(
-            cache_paths,
-            discovery_func=failing_discovery,
-            reconcile_func=None,
-        )
+        with pytest.raises(
+            BatchProcessingError,
+            match=r"discovery failed for .*spec_2_processed\.json: Simulated discovery error",
+        ):
+            processor.process_discovery_reconciliation_batch(
+                cache_paths,
+                discovery_func=failing_discovery,
+                reconcile_func=None,
+            )
 
-        # All specs should still be in final_paths (error doesn't remove them)
-        assert len(final_paths) == 5
+        assert processed_titles == ["Test Spec 0", "Test Spec 1", "Test Spec 2"]
+        assert "x-discovery-enriched" in json.loads(cache_paths["spec_0.json"].read_text())
+        assert "x-discovery-enriched" in json.loads(cache_paths["spec_1.json"].read_text())
+        for filename in ("spec_2.json", "spec_3.json", "spec_4.json"):
+            assert cache_paths[filename].read_text(encoding="utf-8") == original_cache[filename]
 
-        # Discovery function was called for all specs
-        assert call_count[0] == 5
+    def test_cached_load_failure_stops_before_later_inputs(
+        self, temp_spec_dir, mock_enrich_func, mock_normalize_func
+    ):
+        processor = BatchSpecProcessor(batch_size=2)
+        spec_files = sorted(temp_spec_dir.glob("*.json"))
+        cache_paths = processor.process_batch(spec_files, mock_enrich_func, mock_normalize_func, {})
+        cache_paths["spec_2.json"].write_text("not json", encoding="utf-8")
+        processed_titles = []
+
+        def tracking_discovery(spec: dict) -> dict:
+            processed_titles.append(spec["info"]["title"])
+            return spec
+
+        with pytest.raises(
+            BatchProcessingError,
+            match=r"load failed for .*spec_2_processed\.json",
+        ):
+            processor.process_discovery_reconciliation_batch(
+                cache_paths,
+                discovery_func=tracking_discovery,
+            )
+
+        assert processed_titles == ["Test Spec 0", "Test Spec 1"]
+
+    def test_reconciliation_failure_stops_before_later_inputs(
+        self, temp_spec_dir, mock_enrich_func, mock_normalize_func
+    ):
+        processor = BatchSpecProcessor(batch_size=2)
+        spec_files = sorted(temp_spec_dir.glob("*.json"))
+        cache_paths = processor.process_batch(spec_files, mock_enrich_func, mock_normalize_func, {})
+        original_cache = {
+            filename: path.read_text(encoding="utf-8") for filename, path in cache_paths.items()
+        }
+        reconciled_titles = []
+
+        def failing_reconcile(spec: dict) -> tuple[dict, dict]:
+            reconciled_titles.append(spec["info"]["title"])
+            if "Spec 2" in spec["info"]["title"]:
+                raise ValueError("Simulated reconciliation error")
+            spec["x-reconciled"] = True
+            return spec, {}
+
+        with pytest.raises(
+            BatchProcessingError,
+            match=(
+                r"reconciliation failed for .*spec_2_processed\.json: "
+                r"Simulated reconciliation error"
+            ),
+        ):
+            processor.process_discovery_reconciliation_batch(
+                cache_paths,
+                reconcile_func=failing_reconcile,
+            )
+
+        assert reconciled_titles == ["Test Spec 0", "Test Spec 1", "Test Spec 2"]
+        for filename in ("spec_2.json", "spec_3.json", "spec_4.json"):
+            assert cache_paths[filename].read_text(encoding="utf-8") == original_cache[filename]
+
+    def test_phase_three_cache_write_failure_preserves_original_and_stops(
+        self, temp_spec_dir, mock_enrich_func, mock_normalize_func
+    ):
+        processor = BatchSpecProcessor(batch_size=2)
+        spec_files = sorted(temp_spec_dir.glob("*.json"))
+        cache_paths = processor.process_batch(spec_files, mock_enrich_func, mock_normalize_func, {})
+        original = cache_paths["spec_0.json"].read_text(encoding="utf-8")
+        discovery_calls = []
+
+        def unserializable_discovery(spec: dict) -> dict:
+            discovery_calls.append(spec["info"]["title"])
+            spec["unserializable"] = object()
+            return spec
+
+        with pytest.raises(
+            BatchProcessingError,
+            match=r"cache write failed for .*spec_0_processed\.json",
+        ):
+            processor.process_discovery_reconciliation_batch(
+                cache_paths,
+                discovery_func=unserializable_discovery,
+            )
+
+        assert discovery_calls == ["Test Spec 0"]
+        assert cache_paths["spec_0.json"].read_text(encoding="utf-8") == original
 
     def test_multiple_batches(self, temp_spec_dir, mock_enrich_func, mock_normalize_func):
         """Verify correct batching across multiple batches."""

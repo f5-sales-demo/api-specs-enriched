@@ -35,7 +35,7 @@ logger = logging.getLogger(__name__)
 # standard tooling. The custom format stays in `x-f5xc-constraints`; the
 # mirrored `pattern` already encodes the real rule.
 _MIRRORED_KEYS = ("pattern", "minLength", "maxLength")
-_CONSTRAINT_KEY = "x-f5xc-constraints"
+_CONSTRAINT_EXTENSION = "x-f5xc-constraints"
 _NAMING_CATEGORY = "naming"
 # Naming/identifier formats that must be projected regardless of the constraint's
 # source category (e.g. workload volume names arrive via discovery with
@@ -72,7 +72,7 @@ class SchemaConstraintProjector:
     def _visit(self, node: Any) -> None:
         """Recursively walk a schema node, projecting naming constraints."""
         if isinstance(node, dict):
-            constraint = node.get(_CONSTRAINT_KEY)
+            constraint = node.get(_CONSTRAINT_EXTENSION)
             if isinstance(constraint, dict) and self._is_naming(constraint):
                 self._project(node, constraint)
             for value in node.values():

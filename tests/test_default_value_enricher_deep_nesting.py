@@ -22,6 +22,8 @@ def enricher(tmp_path):
     config_file = tmp_path / "discovered_defaults.yaml"
     config_file.write_text(
         """\
+version: "1.0.0"
+description: "Focused test configuration"
 settings:
   use_openapi_default: true
   add_marker_extension: true
@@ -120,6 +122,31 @@ class TestDeepNestedDefaults:
         assert all_schemas["SchemaB"]["properties"]["b_field"]["default"] == 42
         assert all_schemas["SchemaC"]["properties"]["c_field"]["default"] is True
 
+    def test_array_item_reference_is_resolved(self, enricher):
+        """Defaults reach the schema referenced by an array's items."""
+        all_schemas = {
+            "Item": {
+                "type": "object",
+                "properties": {"measured": {"type": "string"}},
+            },
+        }
+        schema = {
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {"$ref": "#/components/schemas/Item"},
+                },
+            },
+        }
+
+        enricher._apply_nested_defaults(
+            schema,
+            {"items": {"defaults": {"measured": "server"}}},
+            all_schemas,
+        )
+
+        assert all_schemas["Item"]["properties"]["measured"]["default"] == "server"
+
     def test_max_depth_prevents_infinite_recursion(self, enricher):
         """Recursion stops at max_depth."""
         all_schemas = {
@@ -139,9 +166,9 @@ class TestDeepNestedDefaults:
         # Build a deeply nested config that would loop
         def build_nested(depth):
             if depth <= 0:
-                return {"defaults": {"val": "found"}}
+                return {"defaults": {"val": "stable"}}
             return {
-                "defaults": {"val": f"level{depth}"},
+                "defaults": {"val": "stable"},
                 "nested": {"deeper": build_nested(depth - 1)},
             }
 
@@ -151,7 +178,7 @@ class TestDeepNestedDefaults:
         enricher._apply_nested_defaults(schema, nested, all_schemas, max_depth=5)
 
         # val should be set at level 1 (depth=0 applies level 1)
-        assert all_schemas["Deep"]["properties"]["val"].get("default") is not None
+        assert all_schemas["Deep"]["properties"]["val"]["default"] == "stable"
 
     def test_missing_ref_schema_skipped(self, enricher):
         """If nested $ref target doesn't exist in all_schemas, skip gracefully."""
@@ -173,8 +200,8 @@ class TestDeepNestedDefaults:
         # Should not raise
         enricher._apply_nested_defaults(schema, nested, all_schemas)
 
-    def test_legacy_flat_format_still_works(self, enricher):
-        """Legacy format without 'defaults' sub-key still works at depth 0."""
+    def test_structured_defaults_work_at_depth_zero(self, enricher):
+        """Structured nested defaults work at depth zero."""
         all_schemas = {
             "Inner": {
                 "properties": {
@@ -187,9 +214,8 @@ class TestDeepNestedDefaults:
                 "inner": {"$ref": "#/components/schemas/Inner"},
             },
         }
-        # Legacy flat: no 'defaults' key, dict IS the defaults
         nested = {
-            "inner": {"timeout": 30},
+            "inner": {"defaults": {"timeout": 30}},
         }
 
         enricher._apply_nested_defaults(schema, nested, all_schemas)
@@ -203,12 +229,14 @@ class TestDeepNestedRecommended:
         """Recommended values propagate through two nesting levels."""
         all_schemas = {
             "Outer": {
+                "x-ves-oneof-field-choice_group": '["variant_a"]',
                 "properties": {
                     "mode": {"type": "string"},
                     "inner": {"$ref": "#/components/schemas/Inner"},
                 },
             },
             "Inner": {
+                "x-ves-oneof-field-sub_choice": '["variant_b"]',
                 "properties": {
                     "strategy": {"type": "string"},
                 },
@@ -246,11 +274,13 @@ class TestDeepNestedOneofRecommended:
         """OneOf recommended variants propagate through two nesting levels."""
         all_schemas = {
             "Outer": {
+                "x-ves-oneof-field-choice_group": '["variant_a"]',
                 "properties": {
                     "inner": {"$ref": "#/components/schemas/Inner"},
                 },
             },
             "Inner": {
+                "x-ves-oneof-field-sub_choice": '["variant_b"]',
                 "properties": {
                     "variant_a": {"type": "object"},
                     "variant_b": {"type": "object"},
@@ -277,3 +307,31 @@ class TestDeepNestedOneofRecommended:
 
         assert all_schemas["Outer"][X_F5XC_RECOMMENDED_ONEOF_VARIANT]["choice_group"] == "variant_a"
         assert all_schemas["Inner"][X_F5XC_RECOMMENDED_ONEOF_VARIANT]["sub_choice"] == "variant_b"
+
+    def test_allof_wrapped_reference_is_resolved(self, enricher):
+        """Normalized allOf wrappers receive their configured OneOf recommendation."""
+        all_schemas = {
+            "Inner": {
+                "type": "object",
+                "x-ves-oneof-field-choice_group": '["variant_a"]',
+                "properties": {"variant_a": {"type": "object"}},
+            },
+        }
+        schema = {
+            "properties": {
+                "inner": {
+                    "allOf": [{"$ref": "#/components/schemas/Inner"}],
+                },
+            },
+        }
+        nested = {
+            "inner": {
+                "oneof_recommended": {"choice_group": "variant_a"},
+            },
+        }
+
+        enricher._apply_nested_oneof_recommended(schema, nested, all_schemas)
+
+        assert all_schemas["Inner"][X_F5XC_RECOMMENDED_ONEOF_VARIANT] == {
+            "choice_group": "variant_a",
+        }

@@ -10,7 +10,6 @@ import pytest
 
 from scripts.utils.domain_metadata import (
     DOMAIN_PRIMARY_RESOURCES,
-    get_primary_resources,
     get_primary_resources_metadata,
     get_resource_metadata,
 )
@@ -177,35 +176,6 @@ class TestPrimaryResourcesMetadata:
         for item in result:
             for field in required_fields:
                 assert field in item, f"Missing field: {field} in resource {item.get('name')}"
-
-
-class TestBackwardCompatibility:
-    """Test backward compatibility with simple format."""
-
-    def test_simple_format_still_works(self):
-        """Test that get_primary_resources still returns strings."""
-        result = get_primary_resources("virtual")
-        assert isinstance(result, list)
-        if result:
-            assert isinstance(result[0], str)
-
-    def test_metadata_names_match_simple_format(self):
-        """Test that metadata names match simple format names."""
-        for domain in list(DOMAIN_PRIMARY_RESOURCES.keys())[:5]:
-            simple = get_primary_resources(domain)
-            rich = get_primary_resources_metadata(domain)
-
-            simple_names = set(simple)
-            rich_names = {item["name"] for item in rich}
-
-            assert simple_names == rich_names, f"Mismatch in domain {domain}"
-
-    def test_all_domains_return_consistent_lengths(self):
-        """Test that simple and rich formats have same count."""
-        for domain in list(DOMAIN_PRIMARY_RESOURCES.keys())[:10]:
-            simple = get_primary_resources(domain)
-            rich = get_primary_resources_metadata(domain)
-            assert len(simple) == len(rich), f"Length mismatch in domain {domain}"
 
 
 class TestRelationshipHints:

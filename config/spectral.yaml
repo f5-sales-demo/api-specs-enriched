@@ -1,5 +1,76 @@
-# Pipeline Spectral config — extends the root .spectral.yaml
-# Single source of truth for rules is .spectral.yaml
-# This file exists because scripts/lint.py --ruleset points here.
+---
+# Canonical packaged Spectral rules for F5 XC API specifications.
 extends:
-  - ../.spectral.yaml
+  - spectral:oas
+
+rules:
+  operation-description: "off"
+  oas3-parameter-description: "off"
+  oas3-valid-schema-example: "off"
+  oas3-valid-media-example: "off"
+  oas3-examples-value-or-externalValue: "off"
+  operation-tag-defined: "off"
+  info-contact: warn
+  info-description: warn
+  info-license: "off"
+  path-params: "off"
+  path-declarations-must-exist: error
+  path-keys-no-trailing-slash: warn
+  path-not-include-query: error
+  operation-operationId: warn
+  operation-operationId-unique: error
+  operation-operationId-valid-in-url: warn
+  oas3-unused-component: "off"
+  oas3-schema: "off"
+  oas3-api-servers: warn
+  oas3-operation-security-defined: "off"
+  operation-success-response: warn
+  no-$ref-siblings: error
+
+  sample-resource-example-naming:
+    description: "Sample resource example values should use the example- prefix"
+    message: >-
+      {{value}} uses a non-standard placeholder prefix; use 'example-' for sample resource names
+    severity: warn
+    given:
+      - "$..example"
+      - "$..examples[*]"
+    then:
+      function: pattern
+      functionOptions:
+        notMatch: "^(my|test|foo|demo|sample)-[a-z]"
+
+  x-f5xc-references-valid-type:
+    description: "x-f5xc-references must be an array"
+    message: "x-f5xc-references must be an array of reference descriptors, got {{type}}"
+    severity: error
+    given: "$..['x-f5xc-references']"
+    then:
+      function: schema
+      functionOptions:
+        schema:
+          type: array
+
+  x-f5xc-references-descriptor-shape:
+    description: "Each x-f5xc-references entry must have resource_kind + field_path"
+    message: "x-f5xc-references entry missing required fields (resource_kind, field_path)"
+    severity: warn
+    given: "$..['x-f5xc-references'][*]"
+    then:
+      function: schema
+      functionOptions:
+        schema:
+          type: object
+          required:
+            - resource_kind
+            - field_path
+
+overrides:
+  - files:
+      - "**/*.json"
+    rules:
+      operation-description: "off"
+      oas3-parameter-description: "off"
+      oas3-schema: "off"
+      oas3-valid-schema-example: "off"
+      path-params: "off"

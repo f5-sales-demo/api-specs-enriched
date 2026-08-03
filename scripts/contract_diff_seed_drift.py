@@ -18,7 +18,7 @@ import argparse
 import gzip
 import json
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 from scripts.contract_diff import _fingerprint_violation, _normalize_pointer
@@ -69,7 +69,7 @@ def _categorize_for_drift(violation: dict) -> str:
 def build_drift_entries(report_path: Path) -> list[dict]:
     """Return drift entries derived from the contract-diff JSON report."""
     report = json.loads(report_path.read_text())
-    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    today = datetime.now(UTC).strftime("%Y-%m-%d")
     entries = []
     for i, v in enumerate(report):
         try:

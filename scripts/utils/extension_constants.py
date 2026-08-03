@@ -15,6 +15,12 @@ Version: v3.0.0 - Clean break, no backward compatibility
 
 from __future__ import annotations
 
+from scripts.utils.extension_registry import (
+    declared_extensions,
+    load_extension_registry,
+    preserved_native_extensions,
+)
+
 # =============================================================================
 # NAMESPACE PREFIX
 # =============================================================================
@@ -27,9 +33,8 @@ X_F5XC_PREFIX = "x-f5xc-"
 
 X_F5XC_CLI_DOMAIN = "x-f5xc-cli-domain"
 X_F5XC_CLI_METADATA = "x-f5xc-cli-metadata"
-X_F5XC_UPSTREAM_TIMESTAMP = "x-f5xc-upstream-timestamp"
-X_F5XC_UPSTREAM_ETAG = "x-f5xc-upstream-etag"
 X_F5XC_ENRICHED_VERSION = "x-f5xc-enriched-version"
+X_F5XC_SUMMARY = "x-f5xc-summary"
 X_F5XC_GLOSSARY = "x-f5xc-glossary"
 X_F5XC_DISCOVERED_AT = "x-f5xc-discovered-at"
 X_F5XC_API_URL = "x-f5xc-api-url"
@@ -54,6 +59,7 @@ X_F5XC_DISPLAYORDER = "x-f5xc-displayorder"
 X_F5XC_TERRAFORM_RESOURCE = "x-f5xc-terraform-resource"
 X_F5XC_DISPLAY_NAME = "x-f5xc-display-name"
 X_F5XC_ACTION = "x-f5xc-action"
+X_F5XC_UPSTREAM_DEFECT = "x-f5xc-upstream-defect"
 
 # Console UI enrichment (Issue #679)
 X_F5XC_CONSOLE = "x-f5xc-console"
@@ -73,6 +79,7 @@ X_F5XC_REQUIRED_FOR = "x-f5xc-required-for"
 X_F5XC_CONDITIONS = "x-f5xc-conditions"
 X_F5XC_DEPRECATED = "x-f5xc-deprecated"
 X_F5XC_SERVER_DEFAULT = "x-f5xc-server-default"
+X_F5XC_SERVER_DEFAULT_VALUE = "x-f5xc-server-default-value"
 X_F5XC_RECOMMENDED_VALUE = "x-f5xc-recommended-value"
 X_F5XC_RECOMMENDED_ONEOF_VARIANT = "x-f5xc-recommended-oneof-variant"
 X_F5XC_CONFLICTS_WITH = "x-f5xc-conflicts-with"
@@ -93,10 +100,8 @@ X_F5XC_CONSOLE_FIELD = "x-f5xc-console-field"
 # OPERATION-LEVEL EXTENSIONS (path operations)
 # =============================================================================
 
-X_F5XC_REQUIRED_FIELDS = "x-f5xc-required-fields"
-X_F5XC_DANGER_LEVEL = "x-f5xc-danger-level"
-X_F5XC_CONFIRMATION_REQUIRED = "x-f5xc-confirmation-required"
-X_F5XC_SIDE_EFFECTS = "x-f5xc-side-effects"
+X_F5XC_OPERATION_METADATA = "x-f5xc-operation-metadata"
+X_F5XC_OPERATION_ALIASES = "x-f5xc-operation-aliases"
 
 # Discovery-derived extensions for live API behavior (Issue #314)
 X_F5XC_DISCOVERED_RESPONSE_TIME = "x-f5xc-discovered-response-time"
@@ -111,6 +116,7 @@ X_F5XC_DISCOVERED_ERROR_CATALOG = "x-f5xc-discovered-error-catalog"
 X_F5XC_CATEGORY = "x-f5xc-category"
 X_F5XC_PRIMARY_RESOURCES = "x-f5xc-primary-resources"
 X_F5XC_CRITICAL_RESOURCES = "x-f5xc-critical-resources"
+X_F5XC_ERROR_RESOLUTION = "x-f5xc-error-resolution"
 
 # Description tiers - used at BOTH index-level (domains) and property-level (Issue #330)
 # - Property level: 80-150 chars (short), 150-300 chars (medium) for properties with >300 char descriptions
@@ -179,19 +185,8 @@ X_F5XC_DOC_SECTION = "x-f5xc-doc-section"
 # and disagrees on 43, and the pipeline derives x-f5xc-required-for from both — so
 # correcting only the marker does not change what consumers see.
 
-PRESERVED_NATIVE_EXTENSIONS = frozenset(
-    [
-        "x-ves-proto-package",
-        "x-ves-proto-file",
-        "x-ves-proto-message",
-        "x-ves-proto-service",
-        "x-ves-proto-rpc",
-        "x-displayname",
-        "x-ves-oneof",
-        "x-ves-default",
-        "x-ves-required",
-    ],
-)
+_EXTENSION_REGISTRY = load_extension_registry()
+PRESERVED_NATIVE_EXTENSIONS = preserved_native_extensions(_EXTENSION_REGISTRY)
 
 # Pattern prefix for F5 native OneOf field extensions (used for conflict derivation)
 # Extensions like x-ves-oneof-field-{group_name} define mutually exclusive fields
@@ -202,82 +197,9 @@ X_VES_ONEOF_FIELD_PREFIX = "x-ves-oneof-field-"
 # VALID EXTENSIONS SET
 # =============================================================================
 
-# All valid x-f5xc-* extension names
-VALID_X_F5XC_EXTENSIONS = frozenset(
-    [
-        # Spec-level
-        X_F5XC_CLI_DOMAIN,
-        X_F5XC_CLI_METADATA,
-        X_F5XC_UPSTREAM_TIMESTAMP,
-        X_F5XC_UPSTREAM_ETAG,
-        X_F5XC_ENRICHED_VERSION,
-        X_F5XC_GLOSSARY,
-        X_F5XC_DISCOVERED_AT,
-        X_F5XC_API_URL,
-        X_F5XC_API_REFERENCE_URL,
-        X_F5XC_RESPONSE_TIME_MS,
-        # Domain-level (Issue #314)
-        X_F5XC_BEST_PRACTICES,
-        X_F5XC_GUIDED_WORKFLOWS,
-        X_F5XC_ACRONYMS,
-        # Schema-level
-        X_F5XC_MINIMUM_CONFIGURATION,
-        X_F5XC_NAMESPACE_PROFILE,
-        X_F5XC_DISPLAYORDER,
-        X_F5XC_TERRAFORM_RESOURCE,
-        X_F5XC_DISPLAY_NAME,
-        X_F5XC_ACTION,
-        # Property-level
-        X_F5XC_DESCRIPTION,
-        X_F5XC_VALIDATION,
-        X_F5XC_EXAMPLES,
-        X_F5XC_EXAMPLE,
-        X_F5XC_COMPLETION,
-        X_F5XC_DEFAULTS,
-        X_F5XC_REQUIRED_FOR_OPERATIONS,
-        X_F5XC_REQUIRED_FOR,
-        X_F5XC_CONDITIONS,
-        X_F5XC_DEPRECATED,
-        X_F5XC_SERVER_DEFAULT,
-        X_F5XC_RECOMMENDED_VALUE,
-        X_F5XC_RECOMMENDED_ONEOF_VARIANT,
-        X_F5XC_CONFLICTS_WITH,
-        X_F5XC_CONSTRAINTS,
-        X_F5XC_REQUIRES,
-        X_F5XC_REFERENCES,
-        X_F5XC_FIELD_EXAMPLES,
-        X_F5XC_UNIQUENESS,
-        X_F5XC_WIRE_NAME,
-        # Operation-level
-        X_F5XC_REQUIRED_FIELDS,
-        X_F5XC_DANGER_LEVEL,
-        X_F5XC_CONFIRMATION_REQUIRED,
-        X_F5XC_SIDE_EFFECTS,
-        # Discovery-derived (Issue #314)
-        X_F5XC_DISCOVERED_RESPONSE_TIME,
-        X_F5XC_DISCOVERED_RATE_LIMITS,
-        X_F5XC_DISCOVERED_ERROR_CATALOG,
-        # Index-level
-        X_F5XC_CATEGORY,
-        X_F5XC_PRIMARY_RESOURCES,
-        X_F5XC_CRITICAL_RESOURCES,
-        X_F5XC_DESCRIPTION_SHORT,
-        X_F5XC_DESCRIPTION_MEDIUM,
-        X_F5XC_DESCRIPTION_LONG,
-        X_F5XC_COMPLEXITY,
-        X_F5XC_REQUIRES_TIER,
-        X_F5XC_IS_PREVIEW,
-        X_F5XC_USE_CASES,
-        X_F5XC_ICON,
-        X_F5XC_LOGO_SVG,
-        X_F5XC_RELATED_DOMAINS,
-        X_F5XC_DOC_SECTION,
-        # Console UI enrichment (Issue #679)
-        X_F5XC_CONSOLE,
-        X_F5XC_CONSOLE_FIELD,
-        X_F5XC_CONSOLE_NAVIGATION,
-    ],
-)
+# Registry entries are the production contract. Constants may exist for
+# implementation code, but only registry members are valid published fields.
+VALID_X_F5XC_EXTENSIONS = declared_extensions(_EXTENSION_REGISTRY)
 
 
 # =============================================================================

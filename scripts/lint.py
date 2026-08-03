@@ -6,7 +6,7 @@
 Validates specifications against OpenAPI standards and custom rules before merge.
 Generates detailed lint reports for quality assurance.
 
-Requires: npm install -g @stoplight/spectral-cli
+Requires: npm ci --ignore-scripts --no-audit --no-fund
 """
 
 import argparse
@@ -14,7 +14,8 @@ import json
 import shutil
 import subprocess
 import sys
-from datetime import datetime, timezone
+from contextlib import nullcontext
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -22,6 +23,8 @@ import yaml
 from rich.console import Console
 from rich.progress import BarColumn, Progress, SpinnerColumn, TextColumn, TimeElapsedColumn
 from rich.table import Table
+
+from scripts.package_config import load_packaged_yaml, packaged_config_path
 
 # Import reporter infrastructure
 sys.path.insert(0, str(Path(__file__).parent / "utils"))
@@ -40,33 +43,34 @@ except ModuleNotFoundError:
 console = Console()
 
 
-# Default configuration
-DEFAULT_CONFIG = {
-    "paths": {
-        "normalized": "docs/specifications/api",
-        "reports": "reports",
-        "ruleset": "config/spectral.yaml",
-    },
-    "linting": {
-        "fail_on_error": True,
-        "fail_on_warning": False,
-        "skip_on_lint_failure": False,
-        "max_errors_per_file": 100,
-    },
-    "spectral": {
-        "format": "json",
-        "verbose": False,
-    },
+# Public for lint APIs and tests; its bytes come only from the packaged YAML.
+DEFAULT_CONFIG = load_packaged_yaml("lint.yaml")
+
+_CONFIG_SCHEMA = {
+    "paths": frozenset({"normalized", "reports"}),
+    "linting": frozenset(
+        {"fail_on_error", "fail_on_warning", "skip_on_lint_failure", "max_errors_per_file"}
+    ),
+    "spectral": frozenset({"format", "verbose"}),
 }
 
 
 def load_config(config_path: Path | None = None) -> dict:
-    """Load configuration from YAML file or use defaults."""
-    if config_path and config_path.exists():
+    """Load packaged lint configuration with an optional validated overlay."""
+    canonical = load_packaged_yaml("lint.yaml")
+    overlay: dict[str, Any] = {}
+    if config_path is not None:
+        if not config_path.is_file():
+            raise FileNotFoundError(f"lint configuration not found: {config_path}")
         with config_path.open() as f:
-            config = yaml.safe_load(f) or {}
-            return _deep_merge(DEFAULT_CONFIG, config)
-    return DEFAULT_CONFIG
+            document = yaml.safe_load(f)
+        if document is not None:
+            if not isinstance(document, dict):
+                raise TypeError("lint configuration must be an object")
+            overlay = document
+    config = _deep_merge(canonical, overlay)
+    _validate_config(config)
+    return config
 
 
 def _deep_merge(base: dict, override: dict) -> dict:
@@ -78,6 +82,24 @@ def _deep_merge(base: dict, override: dict) -> dict:
         else:
             result[key] = value
     return result
+
+
+def _validate_config(config: dict[str, Any]) -> None:
+    """Reject unknown lint controls instead of silently ignoring them."""
+    if not isinstance(config, dict):
+        raise TypeError("lint configuration must be an object")
+    unknown_sections = sorted(set(config) - set(_CONFIG_SCHEMA))
+    if unknown_sections:
+        raise ValueError(f"unsupported lint configuration sections: {unknown_sections}")
+    for section, allowed_keys in _CONFIG_SCHEMA.items():
+        if section not in config:
+            continue
+        section_config = config[section]
+        if not isinstance(section_config, dict):
+            raise TypeError(f"lint configuration {section!r} must be an object")
+        unknown_keys = sorted(set(section_config) - allowed_keys)
+        if unknown_keys:
+            raise ValueError(f"unsupported lint configuration keys in {section!r}: {unknown_keys}")
 
 
 def check_spectral_installed() -> bool:
@@ -149,7 +171,7 @@ def run_spectral(
         return (
             False,
             [],
-            "Spectral CLI not found. Install with: npm install -g @stoplight/spectral-cli",
+            "Spectral CLI not found. Install with: npm ci --ignore-scripts --no-audit --no-fund",
         )
     except Exception as e:
         return False, [], str(e)
@@ -208,16 +230,16 @@ def lint_spec_file(
     hints = sum(1 for i in issues if i.severity == 3)
 
     # Determine success based on config
-    lint_config = config.get("linting", {})
+    lint_config = config["linting"]
     passed = True
 
-    if lint_config.get("fail_on_error", False) and errors > 0:
+    if lint_config["fail_on_error"] and errors > 0:
         passed = False
-    if lint_config.get("fail_on_warning", False) and warnings > 0:
+    if lint_config["fail_on_warning"] and warnings > 0:
         passed = False
 
     # Limit issues if configured
-    max_issues = lint_config.get("max_errors_per_file", 100)
+    max_issues = lint_config["max_errors_per_file"]
     if len(issues) > max_issues:
         issues = issues[:max_issues]
 
@@ -296,7 +318,7 @@ def lint_all_specs(
 def generate_report(stats: LintStats, output_path: Path) -> None:
     """Generate linting report."""
     report = {
-        "timestamp": datetime.now(tz=timezone.utc).isoformat(),
+        "timestamp": datetime.now(tz=UTC).isoformat(),
         "summary": {
             "files_processed": stats.files_processed,
             "files_passed": stats.files_passed,
@@ -376,8 +398,7 @@ def main() -> int:
     parser.add_argument(
         "--config",
         type=Path,
-        default=Path("config/lint.yaml"),
-        help="Path to lint configuration file",
+        help="Path to lint configuration overlay (default: packaged config/lint.yaml)",
     )
     parser.add_argument(
         "--input-dir",
@@ -410,7 +431,7 @@ def main() -> int:
     # Check Spectral installation
     if not check_spectral_installed():
         console.print("[red]Spectral CLI not found![/red]")
-        console.print("[yellow]Install with: npm install -g @stoplight/spectral-cli[/yellow]")
+        console.print("[yellow]Install with: npm ci --ignore-scripts --no-audit --no-fund[/yellow]")
         console.print(
             "[yellow]Or skip linting by removing the lint step from the workflow[/yellow]",
         )
@@ -427,27 +448,28 @@ def main() -> int:
 
     # Determine paths
     input_dir = args.input_dir or Path(config["paths"]["normalized"])
-    ruleset_path = args.ruleset or Path(config["paths"]["ruleset"])
-
-    console.print("[bold blue]F5 XC API Specification Linting[/bold blue]")
-    console.print(f"  Input:   {input_dir}")
-    console.print(f"  Ruleset: {ruleset_path}")
-
-    if not input_dir.exists():
-        console.print(f"[red]Input directory not found: {input_dir}[/red]")
-        console.print(
-            "[yellow]Run 'python -m scripts.normalize' first to normalize specifications[/yellow]",
-        )
+    if args.ruleset is not None and not args.ruleset.is_file():
+        console.print(f"[red]Ruleset not found: {args.ruleset}[/red]")
         return 1
+    ruleset_context = (
+        nullcontext(args.ruleset)
+        if args.ruleset is not None
+        else packaged_config_path("spectral.yaml")
+    )
+    with ruleset_context as ruleset_path:
+        console.print("[bold blue]F5 XC API Specification Linting[/bold blue]")
+        console.print(f"  Input:   {input_dir}")
+        console.print(f"  Ruleset: {ruleset_path}")
 
-    # Check ruleset exists
-    if not ruleset_path.exists():
-        console.print(f"[yellow]Ruleset not found: {ruleset_path}[/yellow]")
-        console.print("[yellow]Using Spectral default rules[/yellow]")
-        ruleset_path = None
+        if not input_dir.exists():
+            console.print(f"[red]Input directory not found: {input_dir}[/red]")
+            console.print(
+                "[yellow]Run 'python -m scripts.normalize' first to normalize specifications[/yellow]",
+            )
+            return 1
 
-    # Run linting
-    stats = lint_all_specs(input_dir, ruleset_path, config)
+        # Run linting
+        stats = lint_all_specs(input_dir, ruleset_path, config)
 
     # Generate reports using LintReporter (both JSON and markdown)
     path_config = PathConfig()
@@ -465,11 +487,11 @@ def main() -> int:
     print_summary(stats)
 
     # Determine exit code
-    lint_config = config.get("linting", {})
-    if lint_config.get("fail_on_error", False) and stats.total_errors > 0:
+    lint_config = config["linting"]
+    if lint_config["fail_on_error"] and stats.total_errors > 0:
         console.print(f"\n[red]Failed: {stats.total_errors} linting errors found[/red]")
         return 1
-    if lint_config.get("fail_on_warning", False) and stats.total_warnings > 0:
+    if lint_config["fail_on_warning"] and stats.total_warnings > 0:
         console.print(f"\n[red]Failed: {stats.total_warnings} linting warnings found[/red]")
         return 1
 

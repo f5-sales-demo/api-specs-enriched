@@ -1,3 +1,4 @@
+---
 # External documentation URL mappings for F5 XC OpenAPI specifications.
 #
 # This configuration maps API domains to their official F5 documentation URLs.
@@ -12,12 +13,6 @@
 #       url: <documentation_url>
 #       description: <brief_description>
 
-# Extension configuration
-extension_field: externalDocs
-
-# Base URL for F5 XC documentation
-base_url: https://docs.cloud.f5.com/docs
-
 # Published API reference site (used to rewrite upstream per-operation externalDocs links)
 api_reference_base_url: https://f5-sales-demo.github.io/api-specs-enriched/api-reference
 
@@ -25,160 +20,175 @@ api_reference_base_url: https://f5-sales-demo.github.io/api-specs-enriched/api-r
 api_reference_rewrite:
   old_prefix: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/"
 
-# Default documentation for unmapped domains
-default:
-  url: https://docs.cloud.f5.com/docs
-  description: F5 Distributed Cloud Documentation
-
 # Domain-specific documentation mappings
 # Organized by category matching config/domain_patterns.yaml
 domains:
   # ===== A. Infrastructure & Deployment =====
   ce_management:
-    url: https://docs.cloud.f5.com/docs/how-to/site-management
+    url: https://docs.cloud.f5.com/docs-v2/multi-cloud-network-connect
     description: F5 XC Documentation - Customer Edge Management
 
+  vpm_and_node_management:
+    url: https://docs.cloud.f5.com/docs-v2/multi-cloud-network-connect
+    description: F5 XC Documentation - Node and Fleet Management
+
   cloud_infrastructure:
-    url: https://docs.cloud.f5.com/docs/how-to/site-management/create-cloud-credentials
+    url: https://docs.cloud.f5.com/docs-v2/multi-cloud-network-connect
     description: F5 XC Documentation - Cloud Infrastructure
 
   container_services:
-    url: https://docs.cloud.f5.com/docs/how-to/app-management/vk8s-deployment
+    url: https://docs.cloud.f5.com/docs-v2/distributed-apps
     description: F5 XC Documentation - Virtual Kubernetes (vK8s)
 
   managed_kubernetes:
-    url: https://docs.cloud.f5.com/docs/how-to/app-management/managed-k8s
+    url: https://docs.cloud.f5.com/docs-v2/distributed-apps
     description: F5 XC Documentation - Managed Kubernetes
 
   service_mesh:
-    url: https://docs.cloud.f5.com/docs/how-to/app-networking/service-mesh
+    url: https://docs.cloud.f5.com/docs-v2/multi-cloud-app-connect
     description: F5 XC Documentation - Service Mesh
 
   sites:
-    url: https://docs.cloud.f5.com/docs/how-to/site-management
+    url: https://docs.cloud.f5.com/docs-v2/multi-cloud-network-connect
     description: F5 XC Documentation - Site Management
 
   # ===== B. Security - Core =====
   shape:
-    url: https://docs.cloud.f5.com/docs/how-to/advanced-security/shape-security
+    url: https://docs.cloud.f5.com/docs-v2/bot-defense
     description: F5 XC Documentation - Shape Security
 
   api:
-    url: https://docs.cloud.f5.com/docs/how-to/app-security/api-discovery-and-protection
+    url: https://docs.cloud.f5.com/docs-v2/web-app-and-api-protection
     description: F5 XC Documentation - API Security
 
   waf:
-    url: https://docs.cloud.f5.com/docs/how-to/app-security/web-app-firewall
+    url: https://docs.cloud.f5.com/docs-v2/web-app-and-api-protection
     description: F5 XC Documentation - Web Application Firewall
 
   bot_and_threat_defense:
-    url: https://docs.cloud.f5.com/docs/how-to/app-security/bot-defense
+    url: https://docs.cloud.f5.com/docs-v2/bot-defense
     description: F5 XC Documentation - Bot Defense
 
   network_security:
-    url: https://docs.cloud.f5.com/docs/how-to/app-security/network-firewall
+    url: https://docs.cloud.f5.com/docs-v2/multi-cloud-network-connect
     description: F5 XC Documentation - Network Security
 
   # ===== C. Security - Advanced =====
   blindfold:
-    url: https://docs.cloud.f5.com/docs/how-to/app-security/blindfold
+    url: https://docs.cloud.f5.com/docs-v2/platform
     description: F5 XC Documentation - Blindfold Secrets
 
   data_and_privacy_security:
-    url: https://docs.cloud.f5.com/docs/how-to/app-security/client-side-defense
+    url: https://docs.cloud.f5.com/docs-v2/client-side-defense
     description: F5 XC Documentation - Data Privacy
 
   secops_and_incident_response:
-    url: https://docs.cloud.f5.com/docs/how-to/app-security/malicious-users
+    url: https://docs.cloud.f5.com/docs-v2/web-app-and-api-protection
     description: F5 XC Documentation - Security Operations
 
   ddos:
-    url: https://docs.cloud.f5.com/docs/how-to/app-security/ddos-protection
+    url: https://docs.cloud.f5.com/docs-v2/ddos-and-transit-services
     description: F5 XC Documentation - DDoS Protection
+
+  threat_campaign:
+    url: https://docs.cloud.f5.com/docs-v2/web-app-and-api-protection
+    description: F5 XC Documentation - Threat Campaign Analysis
 
   # ===== D. Load Balancing & Traffic =====
   dns:
-    url: https://docs.cloud.f5.com/docs/how-to/app-networking/dns-load-balancer
+    url: https://docs.cloud.f5.com/docs-v2/dns-management
     description: F5 XC Documentation - DNS Load Balancing
 
   virtual:
-    url: https://docs.cloud.f5.com/docs/how-to/app-networking/http-load-balancer
+    url: https://docs.cloud.f5.com/docs-v2/multi-cloud-app-connect
     description: F5 XC Documentation - HTTP Load Balancer
 
   network:
-    url: https://docs.cloud.f5.com/docs/how-to/site-management/site-networking
+    url: https://docs.cloud.f5.com/docs-v2/multi-cloud-network-connect
     description: F5 XC Documentation - Network Configuration
 
   cdn:
-    url: https://docs.cloud.f5.com/docs/how-to/app-networking/cdn
+    url: https://docs.cloud.f5.com/docs-v2/content-delivery-network
     description: F5 XC Documentation - Content Delivery Network
 
   # ===== E. Observability & Analytics =====
   observability:
-    url: https://docs.cloud.f5.com/docs/how-to/observe/synthetic-monitoring
+    url: https://docs.cloud.f5.com/docs-v2/observability
     description: F5 XC Documentation - Observability
 
+  data_intelligence:
+    url: https://docs.cloud.f5.com/docs-v2/data-intelligence
+    description: F5 XC Documentation - Data Intelligence
+
+  telemetry_and_insights:
+    url: https://docs.cloud.f5.com/docs-v2/observability
+    description: F5 XC Documentation - Telemetry and Insights
+
   statistics:
-    url: https://docs.cloud.f5.com/docs/how-to/observe/alerts-management
+    url: https://docs.cloud.f5.com/docs-v2/audit-logs-and-alerts
     description: F5 XC Documentation - Alerts and Statistics
 
   support:
-    url: https://docs.cloud.f5.com/docs/support
+    url: https://docs.cloud.f5.com/docs-v2/support-v2
     description: F5 XC Documentation - Support
 
   # ===== F. Identity & Access =====
   tenant_and_identity:
-    url: https://docs.cloud.f5.com/docs/how-to/user-mgmt
+    url: https://docs.cloud.f5.com/docs-v2/administration
     description: F5 XC Documentation - Tenant and Identity
 
+  authentication:
+    url: https://docs.cloud.f5.com/docs-v2/administration
+    description: F5 XC Documentation - Authentication
+
   users:
-    url: https://docs.cloud.f5.com/docs/how-to/user-mgmt/users
+    url: https://docs.cloud.f5.com/docs-v2/administration
     description: F5 XC Documentation - User Management
 
   # ===== G. Platform & Integrations =====
   bigip:
-    url: https://docs.cloud.f5.com/docs/how-to/site-management/bigip-sites
+    url: https://docs.cloud.f5.com/docs-v2/bigip-utilities
     description: F5 XC Documentation - BIG-IP Integration
 
   marketplace:
-    url: https://docs.cloud.f5.com/docs/how-to/integrations
+    url: https://docs.cloud.f5.com/docs-v2/platform
     description: F5 XC Documentation - Marketplace
 
   object_storage:
-    url: https://docs.cloud.f5.com/docs/reference/api-ref
+    url: https://docs.cloud.f5.com/docs-v2/reference/api-ref
     description: F5 XC Documentation - Object Storage
 
   nginx_one:
-    url: https://docs.cloud.f5.com/docs/how-to/integrations/nginx-one
+    url: https://docs.cloud.f5.com/docs-v2/nginx-one
     description: F5 XC Documentation - NGINX One
 
   # ===== H. Advanced & Emerging =====
   certificates:
-    url: https://docs.cloud.f5.com/docs/how-to/app-security/tls-certificates
+    url: https://docs.cloud.f5.com/docs-v2/web-app-and-api-protection
     description: F5 XC Documentation - Certificate Management
 
   ai_services:
-    url: https://docs.cloud.f5.com/docs/how-to/ai-assistant
+    url: https://docs.cloud.f5.com/docs-v2/ai-assistant
     description: F5 XC Documentation - AI Features
 
   rate_limiting:
-    url: https://docs.cloud.f5.com/docs/how-to/app-security/rate-limiting
+    url: https://docs.cloud.f5.com/docs-v2/web-app-and-api-protection
     description: F5 XC Documentation - Rate Limiting
 
   # ===== I. UI & Platform Infrastructure =====
   admin_console_and_ui:
-    url: https://docs.cloud.f5.com/docs/ves-concepts/console
+    url: https://docs.cloud.f5.com/docs-v2/platform
     description: F5 XC Documentation - Console UI
 
   billing_and_usage:
-    url: https://docs.cloud.f5.com/docs/how-to/account-mgmt/billing
+    url: https://docs.cloud.f5.com/docs-v2/purchasing-and-billing
     description: F5 XC Documentation - Billing and Usage
 
   label:
-    url: https://docs.cloud.f5.com/docs/how-to/user-mgmt/labels
+    url: https://docs.cloud.f5.com/docs-v2/shared-configuration
     description: F5 XC Documentation - Labels
 
   # ===== Fallback for "other" domain =====
   other:
-    url: https://docs.cloud.f5.com/docs/reference/api-ref
+    url: https://docs.cloud.f5.com/docs-v2/reference/api-ref
     description: F5 XC Documentation - API Reference

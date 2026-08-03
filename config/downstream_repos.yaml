@@ -1,8 +1,10 @@
+---
 # Downstream Repositories Configuration
 # =====================================
 # This file defines repositories that should be notified when API specs are updated.
-# The upstream workflow (sync-and-enrich.yml) reads this file and dispatches events
-# to each enabled repository using GitHub's repository_dispatch mechanism.
+# The post-merge publisher (publish-release.yml) reads this file only after the
+# immutable enriched release has been verified, then dispatches events to each
+# enabled repository using GitHub's repository_dispatch mechanism.
 #
 # To add a new downstream repository:
 # 1. Add an entry below with owner, repo, event_type, and enabled fields
@@ -15,6 +17,54 @@ downstream_repositories:
   - owner: f5-sales-demo
     repo: xcsh
     event_type: enriched-specs-updated
+    receipt_path: tools/spec-deliveries.json
+    receipt_ref: main
+    detail_path: tools/xcsh-publication-receipts.json
+    detail_ref: main
+    detail_kind: receipt_map
+    detail_collection: receipts
+    detail_publication_fields:
+      - assets
+      - commit
+      - generated
+      - npm
+      - provider
+      - spec_release_sha256
+      - tag
+      - version
+    detail_asset_names:
+      - pi_natives.darwin-arm64.node
+      - pi_natives.darwin-x64-baseline.node
+      - pi_natives.darwin-x64-modern.node
+      - pi_natives.linux-arm64.node
+      - pi_natives.linux-x64-baseline.node
+      - pi_natives.linux-x64-modern.node
+      - pi_natives.win32-x64-baseline.node
+      - pi_natives.win32-x64-modern.node
+      - xcsh-darwin-arm64
+      - xcsh-darwin-arm64.zip
+      - xcsh-darwin-x64
+      - xcsh-darwin-x64.zip
+      - xcsh-linux-arm64
+      - xcsh-linux-arm64.tar.gz
+      - xcsh-linux-x64
+      - xcsh-linux-x64.tar.gz
+      - xcsh-windows-x64.exe
+    detail_generated_names:
+      - packages/coding-agent/src/internal-urls/api-catalog-index.generated.ts
+      - packages/coding-agent/src/internal-urls/api-spec-index.generated.ts
+      - packages/coding-agent/src/internal-urls/terraform-index.generated.ts
+      - packages/resource-management/src/defaults-metadata.generated.ts
+    detail_npm_packages:
+      - '@f5-sales-demo/pi-resource-management'
+      - '@f5-sales-demo/xcsh'
+    detail_spec_pin_indent: tabs
+    publication_authority:
+      kind: github_release_npm
+      repository: f5-sales-demo/xcsh
+      source_pin_path: tools/spec-release.json
+      dependency_repository: f5-sales-demo/terraform-provider-xcsh
+      npm_registry: https://registry.npmjs.org
     enabled: true
     description: Interactive CLI shell for F5 XC resource management
 
@@ -22,6 +72,29 @@ downstream_repositories:
   - owner: f5-sales-demo
     repo: vscode-xcsh
     event_type: enriched-specs-updated
+    receipt_path: tools/spec-deliveries.json
+    receipt_ref: main
+    detail_path: tools/spec-publications.json
+    detail_ref: main
+    detail_kind: publication_map
+    detail_collection: publications
+    detail_publication_fields:
+      - bundle_sha256
+      - marketplace_sha256
+      - marketplace_version
+      - open_vsx_sha256
+      - open_vsx_version
+      - publication_epoch
+      - publication_tag
+      - vsix_name
+      - vsix_sha256
+    source_asset_name: f5xc-api-specs-{release_tag}.zip
+    publication_authority:
+      kind: github_release_marketplaces
+      repository: f5-sales-demo/vscode-xcsh
+      open_vsx_metadata_url: https://open-vsx.org/api/f5-sales-demo/xcsh/{version}
+      open_vsx_download_origin: https://open-vsx.org/
+      marketplace_asset_url: https://marketplace.visualstudio.com/_apis/public/gallery/publishers/f5-sales-demo/vsextensions/xcsh/{version}/vspackage
     enabled: true
     description: VS Code extension for F5 XC development
 
@@ -29,6 +102,38 @@ downstream_repositories:
   - owner: f5-sales-demo
     repo: terraform-provider-xcsh
     event_type: enriched-specs-updated
+    receipt_path: tools/spec-deliveries.json
+    receipt_ref: main
+    detail_path: tools/provider-publication-receipts.json
+    detail_ref: main
+    detail_kind: receipt_map
+    detail_collection: receipts
+    detail_publication_fields:
+      - assets
+      - commit
+      - spec_release_sha256
+      - tag
+      - version
+    detail_asset_names:
+      - mcp-data-{version}.tar.gz
+      - terraform-provider-xcsh_{version}_SHA256SUMS
+      - terraform-provider-xcsh_{version}_SHA256SUMS.sig
+      - terraform-provider-xcsh_{version}_darwin_amd64.zip
+      - terraform-provider-xcsh_{version}_darwin_arm64.zip
+      - terraform-provider-xcsh_{version}_freebsd_386.zip
+      - terraform-provider-xcsh_{version}_freebsd_amd64.zip
+      - terraform-provider-xcsh_{version}_linux_386.zip
+      - terraform-provider-xcsh_{version}_linux_amd64.zip
+      - terraform-provider-xcsh_{version}_linux_arm.zip
+      - terraform-provider-xcsh_{version}_linux_arm64.zip
+      - terraform-provider-xcsh_{version}_manifest.json
+      - terraform-provider-xcsh_{version}_windows_386.zip
+      - terraform-provider-xcsh_{version}_windows_amd64.zip
+    detail_spec_pin_indent: spaces
+    publication_authority:
+      kind: github_release
+      repository: f5-sales-demo/terraform-provider-xcsh
+      source_pin_path: tools/spec-release.json
     enabled: true
     description: Terraform provider for F5 Distributed Cloud resources
 
@@ -36,15 +141,22 @@ downstream_repositories:
   - owner: f5-sales-demo
     repo: console
     event_type: upstream-enrichment-changed
+    receipt_path: tools/spec-deliveries.json
+    receipt_ref: main
+    detail_path: tools/spec-release.json
+    detail_ref: main
+    detail_kind: current_pin
+    publication_authority:
+      kind: receiver_commit_source_pin
     enabled: true
     description: Schema-driven inventory of the F5 XC console UI
 
 # Payload sent to downstream repositories (for documentation):
 # {
+#   "delivery_id": "<canonical SHA-256>",
 #   "version": "1.0.82",
 #   "release_tag": "v1.0.82",
 #   "release_url": "https://github.com/f5-sales-demo/api-specs-enriched/releases/tag/v1.0.82",
-#   "timestamp": "2025-01-01T00:00:00Z",
-#   "trigger_source": "f5-sales-demo/api-specs-enriched",
-#   "run_id": "12345678"
+#   "target_commit": "<full lowercase Git commit>",
+#   "trigger_source": "f5-sales-demo/api-specs-enriched"
 # }

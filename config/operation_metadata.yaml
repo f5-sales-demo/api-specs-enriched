@@ -1,6 +1,4 @@
-enabled: true
-extension_prefix: 'x-f5xc'
-
+---
 # HTTP method base danger levels
 danger_levels:
   method_base_levels:
@@ -36,7 +34,6 @@ required_fields:
   standard_create_fields:
     - 'metadata.name'
     - 'metadata.namespace'
-  comment: 'F5 XC API standard - applies to POST operations creating resources'
 
 # Side effect determination
 side_effects:
@@ -46,32 +43,13 @@ side_effects:
     PATCH: 'modifies'
     DELETE: 'deletes'
 
-# Operation Metadata Extensions:
-# ===============================
+# Operation Metadata Contract:
+# ============================
 #
-# x-f5xc-required-fields (array of strings)
-# - List of required field paths for the operation
-# - Format: "fieldName" or "parent.child" for nested
-# - Example: ["metadata.name", "metadata.namespace", "spec.protocol"]
-#
-# x-f5xc-optional-fields (array of strings)
-# - List of optional but recommended fields
-# - Same format as required fields
-#
-# x-f5xc-danger-level (string)
-# - Risk classification: "low" | "medium" | "high"
-# - low: Read-only operations (GET, HEAD, OPTIONS)
-# - medium: Create/update operations (POST, PUT, PATCH) or system operations
-# - high: Destructive operations (DELETE) or security-critical changes
-#
-# x-f5xc-confirmation-required (boolean)
-# - Whether CLI tools should prompt for confirmation
-# - Automatically true for danger_level: "high"
-#
-# x-f5xc-side-effects (object)
-# - Documents what the operation creates/modifies/deletes
-# - Fields: creates[], modifies[], deletes[] (arrays of resource types)
-# - Example: {creates: ["http_loadbalancer"], modifies: [], deletes: []}
+# x-f5xc-operation-metadata is the sole operation metadata extension. Its
+# required_fields member lists required field paths, danger_level is low,
+# medium, or high, confirmation_required is true for high-risk operations, and
+# side_effects contains creates/modifies/deletes arrays of resource types.
 #
 # Danger Level Algorithm:
 # =======================
@@ -105,9 +83,3 @@ side_effects:
 # POST /api/config/.../system_settings
 #   Base: medium → Escalation: POST.*/(system|global)_ → Final: medium
 #
-# Future Enhancement Opportunities:
-# ==================================
-# - Add custom danger level overrides per operation (operationId)
-# - Add templated example generation from OpenAPI examples
-# - Add validation rule extraction from requestBody schema
-# - Add response code side effect mapping (201=create, 204=delete, etc.)

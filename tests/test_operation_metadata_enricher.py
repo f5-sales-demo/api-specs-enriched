@@ -5,6 +5,7 @@
 from pathlib import Path
 
 import pytest
+import yaml
 
 from scripts.utils.operation_metadata_enricher import OperationMetadataEnricher
 
@@ -55,12 +56,38 @@ class TestOperationMetadataEnricherBasics:
         """Test enricher initializes with default config."""
         enricher = OperationMetadataEnricher()
         assert len(enricher.danger_levels) > 0
-        assert enricher.extension_prefix == "x-f5xc"
 
-    def test_config_loading_missing_file(self):
-        """Test enricher loads defaults when config file missing."""
-        enricher = OperationMetadataEnricher(config_path=Path("/nonexistent/path.yaml"))
-        assert "method_base_levels" in enricher.danger_levels
+    def test_config_loading_missing_file_fails_closed(self):
+        """A missing production contract cannot silently select built-in defaults."""
+        with pytest.raises(FileNotFoundError, match="operation metadata config not found"):
+            OperationMetadataEnricher(config_path=Path("/nonexistent/path.yaml"))
+
+    @pytest.mark.parametrize(
+        ("mutation", "message"),
+        [
+            (lambda config: config.update({"extension_prefix": "x-example"}), "unknown.*keys"),
+            (
+                lambda config: config["danger_levels"]["escalation_patterns"][0].update(
+                    {"pattern": "["},
+                ),
+                "invalid.*regex",
+            ),
+            (
+                lambda config: config["side_effects"]["method_effects"].update(
+                    {"POST": "observes"},
+                ),
+                "method effects",
+            ),
+        ],
+    )
+    def test_invalid_config_fails_closed(self, tmp_path, mutation, message):
+        config = yaml.safe_load(Path("config/operation_metadata.yaml").read_text())
+        mutation(config)
+        path = tmp_path / "operation_metadata.yaml"
+        path.write_text(yaml.safe_dump(config))
+
+        with pytest.raises(ValueError, match=message):
+            OperationMetadataEnricher(config_path=path)
 
     def test_stats_initialization(self):
         """Test enrichment stats start at zero."""
@@ -311,20 +338,19 @@ class TestSpecEnrichment:
 
         # Check GET operation enriched
         list_op = result["paths"]["/api/config/namespaces/{namespace}/http_loadbalancers"]["get"]
-        assert "x-f5xc-danger-level" in list_op
-        assert list_op["x-f5xc-danger-level"] == "low"
+        assert list_op["x-f5xc-operation-metadata"]["danger_level"] == "low"
 
         # Check DELETE operation enriched
         delete_op = result["paths"]["/api/config/namespaces/{namespace}/http_loadbalancers/{name}"][
             "delete"
         ]
-        assert "x-f5xc-danger-level" in delete_op
-        assert delete_op["x-f5xc-danger-level"] == "high"
-        assert delete_op.get("x-f5xc-confirmation-required") is True
+        delete_metadata = delete_op["x-f5xc-operation-metadata"]
+        assert delete_metadata["danger_level"] == "high"
+        assert delete_metadata["confirmation_required"] is True
 
         # Check POST operation has required fields
         create_op = result["paths"]["/api/config/namespaces/{namespace}/http_loadbalancers"]["post"]
-        assert "x-f5xc-required-fields" in create_op
+        assert create_op["x-f5xc-operation-metadata"]["required_fields"]
 
     def test_stats_updated(self, enricher, simple_spec):
         """Test stats are updated after enrichment."""

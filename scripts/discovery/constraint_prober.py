@@ -8,7 +8,7 @@ import json
 import logging
 import os
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -18,6 +18,7 @@ import yaml
 sys.path.insert(0, str(Path(__file__).parent))
 from rate_limiter import RateLimitConfig, RateLimiter
 
+from scripts.discovery.error_parser import parse_constraint_from_error
 from scripts.discovery.probes import ProbeRequest, ProbeResponse, ResourceAuditResult
 from scripts.discovery.probes.enum import EnumProbe
 from scripts.discovery.probes.numeric import NumericBoundaryProbe
@@ -92,8 +93,6 @@ class ConstraintProber:
         resource_type: str,
     ) -> ProbeResponse:
         """Send one probe request and return a ProbeResponse."""
-        from scripts.discovery.error_parser import parse_constraint_from_error
-
         if self.dry_run:
             return ProbeResponse(
                 field_path=probe.field_path,
@@ -149,7 +148,7 @@ class ConstraintProber:
         """Run all probes for a resource type."""
         result = ResourceAuditResult(
             resource_type=resource_type,
-            timestamp=datetime.now(timezone.utc).isoformat(),
+            timestamp=datetime.now(UTC).isoformat(),
             namespace=self.namespace,
         )
 

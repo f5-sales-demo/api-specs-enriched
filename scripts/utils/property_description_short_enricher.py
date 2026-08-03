@@ -181,7 +181,7 @@ class PropertyDescriptionShortEnricher:
                             template=pattern_config["template"],
                         ),
                     )
-                except re.error:  # noqa: PERF203
+                except re.error:
                     pass  # Skip invalid patterns
 
             # Compile medium tier patterns
@@ -194,14 +194,14 @@ class PropertyDescriptionShortEnricher:
                             template=pattern_config["template"],
                         ),
                     )
-                except re.error:  # noqa: PERF203
+                except re.error:
                     pass  # Skip invalid patterns
 
             # Compile exclusions
             for exclusion in config.get("exclusions", []):
                 try:  # noqa: SIM105
                     self.exclusions.append(re.compile(exclusion))
-                except re.error:  # noqa: PERF203
+                except re.error:
                     pass
 
         except Exception:  # noqa: S110
@@ -214,14 +214,14 @@ class PropertyDescriptionShortEnricher:
             try:
                 compiled = re.compile(pattern, re.IGNORECASE)
                 self._compiled_transforms.append((compiled, replacement))
-            except re.error:  # noqa: PERF203
+            except re.error:
                 pass
 
         self._compiled_removals: list[re.Pattern[str]] = []
         for pattern in self.REMOVAL_PATTERNS:
             try:  # noqa: SIM105
                 self._compiled_removals.append(re.compile(pattern, re.IGNORECASE | re.DOTALL))
-            except re.error:  # noqa: PERF203
+            except re.error:
                 pass
 
     def get_config_version(self) -> str:
@@ -308,21 +308,20 @@ class PropertyDescriptionShortEnricher:
 
         # Generate short description if not already present
         if not (self.settings.preserve_existing and has_short):
-            short_desc = self._generate_short_description_for_schema(schema_name, description)
+            short_desc = self._generate_short_description_for_schema(description)
             if short_desc:
                 schema[X_F5XC_DESCRIPTION_SHORT] = short_desc
                 self.stats.short_descriptions_added += 1
 
         # Generate medium description if not already present
         if not (self.settings.preserve_existing and has_medium):
-            medium_desc = self._generate_medium_description_for_schema(schema_name, description)
+            medium_desc = self._generate_medium_description_for_schema(description)
             if medium_desc:
                 schema[X_F5XC_DESCRIPTION_MEDIUM] = medium_desc
                 self.stats.medium_descriptions_added += 1
 
     def _generate_short_description_for_schema(
         self,
-        schema_name: str,
         description: str,
     ) -> str | None:
         """Generate short description for a schema.
@@ -332,7 +331,6 @@ class PropertyDescriptionShortEnricher:
         2. First sentence extraction with style transformation
 
         Args:
-            schema_name: Name of the parent schema (unused, kept for interface compatibility)
             description: Original long description
 
         Returns:
@@ -351,7 +349,6 @@ class PropertyDescriptionShortEnricher:
 
     def _generate_medium_description_for_schema(
         self,
-        schema_name: str,
         description: str,
     ) -> str | None:
         """Generate medium description for a schema.
@@ -359,7 +356,6 @@ class PropertyDescriptionShortEnricher:
         Uses multi-sentence extraction with style transformation.
 
         Args:
-            schema_name: Name of the schema
             description: Original long description
 
         Returns:

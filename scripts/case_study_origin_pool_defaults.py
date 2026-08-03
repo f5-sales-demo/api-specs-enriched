@@ -29,7 +29,7 @@ import sys
 import time
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import httpx
@@ -457,7 +457,7 @@ class OriginPoolCaseStudy:
         """Execute the full case study."""
         start = time.monotonic()
         report = CaseStudyReport(
-            timestamp=datetime.now(tz=timezone.utc).isoformat(),
+            timestamp=datetime.now(tz=UTC).isoformat(),
             api_url=self.api_url,
             namespace=self.namespace,
         )

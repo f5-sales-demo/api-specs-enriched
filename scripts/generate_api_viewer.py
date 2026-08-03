@@ -13,6 +13,7 @@ Usage:
 
 from __future__ import annotations
 
+import argparse
 import json
 import sys
 from collections import defaultdict
@@ -150,7 +151,7 @@ def _escape_mdx(text: str) -> str:
     )
 
 
-def generate_domain_summary(spec: dict) -> str:
+def generate_domain_summary(spec: dict, *, spec_dir: Path = SPEC_DIR) -> str:
     """Generate a per-domain summary MDX page for llms-txt indexing."""
     domain = spec["domain"]
     title = spec["title"]
@@ -166,7 +167,7 @@ def generate_domain_summary(spec: dict) -> str:
     related = spec.get("x-f5xc-related-domains", [])
     resources = spec.get("x-f5xc-primary-resources", [])
 
-    spec_file = SPEC_DIR / f"{domain}.json"
+    spec_file = spec_dir / f"{domain}.json"
     rows: list[str] = []
     if spec_file.exists():
         with spec_file.open() as f:
@@ -240,13 +241,20 @@ sidebar:
     return "\n\n".join(section for section in sections if section) + "\n"
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
     """Generate catalog page and plugin configuration."""
-    if not INDEX_JSON.exists():
-        print(f"Error: {INDEX_JSON} not found. Run 'make pipeline' first.")
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--spec-dir", type=Path, default=SPEC_DIR)
+    parser.add_argument("--mdx-dir", type=Path, default=MDX_DIR)
+    parser.add_argument("--openapi-config", type=Path, default=OPENAPI_CONFIG_PATH)
+    args = parser.parse_args(argv)
+    index_json = args.spec_dir / "index.json"
+
+    if not index_json.exists():
+        print(f"Error: {index_json} not found. Run 'make pipeline' first.")
         return 1
 
-    with INDEX_JSON.open() as f:
+    with index_json.open() as f:
         index = json.load(f)
 
     specs = index.get("specifications", [])
@@ -254,33 +262,37 @@ def main() -> int:
         print("Error: No specifications found in index.json")
         return 1
 
-    MDX_DIR.mkdir(parents=True, exist_ok=True)
+    args.mdx_dir.mkdir(parents=True, exist_ok=True)
+    args.openapi_config.parent.mkdir(parents=True, exist_ok=True)
 
     # Remove stale generated MDX files
     valid_stems = {"index"} | {f"{s['domain']}-api" for s in specs}
-    for stale in MDX_DIR.glob("*.mdx"):
+    for stale in args.mdx_dir.glob("*.mdx"):
         if stale.stem not in valid_stems:
             stale.unlink()
 
     # Generate catalog landing page
-    catalog_path = MDX_DIR / "index.mdx"
-    catalog_path.write_text(generate_catalog_mdx(specs))
+    catalog_path = args.mdx_dir / "index.mdx"
+    catalog_path.write_text(generate_catalog_mdx(specs), encoding="utf-8")
 
     # Generate per-domain summary pages for llms-txt indexing
     summary_count = 0
     for spec in specs:
         if spec.get("path_count", 0) == 0:
             continue
-        summary_path = MDX_DIR / f"{spec['domain']}-api.mdx"
-        summary_path.write_text(generate_domain_summary(spec))
+        summary_path = args.mdx_dir / f"{spec['domain']}-api.mdx"
+        summary_path.write_text(
+            generate_domain_summary(spec, spec_dir=args.spec_dir),
+            encoding="utf-8",
+        )
         summary_count += 1
     # Generate starlight-openapi plugin configuration
     config_content = generate_openapi_specs_config(specs)
-    OPENAPI_CONFIG_PATH.write_text(config_content)
+    args.openapi_config.write_text(config_content, encoding="utf-8")
 
     print(f"Generated catalog page at {catalog_path}")
     print(f"Generated {summary_count} domain summary pages")
-    print(f"Generated OpenAPI specs config at {OPENAPI_CONFIG_PATH}")
+    print(f"Generated OpenAPI specs config at {args.openapi_config}")
     return 0
 
 

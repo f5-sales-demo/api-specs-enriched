@@ -38,12 +38,24 @@ set -euo pipefail
 
 OUTPUT_DIR="docs/specifications/api"
 INDEX_FILE="${OUTPUT_DIR}/index.json"
+API_REFERENCE_DIR="docs/api-reference"
+OPENAPI_CONFIG="docs/openapi-specs-config.json"
 UPSTREAM_STATE=".github_release"
+CATALOG_FILE="release/api-catalog.json"
+RELEASE_README="release/README.md"
+BASE_REF="${DETECT_RELEASE_BASE:-HEAD}"
 
-# Every path used as a change signal, guarded below. Both match a .gitignore
-# pattern and are tracked only because the release commit force-adds them, so
-# the invariant that matters is trackedness, not .gitignore membership.
-SIGNAL_PATHS=("$OUTPUT_DIR" "$UPSTREAM_STATE")
+# Every path used as a change signal is guarded below. Some generated paths
+# match .gitignore and are tracked only because the release commit force-adds
+# them, so the invariant that matters is trackedness, not ignore membership.
+SIGNAL_PATHS=(
+  "$OUTPUT_DIR"
+  "$API_REFERENCE_DIR"
+  "$OPENAPI_CONFIG"
+  "$UPSTREAM_STATE"
+  "$CATALOG_FILE"
+  "$RELEASE_README"
+)
 
 # Fields that move without the content moving, stripped before comparing:
 #
@@ -59,12 +71,23 @@ SIGNAL_PATHS=("$OUTPUT_DIR" "$UPSTREAM_STATE")
 #                            looks "changed" and every run would publish a
 #                            content-free patch release.
 #
-# A diff made only of these must not publish an otherwise empty release.
-VOLATILE_FILTER='del(.timestamp, .generated_at, .version, .info.version)'
+# A diff made only of these must not publish an otherwise empty release. Root
+# `version` is not generically volatile: validation.json uses it as its schema
+# format version. Only the four measured release-stamped artifacts may drop it.
+VOLATILE_FILTER='del(.timestamp, .generated_at) | if has("openapi") then del(.info.version) else . end'
 
 GH_CMD="${DETECT_RELEASE_GH:-gh}"
 
 : "${GITHUB_OUTPUT:?GITHUB_OUTPUT must point at the step output file}"
+
+if ! git rev-parse --verify "${BASE_REF}^{commit}" >/dev/null 2>&1; then
+  echo "::error::Release comparison base is not a commit: ${BASE_REF}" >&2
+  exit 1
+fi
+if ! git merge-base --is-ancestor "$BASE_REF" HEAD; then
+  echo "::error::Release comparison base ${BASE_REF} is not an ancestor of HEAD" >&2
+  exit 1
+fi
 
 WORK_DIR="$(mktemp -d)"
 trap 'rm -rf "$WORK_DIR"' EXIT
@@ -73,33 +96,88 @@ emit() {
   printf '%s\n' "$@" >>"$GITHUB_OUTPUT"
 }
 
-# Canonicalise one generated artifact into $1, dropping volatile metadata.
-# Input arrives on stdin. Anything jq cannot parse is compared byte-for-byte
-# instead, so a non-JSON artifact is never silently treated as unchanged.
+# Canonicalise one generated JSON artifact into $1, dropping volatile metadata.
+# Invalid JSON is a broken candidate, not a byte-comparison compatibility case.
 normalize_to() {
-  local dest="$1"
+  local dest="$1" artifact="$2" filter="$VOLATILE_FILTER" expected_type="object"
   local raw="${WORK_DIR}/raw"
+  case "$artifact" in
+    "$INDEX_FILE" | "$OUTPUT_DIR/minimal-export-defaults.json" | \
+      "$OUTPUT_DIR/namespace_profiles.json" | "$CATALOG_FILE")
+      filter="$filter | del(.version)"
+      ;;
+    "$OPENAPI_CONFIG")
+      filter='.'
+      expected_type="array"
+      ;;
+  esac
   cat >"$raw"
-  if ! jq -S "$VOLATILE_FILTER" "$raw" >"$dest" 2>/dev/null; then
-    cp "$raw" "$dest"
+  if ! jq -eS "select(type == \"$expected_type\") | $filter" "$raw" >"$dest"; then
+    echo "::error::Generated publication signal has the wrong JSON type" >&2
+    exit 1
   fi
 }
 
-# A signal path with no tracked files cannot ever produce a diff. That was
-# defect (1) of #1094 and it failed silently for months; make it loud.
+# Extract and validate the immutable part of the upstream release receipt.
+# Download timestamps are deliberately excluded, but malformed receipt state
+# must never collapse to an empty identity and compare equal.
+upstream_identity() {
+  jq -er '
+    if type != "object"
+      or (.version | type) != "string"
+      or (.tag_name | type) != "string"
+      or .tag_name != ("v" + .version)
+      or (.published_at | type) != "string"
+      or (.published_at | test("^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$")) != true
+      or (.asset_name | type) != "string"
+      or (.asset_name | test("^[^/[:cntrl:]]+$")) != true
+      or (.asset_digest | type) != "string"
+      or (.asset_digest | test("^sha256:[0-9a-f]{64}$")) != true
+    then error("invalid upstream release state")
+    else [.tag_name, .asset_name, .asset_digest] | @tsv
+    end
+  ' || {
+    echo "::error::Invalid upstream release state" >&2
+    return 1
+  }
+}
+
+# A signal must exist either in the comparison base or as a generated file in
+# the worktree. An empty directory has no diffable state and is not measurable.
+# This permits a first publication while still making an unmeasurable signal
+# loud (defect (1) of #1094 failed silently for months).
+worktree_signal_exists() {
+  local path="$1"
+  if [ -f "$path" ]; then
+    return 0
+  fi
+  [ -d "$path" ] && [ -n "$(find "$path" -type f -print -quit)" ]
+}
+
 for path in "${SIGNAL_PATHS[@]}"; do
-  if [ -z "$(git ls-files -- "$path")" ]; then
-    echo "::error::Change signal '${path}' has no files tracked in git," \
-      "so a diff on it can never report a change (see #1094)." >&2
+  if ! git cat-file -e "${BASE_REF}:${path}" 2>/dev/null && \
+    ! worktree_signal_exists "$path"; then
+    echo "::error::Change signal '${path}' is absent from both ${BASE_REF}" \
+      "and the generated worktree, so it cannot be measured (see #1094)." >&2
     exit 1
   fi
 done
 
-if [ ! -f "$INDEX_FILE" ]; then
-  emit "has_changes=false"
-  echo "No enriched specs generated (${INDEX_FILE} is missing)"
-  exit 0
+for required in "$INDEX_FILE" "$CATALOG_FILE" "$UPSTREAM_STATE" "$RELEASE_README"; do
+  if [ ! -f "$required" ]; then
+    echo "::error::Required generated artifact is missing: ${required}" >&2
+    exit 1
+  fi
+done
+
+# Validate every identity that exists before the initial-release shortcut as
+# well. A malformed receipt can never be published. Absence at the base is a
+# measurable first publication, represented by an empty committed identity.
+COMMITTED_IDENTITY=""
+if git cat-file -e "${BASE_REF}:${UPSTREAM_STATE}" 2>/dev/null; then
+  COMMITTED_IDENTITY="$(git show "${BASE_REF}:${UPSTREAM_STATE}" | upstream_identity)"
 fi
+CURRENT_IDENTITY="$(upstream_identity <"$UPSTREAM_STATE")"
 
 # Fresh repo / migration: nothing published yet, so publish.
 RELEASE_COUNT="$("$GH_CMD" release list --limit 1 2>/dev/null | wc -l | tr -d ' ')"
@@ -113,16 +191,10 @@ fi
 # Classify on the release IDENTITY, not on the bytes of .github_release: the
 # download step rewrites `downloaded_at` on every forced download, so a byte
 # comparison would report `source` on every run and never `pipeline`.
-COMMITTED_TAG="$({ git show "HEAD:${UPSTREAM_STATE}" 2>/dev/null || true; } | jq -r '.tag_name // ""' 2>/dev/null || true)"
-CURRENT_TAG=""
-if [ -f "$UPSTREAM_STATE" ]; then
-  CURRENT_TAG="$(jq -r '.tag_name // ""' "$UPSTREAM_STATE" 2>/dev/null || true)"
-fi
-
 SOURCE_CHANGED=false
-if [ "$CURRENT_TAG" != "$COMMITTED_TAG" ]; then
+if [ "$CURRENT_IDENTITY" != "$COMMITTED_IDENTITY" ]; then
   SOURCE_CHANGED=true
-  echo "Upstream release changed: '${COMMITTED_TAG:-none}' -> '${CURRENT_TAG:-none}'"
+  echo "Upstream release asset identity changed"
 fi
 
 # --- Did the generated output move? ---------------------------------------
@@ -134,14 +206,47 @@ while IFS= read -r file; do
     OUTPUT_CHANGED=true
     break
   fi
-  { git show "HEAD:${file}" 2>/dev/null || true; } | normalize_to "${WORK_DIR}/committed"
-  normalize_to "${WORK_DIR}/current" <"$file"
+  if ! git cat-file -e "${BASE_REF}:${file}" 2>/dev/null; then
+    echo "Generated output changed: ${file} was added"
+    OUTPUT_CHANGED=true
+    break
+  fi
+  case "$file" in
+    "$OUTPUT_DIR"/*.json | "$CATALOG_FILE" | "$OPENAPI_CONFIG")
+      git show "${BASE_REF}:${file}" | normalize_to "${WORK_DIR}/committed" "$file"
+      # The normalizer writes WORK_DIR/current, never the source artifact.
+      # shellcheck disable=SC2094
+      normalize_to "${WORK_DIR}/current" "$file" <"$file"
+      ;;
+    *)
+      git show "${BASE_REF}:${file}" >"${WORK_DIR}/committed"
+      dd if="$file" of="${WORK_DIR}/current" status=none
+      ;;
+  esac
   if ! cmp -s "${WORK_DIR}/committed" "${WORK_DIR}/current"; then
     echo "Generated output changed: ${file}"
     OUTPUT_CHANGED=true
     break
   fi
-done < <(git diff --name-only HEAD -- "$OUTPUT_DIR")
+done < <(
+  {
+    git ls-tree -r --name-only "$BASE_REF" -- \
+      "$OUTPUT_DIR" "$API_REFERENCE_DIR" "$CATALOG_FILE" "$OPENAPI_CONFIG"
+    find "$OUTPUT_DIR" "$API_REFERENCE_DIR" -type f -print
+    printf '%s\n' "$CATALOG_FILE" "$OPENAPI_CONFIG"
+  } | LC_ALL=C sort -u
+)
+
+if [ "$OUTPUT_CHANGED" = false ]; then
+  if ! git cat-file -e "${BASE_REF}:${RELEASE_README}" 2>/dev/null; then
+    echo "Generated output changed: ${RELEASE_README} was added"
+    OUTPUT_CHANGED=true
+  elif ! git show "${BASE_REF}:${RELEASE_README}" | \
+    cmp -s - "$RELEASE_README"; then
+    echo "Generated output changed: ${RELEASE_README}"
+    OUTPUT_CHANGED=true
+  fi
+fi
 
 if [ "$SOURCE_CHANGED" = false ] && [ "$OUTPUT_CHANGED" = false ]; then
   emit "has_changes=false"

@@ -1,3 +1,4 @@
+---
 # Extension Registry - Single source of truth for x-f5xc-* namespace
 #
 # This file documents all custom OpenAPI extensions added by the enrichment pipeline.
@@ -18,8 +19,8 @@
 #
 # All extensions are now unified under x-f5xc-* namespace.
 
-version: "3.5"
-namespace: "x-f5xc-"
+version: "4.0"
+extension_prefix: "x-f5xc-"
 
 # =============================================================================
 # SPEC-LEVEL EXTENSIONS (info section)
@@ -32,33 +33,24 @@ spec_level:
     example: "virtual"
     migrated_from: "x-ves-cli-domain"
 
-  x-f5xc-upstream-timestamp:
+  x-f5xc-summary:
     type: string
-    format: iso8601
-    purpose: Timestamp when spec was downloaded from F5 source
-    consumers: [pipeline]
-    example: "2025-01-04T12:00:00Z"
-    migrated_from: "x-upstream-timestamp"
+    purpose: Configured medium-length domain summary
+    consumers: [mcp, cli, ide, docs]
+    source: config/domain_descriptions.yaml
 
-  x-f5xc-upstream-etag:
+  x-f5xc-description-long:
     type: string
-    purpose: ETag from F5 source for cache validation
-    consumers: [pipeline]
-    example: "\"abc123\""
-    migrated_from: "x-upstream-etag"
+    purpose: Configured long-form domain description
+    consumers: [mcp, cli, ide, docs]
+    source: config/domain_descriptions.yaml
 
-  x-f5xc-enriched-version:
+  x-f5xc-api-reference-url:
     type: string
-    purpose: Version of enrichment pipeline that processed this spec
-    consumers: [pipeline, mcp]
-    example: "3.0.0"
-    migrated_from: "x-enriched-version"
-
-  x-f5xc-glossary:
-    type: object
-    purpose: Domain-specific terminology and acronym definitions
-    consumers: [mcp, ide, docs]
-    added_in: "3.0.0"
+    format: uri
+    purpose: Hosted API reference page for the generated domain specification
+    consumers: [mcp, cli, ide, docs]
+    source: scripts/utils/external_docs_enricher.py
 
   x-f5xc-cli-metadata:
     type: object
@@ -66,26 +58,6 @@ spec_level:
     consumers: [cli, mcp]
     added_in: "3.0.0"
     note: "Migrated from non-prefixed cli_metadata in v3.0.0"
-
-  x-f5xc-discovered-at:
-    type: string
-    format: iso8601
-    purpose: Timestamp when endpoint was discovered via live API
-    consumers: [discovery]
-    added_in: "3.0.0"
-
-  x-f5xc-api-url:
-    type: string
-    format: uri
-    purpose: API URL used during discovery
-    consumers: [discovery]
-    added_in: "3.0.0"
-
-  x-f5xc-response-time-ms:
-    type: number
-    purpose: Response time in milliseconds during discovery
-    consumers: [discovery]
-    added_in: "3.0.0"
 
   x-f5xc-best-practices:
     type: object
@@ -121,16 +93,6 @@ spec_level:
       CE: "Customer Edge"
     added_in: "3.1.0"
     issue: "#314"
-
-  x-f5xc-console-navigation:
-    type: object
-    purpose: Global console navigation tree — workspace and menu hierarchy
-    consumers: [console-catalog, xcsh, browser-automation]
-    added_in: "3.5.0"
-    issue: "#679"
-    properties:
-      workspaces: Workspace definitions with route prefixes
-      tree: Navigation tree nodes with routes and children
 
 # =============================================================================
 # SCHEMA-LEVEL EXTENSIONS (component schemas)
@@ -176,48 +138,6 @@ schema_level:
         multi_tenant_pattern: "per-tenant"
     migrated_from: "x-f5xc-namespace-scope"
 
-  x-f5xc-displayorder:
-    type: integer
-    purpose: UI display ordering hint
-    consumers: [ide]
-    example: 10
-    migrated_from: "x-ves-displayorder"
-
-  x-f5xc-terraform-resource:
-    type: string
-    purpose: Corresponding Terraform resource name
-    consumers: [ide, mcp]
-    example: "volterra_http_loadbalancer"
-    new_field: true
-
-  x-f5xc-display-name:
-    type: string
-    purpose: Human-friendly resource name
-    consumers: [ide, cli, mcp]
-    example: "HTTP Load Balancer"
-    new_field: true
-
-  x-f5xc-console:
-    type: object
-    purpose: Console UI navigation, routing, and form structure for this resource
-    consumers: [console-catalog, xcsh, vscode-xcsh, browser-automation]
-    added_in: "3.5.0"
-    issue: "#679"
-    properties:
-      workspace: Workspace ID (web-app-and-api-protection, multi-cloud-app-connect, administration)
-      menu_path: Sidebar navigation path array
-      route_pattern: URL path relative to workspace route_prefix
-      breadcrumbs: Full breadcrumb trail with namespace placeholder
-      add_action: How to open the create form (type + label)
-      save_action: Save button label
-      form_tabs: Tab labels on the form view
-      form_sections: Ordered sections with API field references
-      metadata: Discovery confidence, date, console version
-    example:
-      workspace: "web-app-and-api-protection"
-      menu_path: ["Manage", "Load Balancers", "HTTP Load Balancers"]
-      route_pattern: "/namespaces/{namespace}/manage/load_balancers/http_loadbalancers"
-
   x-f5xc-action:
     type: string
     purpose: >-
@@ -227,27 +147,16 @@ schema_level:
     consumers: [terraform]
     example: "approve"
 
+  x-f5xc-upstream-defect:
+    type: string
+    purpose: Explicit repair marker for a referenced message omitted upstream
+    consumers: [terraform, cli, mcp, ide]
+    source: upstream pass-through from api-specs
+
 # =============================================================================
 # PROPERTY-LEVEL EXTENSIONS (schema properties)
 # =============================================================================
 property_level:
-  x-f5xc-description:
-    type: string
-    purpose: Enhanced field description with context
-    consumers: [ide, mcp]
-    migrated_from: "x-ves-description"
-
-  x-f5xc-validation:
-    type: object
-    purpose: Field validation constraints beyond JSON Schema
-    consumers: [cli, ide]
-    properties:
-      pattern: "Regex pattern"
-      min_length: "Minimum string length"
-      max_length: "Maximum string length"
-      allowed_values: "Enumerated allowed values"
-    migrated_from: "x-ves-validation"
-
   x-f5xc-examples:
     type: array
     items: any
@@ -261,29 +170,6 @@ property_level:
     consumers: [ide, mcp]
     migrated_from: "x-ves-example"
 
-  x-f5xc-completion:
-    type: object
-    purpose: IDE autocompletion hints
-    consumers: [ide]
-    properties:
-      suggestions: "Array of completion suggestions"
-      dynamic: "Whether completions are dynamic"
-    migrated_from: "x-ves-completion"
-
-  x-f5xc-defaults:
-    type: any
-    purpose: Default value for the field
-    consumers: [cli, ide, mcp]
-    migrated_from: "x-ves-defaults"
-
-  x-f5xc-required-for-operations:
-    type: array
-    items: string
-    purpose: Operations that require this field
-    consumers: [cli, mcp]
-    example: ["create", "update"]
-    migrated_from: "x-ves-required-for-operations"
-
   x-f5xc-required-for:
     type: object
     purpose: Context-specific field requirements
@@ -295,23 +181,24 @@ property_level:
       read: "Required for read operation"
     migrated_from: "x-ves-required-for"
 
-  x-f5xc-conditions:
-    type: object
-    purpose: Conditional field visibility/requirements
-    consumers: [ide, cli]
-    migrated_from: "x-ves-conditions"
-
-  x-f5xc-deprecated:
-    type: boolean
-    purpose: Field deprecation indicator
-    consumers: [ide, cli, mcp]
-    migrated_from: "x-ves-deprecated"
-
   x-f5xc-server-default:
     type: boolean
     purpose: Marker indicating value is server-applied when field omitted
     consumers: [cli, mcp, ide]
     added_in: "3.1.0"
+    issue: "#449"
+
+  x-f5xc-server-default-value:
+    type: object
+    purpose: Lossless representation of a server-applied value that is invalid as an OpenAPI default
+    consumers: [cli, mcp, ide]
+    properties:
+      type: "Explicit value type; currently null"
+      value: "Measured server-applied value"
+    example:
+      type: "null"
+      value: null
+    added_in: "3.5.0"
     issue: "#449"
 
   x-f5xc-recommended-value:
@@ -358,6 +245,19 @@ property_level:
     added_in: "3.5.0"
     issue: "#TBD"
     note: "resource_kind null = unresolved (curate in resource_references.yaml, never guessed). The coarse resource_dependency_graph.json is a projection of these."
+
+  x-f5xc-field-examples:
+    type: object
+    purpose: Deterministic create values keyed by field path
+    consumers: [terraform, cli, mcp, ide]
+    source: scripts/utils/example_field_enricher.py
+
+  x-f5xc-requires:
+    type: array
+    items: object
+    purpose: Cross-field dependencies required for deterministic configuration
+    consumers: [terraform, cli, mcp, ide]
+    source: scripts/utils/dependency_enricher.py
 
   x-f5xc-constraints:
     type: object
@@ -443,54 +343,10 @@ property_level:
       presented property name. Emitting the corrected name makes F5 silently
       discard the field (terraform-provider-xcsh#1257).
 
-  x-f5xc-console-field:
-    type: object
-    purpose: Console form widget metadata for this API property
-    consumers: [console-catalog, xcsh, browser-automation]
-    added_in: "3.5.0"
-    issue: "#679"
-    properties:
-      widget_type: Console widget type (textbox, listbox, spinbutton, checkbox, etc.)
-      label: Console display label when different from schema title
-      default: Console default value
-      selector: Text/aria selector for browser automation
-      form_section: Which form section this field appears in
-      show_when: Conditional visibility rule
-      advanced: Hidden behind Show Advanced Fields toggle
-
 # =============================================================================
 # OPERATION-LEVEL EXTENSIONS (path operations)
 # =============================================================================
 operation_level:
-  x-f5xc-required-fields:
-    type: array
-    items: string
-    purpose: Fields required for this operation
-    consumers: [cli, mcp]
-    migrated_from: "x-ves-required-fields"
-
-  x-f5xc-danger-level:
-    type: string
-    enum: [low, medium, high]
-    purpose: Risk classification for destructive operations
-    consumers: [cli]
-    example: "high"
-    migrated_from: "x-ves-danger-level"
-
-  x-f5xc-confirmation-required:
-    type: boolean
-    purpose: Whether operation requires user confirmation
-    consumers: [cli]
-    migrated_from: "x-ves-confirmation-required"
-
-  x-f5xc-side-effects:
-    type: array
-    items: string
-    purpose: Side effects of the operation
-    consumers: [cli, mcp]
-    example: ["Deletes associated origin pools", "Invalidates CDN cache"]
-    migrated_from: "x-ves-side-effects"
-
   x-f5xc-operation-metadata:
     type: object
     purpose: Comprehensive operation metadata for CLI tooling and AI assistants
@@ -510,45 +366,12 @@ operation_level:
     added_in: "3.0.0"
     issue: "#292"
 
-  x-f5xc-discovered-response-time:
-    type: object
-    purpose: Statistical response time data from live API discovery
-    consumers: [mcp, cli, docs]
-    properties:
-      p50: "50th percentile response time in milliseconds"
-      p95: "95th percentile response time in milliseconds"
-      p99: "99th percentile response time in milliseconds"
-      sample_count: "Number of samples collected"
-      last_measured: "ISO 8601 timestamp of last measurement"
-    added_in: "3.1.0"
-    issue: "#314"
-
-  x-f5xc-discovered-rate-limits:
-    type: object
-    purpose: Rate limiting behavior discovered from live API
-    consumers: [mcp, cli]
-    properties:
-      requests_per_minute: "Maximum requests per minute"
-      requests_per_second: "Maximum requests per second"
-      burst_limit: "Burst capacity if applicable"
-      retry_after_header: "Whether API returns Retry-After header"
-      discovered_at: "ISO 8601 timestamp of discovery"
-    added_in: "3.1.0"
-    issue: "#314"
-
-  x-f5xc-discovered-error-catalog:
+  x-f5xc-operation-aliases:
     type: array
-    items: object
-    purpose: Catalog of error responses discovered from live API
-    consumers: [mcp, cli, ide]
-    properties:
-      status_code: "HTTP status code"
-      error_type: "Error classification"
-      message_pattern: "Common message patterns"
-      resolution: "Suggested resolution"
-      frequency: "How often this error was encountered"
-    added_in: "3.1.0"
-    issue: "#314"
+    items: string
+    purpose: Explicit aliases for source operations collapsed into one canonical operation
+    consumers: [terraform, cli, mcp, ide]
+    source: scripts/pipeline.py
 
 # =============================================================================
 # INDEX-LEVEL EXTENSIONS (index.json metadata)
@@ -568,6 +391,12 @@ index_level:
     purpose: Critical resources requiring special handling
     consumers: [cli, mcp]
     source: "config/critical_resources.yaml"
+
+  x-f5xc-error-resolution:
+    type: object
+    purpose: HTTP and resource-specific resolution guidance for failed operations
+    consumers: [cli, mcp, ide]
+    source: config/error_resolution.yaml
 
   x-f5xc-primary-resources:
     type: array
@@ -660,12 +489,6 @@ index_level:
     consumers: [ide, mcp]
     migrated_from: "related_domains"
 
-  x-f5xc-doc-section:
-    type: string
-    purpose: Documentation navigation section
-    consumers: [ide]
-    new_field: true
-
 # =============================================================================
 # PRESERVED F5 NATIVE EXTENSIONS (DO NOT MODIFY)
 # =============================================================================
@@ -684,15 +507,3 @@ preserved_native:
     - x-ves-oneof
     - x-ves-default
     - x-ves-required
-
-# =============================================================================
-# WRAPPER FIELDS (NOT EXTENSIONS) - DEPRECATED IN v3.0.0
-# =============================================================================
-wrapper_fields:
-  description: |
-    In v3.0.0, all wrapper fields have been migrated to the x-f5xc-* namespace.
-    The cli_metadata wrapper field is now x-f5xc-cli-metadata.
-
-    This section is retained for historical reference only.
-
-  fields: []  # All migrated to x-f5xc-* namespace in v3.0.0

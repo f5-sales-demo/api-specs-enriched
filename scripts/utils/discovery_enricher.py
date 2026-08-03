@@ -1,20 +1,17 @@
 # Copyright (c) 2026 Robin Mordasiewicz. MIT License.
 
-"""Discovery Enricher Module.
+"""Explicit local enrichment from a complete, measured discovery snapshot.
 
-Merges live API discovery data into published OpenAPI specifications,
-adding x-discovered-* extensions with real-world constraints, patterns,
-and examples without modifying the core schema.
+Release generation never imports discovery snapshots; its sole API source is the
+immutable upstream release artifact. This module supports separate local analysis.
 """
 
 import json
+import math
 import re
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
-
-import yaml
 
 from scripts.utils.extension_constants import (
     X_F5XC_DISCOVERED_ERROR_CATALOG,
@@ -72,16 +69,13 @@ class DiscoveryData:
     session: dict = field(default_factory=dict)
     paths: dict = field(default_factory=dict)
     schemas: dict = field(default_factory=dict)
-    response_times: dict = field(default_factory=dict)
     discovered_at: str | None = None
 
 
 class DiscoveryEnricher:
     """Merge discovered constraints with published specs.
 
-    This class loads discovery data from the specs/discovered directory
-    and enriches published OpenAPI specs with real-world constraints,
-    patterns, and examples using x-discovered-* extensions.
+    The caller supplies an explicit snapshot directory outside the release pipeline.
     """
 
     # Precompiled format detection patterns (Issue #391)
@@ -101,7 +95,12 @@ class DiscoveryEnricher:
         Args:
             config: Discovery enrichment configuration from YAML
         """
-        self.config = config.get("discovery_enrichment", config)
+        if "discovery_enrichment" in config:
+            raise ValueError(
+                "DiscoveryEnricher requires the discovery_enrichment section itself, "
+                "not a wrapped enrichment configuration"
+            )
+        self.config = config
         self.stats = EnrichmentStats()
         self.constraint_diffs: list[ConstraintDiff] = []
         self.discovery_data: DiscoveryData | None = None
@@ -137,95 +136,12 @@ class DiscoveryEnricher:
         self.errors_config = self.config.get("errors", {})
         self.errors_enabled = self.errors_config.get("enabled", True)
 
-        # Load latency estimates for fallback values
-        self.latency_estimates = self._load_latency_estimates()
-
-    def _load_latency_estimates(self) -> dict:
-        """Load latency estimates configuration for fallback values.
-
-        Returns:
-            Latency estimates configuration dictionary
-        """
-        latency_file = self.performance_config.get(
-            "latency_estimates_file",
-            "config/latency_estimates.yaml",
-        )
-        latency_path = Path(latency_file)
-
-        if latency_path.exists():
-            with latency_path.open() as f:
-                return yaml.safe_load(f)
-
-        # Return sensible defaults if file doesn't exist
-        return {
-            "defaults": {
-                "list_operations": {"p50": 500, "p95": 2000, "p99": 5000, "unknown": 1500},
-                "get_operations": {"p50": 200, "p95": 800, "p99": 2000, "unknown": 600},
-                "create_operations": {"p50": 1000, "p95": 3000, "p99": 8000, "unknown": 2500},
-                "update_operations": {"p50": 800, "p95": 2500, "p99": 6000, "unknown": 2000},
-                "delete_operations": {"p50": 500, "p95": 1500, "p99": 4000, "unknown": 1200},
-            },
-            "operation_patterns": [
-                {"pattern": r"^GET .*/list$", "latency_level": "list_operations"},
-                {"pattern": r"^GET .*/items$", "latency_level": "list_operations"},
-                {"pattern": r"^GET .*", "latency_level": "get_operations"},
-                {"pattern": r"^POST .*", "latency_level": "create_operations"},
-                {"pattern": r"^PUT .*", "latency_level": "update_operations"},
-                {"pattern": r"^PATCH .*", "latency_level": "update_operations"},
-                {"pattern": r"^DELETE .*", "latency_level": "delete_operations"},
-            ],
-        }
-
-    def _get_latency_level(self, method: str, path: str) -> str:
-        """Determine the latency level for an operation based on method and path.
-
-        Args:
-            method: HTTP method (GET, POST, etc.)
-            path: API path
-
-        Returns:
-            Latency level key (e.g., "get_operations", "create_operations")
-        """
-        operation_key = f"{method.upper()} {path}"
-        patterns = self.latency_estimates.get("operation_patterns", [])
-
-        for pattern_config in patterns:
-            pattern = pattern_config.get("pattern", "")
-            if re.match(pattern, operation_key):
-                return pattern_config.get("latency_level", "get_operations")
-
-        # Default based on method
-        method_defaults = {
-            "GET": "get_operations",
-            "POST": "create_operations",
-            "PUT": "update_operations",
-            "PATCH": "update_operations",
-            "DELETE": "delete_operations",
-        }
-        return method_defaults.get(method.upper(), "get_operations")
-
-    def _get_default_latency_estimates(self, method: str, path: str) -> dict:
-        """Get default latency estimates for an operation.
-
-        Args:
-            method: HTTP method
-            path: API path
-
-        Returns:
-            Dictionary with p50, p95, p99, unknown latency estimates
-        """
-        latency_level = self._get_latency_level(method, path)
-        defaults = self.latency_estimates.get("defaults", {})
-        return defaults.get(latency_level, defaults.get("get_operations", {}))
-
     def _enrich_operation_with_response_time(
         self,
         operation: dict,
         discovered_op: dict | None,
-        method: str,
-        path: str,
     ) -> None:
-        """Enrich operation with percentile response time data.
+        """Enrich an operation only with complete measured percentile data.
 
         Adds x-f5xc-discovered-response-time extension with p50, p95, p99
         percentiles, sample count, and last measured timestamp.
@@ -233,60 +149,49 @@ class DiscoveryEnricher:
         Args:
             operation: Operation dict to enrich
             discovered_op: Discovered operation data (may be None)
-            method: HTTP method
-            path: API path
         """
         if not self.add_percentiles:
             return
+        if not discovered_op or "x-response-time-percentiles" not in discovered_op:
+            return
 
-        response_time_data: dict[str, Any] = {}
+        percentiles = discovered_op["x-response-time-percentiles"]
+        if not isinstance(percentiles, dict):
+            raise TypeError("x-response-time-percentiles must be an object")
 
-        if discovered_op:
-            # Use discovered response time data if available
-            rt = discovered_op.get("x-response-time-ms")
-            if rt:
-                # Single measurement - use as p50 estimate
-                response_time_data = {
-                    "p50_ms": round(rt, 2),
-                    "p95_ms": round(rt * 2.0, 2),  # Estimate based on single sample
-                    "p99_ms": round(rt * 3.0, 2),  # Estimate based on single sample
-                    "sample_count": 1,
-                    "source": "discovery",
-                }
+        required = {"p50", "p95", "p99", "sample_count"}
+        missing = sorted(required - percentiles.keys())
+        if missing:
+            raise ValueError(f"x-response-time-percentiles is missing measured fields: {missing}")
 
-            # Check for more detailed percentile data if present
-            if "x-response-time-percentiles" in discovered_op:
-                percentiles = discovered_op["x-response-time-percentiles"]
-                response_time_data = {
-                    "p50_ms": percentiles.get("p50", response_time_data.get("p50_ms")),
-                    "p95_ms": percentiles.get("p95", response_time_data.get("p95_ms")),
-                    "p99_ms": percentiles.get("p99", response_time_data.get("p99_ms")),
-                    "sample_count": percentiles.get(
-                        "sample_count",
-                        response_time_data.get("sample_count", 1),
-                    ),
-                    "source": "discovery",
-                }
+        p50, p95, p99 = (percentiles[name] for name in ("p50", "p95", "p99"))
+        sample_count = percentiles["sample_count"]
+        if any(
+            isinstance(value, bool) or not isinstance(value, (int, float))
+            for value in (p50, p95, p99)
+        ):
+            raise TypeError("response-time percentiles must be numbers")
+        if not all(math.isfinite(value) for value in (p50, p95, p99)):
+            raise ValueError("response-time percentiles must be finite")
+        if isinstance(sample_count, bool) or not isinstance(sample_count, int) or sample_count <= 0:
+            raise ValueError("response-time sample_count must be a positive integer")
+        if p50 < 0 or not p50 <= p95 <= p99:
+            raise ValueError("response-time percentiles must satisfy 0 <= p50 <= p95 <= p99")
 
-            # Add last measured timestamp if available
-            if self.discovery_data and self.discovery_data.discovered_at:
-                response_time_data["last_measured"] = self.discovery_data.discovered_at
+        response_time_data: dict[str, Any] = {
+            "p50": round(p50, 2),
+            "p95": round(p95, 2),
+            "p99": round(p99, 2),
+            "sample_count": sample_count,
+        }
+        last_measured = percentiles.get("last_measured")
+        if last_measured is not None:
+            if not isinstance(last_measured, str) or not last_measured:
+                raise TypeError("response-time last_measured must be a non-empty string")
+            response_time_data["last_measured"] = last_measured
 
-        # Fall back to latency estimates if no discovery data
-        if not response_time_data:
-            estimates = self._get_default_latency_estimates(method, path)
-            if estimates:
-                response_time_data = {
-                    "p50_ms": estimates.get("p50"),
-                    "p95_ms": estimates.get("p95"),
-                    "p99_ms": estimates.get("p99"),
-                    "sample_count": 0,
-                    "source": "estimate",
-                }
-
-        if response_time_data:
-            operation[X_F5XC_DISCOVERED_RESPONSE_TIME] = response_time_data
-            self.stats.response_times_added += 1
+        operation[X_F5XC_DISCOVERED_RESPONSE_TIME] = response_time_data
+        self.stats.response_times_added += 1
 
     def _enrich_operation_with_rate_limits(
         self,
@@ -485,34 +390,44 @@ class DiscoveryEnricher:
             DiscoveryData with loaded specifications
         """
         discovered_dir = Path(discovered_dir)
-        data = DiscoveryData()
-
-        # Load main OpenAPI spec
         openapi_path = discovered_dir / "openapi.json"
-        if openapi_path.exists():
-            with openapi_path.open() as f:
-                data.openapi_spec = json.load(f)
-                data.paths = data.openapi_spec.get("paths", {})
-                data.schemas = data.openapi_spec.get("components", {}).get("schemas", {})
-
-            # Extract discovered timestamp
-            info = data.openapi_spec.get("info", {})
-            data.discovered_at = info.get("x-discovered-at", "")
-
-        # Load session data
         session_path = discovered_dir / "session.json"
-        if session_path.exists():
-            with session_path.open() as f:
-                data.session = json.load(f)
+        missing = [path.name for path in (openapi_path, session_path) if not path.is_file()]
+        if missing:
+            raise FileNotFoundError(f"required discovery inputs are missing: {missing}")
 
-        # Build response time index
-        for path, path_item in data.paths.items():
-            for method, operation in path_item.items():
-                if isinstance(operation, dict):
-                    rt = operation.get("x-response-time-ms")
-                    if rt:
-                        key = f"{method.upper()} {path}"
-                        data.response_times[key] = rt
+        with openapi_path.open() as f:
+            openapi_spec = json.load(f)
+        with session_path.open() as f:
+            session = json.load(f)
+        if not isinstance(openapi_spec, dict):
+            raise TypeError("discovery openapi.json must contain an object")
+        if not isinstance(session, dict):
+            raise TypeError("discovery session.json must contain an object")
+
+        paths = openapi_spec.get("paths")
+        if not isinstance(paths, dict) or not paths:
+            raise ValueError("discovery openapi.json must contain a non-empty paths object")
+        components = openapi_spec.get("components", {})
+        if not isinstance(components, dict):
+            raise TypeError("discovery openapi.json components must be an object")
+        schemas = components.get("schemas", {})
+        if not isinstance(schemas, dict):
+            raise TypeError("discovery openapi.json components.schemas must be an object")
+        info = openapi_spec.get("info", {})
+        if not isinstance(info, dict):
+            raise TypeError("discovery openapi.json info must be an object")
+        discovered_at = info.get("x-discovered-at")
+        if discovered_at is not None and (not isinstance(discovered_at, str) or not discovered_at):
+            raise TypeError("discovery x-discovered-at must be a non-empty string")
+
+        data = DiscoveryData(
+            openapi_spec=openapi_spec,
+            session=session,
+            paths=paths,
+            schemas=schemas,
+            discovered_at=discovered_at,
+        )
 
         self.discovery_data = data
         return data
@@ -535,7 +450,7 @@ class DiscoveryEnricher:
             discoveries = self.discovery_data
 
         if discoveries is None or not discoveries.openapi_spec:
-            return spec
+            raise ValueError("discovery enrichment requires loaded discovery data")
 
         # Enrich paths/operations
         if self.config.get("performance", {}).get("add_response_times", True):
@@ -543,18 +458,6 @@ class DiscoveryEnricher:
 
         # Enrich schemas
         spec = self._enrich_schemas(spec, discoveries)
-
-        # Add discovery metadata to info
-        if "info" not in spec:
-            spec["info"] = {}
-
-        spec["info"][f"{self.prefix}-enrichment-applied"] = True
-        spec["info"][f"{self.prefix}-enrichment-at"] = datetime.now(
-            timezone.utc,
-        ).isoformat()
-
-        if discoveries.discovered_at:
-            spec["info"][f"{self.prefix}-source-timestamp"] = discoveries.discovered_at
 
         return spec
 
@@ -589,24 +492,7 @@ class DiscoveryEnricher:
                     discoveries,
                 )
 
-                # Legacy: Add basic response time for backward compatibility
-                if discovered_op:
-                    rt = discovered_op.get("x-response-time-ms")
-                    if rt:
-                        operation[f"{self.prefix}-response-time-ms"] = round(rt, 2)
-
-                    # Add sample size if available
-                    if self.config.get("performance", {}).get("add_sample_size", True):
-                        operation[f"{self.prefix}-sample-size"] = 1
-
-                # Issue #314: Add operation-level enrichment extensions
-                # These methods handle both discovered data and fallback estimates
-                self._enrich_operation_with_response_time(
-                    operation,
-                    discovered_op,
-                    method,
-                    path,
-                )
+                self._enrich_operation_with_response_time(operation, discovered_op)
                 self._enrich_operation_with_rate_limits(operation, discovered_op)
                 self._enrich_operation_with_error_catalog(operation, discovered_op)
 

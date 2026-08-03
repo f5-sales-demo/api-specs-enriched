@@ -6,6 +6,7 @@ Tests verify that regex patterns are precompiled at module/class level
 for performance optimization and that behavior remains unchanged.
 """
 
+import copy
 import re
 
 import pytest
@@ -52,41 +53,6 @@ class TestGrammarPatterns:
         result = improver._capitalize_sentences(text_lowercase)
         assert result[0].isupper()
         assert "Hello world" in result
-
-
-class TestNormalizePattern:
-    """Test precompiled pattern in normalize.py."""
-
-    def test_pattern_is_precompiled(self):
-        """Verify normalize pattern is precompiled."""
-        from scripts import normalize
-
-        assert hasattr(normalize, "_COMPONENT_REF_PATTERN")
-        assert isinstance(normalize._COMPONENT_REF_PATTERN, re.Pattern)
-
-    def test_pattern_behavior_unchanged(self):
-        """Verify normalize pattern still works correctly."""
-        from scripts.normalize import get_component_from_ref
-
-        # Test schema reference
-        result = get_component_from_ref("#/components/schemas/MySchema")
-        assert result == ("schemas", "MySchema")
-
-        # Test response reference
-        result = get_component_from_ref("#/components/responses/ErrorResponse")
-        assert result == ("responses", "ErrorResponse")
-
-        # Test parameter reference
-        result = get_component_from_ref("#/components/parameters/IdParam")
-        assert result == ("parameters", "IdParam")
-
-        # Test invalid reference
-        result = get_component_from_ref("invalid-ref")
-        assert result is None
-
-        # Test external reference
-        result = get_component_from_ref("https://example.com/schemas/MySchema")
-        assert result is None
 
 
 class TestDiscoverPattern:
@@ -142,12 +108,13 @@ class TestValidatePatterns:
     def test_should_skip_endpoint_caching(self):
         """Verify endpoint skipping uses cached patterns."""
         from scripts import validate
-        from scripts.validate import should_skip_endpoint
+        from scripts.validate import DEFAULT_CONFIG, should_skip_endpoint
 
-        config = {
-            "scope": {"validate_methods": ["GET"], "skip_methods": []},
-            "filters": {"skip_patterns": ["*/internal/*"], "include_patterns": []},
-        }
+        config = copy.deepcopy(DEFAULT_CONFIG)
+        config["scope"]["validate_methods"] = ["GET"]
+        config["scope"]["skip_methods"] = []
+        config["filters"]["skip_patterns"] = ["*/internal/*"]
+        config["filters"]["include_patterns"] = []
 
         endpoint1 = {"method": "GET", "path": "/api/internal/debug"}
         endpoint2 = {"method": "GET", "path": "/api/public/users"}
@@ -169,23 +136,18 @@ class TestValidatePatterns:
         """Verify path parameter resolution uses precompiled pattern."""
         from scripts.validate import resolve_path_parameters
 
-        # Test with known parameters
+        # The configured namespace is the only identity safe to substitute.
         result = resolve_path_parameters(
-            "/api/{namespace}/{name}",
-            [
-                {"in": "path", "name": "namespace"},
-                {"in": "path", "name": "name"},
-            ],
+            "/api/{namespace}/items",
+            "system",
         )
-        assert "{namespace}" not in result
-        assert "{name}" not in result
-        assert "system" in result
-        assert "test" in result
+        assert result.resolved_path == "/api/system/items"
+        assert result.unresolved_reason is None
 
-        # Test with unknown parameters
-        result = resolve_path_parameters("/api/{unknown_param}/items", [])
-        assert "{unknown_param}" not in result
-        assert "sample" in result
+        # Unknown resource identities must remain unrequested, not use samples.
+        result = resolve_path_parameters("/api/{name}/items", "system")
+        assert result.resolved_path is None
+        assert result.unresolved_reason == "unsupported path parameter(s): name"
 
 
 class TestDiscoveryEnricherPatterns:

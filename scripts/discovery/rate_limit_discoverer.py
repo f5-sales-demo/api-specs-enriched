@@ -16,7 +16,7 @@ import asyncio
 import contextlib
 from collections.abc import Callable, Coroutine
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 
@@ -181,7 +181,7 @@ class RateLimitDiscoverer:
             return RateLimitInfo(
                 endpoint=endpoint,
                 method=method,
-                discovered_at=datetime.now(timezone.utc).isoformat(),
+                discovered_at=datetime.now(UTC).isoformat(),
                 confidence="unknown",
             )
 
@@ -233,7 +233,7 @@ class RateLimitDiscoverer:
         info = RateLimitInfo(
             endpoint=endpoint,
             method=method,
-            discovered_at=datetime.now(timezone.utc).isoformat(),
+            discovered_at=datetime.now(UTC).isoformat(),
         )
 
         if not results:
@@ -302,7 +302,7 @@ class RateLimitDiscoverer:
         info = RateLimitInfo(
             endpoint=endpoint,
             method=method,
-            discovered_at=datetime.now(timezone.utc).isoformat(),
+            discovered_at=datetime.now(UTC).isoformat(),
         )
 
         try:

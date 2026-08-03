@@ -12,25 +12,20 @@ import pytest
 from scripts.utils.extension_constants import (
     PRESERVED_NATIVE_EXTENSIONS,
     VALID_X_F5XC_EXTENSIONS,
+    X_F5XC_ACTION,
+    X_F5XC_API_REFERENCE_URL,
     X_F5XC_CATEGORY,
     X_F5XC_CLI_DOMAIN,
-    X_F5XC_DANGER_LEVEL,
-    X_F5XC_DESCRIPTION,
     X_F5XC_DESCRIPTION_MEDIUM,
     X_F5XC_DESCRIPTION_SHORT,
-    X_F5XC_DISPLAY_NAME,
-    X_F5XC_DISPLAYORDER,
-    X_F5XC_DOC_SECTION,
-    X_F5XC_ENRICHED_VERSION,
+    X_F5XC_ERROR_RESOLUTION,
+    X_F5XC_FIELD_EXAMPLES,
     X_F5XC_MINIMUM_CONFIGURATION,
     X_F5XC_NAMESPACE_PROFILE,
+    X_F5XC_OPERATION_METADATA,
     X_F5XC_PREFIX,
     X_F5XC_PRIMARY_RESOURCES,
-    X_F5XC_REQUIRED_FIELDS,
-    X_F5XC_SIDE_EFFECTS,
-    X_F5XC_TERRAFORM_RESOURCE,
-    X_F5XC_UPSTREAM_ETAG,
-    X_F5XC_UPSTREAM_TIMESTAMP,
+    X_F5XC_SUMMARY,
     is_preserved_native,
     is_valid_extension,
     validate_no_invalid_extensions,
@@ -62,21 +57,16 @@ class TestExtensionConstants:
             X_F5XC_CLI_DOMAIN,
             X_F5XC_MINIMUM_CONFIGURATION,
             X_F5XC_NAMESPACE_PROFILE,
-            X_F5XC_DISPLAYORDER,
-            X_F5XC_DESCRIPTION,
-            X_F5XC_DANGER_LEVEL,
-            X_F5XC_REQUIRED_FIELDS,
-            X_F5XC_SIDE_EFFECTS,
+            X_F5XC_ACTION,
+            X_F5XC_OPERATION_METADATA,
             X_F5XC_CATEGORY,  # Single category field (DRY)
             X_F5XC_PRIMARY_RESOURCES,
             X_F5XC_DESCRIPTION_SHORT,
             X_F5XC_DESCRIPTION_MEDIUM,
-            X_F5XC_UPSTREAM_TIMESTAMP,
-            X_F5XC_UPSTREAM_ETAG,
-            X_F5XC_ENRICHED_VERSION,
-            X_F5XC_TERRAFORM_RESOURCE,
-            X_F5XC_DISPLAY_NAME,
-            X_F5XC_DOC_SECTION,
+            X_F5XC_SUMMARY,
+            X_F5XC_API_REFERENCE_URL,
+            X_F5XC_FIELD_EXAMPLES,
+            X_F5XC_ERROR_RESOLUTION,
         ],
     )
     def test_constant_has_prefix(self, constant: str) -> None:
@@ -89,11 +79,8 @@ class TestExtensionConstants:
             X_F5XC_CLI_DOMAIN,
             X_F5XC_MINIMUM_CONFIGURATION,
             X_F5XC_NAMESPACE_PROFILE,
-            X_F5XC_DISPLAYORDER,
-            X_F5XC_DESCRIPTION,
-            X_F5XC_DANGER_LEVEL,
-            X_F5XC_REQUIRED_FIELDS,
-            X_F5XC_SIDE_EFFECTS,
+            X_F5XC_ACTION,
+            X_F5XC_OPERATION_METADATA,
             X_F5XC_CATEGORY,  # Single category field (DRY)
             X_F5XC_PRIMARY_RESOURCES,
             X_F5XC_DESCRIPTION_SHORT,
@@ -110,11 +97,8 @@ class TestExtensionConstants:
             X_F5XC_CLI_DOMAIN,
             X_F5XC_MINIMUM_CONFIGURATION,
             X_F5XC_NAMESPACE_PROFILE,
-            X_F5XC_DISPLAYORDER,
-            X_F5XC_DESCRIPTION,
-            X_F5XC_DANGER_LEVEL,
-            X_F5XC_REQUIRED_FIELDS,
-            X_F5XC_SIDE_EFFECTS,
+            X_F5XC_ACTION,
+            X_F5XC_OPERATION_METADATA,
             X_F5XC_CATEGORY,  # Single category field (DRY)
             X_F5XC_PRIMARY_RESOURCES,
             X_F5XC_DESCRIPTION_SHORT,
@@ -160,10 +144,15 @@ class TestValidExtensions:
         for ext in VALID_X_F5XC_EXTENSIONS:
             assert ext.startswith(X_F5XC_PREFIX), f"Valid extension '{ext}' missing prefix"
 
-    def test_new_fields_are_valid(self) -> None:
-        """New fields should be in valid extensions set."""
-        new_fields = [X_F5XC_TERRAFORM_RESOURCE, X_F5XC_DISPLAY_NAME, X_F5XC_DOC_SECTION]
-        for field in new_fields:
+    def test_generated_contract_fields_are_valid(self) -> None:
+        """Fields emitted by the release pipeline must be registry members."""
+        contract_fields = [
+            X_F5XC_API_REFERENCE_URL,
+            X_F5XC_FIELD_EXAMPLES,
+            X_F5XC_ERROR_RESOLUTION,
+            X_F5XC_OPERATION_METADATA,
+        ]
+        for field in contract_fields:
             assert field in VALID_X_F5XC_EXTENSIONS, f"New field '{field}' not in valid set"
 
 
@@ -173,8 +162,25 @@ class TestValidationFunctions:
     def test_is_valid_extension_true(self) -> None:
         """Valid extensions should return True."""
         assert is_valid_extension(X_F5XC_CLI_DOMAIN)
-        assert is_valid_extension(X_F5XC_DANGER_LEVEL)
-        assert is_valid_extension(X_F5XC_TERRAFORM_RESOURCE)
+        assert is_valid_extension(X_F5XC_OPERATION_METADATA)
+        assert is_valid_extension(X_F5XC_API_REFERENCE_URL)
+
+    @pytest.mark.parametrize(
+        "removed_extension",
+        [
+            "x-f5xc-required-fields",
+            "x-f5xc-danger-level",
+            "x-f5xc-confirmation-required",
+            "x-f5xc-side-effects",
+        ],
+    )
+    def test_flat_operation_metadata_extensions_are_invalid(
+        self,
+        removed_extension: str,
+    ) -> None:
+        """Operation metadata has one registered wrapper, not parallel flat fields."""
+        assert removed_extension not in VALID_X_F5XC_EXTENSIONS
+        assert not is_valid_extension(removed_extension)
 
     def test_is_valid_extension_false(self) -> None:
         """Invalid extensions should return False."""
@@ -204,7 +210,7 @@ class TestValidateNoInvalidExtensions:
                 "title": "Test API",
                 "version": "1.0.0",
                 X_F5XC_CLI_DOMAIN: "test",
-                X_F5XC_ENRICHED_VERSION: "2.0.0",
+                X_F5XC_SUMMARY: "Test API contract",
             },
             "x-ves-proto-package": "native.field",  # preserved
         }

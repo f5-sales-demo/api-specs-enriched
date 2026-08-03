@@ -7,19 +7,19 @@ Python-based OpenAPI enrichment pipeline for F5 Distributed Cloud. Downloads pre
 ## Key Commands
 
 - `make install` — production setup
-- `make dev-install` — dev setup with testing tools
 - `make download` — download specs from upstream (api-specs)
+- `make download-force` — force a fresh immutable-asset download and digest check
 - `make enrich` — run enrichment pipeline
-- `make release` — build release package
+- `make pipeline` — build the enriched specifications and API viewer
+- `make validate` — validate against the configured live API
 - `make test` — run pytest suite
-- `make all` — full pipeline: download → enrich → release
+- `make all` — full pipeline: download → enrich → normalize → merge
 
 ## Directory Structure
 
 - `scripts/` — Python pipeline scripts
-- `config/` — 40 configuration files (enrichment, descriptions, metadata, etc.)
+- `config/` — enrichment, description, metadata, and validation configuration
 - `specs/original/` — Downloaded source specs (from api-specs releases)
-- `specs/discovered/` — API discovery data
 - `docs/` — MDX documentation (Starlight format)
 - `docs/specifications/api/` — Generated enriched spec files
 - `tests/` — Test suite
@@ -27,12 +27,13 @@ Python-based OpenAPI enrichment pipeline for F5 Distributed Cloud. Downloads pre
 
 ## Upstream/Downstream
 
-- **Upstream**: f5-sales-demo/api-specs (pre-validated OpenAPI specs)
-- **Downstream**: f5-sales-demo/xcsh, f5-sales-demo/vscode-xcsh
+- **Upstream correction layer**: f5-sales-demo/api-specs (basic source-spec corrections and immutable input releases)
+- **Canonical enriched publication**: this repository
+- **Downstream**: f5-sales-demo/terraform-provider-xcsh and other API-spec, CLI, IDE, and documentation consumers
 
 ## Environment Variables
 
 ```bash
-F5XC_API_URL=https://${XC_TENANT}.console.ves.volterra.io
+F5XC_API_URL=https://tenant-placeholder.console.ves.volterra.io
 F5XC_API_TOKEN=<your-api-token>
 ```

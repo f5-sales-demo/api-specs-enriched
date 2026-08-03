@@ -126,7 +126,7 @@ class CLIExplorer:
 
             return CLIResult(success=True, data=stdout_str, raw_output=stdout_str)
 
-        except asyncio.TimeoutError:
+        except TimeoutError:
             return CLIResult(
                 success=False,
                 error=f"Command timed out after {self.timeout} seconds",

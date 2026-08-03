@@ -327,7 +327,7 @@ class TestDiscoveryConstraintMerging:
             },
         }
 
-        enricher._merge_discovery_constraints(prop, "test")
+        enricher._merge_discovery_constraints(prop)
 
         # Discovery constraints should be present
         assert prop["pattern"] == "^[A-Z]+$"
@@ -343,7 +343,7 @@ class TestDiscoveryConstraintMerging:
             },
         }
 
-        enricher._merge_discovery_constraints(prop, "test")
+        enricher._merge_discovery_constraints(prop)
 
         # Existing constraint should be preserved
         assert prop["minLength"] == 10
