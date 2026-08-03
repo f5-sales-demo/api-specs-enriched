@@ -98,7 +98,7 @@ def generate_catalog_mdx(
             )
 
         cards_block = "\n".join(cards)
-        cards_sections.append(f"### {cat}\n\n<CardGrid>\n{cards_block}\n</CardGrid>")
+        cards_sections.append(f"## {cat}\n\n<CardGrid>\n{cards_block}\n</CardGrid>")
 
     all_sections = "\n\n".join(cards_sections)
 
@@ -121,8 +121,11 @@ endpoint details, request and response schemas, and code examples.
 
 UPSTREAM_TYPOS = {
     "Con" + "nnect": "Connect",
+    "JI" + "RA": "Jira",
+    "Open" + "Api": "OpenAPI",
     "Subsci" + "ption": "Subscription",
     "Insatn" + "ce": "Instance",
+    "WI" + "FI": "Wi-Fi",
     "avaialab" + "le": "available",
     "Sou" + "ce": "Source",
     "pro" + "xys": "proxies",
@@ -182,7 +185,7 @@ def generate_domain_summary(spec: dict) -> str:
 
     endpoints_table = ""
     if rows:
-        header = "| Method | Path | Description |\n|--------|------|-------------|"
+        header = "| Method | Path | Description |\n| --- | --- | --- |"
         endpoints_table = f"## Endpoints\n\n{header}\n" + "\n".join(rows)
 
     use_cases_block = ""
@@ -205,32 +208,36 @@ def generate_domain_summary(spec: dict) -> str:
 
     description_line = medium_desc or short_desc or title
 
-    return f"""---
+    frontmatter = f"""---
 title: "{icon} {title} API"
 description: "{_escape_mdx(short_desc or title)}"
 sidebar:
     hidden: true
----
-
-{_escape_mdx(description_line)}
-
-- **Category**: {category}
-- **Complexity**: {complexity}
-- **Paths**: {path_count} | **Schemas**: {schema_count}
-- **Tier**: {tier}
-{f"- {related_block}" if related_block else ""}
-
-{use_cases_block}
-
-{resources_block}
-
-{endpoints_table}
-
-## Links
+---"""
+    overview_lines = [
+        _escape_mdx(description_line),
+        "",
+        f"- **Category**: {category}",
+        f"- **Complexity**: {complexity}",
+        f"- **Paths**: {path_count} | **Schemas**: {schema_count}",
+        f"- **Tier**: {tier}",
+    ]
+    if related_block:
+        overview_lines.append(f"- {related_block}")
+    overview = "\n".join(overview_lines)
+    links_block = f"""## Links
 
 - [Interactive API Reference](../../../api-reference/{domain}/)
-- [OpenAPI Specification JSON](../../../specifications/api/{domain}.json)
-"""
+- [OpenAPI Specification JSON](../../../specifications/api/{domain}.json)"""
+    sections = [
+        frontmatter,
+        overview,
+        use_cases_block,
+        resources_block,
+        endpoints_table,
+        links_block,
+    ]
+    return "\n\n".join(section for section in sections if section) + "\n"
 
 
 def main() -> int:
@@ -267,7 +274,6 @@ def main() -> int:
         summary_path = MDX_DIR / f"{spec['domain']}-api.mdx"
         summary_path.write_text(generate_domain_summary(spec))
         summary_count += 1
-
     # Generate starlight-openapi plugin configuration
     config_content = generate_openapi_specs_config(specs)
     OPENAPI_CONFIG_PATH.write_text(config_content)

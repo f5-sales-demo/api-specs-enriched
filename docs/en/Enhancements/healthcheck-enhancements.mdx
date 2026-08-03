@@ -23,45 +23,45 @@ Additionally, the nested schema `healthcheckHttpHealthCheck` contains enrichment
 
 Fields marked with `x-f5xc-server-default: true` have their `default` value applied by the F5 XC API server when omitted from requests.
 
-### Top-Level Fields
+### Server-applied top-level fields
 
-| Field | Default Value | Type | Description |
-|-------|---------------|------|-------------|
-| `jitter` | `0` | integer | Absolute jitter value for timing randomization |
-| `jitter_percent` | `0` | integer | Percentage-based jitter for timing randomization |
+| Field            | Default Value | Type    | Description                                      |
+| ---------------- | ------------- | ------- | ------------------------------------------------ |
+| `jitter`         | `0`           | integer | Absolute jitter value for timing randomization   |
+| `jitter_percent` | `0`           | integer | Percentage-based jitter for timing randomization |
 
-### healthcheckHttpHealthCheck Schema
+### Server-applied healthcheckHttpHealthCheck schema
 
-| Field | Default Value | Type | Description |
-|-------|---------------|------|-------------|
-| `use_origin_server_name` | `{}` | object | Origin server name for Host header |
-| `headers` | `{}` | object | Custom headers |
-| `request_headers_to_remove` | `[]` | array | Headers to strip from requests |
-| `use_http2` | `false` | boolean | HTTP/2 support |
-| `expected_status_codes` | `[]` | array | Accepted status codes (empty = 200-299) |
+| Field                       | Default Value | Type    | Description                             |
+| --------------------------- | ------------- | ------- | --------------------------------------- |
+| `use_origin_server_name`    | `{}`          | object  | Origin server name for Host header      |
+| `headers`                   | `{}`          | object  | Custom headers                          |
+| `request_headers_to_remove` | `[]`          | array   | Headers to strip from requests          |
+| `use_http2`                 | `false`       | boolean | HTTP/2 support                          |
+| `expected_status_codes`     | `[]`          | array   | Accepted status codes (empty = 200-299) |
 
 ## Recommended Values
 
 Fields marked with `x-f5xc-recommended-value` indicate values that the F5 XC web console pre-populates when creating new resources.
 
-### Top-Level Fields
+### Recommended top-level fields
 
-| Field | Recommended Value | Type | Description |
-|-------|-------------------|------|-------------|
-| `timeout` | `3` | integer | Health check timeout in seconds |
-| `interval` | `15` | integer | Interval between health checks in seconds |
-| `unhealthy_threshold` | `1` | integer | Consecutive failures before marking unhealthy |
-| `healthy_threshold` | `3` | integer | Consecutive successes before marking healthy |
-| `jitter_percent` | `30` | integer | Jitter percentage for production use |
+| Field                 | Recommended Value | Type    | Description                                   |
+| --------------------- | ----------------- | ------- | --------------------------------------------- |
+| `timeout`             | `3`               | integer | Health check timeout in seconds               |
+| `interval`            | `15`              | integer | Interval between health checks in seconds     |
+| `unhealthy_threshold` | `1`               | integer | Consecutive failures before marking unhealthy |
+| `healthy_threshold`   | `3`               | integer | Consecutive successes before marking healthy  |
+| `jitter_percent`      | `30`              | integer | Jitter percentage for production use          |
 
-### healthcheckHttpHealthCheck Schema
+### Recommended healthcheckHttpHealthCheck schema
 
-| Field | Recommended Value | Type | Description |
-|-------|-------------------|------|-------------|
-| `path` | `"/"` | string | Health check endpoint path |
-| `use_http2` | `false` | boolean | HTTP/2 support setting |
-| `expected_status_codes` | `["200"]` | array | Status codes indicating healthy origin |
-| `use_origin_server_name` | `{}` | object | Origin server name for Host header |
+| Field                    | Recommended Value | Type    | Description                            |
+| ------------------------ | ----------------- | ------- | -------------------------------------- |
+| `path`                   | `"/"`             | string  | Health check endpoint path             |
+| `use_http2`              | `false`           | boolean | HTTP/2 support setting                 |
+| `expected_status_codes`  | `["200"]`         | array   | Status codes indicating healthy origin |
+| `use_origin_server_name` | `{}`              | object  | Origin server name for Host header     |
 
 ## OneOf Variant Recommendations
 
@@ -69,25 +69,25 @@ Schemas containing mutually exclusive field groups (OneOf) include `x-f5xc-recom
 
 ### Top-Level OneOf Groups
 
-| Schema | OneOf Group | Recommended Variant | Description |
-|--------|-------------|---------------------|-------------|
-| `healthcheckCreateSpecType` | `health_check` | `http_health_check` | HTTP health check type |
+| Schema                       | OneOf Group    | Recommended Variant | Description            |
+| ---------------------------- | -------------- | ------------------- | ---------------------- |
+| `healthcheckCreateSpecType`  | `health_check` | `http_health_check` | HTTP health check type |
 | `healthcheckReplaceSpecType` | `health_check` | `http_health_check` | HTTP health check type |
 
 ### healthcheckHttpHealthCheck OneOf Groups
 
-| Schema | OneOf Group | Recommended Variant | Description |
-|--------|-------------|---------------------|-------------|
+| Schema                       | OneOf Group          | Recommended Variant      | Description                           |
+| ---------------------------- | -------------------- | ------------------------ | ------------------------------------- |
 | `healthcheckHttpHealthCheck` | `host_header_choice` | `use_origin_server_name` | Host header for health check requests |
 
 #### Host Header Choice
 
 The `host_header_choice` OneOf group controls how the Host header is specified in health check HTTP requests.
 
-| Variant | Type | Description |
-|---------|------|-------------|
+| Variant                  | Type             | Description                                                                                        |
+| ------------------------ | ---------------- | -------------------------------------------------------------------------------------------------- |
 | `use_origin_server_name` | `object` (empty) | Use the origin server name as the Host header. This is the default selection in the F5 XC console. |
-| `host_header` | `string` | Specify a custom Host header value for health check requests. |
+| `host_header`            | `string`         | Specify a custom Host header value for health check requests.                                      |
 
 **API Schema Reference**: `x-ves-oneof-field-host_header_choice: ["host_header", "use_origin_server_name"]`
 
@@ -132,14 +132,15 @@ healthcheckCreateSpecType:
   x-f5xc-recommended-oneof-variant:
     health_check: "http_health_check"
 ```
+
 ## Data Access
 
 ### OpenAPI Specifications
 
-| File | Content |
-|------|---------|
+| File                                   | Content                                                                                                           |
+| -------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
 | `docs/specifications/api/virtual.json` | `healthcheckHttpHealthCheck`, `healthcheckCreateSpecType`, `healthcheckReplaceSpecType`, `healthcheckGetSpecType` |
-| `docs/specifications/api/openapi.json` | Merged specification with all schemas |
+| `docs/specifications/api/openapi.json` | Merged specification with all schemas                                                                             |
 
 ### validation.json Structure
 
@@ -159,12 +160,12 @@ defaults.resources.healthcheck
 
 ## Changelog
 
-| Version | Date | Changes |
-|---------|------|---------|
-| 2.1.4 | 2026-01-19 | Added `host_header_choice` OneOf group documentation for HTTP health check request parameters |
-| 2.1.3 | 2026-01-18 | Consolidated global extension docs to DEVELOPMENT.md; resource-specific data only |
-| 2.1.2 | 2026-01-18 | Rewritten as pure API reference; removed downstream examples and prescriptive language |
-| 2.1.1 | 2026-01-18 | Added nested recommended values, OneOf recommended variants, `x-f5xc-recommended-oneof-variant` extension |
-| 2.1.0 | 2026-01-18 | Added unified defaults structure in validation.json |
-| 2.0.30 | 2026-01-16 | Added nested defaults for `$ref` schemas |
-| 2.0.29 | 2026-01-17 | Initial healthcheck defaults |
+| Version | Date       | Changes                                                                                                   |
+| ------- | ---------- | --------------------------------------------------------------------------------------------------------- |
+| 2.1.4   | 2026-01-19 | Added `host_header_choice` OneOf group documentation for HTTP health check request parameters             |
+| 2.1.3   | 2026-01-18 | Consolidated global extension docs to DEVELOPMENT.md; resource-specific data only                         |
+| 2.1.2   | 2026-01-18 | Rewritten as pure API reference; removed downstream examples and prescriptive language                    |
+| 2.1.1   | 2026-01-18 | Added nested recommended values, OneOf recommended variants, `x-f5xc-recommended-oneof-variant` extension |
+| 2.1.0   | 2026-01-18 | Added unified defaults structure in validation.json                                                       |
+| 2.0.30  | 2026-01-16 | Added nested defaults for `$ref` schemas                                                                  |
+| 2.0.29  | 2026-01-17 | Initial healthcheck defaults                                                                              |

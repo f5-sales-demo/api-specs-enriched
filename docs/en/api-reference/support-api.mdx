@@ -2,7 +2,7 @@
 title: "🎫 Support API"
 description: "Tickets, escalations, and network diagnostics."
 sidebar:
-    hidden: true
+  hidden: true
 ---
 
 Issue lifecycle with comments, severity changes, and resolution tracking. Packet capture for connection analysis.
@@ -27,65 +27,65 @@ Issue lifecycle with comments, severity changes, and resolution tracking. Packet
 
 ## Endpoints
 
-| Method | Path | Description |
-|--------|------|-------------|
-| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/resync_crl` | Resync CRL. |
-| POST | `/api/web/namespaces/system/child_tenant/support_tickets` | List of support tickets created for a child tenant. |
-| POST | `/api/web/namespaces/system/customer_support/tax_exempt_request` | Tax exemption verification request. |
-| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/customer_supports` | Create Customer Support. |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/admin/customer_supports` | List all tenant tickets. |
-| POST | `/api/web/namespaces/&#123;namespace&#125;/customer_support/&#123;name&#125;/close` | Close a customer support ticket. |
-| POST | `/api/web/namespaces/&#123;namespace&#125;/customer_support/&#123;name&#125;/comment` | Add comment to a customer support ticket. |
-| POST | `/api/web/namespaces/&#123;namespace&#125;/customer_support/&#123;name&#125;/escalate` | Escalate a ticket. |
-| POST | `/api/web/namespaces/&#123;namespace&#125;/customer_support/&#123;name&#125;/priority` | Change priority of a ticket. |
-| POST | `/api/web/namespaces/&#123;namespace&#125;/customer_support/&#123;name&#125;/reopen` | Reopen a closed customer support ticket. |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/customer_supports` | List Customer Support. |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/customer_supports/&#123;name&#125;` | GET Customer Support. |
-| GET | `/api/web/namespaces/system/customer_support/&#123;name&#125;/comment/&#123;comment_id&#125;/attachment/&#123;attachment_id&#125;` | GET attachment. |
-| GET | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/global/check-debug-info-collection` | Check Debug Info Collection. |
-| GET | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/global/diagnosis` | Diagnosis |
-| GET | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/global/download-debug-info-collection` | Download Debug Info Collection. |
-| GET | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/global/health` | Health |
-| POST | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/change-password` | ChangePassword. |
-| GET | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/start-debug-info-collection` | Start Debug Info Collection. |
-| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/global/list-service` | List F5XC services. |
-| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/global/&#123;vesnamespace&#125;/status` | Status |
-| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/exec` | Exec |
-| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/exec-log` | Exec Log |
-| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/exec-user` | ExecUser |
-| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/host-ping` | Host Ping |
-| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/reboot` | Reboot node. |
-| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/&#123;service&#125;/log` | Log |
-| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/&#123;service&#125;/soft-restart` | Soft restart. |
-| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/dhcp_leases` | Show DHCP Leases. |
-| POST | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/global/allow-f5-ssh` | Allow F5 SSH. |
-| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/lte/&#123;node&#125;/config` | GET LTE configuration. |
-| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/lte/&#123;node&#125;/config` | Update LTE configuration. |
-| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/lte/&#123;node&#125;/disconnect` | Disconnect. |
-| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/lte/&#123;node&#125;/info` | Show LTE info. |
-| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/ping` | Ping |
-| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/fetchdump` | FetchDump |
-| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/list_tcpdump` | List Tcpdump. |
-| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/stop_tcpdump` | Stop Tcpdump. |
-| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/tcpdump` | Tcpdump |
-| POST | `/api/web/namespaces/shared/ticket_tracking_systems/jira_projects_issue_types` | JIRA Projects & Issue Types. |
-| POST | `/api/web/namespaces/shared/ticket_tracking_systems/validate_ticket_tracking_system` | Validate Ticket Tracking System. |
-| POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/ticket_tracking_systems` | Create Ticket Tracking System. |
-| PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/ticket_tracking_systems/&#123;metadata.name&#125;` | Replace Ticket Tracking System. |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/ticket_tracking_systems` | List Ticket Tracking System. |
-| GET | `/api/web/namespaces/&#123;namespace&#125;/ticket_tracking_systems/&#123;name&#125;` | GET Ticket Tracking System. |
-| DELETE | `/api/web/namespaces/&#123;namespace&#125;/ticket_tracking_systems/&#123;name&#125;` | DELETE Ticket Tracking System. |
-| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/config` | GET USB configuration. |
-| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/config` | Update USB configuration. |
-| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/list` | List USB devices. |
-| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/rules` | List USB Enablement Rules. |
-| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/rules/add` | Add USB Enablement Rules. |
-| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/rules/delete` | DELETE USB Enablement Rules. |
-| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/wifi/&#123;node&#125;/config` | GET WIFI configuration. |
-| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/wifi/&#123;node&#125;/config` | Update WIFI configuration. |
-| POST | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/wifi/&#123;node&#125;/disconnect` | Disconnect. |
-| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/wifi/&#123;node&#125;/info` | Show WIFI info. |
-| GET | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/wifi/&#123;node&#125;/list` | List WIFI networks. |
+| Method | Path                                                                                                                               | Description                                         |
+| ------ | ---------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| POST   | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/resync_crl`                                              | Resync CRL.                                         |
+| POST   | `/api/web/namespaces/system/child_tenant/support_tickets`                                                                          | List of support tickets created for a child tenant. |
+| POST   | `/api/web/namespaces/system/customer_support/tax_exempt_request`                                                                   | Tax exemption verification request.                 |
+| POST   | `/api/web/namespaces/&#123;metadata.namespace&#125;/customer_supports`                                                             | Create Customer Support.                            |
+| GET    | `/api/web/namespaces/&#123;namespace&#125;/admin/customer_supports`                                                                | List all tenant tickets.                            |
+| POST   | `/api/web/namespaces/&#123;namespace&#125;/customer_support/&#123;name&#125;/close`                                                | Close a customer support ticket.                    |
+| POST   | `/api/web/namespaces/&#123;namespace&#125;/customer_support/&#123;name&#125;/comment`                                              | Add comment to a customer support ticket.           |
+| POST   | `/api/web/namespaces/&#123;namespace&#125;/customer_support/&#123;name&#125;/escalate`                                             | Escalate a ticket.                                  |
+| POST   | `/api/web/namespaces/&#123;namespace&#125;/customer_support/&#123;name&#125;/priority`                                             | Change priority of a ticket.                        |
+| POST   | `/api/web/namespaces/&#123;namespace&#125;/customer_support/&#123;name&#125;/reopen`                                               | Reopen a closed customer support ticket.            |
+| GET    | `/api/web/namespaces/&#123;namespace&#125;/customer_supports`                                                                      | List Customer Support.                              |
+| GET    | `/api/web/namespaces/&#123;namespace&#125;/customer_supports/&#123;name&#125;`                                                     | GET Customer Support.                               |
+| GET    | `/api/web/namespaces/system/customer_support/&#123;name&#125;/comment/&#123;comment_id&#125;/attachment/&#123;attachment_id&#125;` | GET attachment.                                     |
+| GET    | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/global/check-debug-info-collection`                               | Check Debug Info Collection.                        |
+| GET    | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/global/diagnosis`                                                 | Diagnosis                                           |
+| GET    | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/global/download-debug-info-collection`                            | Download Debug Info Collection.                     |
+| GET    | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/global/health`                                                    | Health                                              |
+| POST   | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/change-password`                                 | ChangePassword.                                     |
+| GET    | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/start-debug-info-collection`                     | Start Debug Info Collection.                        |
+| GET    | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/global/list-service`                               | List F5XC services.                                 |
+| GET    | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/global/&#123;vesnamespace&#125;/status`            | Status                                              |
+| POST   | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/exec`                             | Exec                                                |
+| GET    | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/exec-log`                         | Exec Log                                            |
+| POST   | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/exec-user`                        | ExecUser                                            |
+| POST   | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/host-ping`                        | Host Ping                                           |
+| POST   | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/reboot`                           | Reboot node.                                        |
+| GET    | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/&#123;service&#125;/log`          | Log                                                 |
+| POST   | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/debug/&#123;node&#125;/&#123;service&#125;/soft-restart` | Soft restart.                                       |
+| GET    | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/dhcp_leases`                                             | Show DHCP Leases.                                   |
+| POST   | `/api/operate/namespaces/system/sites/&#123;site&#125;/vpm/debug/global/allow-f5-ssh`                                              | Allow F5 SSH.                                       |
+| GET    | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/lte/&#123;node&#125;/config`                             | GET LTE configuration.                              |
+| POST   | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/lte/&#123;node&#125;/config`                             | Update LTE configuration.                           |
+| POST   | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/lte/&#123;node&#125;/disconnect`                         | Disconnect.                                         |
+| GET    | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/lte/&#123;node&#125;/info`                               | Show LTE info.                                      |
+| POST   | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/ping`                                                    | Ping                                                |
+| POST   | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/fetchdump`                                               | FetchDump                                           |
+| POST   | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/list_tcpdump`                                            | List Tcpdump.                                       |
+| POST   | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/stop_tcpdump`                                            | Stop Tcpdump.                                       |
+| POST   | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/ver/tcpdump`                                                 | Tcpdump                                             |
+| POST   | `/api/web/namespaces/shared/ticket_tracking_systems/jira_projects_issue_types`                                                     | Jira Projects & Issue Types.                        |
+| POST   | `/api/web/namespaces/shared/ticket_tracking_systems/validate_ticket_tracking_system`                                               | Validate Ticket Tracking System.                    |
+| POST   | `/api/web/namespaces/&#123;metadata.namespace&#125;/ticket_tracking_systems`                                                       | Create Ticket Tracking System.                      |
+| PUT    | `/api/web/namespaces/&#123;metadata.namespace&#125;/ticket_tracking_systems/&#123;metadata.name&#125;`                             | Replace Ticket Tracking System.                     |
+| GET    | `/api/web/namespaces/&#123;namespace&#125;/ticket_tracking_systems`                                                                | List Ticket Tracking System.                        |
+| GET    | `/api/web/namespaces/&#123;namespace&#125;/ticket_tracking_systems/&#123;name&#125;`                                               | GET Ticket Tracking System.                         |
+| DELETE | `/api/web/namespaces/&#123;namespace&#125;/ticket_tracking_systems/&#123;name&#125;`                                               | DELETE Ticket Tracking System.                      |
+| GET    | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/config`                             | GET USB configuration.                              |
+| POST   | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/config`                             | Update USB configuration.                           |
+| GET    | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/list`                               | List USB devices.                                   |
+| GET    | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/rules`                              | List USB Enablement Rules.                          |
+| POST   | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/rules/add`                          | Add USB Enablement Rules.                           |
+| POST   | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/usb/&#123;node&#125;/rules/delete`                       | DELETE USB Enablement Rules.                        |
+| GET    | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/wifi/&#123;node&#125;/config`                            | GET Wi-Fi configuration.                            |
+| POST   | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/wifi/&#123;node&#125;/config`                            | Update Wi-Fi configuration.                         |
+| POST   | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/wifi/&#123;node&#125;/disconnect`                        | Disconnect.                                         |
+| GET    | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/wifi/&#123;node&#125;/info`                              | Show Wi-Fi info.                                    |
+| GET    | `/api/operate/namespaces/&#123;namespace&#125;/sites/&#123;site&#125;/vpm/wifi/&#123;node&#125;/list`                              | List Wi-Fi networks.                                |
 
 ## Links
 

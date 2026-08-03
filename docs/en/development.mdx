@@ -68,20 +68,21 @@ Download (ETag) → Enrich → Normalize → Merge → Lint → Serve
 
 ### Directory Structure
 
-| Directory | Purpose | Git Status |
-|-----------|---------|------------|
-| `specs/original/` | F5 source specs | Gitignored |
-| `specs/discovered/` | API discovery output | Tracked (openapi.json, session.json) |
-| `docs/specifications/api/` | Generated domain specs | Gitignored |
-| `scripts/` | Python pipeline scripts | Tracked |
-| `config/` | Pipeline configuration | Tracked |
-| `reports/` | Generated reports | Gitignored |
+| Directory                  | Purpose                 | Git Status                           |
+| -------------------------- | ----------------------- | ------------------------------------ |
+| `specs/original/`          | F5 source specs         | Gitignored                           |
+| `specs/discovered/`        | API discovery output    | Tracked (openapi.json, session.json) |
+| `docs/specifications/api/` | Generated domain specs  | Gitignored                           |
+| `scripts/`                 | Python pipeline scripts | Tracked                              |
+| `config/`                  | Pipeline configuration  | Tracked                              |
+| `reports/`                 | Generated reports       | Gitignored                           |
 
 ## Workflow Patterns
 
 ### 1. Discovery Workflow
 
 **Prerequisites**:
+
 - VPN connection to F5 XC environment
 - Valid API credentials
 
@@ -101,6 +102,7 @@ make push-discovery
 ```
 
 **Discovery captures**:
+
 - Actual required/optional fields
 - Enum values from live responses
 - Default values
@@ -121,12 +123,12 @@ Releases are automated:
 
 **Version Bump Rules**:
 
-| Condition | Bump Type | Example |
-|-----------|-----------|---------|
-| `[major]` in commit | Major | 1.0.0 → 2.0.0 |
-| `BREAKING CHANGE` in commit | Major | 1.0.0 → 2.0.0 |
-| New domain spec added | Minor | 1.0.0 → 1.1.0 |
-| Any other change | Patch | 1.0.0 → 1.0.1 |
+| Condition                   | Bump Type | Example       |
+| --------------------------- | --------- | ------------- |
+| `[major]` in commit         | Major     | 1.0.0 → 2.0.0 |
+| `BREAKING CHANGE` in commit | Major     | 1.0.0 → 2.0.0 |
+| New domain spec added       | Minor     | 1.0.0 → 1.1.0 |
+| Any other change            | Patch     | 1.0.0 → 1.0.1 |
 
 ### 3. Development Workflow
 
@@ -265,7 +267,7 @@ normalization:
     enabled: true
 ```
 
-### Spectral Linting Rules
+### Spectral linter rules
 
 ```yaml
 # config/spectral.yaml
@@ -283,33 +285,34 @@ The enrichment pipeline uses vendor extensions to embed validation and default v
 
 ### Extension Categories
 
-| Extension | Meaning | Implication |
-|-----------|---------|-------------|
-| `x-f5xc-server-default` | The F5 XC API server applies this value when the field is omitted | Field is optional; omitting it produces the documented default behavior |
-| `x-f5xc-recommended-value` | The F5 XC web console pre-populates this value for new resources | Field has no server default but this value represents typical configuration |
-| `x-f5xc-recommended-oneof-variant` | The F5 XC console preselects this OneOf variant | Identifies the typical choice when multiple mutually exclusive options exist |
-| `x-f5xc-conflicts-with` | Lists other properties that cannot be used together with this field | Property is part of a OneOf group; only one of the conflicting properties can be specified |
+| Extension                          | Meaning                                                             | Implication                                                                                |
+| ---------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| `x-f5xc-server-default`            | The F5 XC API server applies this value when the field is omitted   | Field is optional; omitting it produces the documented default behavior                    |
+| `x-f5xc-recommended-value`         | The F5 XC web console pre-populates this value for new resources    | Field has no server default but this value represents typical configuration                |
+| `x-f5xc-recommended-oneof-variant` | The F5 XC console preselects this OneOf variant                     | Identifies the typical choice when multiple mutually exclusive options exist               |
+| `x-f5xc-conflicts-with`            | Lists other properties that cannot be used together with this field | Property is part of a OneOf group; only one of the conflicting properties can be specified |
 
 ### Required Field Extensions
 
-| Extension | Source | Purpose |
-|-----------|--------|---------|
+| Extension                | Source              | Purpose                                 |
+| ------------------------ | ------------------- | --------------------------------------- |
 | `x-ves-required: "true"` | F5 XC original spec | Field requires non-zero/non-empty value |
-| `x-f5xc-required-for` | Enrichment pipeline | Context-specific required status |
+| `x-f5xc-required-for`    | Enrichment pipeline | Context-specific required status        |
 
 **x-f5xc-required-for contexts**:
+
 - `create`: Required when creating the resource
 - `update`: Required when updating the resource
 - `minimum_config`: Required for minimum viable configuration
 
 ### Default Value and OneOf Extensions
 
-| Extension | Purpose |
-|-----------|---------|
-| `x-f5xc-server-default: true` | Marks server-applied defaults |
-| `x-f5xc-recommended-value` | F5 XC console pre-populated value |
-| `x-f5xc-recommended-oneof-variant` | Recommended OneOf variant |
-| `x-f5xc-conflicts-with` | Mutual exclusivity with other OneOf properties |
+| Extension                          | Purpose                                        |
+| ---------------------------------- | ---------------------------------------------- |
+| `x-f5xc-server-default: true`      | Marks server-applied defaults                  |
+| `x-f5xc-recommended-value`         | F5 XC console pre-populated value              |
+| `x-f5xc-recommended-oneof-variant` | Recommended OneOf variant                      |
+| `x-f5xc-conflicts-with`            | Mutual exclusivity with other OneOf properties |
 
 #### x-f5xc-server-default
 
@@ -368,6 +371,7 @@ use_origin_server_name:
 ```
 
 **Use cases**:
+
 - Terraform providers can generate validation rules
 - CLI tools can warn about conflicting field combinations
 - AI assistants can generate correct OneOf configurations
@@ -379,35 +383,35 @@ use_origin_server_name:
 
 The enricher inspects `x-ves-validation-rules` to infer required status:
 
-| Rule | Implication |
-|------|-------------|
-| `ves.io.schema.rules.message.required: "true"` | Field is required |
-| `ves.io.schema.rules.uint32.gte: N` | If N >= 1 and no server default, field is required |
-| `ves.io.schema.rules.repeated.min_items: N` | If N >= 1, array requires at least N items |
-| `ves.io.schema.rules.string.min_bytes: N` | If N >= 1, string requires at least N bytes |
+| Rule                                           | Implication                                        |
+| ---------------------------------------------- | -------------------------------------------------- |
+| `ves.io.schema.rules.message.required: "true"` | Field is required                                  |
+| `ves.io.schema.rules.uint32.gte: N`            | If N >= 1 and no server default, field is required |
+| `ves.io.schema.rules.repeated.min_items: N`    | If N >= 1, array requires at least N items         |
+| `ves.io.schema.rules.string.min_bytes: N`      | If N >= 1, string requires at least N bytes        |
 
 ### Resources with Server-Applied Defaults
 
 Some resources accept empty specs because the server applies defaults:
 
-| Resource | Server-Applied Defaults |
-|----------|------------------------|
-| `app_firewall` | `monitoring: \{\}`, `default_detection_settings: \{\}` |
-| `rate_limiter` | `limits: []`, `user_identification: []` |
-| `api_definition` | `swagger_specs: []`, default `api_groups` |
-| `healthcheck` | `jitter: 0`, `jitter_percent: 0`, nested http_health_check defaults |
+| Resource         | Server-Applied Defaults                                             |
+| ---------------- | ------------------------------------------------------------------- |
+| `app_firewall`   | `monitoring: \{\}`, `default_detection_settings: \{\}`              |
+| `rate_limiter`   | `limits: []`, `user_identification: []`                             |
+| `api_definition` | `swagger_specs: []`, default `api_groups`                           |
+| `healthcheck`    | `jitter: 0`, `jitter_percent: 0`, nested http_health_check defaults |
 
 For these resources, `x-f5xc-required-for.create` may be `false` even when `x-ves-required` is `true`.
 
 ### Default Value Patterns
 
-| Pattern | Type | Example |
-|---------|------|---------|
-| `\{\}` | Empty object (choice selection) | `monitoring: \{\}` |
-| `[]` | Empty array | `expected_status_codes: []` |
-| `0` | Numeric | `jitter: 0` |
-| `""` | String | `expected_response: ""` |
-| `false` | Boolean | `use_http2: false` |
+| Pattern | Type                            | Example                     |
+| ------- | ------------------------------- | --------------------------- |
+| `\{\}`  | Empty object (choice selection) | `monitoring: \{\}`          |
+| `[]`    | Empty array                     | `expected_status_codes: []` |
+| `0`     | Numeric                         | `jitter: 0`                 |
+| `""`    | String                          | `expected_response: ""`     |
+| `false` | Boolean                         | `use_http2: false`          |
 
 ### Adding Discovered Defaults
 
@@ -442,7 +446,7 @@ echo $F5XC_API_URL
 # Format: https://tenant.console.ves.volterra.io/api
 ```
 
-### Lint Errors on Generated Specs
+### Linting errors on generated specs
 
 ```bash
 # Check lint report
@@ -482,38 +486,37 @@ Add exclusion to `.pre-commit-config.yaml`:
 
 ### Make Targets
 
-| Target | Description |
-|--------|-------------|
-| `make build` | Full build (download + pipeline) |
-| `make rebuild` | Quick rebuild (skip download) |
-| `make download` | Download specs (ETag cached) |
-| `make download-force` | Force download |
-| `make pipeline` | Run enrichment pipeline |
-| `make lint` | Spectral linting |
-| `make serve` | Local documentation server |
-| `make discover` | API discovery (VPN required) |
-| `make push-discovery` | Commit discovery data |
-| `make clean` | Remove generated files |
-| `make pre-commit-run` | Run all quality checks |
+| Target                | Description                      |
+| --------------------- | -------------------------------- |
+| `make build`          | Full build (download + pipeline) |
+| `make rebuild`        | Quick rebuild (skip download)    |
+| `make download`       | Download specs (ETag cached)     |
+| `make download-force` | Force download                   |
+| `make pipeline`       | Run enrichment pipeline          |
+| `make lint`           | Spectral linting                 |
+| `make serve`          | Local documentation server       |
+| `make discover`       | API discovery (VPN required)     |
+| `make push-discovery` | Commit discovery data            |
+| `make clean`          | Remove generated files           |
+| `make pre-commit-run` | Run all quality checks           |
 
 ### Environment Variables
 
-| Variable | Purpose |
-|----------|---------|
-| `F5XC_API_URL` | F5 XC tenant API URL |
+| Variable         | Purpose                  |
+| ---------------- | ------------------------ |
+| `F5XC_API_URL`   | F5 XC tenant API URL     |
 | `F5XC_API_TOKEN` | API authentication token |
 
 ### Key Files
 
-| File | Purpose |
-|------|---------|
-| `.etag` | Last downloaded ETag |
-| `CHANGELOG.md` | Auto-generated changelog |
-| `config/enrichment.yaml` | Enrichment rules |
-| `config/normalization.yaml` | Normalization rules |
-| `config/discovery.yaml` | Discovery settings |
-| `config/spectral.yaml` | Linting rules |
+| File                                  | Purpose                       |
+| ------------------------------------- | ----------------------------- |
+| `.etag`                               | Last downloaded ETag          |
+| `CHANGELOG.md`                        | Auto-generated changelog      |
+| `config/enrichment.yaml`              | Enrichment rules              |
+| `config/normalization.yaml`           | Normalization rules           |
+| `config/discovery.yaml`               | Discovery settings            |
+| `config/spectral.yaml`                | Linter rules                  |
 | `scripts/utils/version_calculator.py` | Tag-based version calculation |
 
 **Note**: Version is derived from git tags (e.g., `v2.0.38`), not from a `.version` file.
-
