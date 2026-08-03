@@ -1,6 +1,6 @@
-🌐 English
-
 # API Specs Enriched
+
+🌐 English
 
 [![GitHub Pages Deploy](https://github.com/f5-sales-demo/api-specs-enriched/actions/workflows/github-pages-deploy.yml/badge.svg)](https://github.com/f5-sales-demo/api-specs-enriched/actions/workflows/github-pages-deploy.yml)
 [![Repository Settings](https://github.com/f5-sales-demo/api-specs-enriched/actions/workflows/enforce-repo-settings.yml/badge.svg)](https://github.com/f5-sales-demo/api-specs-enriched/actions/workflows/enforce-repo-settings.yml)
