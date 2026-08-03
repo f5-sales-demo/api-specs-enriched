@@ -38,7 +38,7 @@ DEFAULT_GOVERNANCE_JSON = Path(".claude/governance.json")
 # reject. Authorization requires an exact branch identity and same-repository
 # ownership proven by GitHub's pull-request event receipt.
 AUTHORIZED_AUTOMATION_BRANCH = re.compile(
-    r"(?:governance/sync-managed-files|"
+    r"(?:governance/sync-managed-files(?:-[0-9a-f]{12}-[1-9][0-9]*-[1-9][0-9]*)?|"
     r"sync/exact-caller-[0-9a-f]{12}-[1-9][0-9]*-[1-9][0-9]*)",
 )
 
