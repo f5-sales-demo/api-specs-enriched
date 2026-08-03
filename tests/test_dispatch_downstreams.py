@@ -474,6 +474,7 @@ def test_authoritative_release_is_queried_once_and_bound_to_tag_bytes(monkeypatc
 
     raw_calls: list[str] = []
     monkeypatch.setattr(delivery, "_github_json", github_json)
+
     def _fake_raw(endpoint, _label):
         raw_calls.append(endpoint)
         return pin
@@ -513,6 +514,7 @@ def test_npm_authority_hashes_exact_registry_tarball_bytes(monkeypatch) -> None:
             "version": "9.8.7",
         },
     )
+
     def _fake_download(url, _label):
         urls.append(url)
         return tarball
@@ -549,6 +551,7 @@ def test_marketplace_authority_hashes_both_public_vsix_artifacts(monkeypatch) ->
         "_http_json",
         lambda *_args: {"files": {"download": "https://open-vsx.example/xcsh.vsix"}},
     )
+
     def _fake_vsix_download(url, _label):
         downloads.append(url)
         return gzip.compress(vsix) if "marketplace.example" in url else vsix
@@ -623,7 +626,7 @@ def test_receiver_evidence_reads_one_pinned_main_snapshot(monkeypatch) -> None:
 
     def recording_run(*args, **kwargs):
         calls.append(args[0][-1])
-        return mocked_run(*args, **kwargs)
+        return mocked_run(*args, **kwargs)  # pylint: disable=subprocess-run-check
 
     monkeypatch.setattr(delivery.subprocess, "run", recording_run)
 
@@ -648,7 +651,7 @@ def test_unchanged_receiver_commit_reuses_fully_validated_snapshot(monkeypatch) 
 
     def recording_run(*args, **kwargs):
         endpoints.append(args[0][-1])
-        return mocked_run(*args, **kwargs)
+        return mocked_run(*args, **kwargs)  # pylint: disable=subprocess-run-check
 
     monkeypatch.setattr(delivery.subprocess, "run", recording_run)
     snapshot_cache: dict[tuple[str, str, str, str, str], bool] = {}
@@ -974,6 +977,7 @@ def test_verify_only_rechecks_every_receipted_target_without_mutation(monkeypatc
     release = _release(commit, *markers)
     verified: list[str] = []
     monkeypatch.setattr(delivery, "github_release", lambda *_args: release)
+
     def _fake_verify(target, *_args, **_kwargs):
         verified.append(target["repo"])
         return True

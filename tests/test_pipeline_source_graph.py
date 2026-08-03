@@ -214,7 +214,8 @@ def test_silent_batch_omission_becomes_fatal_error(
 
 
 class _UnreadableCacheBatchProcessor(_OmittingBatchProcessor):
-    def process_batch(self, spec_files, output_dir=None, temp_dir=None, config=None):
+    def process_batch(self, *args, **kwargs):
+        spec_files = args[0] if args else kwargs["spec_files"]
         return {spec_files[0].name: Path("unreadable-cache.json")}
 
     def get_stats(self):

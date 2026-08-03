@@ -845,6 +845,7 @@ def test_main_completed_retry_rebuilds_authoritative_assets(
     reconciled: list[dict[str, Path]] = []
     monkeypatch.setattr(publication, "extract_snapshot", extract)
     monkeypatch.setattr(publication, "build_release_assets", lambda *_args: assets)
+
     def _fake_reconcile(*_args):
         reconciled.append(assets)
         return release

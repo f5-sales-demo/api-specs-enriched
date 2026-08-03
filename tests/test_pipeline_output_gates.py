@@ -255,7 +255,7 @@ def test_operation_metadata_gate_rejects_every_flat_compatibility_field() -> Non
         "alpha.json": {
             "paths": {
                 "/alpha": {
-                    "get": _operation(**{"x-f5xc-danger-level": "low"}),
+                    "get": _operation(None, **{"x-f5xc-danger-level": "low"}),
                 }
             }
         }

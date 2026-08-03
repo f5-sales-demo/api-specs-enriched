@@ -147,6 +147,7 @@ def test_explicit_loader_uses_the_requested_snapshot_directory(
 
     assert enricher is not None
     assert enricher.config["discovered_specs_dir"] == str(tmp_path)
+    assert enricher.discovery_data is not None
     assert set(enricher.discovery_data.paths) == {"/probe"}
 
 
