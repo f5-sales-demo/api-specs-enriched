@@ -42,7 +42,7 @@ The `x-f5xc-constraints` extension provides deterministic knowledge about field 
 - **9,851 constraints** across all F5 XC API specs
 - **50+ pattern types** (string, array, numeric)
 - **95% confidence** on high-priority fields (names, ports, identifiers)
-- **3-tier reconciliation**: EXISTING > DISCOVERY > INFERRED
+- **3-tier reconciliation**: `EXISTING > DISCOVERY > INFERRED`
 
 ---
 
@@ -73,13 +73,13 @@ The `x-f5xc-constraints` extension provides deterministic knowledge about field 
 
 ### Field Descriptions
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `constraintType` | string | Data type (string, array, number, object) |
-| `deterministic` | boolean | High-confidence flag (confidence >= 0.9) for AI generation |
-| `category` | string | Constraint category for grouping and reporting |
-| *(constraint keys)* | various | Type-specific constraint keys flattened at top level (e.g., `minLength`, `maxItems`, `minimum`) |
-| `metadata` | object | Source tracking, confidence, validation timestamp |
+| Field               | Type    | Description                                                                                     |
+| ------------------- | ------- | ----------------------------------------------------------------------------------------------- |
+| `constraintType`    | string  | Data type (string, array, number, object)                                                       |
+| `deterministic`     | boolean | High-confidence flag (confidence >= 0.9) for AI generation                                      |
+| `category`          | string  | Constraint category for grouping and reporting                                                  |
+| _(constraint keys)_ | various | Type-specific constraint keys flattened at top level (e.g., `minLength`, `maxItems`, `minimum`) |
+| `metadata`          | object  | Source tracking, confidence, validation timestamp                                               |
 
 ---
 
@@ -120,26 +120,26 @@ The `x-f5xc-constraints` extension provides deterministic knowledge about field 
 
 #### Supported Formats
 
-| Format | Description | Example |
-|--------|-------------|---------|
-| `dns-label` | RFC 1123 DNS label (1-63 chars) | `my-service` |
-| `fqdn` | Fully qualified domain name | `api.example.com` |
-| `email` | RFC 5322 email address | `user@example.com` |
-| `url` | RFC 3986 URI/URL | `https://example.com/api` |
-| `ipv4` | IPv4 address | `192.168.1.1` |
-| `ipv6` | IPv6 address | `2001:db8::1` |
-| `uuid` | RFC 4122 UUID | `550e8400-e29b-41d4-a716-446655440000` |
-| `date-time` | ISO 8601 timestamp | `2026-01-19T12:00:00Z` |
-| `date` | ISO 8601 date | `2026-01-19` |
-| `time` | ISO 8601 time | `12:00:00` |
-| `json` | JSON string (parseable) | `{"key": "value"}` |
-| `yaml` | YAML string (parseable) | `key: value` |
-| `base64` | Base64-encoded string | `SGVsbG8gV29ybGQ=` |
-| `hex` | Hexadecimal string | `48656c6c6f` |
-| `mac-address` | MAC address | `00:1A:2B:3C:4D:5E` |
-| `phone` | E.164 phone number | `+1-555-123-4567` |
+| Format        | Description                     | Example                                |
+| ------------- | ------------------------------- | -------------------------------------- |
+| `dns-label`   | RFC 1123 DNS label (1-63 chars) | `my-service`                           |
+| `fqdn`        | Fully qualified domain name     | `api.example.com`                      |
+| `email`       | RFC 5322 email address          | `user@example.com`                     |
+| `url`         | RFC 3986 URI/URL                | `https://example.com/api`              |
+| `ipv4`        | IPv4 address                    | `192.168.1.1`                          |
+| `ipv6`        | IPv6 address                    | `2001:db8::1`                          |
+| `uuid`        | RFC 4122 UUID                   | `550e8400-e29b-41d4-a716-446655440000` |
+| `date-time`   | ISO 8601 timestamp              | `2026-01-19T12:00:00Z`                 |
+| `date`        | ISO 8601 date                   | `2026-01-19`                           |
+| `time`        | ISO 8601 time                   | `12:00:00`                             |
+| `json`        | JSON string (parseable)         | `{"key": "value"}`                     |
+| `yaml`        | YAML string (parseable)         | `key: value`                           |
+| `base64`      | Base64-encoded string           | `SGVsbG8gV29ybGQ=`                     |
+| `hex`         | Hexadecimal string              | `48656c6c6f`                           |
+| `mac-address` | MAC address                     | `00:1A:2B:3C:4D:5E`                    |
+| `phone`       | E.164 phone number              | `+1-555-123-4567`                      |
 
-### Array Constraints
+### Array constraint structure
 
 ```json
 {
@@ -150,13 +150,13 @@ The `x-f5xc-constraints` extension provides deterministic knowledge about field 
   "uniqueItems": true,
   "metadata": {
     "source": "inferred",
-    "confidence": 0.90
+    "confidence": 0.9
   },
   "deterministic": true
 }
 ```
 
-### Numeric Constraints
+### Numeric constraint structure
 
 ```json
 {
@@ -182,56 +182,68 @@ The `x-f5xc-constraints` extension provides deterministic knowledge about field 
 ### String Format Constraints
 
 **DNS Labels** (`format: "dns-label"`):
+
 - DNS label names must be 1-63 lowercase alphanumeric characters
 - Hyphens allowed but not at start/end (RFC 1123)
 - Example: `my-service`, `api-gateway`, `lb-prod-01`
 
 **Email Addresses** (`format: "email"`):
+
 - Email addresses must be valid per RFC 5322
 - Maximum 254 characters
 - Example: `admin@example.com`, `api+webhook@service.io`
 
 **FQDNs** (`format: "fqdn"`):
+
 - Fully Qualified Domain Names must be 1-253 characters
 - Dot-separated DNS labels
 - Example: `api.example.com`, `service.production.internal`
 
 **URLs** (`format: "url"`):
+
 - URLs must be valid URIs per RFC 3986
 - Must include scheme (http/https)
 - Example: `https://api.example.com/v1`, `http://localhost:8080`
 
 **IPv4 Addresses** (`format: "ipv4"`):
+
 - IPv4 addresses must be in dotted-decimal notation
 - Example: `192.168.1.1`, `10.0.0.1`
 
 **UUIDs** (`format: "uuid"`):
+
 - UUIDs must follow RFC 4122 format
 - Example: `550e8400-e29b-41d4-a716-446655440000`
 
 **Timestamps** (`format: "date-time"`):
+
 - Timestamps must be ISO 8601 format
 - Example: `2026-01-19T12:00:00Z`, `2026-01-19T12:00:00+00:00`
 
-### Numeric Constraints
+### Numeric constraint guidance
 
 **Port Numbers**:
+
 - Port numbers must be integers between 1 and 65535
 - Standard ports: 80 (HTTP), 443 (HTTPS), 22 (SSH)
 
 **VLAN IDs**:
+
 - VLAN IDs must be integers between 1 and 4094 (802.1Q standard)
 
 **Timeouts**:
+
 - Timeouts must be 1-3600 seconds (1 hour maximum)
 
-### Array Constraints
+### Array constraint guidance
 
 **Origin Pools**:
+
 - Array of origin pools requires at least 1 item, maximum 50 items
 - Each item must be unique
 
 **Tags**:
+
 - Tags array allows 0-100 items
 - Items need not be unique
 
@@ -242,6 +254,7 @@ The `x-f5xc-constraints` extension provides deterministic knowledge about field 
 ### Example 1: DNS Label Name Validation
 
 **Constraint**:
+
 ```json
 {
   "constraintType": "string",
@@ -254,12 +267,14 @@ The `x-f5xc-constraints` extension provides deterministic knowledge about field 
 ```
 
 **Valid Values**:
+
 - ✅ `my-service`
 - ✅ `api-gateway`
 - ✅ `lb-prod-01`
 - ✅ `web`
 
 **Invalid Values**:
+
 - ❌ `My-Service` (uppercase not allowed)
 - ❌ `-my-service` (hyphen at start)
 - ❌ `my-service-` (hyphen at end)
@@ -269,6 +284,7 @@ The `x-f5xc-constraints` extension provides deterministic knowledge about field 
 ### Example 2: Port Number Validation
 
 **Constraint**:
+
 ```json
 {
   "constraintType": "number",
@@ -279,12 +295,14 @@ The `x-f5xc-constraints` extension provides deterministic knowledge about field 
 ```
 
 **Valid Values**:
+
 - ✅ `80` (HTTP)
 - ✅ `443` (HTTPS)
 - ✅ `8080` (common alternative HTTP)
 - ✅ `65535` (maximum port)
 
 **Invalid Values**:
+
 - ❌ `0` (below minimum)
 - ❌ `65536` (above maximum)
 - ❌ `-1` (negative)
@@ -293,6 +311,7 @@ The `x-f5xc-constraints` extension provides deterministic knowledge about field 
 ### Example 3: Array Size Validation
 
 **Constraint**:
+
 ```json
 {
   "constraintType": "array",
@@ -304,10 +323,12 @@ The `x-f5xc-constraints` extension provides deterministic knowledge about field 
 ```
 
 **Valid Values**:
+
 - ✅ `["origin-1"]` (1 item)
 - ✅ `["origin-1", "origin-2", "origin-3"]` (3 items, all unique)
 
 **Invalid Values**:
+
 - ❌ `[]` (below minimum)
 - ❌ `["origin-1", "origin-1"]` (duplicate items)
 - ❌ `[array with 51 items]` (above maximum)
@@ -318,21 +339,23 @@ The `x-f5xc-constraints` extension provides deterministic knowledge about field 
 
 ### Score Interpretation
 
-| Range | Interpretation | Usage |
-|-------|----------------|-------|
-| 0.90-1.00 | **High confidence** | Deterministic flag enabled, use for AI generation |
-| 0.70-0.89 | **Medium confidence** | Advisory, recommend user confirmation |
-| 0.50-0.69 | **Low confidence** | Informational only, require user validation |
-| < 0.50 | **Very low** | Not included in constraints |
+| Range          | Interpretation        | Usage                                             |
+| -------------- | --------------------- | ------------------------------------------------- |
+| 0.90-1.00      | **High confidence**   | Deterministic flag enabled, use for AI generation |
+| 0.70-0.89      | **Medium confidence** | Advisory, recommend user confirmation             |
+| 0.50-0.69      | **Low confidence**    | Informational only, require user validation       |
+| Less than 0.50 | **Very low**          | Not included in constraints                       |
 
 ### Deterministic Flag
 
 The `deterministic` boolean flag is set when:
-- Confidence score >= 0.9
+
+- Confidence score is at least 0.9
 - Pattern has been validated against discovery data OR
 - Pattern matches well-established standards (RFC, ISO, etc.)
 
 **Usage in AI generation**:
+
 ```python
 if constraint.get("deterministic"):
     # Generate value automatically without asking user
@@ -387,6 +410,7 @@ Discovery constraints are extracted from:
 ### AI Assistant Integration
 
 **Generate valid resource names**:
+
 ```python
 def generate_resource_name(schema_property):
     constraints = schema_property.get("x-f5xc-constraints", {})
@@ -406,6 +430,7 @@ def generate_resource_name(schema_property):
 ### CLI Tool Integration
 
 **Provide input validation**:
+
 ```python
 def validate_cli_input(field_name, user_value, constraints):
     if not constraints:
@@ -432,6 +457,7 @@ def validate_cli_input(field_name, user_value, constraints):
 ### Terraform Provider Integration
 
 **Schema generation**:
+
 ```go
 func generateTerraformSchema(property map[string]interface{}) *schema.Schema {
     constraints := property["x-f5xc-constraints"].(map[string]interface{})
@@ -458,33 +484,34 @@ func generateTerraformSchema(property map[string]interface{}) *schema.Schema {
 ### IDE Extension Integration
 
 **Autocomplete and validation**:
+
 ```typescript
 function provideCompletions(field: FieldInfo): CompletionItem[] {
-    const constraints = field.schema['x-f5xc-constraints'];
-    if (!constraints) return [];
+  const constraints = field.schema["x-f5xc-constraints"];
+  if (!constraints) return [];
 
-    const items: CompletionItem[] = [];
+  const items: CompletionItem[] = [];
 
-    // Add format-specific completions
-    if (constraints.format === 'dns-label') {
-        items.push({
-            label: 'my-service',
-            detail: 'Example DNS label',
-            kind: CompletionItemKind.Value
-        });
-    }
+  // Add format-specific completions
+  if (constraints.format === "dns-label") {
+    items.push({
+      label: "my-service",
+      detail: "Example DNS label",
+      kind: CompletionItemKind.Value,
+    });
+  }
 
-    // Add validation hint
-    if (constraints.deterministic) {
-        items.push({
-            label: '✨ Auto-generate',
-            detail: 'Generate valid value automatically',
-            kind: CompletionItemKind.Function,
-            command: { command: 'f5xc.generateValue', arguments: [field] }
-        });
-    }
+  // Add validation hint
+  if (constraints.deterministic) {
+    items.push({
+      label: "✨ Auto-generate",
+      detail: "Generate valid value automatically",
+      kind: CompletionItemKind.Function,
+      command: { command: "f5xc.generateValue", arguments: [field] },
+    });
+  }
 
-    return items;
+  return items;
 }
 ```
 
@@ -494,31 +521,31 @@ function provideCompletions(field: FieldInfo): CompletionItem[] {
 
 ### High-Confidence Patterns (0.95-0.99)
 
-| Pattern | Field Name Regex | Constraint Type | Example |
-|---------|------------------|-----------------|---------|
-| DNS Label | `\bname$` | String (1-63 chars, dns-label) | `my-service` |
-| Namespace | `\bnamespace$` | String (1-63 chars, dns-label) | `production` |
-| Port | `\bport$` | Number (1-65535) | `443` |
-| VLAN ID | `\b(vlan)?_?id$` | Number (1-4094) | `100` |
-| UUID | `\buuid$` | String (36 chars, uuid format) | `550e8400-...` |
-| Email | `\bemail$` | String (max 254 chars, email) | `user@example.com` |
-| Timestamp | `\b(timestamp\|created_at\|updated_at)$` | String (ISO 8601) | `2026-01-19T12:00:00Z` |
+| Pattern   | Field Name Regex                         | Constraint Type                | Example                |
+| --------- | ---------------------------------------- | ------------------------------ | ---------------------- |
+| DNS Label | `\bname$`                                | String (1-63 chars, dns-label) | `my-service`           |
+| Namespace | `\bnamespace$`                           | String (1-63 chars, dns-label) | `production`           |
+| Port      | `\bport$`                                | Number (1-65535)               | `443`                  |
+| VLAN ID   | `\b(vlan)?_?id$`                         | Number (1-4094)                | `100`                  |
+| UUID      | `\buuid$`                                | String (36 chars, uuid format) | `550e8400-...`         |
+| Email     | `\bemail$`                               | String (max 254 chars, email)  | `user@example.com`     |
+| Timestamp | `\b(timestamp\|created_at\|updated_at)$` | String (ISO 8601)              | `2026-01-19T12:00:00Z` |
 
 ### Medium-Confidence Patterns (0.80-0.94)
 
-| Pattern | Field Name Regex | Constraint Type | Example |
-|---------|------------------|-----------------|---------|
-| Username | `\b(user\|username)$` | String (1-64 chars, alphanumeric) | `admin` |
-| Display Name | `\b(display_?)?name$` | String (1-256 chars, free text) | `My Service` |
-| Description | `\b(comment\|description\|note)$` | String (max 4096 chars) | `Service description` |
-| Path | `\bpath$` | String (max 2048 chars) | `/api/v1/resources` |
+| Pattern      | Field Name Regex                  | Constraint Type                   | Example               |
+| ------------ | --------------------------------- | --------------------------------- | --------------------- |
+| Username     | `\b(user\|username)$`             | String (1-64 chars, alphanumeric) | `admin`               |
+| Display Name | `\b(display_?)?name$`             | String (1-256 chars, free text)   | `My Service`          |
+| Description  | `\b(comment\|description\|note)$` | String (max 4096 chars)           | `Service description` |
+| Path         | `\bpath$`                         | String (max 2048 chars)           | `/api/v1/resources`   |
 
 ---
 
 ## Support and Feedback
 
-- **Issues**: Report constraint accuracy issues at https://github.com/f5-sales-demo/api-specs-enriched/issues
-- **Documentation**: Full API documentation at https://f5-sales-demo.github.io/api-specs-enriched/
+- **Issues**: Report constraint accuracy issues in [GitHub issues](https://github.com/f5-sales-demo/api-specs-enriched/issues)
+- **Documentation**: See the [full API documentation](https://f5-sales-demo.github.io/api-specs-enriched/)
 - **MCP Integration**: See `f5xc-api-mcp` repository for MCP server integration examples
 
 ---
@@ -527,4 +554,3 @@ function provideCompletions(field: FieldInfo): CompletionItem[] {
 **Last Updated**: 2026-01-19
 **Constraints Reconciled**: 9,851
 **Pattern Coverage**: 50+ types
-

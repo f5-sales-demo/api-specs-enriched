@@ -3,8 +3,6 @@ title: "Enrichment Extension Catalog"
 description: "Source of truth for every x-* extension in the enriched OpenAPI specifications"
 ---
 
-# Enrichment Extension Catalog
-
 Source of truth for every `x-*` extension that appears in
 `docs/specifications/api/*.json`. Parity with
 `scripts/utils/extension_constants.py` is enforced by

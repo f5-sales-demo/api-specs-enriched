@@ -23,24 +23,25 @@ The `x-f5xc-minimum-configuration` extension provides comprehensive CLI metadata
 
 ### Required Fields
 
-| Field | Constraint | Description |
-|-------|-----------|-------------|
-| `metadata.name` | DNS label format: `[a-z0-9]([-a-z0-9]*[a-z0-9])?` | Resource name |
-| `metadata.namespace` | DNS label format | Namespace |
-| `spec.domains` | Array, min_items: 1 | Domains to serve |
+| Field                | Constraint                                        | Description      |
+| -------------------- | ------------------------------------------------- | ---------------- |
+| `metadata.name`      | DNS label format: `[a-z0-9]([-a-z0-9]*[a-z0-9])?` | Resource name    |
+| `metadata.namespace` | DNS label format                                  | Namespace        |
+| `spec.domains`       | Array, min_items: 1                               | Domains to serve |
 
 ### Load Balancer Type (OneOf Required)
 
 One of the following load balancer types must be specified:
 
-| Variant | Description |
-|---------|-------------|
-| `spec.http` | HTTP only |
-| `spec.https` | HTTPS with manual certificate |
+| Variant                | Description                      |
+| ---------------------- | -------------------------------- |
+| `spec.http`            | HTTP only                        |
+| `spec.https`           | HTTPS with manual certificate    |
 | `spec.https_auto_cert` | HTTPS with automatic certificate |
-| `spec.http_https` | Both HTTP and HTTPS |
+| `spec.http_https`      | Both HTTP and HTTPS              |
 
 **Note**: The load balancer type OneOf group is referred to as:
+
 - `lb_type` in configuration files (short form in `config/minimum_configs.yaml`)
 - `loadbalancer_type` in OpenAPI spec native extensions (native field name)
 
@@ -58,10 +59,12 @@ One of the following load balancer types must be specified:
     "domains": ["example.com"],
     "https_auto_cert": {
       "port": 443,
-      "tls_config": {"default_security": {}}
+      "tls_config": { "default_security": {} }
     },
     "advertise_on_public_default_vip": {},
-    "routes": [{"prefix": "/", "origin_pool": {"pool_name": "backend-pool"}}]
+    "routes": [
+      { "prefix": "/", "origin_pool": { "pool_name": "backend-pool" } }
+    ]
   }
 }
 ```
@@ -74,61 +77,61 @@ Fields marked with `x-f5xc-server-default: true` have their `default` value appl
 
 When `https_auto_cert` is specified, the server applies these defaults for omitted fields:
 
-| Field | Default Value | Type | Description |
-|-------|---------------|------|-------------|
-| `port` | `443` | integer | HTTPS listening port |
-| `http_redirect` | `false` | boolean | HTTP to HTTPS redirect |
-| `add_hsts` | `false` | boolean | HTTP Strict Transport Security header |
-| `tls_config.default_security` | `{}` | object | TLS 1.2+ with strong ciphers |
-| `no_mtls` | `{}` | object | Mutual TLS disabled |
-| `default_header` | `{}` | object | Default server name header handling |
-| `enable_path_normalize` | `{}` | object | Path normalization enabled |
-| `default_loadbalancer` | `{}` | object | Default load balancer settings |
-| `header_transformation_type.legacy_header_transformation` | `{}` | object | Legacy header transformation |
-| `connection_idle_timeout` | `120000` | integer | Connection idle timeout in milliseconds (2 minutes) |
-| `http_protocol_options.http_protocol_enable_v1_v2` | `{}` | object | HTTP/1.1 and HTTP/2 enabled |
-| `coalescing_options.default_coalescing` | `{}` | object | Default HTTP/2 connection coalescing |
+| Field                                                     | Default Value | Type    | Description                                         |
+| --------------------------------------------------------- | ------------- | ------- | --------------------------------------------------- |
+| `port`                                                    | `443`         | integer | HTTPS listening port                                |
+| `http_redirect`                                           | `false`       | boolean | HTTP to HTTPS redirect                              |
+| `add_hsts`                                                | `false`       | boolean | HTTP Strict Transport Security header               |
+| `tls_config.default_security`                             | `{}`          | object  | TLS 1.2+ with strong ciphers                        |
+| `no_mtls`                                                 | `{}`          | object  | Mutual TLS disabled                                 |
+| `default_header`                                          | `{}`          | object  | Default server name header handling                 |
+| `enable_path_normalize`                                   | `{}`          | object  | Path normalization enabled                          |
+| `default_loadbalancer`                                    | `{}`          | object  | Default load balancer settings                      |
+| `header_transformation_type.legacy_header_transformation` | `{}`          | object  | Legacy header transformation                        |
+| `connection_idle_timeout`                                 | `120000`      | integer | Connection idle timeout in milliseconds (2 minutes) |
+| `http_protocol_options.http_protocol_enable_v1_v2`        | `{}`          | object  | HTTP/1.1 and HTTP/2 enabled                         |
+| `coalescing_options.default_coalescing`                   | `{}`          | object  | Default HTTP/2 connection coalescing                |
 
 ### Security Feature Defaults
 
 All security features default to disabled when omitted:
 
-| Field | Default Value | Description |
-|-------|---------------|-------------|
-| `disable_waf` | `{}` | Web Application Firewall disabled |
-| `disable_bot_defense` | `{}` | Bot defense disabled |
-| `disable_rate_limit` | `{}` | Rate limiting disabled |
-| `disable_api_discovery` | `{}` | API discovery disabled |
-| `disable_api_testing` | `{}` | API testing disabled |
-| `disable_api_definition` | `{}` | API definition disabled |
-| `disable_malware_protection` | `{}` | Malware protection disabled |
-| `disable_client_side_defense` | `{}` | Client-side defense disabled |
-| `disable_ip_reputation` | `{}` | IP reputation disabled |
-| `disable_threat_mesh` | `{}` | Threat mesh disabled |
-| `disable_malicious_user_detection` | `{}` | Malicious user detection disabled |
+| Field                              | Default Value | Description                       |
+| ---------------------------------- | ------------- | --------------------------------- |
+| `disable_waf`                      | `{}`          | Web Application Firewall disabled |
+| `disable_bot_defense`              | `{}`          | Bot defense disabled              |
+| `disable_rate_limit`               | `{}`          | Rate limiting disabled            |
+| `disable_api_discovery`            | `{}`          | API discovery disabled            |
+| `disable_api_testing`              | `{}`          | API testing disabled              |
+| `disable_api_definition`           | `{}`          | API definition disabled           |
+| `disable_malware_protection`       | `{}`          | Malware protection disabled       |
+| `disable_client_side_defense`      | `{}`          | Client-side defense disabled      |
+| `disable_ip_reputation`            | `{}`          | IP reputation disabled            |
+| `disable_threat_mesh`              | `{}`          | Threat mesh disabled              |
+| `disable_malicious_user_detection` | `{}`          | Malicious user detection disabled |
 
 ### DDoS and Access Control Defaults
 
-| Field | Default Value | Description |
-|-------|---------------|-------------|
-| `l7_ddos_protection.mitigation_block` | `{}` | Block DDoS traffic (default mitigation action) |
-| `l7_ddos_protection.default_rps_threshold` | `{}` | Use default RPS threshold |
-| `l7_ddos_protection.clientside_action_none` | `{}` | No client-side DDoS validation |
-| `l7_ddos_protection.ddos_policy_none` | `{}` | No DDoS policy reference |
-| `no_challenge` | `{}` | No client challenge |
-| `user_id_client_ip` | `{}` | Identify users by client IP |
-| `disable_trust_client_ip_headers` | `{}` | Do not trust client IP headers |
+| Field                                       | Default Value | Description                                    |
+| ------------------------------------------- | ------------- | ---------------------------------------------- |
+| `l7_ddos_protection.mitigation_block`       | `{}`          | Block DDoS traffic (default mitigation action) |
+| `l7_ddos_protection.default_rps_threshold`  | `{}`          | Use default RPS threshold                      |
+| `l7_ddos_protection.clientside_action_none` | `{}`          | No client-side DDoS validation                 |
+| `l7_ddos_protection.ddos_policy_none`       | `{}`          | No DDoS policy reference                       |
+| `no_challenge`                              | `{}`          | No client challenge                            |
+| `user_id_client_ip`                         | `{}`          | Identify users by client IP                    |
+| `disable_trust_client_ip_headers`           | `{}`          | Do not trust client IP headers                 |
 
 ### Other Server-Applied Defaults
 
-| Field | Default Value | Type | Description |
-|-------|---------------|------|-------------|
-| `advertise_on_public_default_vip` | `{}` | object | Advertise on public default VIP |
-| `round_robin` | `{}` | object | Round-robin load balancing algorithm |
-| `add_location` | `true` | boolean | Add location header to responses |
-| `system_default_timeouts` | `{}` | object | Use system default timeouts |
-| `service_policies_from_namespace` | `{}` | object | Inherit service policies from namespace |
-| `default_sensitive_data_policy` | `{}` | object | Use default sensitive data policy |
+| Field                             | Default Value | Type    | Description                             |
+| --------------------------------- | ------------- | ------- | --------------------------------------- |
+| `advertise_on_public_default_vip` | `{}`          | object  | Advertise on public default VIP         |
+| `round_robin`                     | `{}`          | object  | Round-robin load balancing algorithm    |
+| `add_location`                    | `true`        | boolean | Add location header to responses        |
+| `system_default_timeouts`         | `{}`          | object  | Use system default timeouts             |
+| `service_policies_from_namespace` | `{}`          | object  | Inherit service policies from namespace |
+| `default_sensitive_data_policy`   | `{}`          | object  | Use default sensitive data policy       |
 
 ## Mutually Exclusive Field Groups
 
@@ -136,72 +139,72 @@ Fields marked with `x-f5xc-conflicts-with` indicate OneOf patterns. Only one fie
 
 ### Core Configuration Groups
 
-| Group Name | Fields | Description |
-|-----------|--------|-------------|
-| `lb_type` | `http`, `https`, `https_auto_cert`, `http_https` | Load balancer protocol type |
-| `advertising` | `advertise_on_public_default_vip`, `advertise_on_public`, `advertise_custom`, `do_not_advertise` | How to advertise the load balancer |
-| `load_balancing_algorithm` | `round_robin`, `least_request`, `ring_hash`, `random` | Traffic distribution algorithm |
+| Group Name                 | Fields                                                                                           | Description                        |
+| -------------------------- | ------------------------------------------------------------------------------------------------ | ---------------------------------- |
+| `lb_type`                  | `http`, `https`, `https_auto_cert`, `http_https`                                                 | Load balancer protocol type        |
+| `advertising`              | `advertise_on_public_default_vip`, `advertise_on_public`, `advertise_custom`, `do_not_advertise` | How to advertise the load balancer |
+| `load_balancing_algorithm` | `round_robin`, `least_request`, `ring_hash`, `random`                                            | Traffic distribution algorithm     |
 
 ### HTTPS Configuration Groups (10 groups)
 
 #### TLS Configuration
 
-| Group Name | Fields | Description |
-|-----------|--------|-------------|
-| `tls_config` | `default_security`, `medium_security`, `low_security`, `custom_security` | TLS security level |
-| `mtls` | `no_mtls`, `use_mtls` | Mutual TLS enabled or disabled |
+| Group Name   | Fields                                                                   | Description                    |
+| ------------ | ------------------------------------------------------------------------ | ------------------------------ |
+| `tls_config` | `default_security`, `medium_security`, `low_security`, `custom_security` | TLS security level             |
+| `mtls`       | `no_mtls`, `use_mtls`                                                    | Mutual TLS enabled or disabled |
 
 #### Protocol and Headers
 
-| Group Name | Fields | Description |
-|-----------|--------|-------------|
-| `http_protocol` | `http_protocol_enable_v1_only`, `http_protocol_enable_v1_v2`, `http_protocol_enable_v2_only` | HTTP protocol versions |
+| Group Name              | Fields                                                                                                | Description                     |
+| ----------------------- | ----------------------------------------------------------------------------------------------------- | ------------------------------- |
+| `http_protocol`         | `http_protocol_enable_v1_only`, `http_protocol_enable_v1_v2`, `http_protocol_enable_v2_only`          | HTTP protocol versions          |
 | `header_transformation` | `legacy_header_transformation`, `proper_header_transformation`, `preserve_case_header_transformation` | HTTP header transformation type |
-| `server_name_header` | `default_header`, `append_server_name_header`, `pass_through_server_name_header` | Server name header handling |
+| `server_name_header`    | `default_header`, `append_server_name_header`, `pass_through_server_name_header`                      | Server name header handling     |
 
 #### Connection Management
 
-| Group Name | Fields | Description |
-|-----------|--------|-------------|
-| `path_normalize` | `enable_path_normalize`, `disable_path_normalize` | Path normalization enabled or disabled |
-| `loadbalancer_choice` | `non_default_loadbalancer`, `default_loadbalancer` | Default or non-default load balancer |
-| `coalescing` | `default_coalescing`, `disable_coalescing`, `enable_for_same_origin` | HTTP/2 connection coalescing options |
+| Group Name            | Fields                                                               | Description                            |
+| --------------------- | -------------------------------------------------------------------- | -------------------------------------- |
+| `path_normalize`      | `enable_path_normalize`, `disable_path_normalize`                    | Path normalization enabled or disabled |
+| `loadbalancer_choice` | `non_default_loadbalancer`, `default_loadbalancer`                   | Default or non-default load balancer   |
+| `coalescing`          | `default_coalescing`, `disable_coalescing`, `enable_for_same_origin` | HTTP/2 connection coalescing options   |
 
 ### Security Feature Groups (11 groups)
 
-| Group Name | Fields | Description |
-|-----------|--------|-------------|
-| `waf` | `disable_waf`, `enable_waf` | Web Application Firewall |
-| `bot_defense` | `disable_bot_defense`, `enable_bot_defense` | Bot detection and mitigation |
-| `rate_limit` | `disable_rate_limit`, `enable_rate_limit` | Rate limiting |
-| `api_discovery` | `disable_api_discovery`, `enable_api_discovery` | API discovery |
-| `api_testing` | `disable_api_testing`, `enable_api_testing` | API testing |
-| `api_definition` | `disable_api_definition`, `enable_api_definition` | API definition |
-| `malware_protection` | `disable_malware_protection`, `enable_malware_protection` | Malware protection |
-| `client_side_defense` | `disable_client_side_defense`, `enable_client_side_defense` | Client-side defense |
-| `ip_reputation` | `disable_ip_reputation`, `enable_ip_reputation` | IP reputation |
-| `threat_mesh` | `disable_threat_mesh`, `enable_threat_mesh` | Threat mesh |
-| `malicious_user_detection` | `disable_malicious_user_detection`, `enable_malicious_user_detection` | Malicious user detection |
+| Group Name                 | Fields                                                                | Description                  |
+| -------------------------- | --------------------------------------------------------------------- | ---------------------------- |
+| `waf`                      | `disable_waf`, `enable_waf`                                           | Web Application Firewall     |
+| `bot_defense`              | `disable_bot_defense`, `enable_bot_defense`                           | Bot detection and mitigation |
+| `rate_limit`               | `disable_rate_limit`, `enable_rate_limit`                             | Rate limiting                |
+| `api_discovery`            | `disable_api_discovery`, `enable_api_discovery`                       | API discovery                |
+| `api_testing`              | `disable_api_testing`, `enable_api_testing`                           | API testing                  |
+| `api_definition`           | `disable_api_definition`, `enable_api_definition`                     | API definition               |
+| `malware_protection`       | `disable_malware_protection`, `enable_malware_protection`             | Malware protection           |
+| `client_side_defense`      | `disable_client_side_defense`, `enable_client_side_defense`           | Client-side defense          |
+| `ip_reputation`            | `disable_ip_reputation`, `enable_ip_reputation`                       | IP reputation                |
+| `threat_mesh`              | `disable_threat_mesh`, `enable_threat_mesh`                           | Threat mesh                  |
+| `malicious_user_detection` | `disable_malicious_user_detection`, `enable_malicious_user_detection` | Malicious user detection     |
 
 ### DDoS Protection Groups (4 groups)
 
-| Group Name | Fields | Description |
-|-----------|--------|-------------|
-| `ddos_mitigation` | `mitigation_block`, `mitigation_challenge`, `mitigation_none` | DDoS mitigation action |
-| `ddos_rps_threshold` | `default_rps_threshold`, `custom_rps_threshold` | Requests per second threshold |
+| Group Name               | Fields                                                                                | Description                        |
+| ------------------------ | ------------------------------------------------------------------------------------- | ---------------------------------- |
+| `ddos_mitigation`        | `mitigation_block`, `mitigation_challenge`, `mitigation_none`                         | DDoS mitigation action             |
+| `ddos_rps_threshold`     | `default_rps_threshold`, `custom_rps_threshold`                                       | Requests per second threshold      |
 | `ddos_clientside_action` | `clientside_action_none`, `clientside_action_javascript`, `clientside_action_captcha` | Client-side DDoS validation action |
-| `ddos_policy` | `ddos_policy_none`, `ddos_policy_ref` | DDoS policy reference or none |
+| `ddos_policy`            | `ddos_policy_none`, `ddos_policy_ref`                                                 | DDoS policy reference or none      |
 
 ### Other Settings Groups (6 groups)
 
-| Group Name | Fields | Description |
-|-----------|--------|-------------|
-| `challenge` | `no_challenge`, `js_challenge`, `captcha_challenge` | Client challenge type for bot detection |
-| `user_identification` | `user_id_client_ip`, `user_identification` | User identification method |
-| `client_ip_headers` | `disable_trust_client_ip_headers`, `enable_trust_client_ip_headers` | Trust client IP headers or not |
-| `timeouts` | `system_default_timeouts`, `custom_timeouts` | Use system default or custom timeouts |
-| `service_policies_source` | `service_policies_from_namespace`, `active_service_policies` | Service policies from namespace or active list |
-| `sensitive_data_policy` | `default_sensitive_data_policy`, `custom_sensitive_data_policy` | Use default or custom sensitive data policy |
+| Group Name                | Fields                                                              | Description                                    |
+| ------------------------- | ------------------------------------------------------------------- | ---------------------------------------------- |
+| `challenge`               | `no_challenge`, `js_challenge`, `captcha_challenge`                 | Client challenge type for bot detection        |
+| `user_identification`     | `user_id_client_ip`, `user_identification`                          | User identification method                     |
+| `client_ip_headers`       | `disable_trust_client_ip_headers`, `enable_trust_client_ip_headers` | Trust client IP headers or not                 |
+| `timeouts`                | `system_default_timeouts`, `custom_timeouts`                        | Use system default or custom timeouts          |
+| `service_policies_source` | `service_policies_from_namespace`, `active_service_policies`        | Service policies from namespace or active list |
+| `sensitive_data_policy`   | `default_sensitive_data_policy`, `custom_sensitive_data_policy`     | Use default or custom sensitive data policy    |
 
 ## OneOf Variant Recommendations (Future Extension)
 
@@ -212,6 +215,7 @@ Unlike healthcheck, which includes `x-f5xc-recommended-oneof-variant` to indicat
 ### Comparison with Healthcheck
 
 **Healthcheck** (implemented):
+
 ```yaml
 viewshealthcheckCreateSpecType:
   x-f5xc-recommended-oneof-variant:
@@ -219,23 +223,26 @@ viewshealthcheckCreateSpecType:
 ```
 
 **HTTP LoadBalancer** (not yet implemented):
+
 ```yaml
 viewshttp_loadbalancerCreateSpecType:
-  x-f5xc-recommended-oneof-variant: null  # Would indicate recommended lb_type variant
+  x-f5xc-recommended-oneof-variant: null # Would indicate recommended lb_type variant
 ```
 
 ### Future Implementation
 
 To add this extension for http_loadbalancer:
+
 1. Observe F5 XC console default selections (e.g., which lb_type is preselected in the UI)
 2. Add configuration to `config/discovered_defaults.yaml`
 3. Re-run enrichment pipeline to apply extension
 
 **Expected structure when added**:
+
 ```yaml
 viewshttp_loadbalancerCreateSpecType:
   x-f5xc-recommended-oneof-variant:
-    loadbalancer_type: "https_auto_cert"  # Example - requires verification
+    loadbalancer_type: "https_auto_cert" # Example - requires verification
 ```
 
 This extension would enable downstream tools to preselect the most commonly used variant when presenting configuration options to users.
@@ -246,35 +253,35 @@ Fields marked with `x-f5xc-constraints` include validation constraints discovere
 
 ### Array Constraints
 
-| Field | minItems | maxItems | uniqueItems |
-|-------|----------|----------|-------------|
-| `spec.domains` | 1 | - | false |
-| `spec.routes` | 1 | 256 | false |
-| `spec.blocked_clients` | 1 | 128 | true |
-| `spec.trusted_clients` | 1 | 128 | true |
-| `spec.data_guard_rules` | 1 | 256 | true |
+| Field                   | minItems | maxItems | uniqueItems |
+| ----------------------- | -------- | -------- | ----------- |
+| `spec.domains`          | 1        | -        | false       |
+| `spec.routes`           | 1        | 256      | false       |
+| `spec.blocked_clients`  | 1        | 128      | true        |
+| `spec.trusted_clients`  | 1        | 128      | true        |
+| `spec.data_guard_rules` | 1        | 256      | true        |
 
 ### Integer Constraints
 
-| Field | Minimum | Maximum | Default | Description |
-|-------|---------|---------|---------|-------------|
-| `spec.https_auto_cert.port` | 1 | 65535 | 443 | HTTPS port number |
-| `spec.https_auto_cert.connection_idle_timeout` | 1000 | 3600000 | 120000 | Connection idle timeout (milliseconds, 1s to 1h) |
+| Field                                          | Minimum | Maximum | Default | Description                                      |
+| ---------------------------------------------- | ------- | ------- | ------- | ------------------------------------------------ |
+| `spec.https_auto_cert.port`                    | 1       | 65535   | 443     | HTTPS port number                                |
+| `spec.https_auto_cert.connection_idle_timeout` | 1000    | 3600000 | 120000  | Connection idle timeout (milliseconds, 1s to 1h) |
 
 ### Enum Constraints
 
-| Field | Values | Default | Description |
-|-------|--------|---------|-------------|
-| `spec.https_auto_cert.tls_config` | `default_security`, `medium_security`, `low_security`, `custom_security` | `default_security` | TLS security level |
-| `spec.https_auto_cert.header_transformation_type` | `legacy_header_transformation`, `proper_header_transformation`, `preserve_case_header_transformation` | `legacy_header_transformation` | HTTP header transformation |
-| `spec.https_auto_cert.http_protocol_options` | `http_protocol_enable_v1_only`, `http_protocol_enable_v1_v2`, `http_protocol_enable_v2_only` | `http_protocol_enable_v1_v2` | HTTP protocol versions |
-| `spec.https_auto_cert.coalescing_options` | `default_coalescing`, `disable_coalescing`, `enable_for_same_origin` | `default_coalescing` | HTTP/2 connection coalescing |
-| `spec.load_balancing_algorithm` | `round_robin`, `least_request`, `ring_hash`, `random` | `round_robin` | Load balancing algorithm |
-| `spec.l7_ddos_protection.mitigation` | `mitigation_block`, `mitigation_challenge`, `mitigation_none` | `mitigation_block` | Layer 7 DDoS mitigation action |
-| `spec.l7_ddos_protection.rps_threshold` | `default_rps_threshold`, `custom_rps_threshold` | `default_rps_threshold` | RPS threshold for DDoS detection |
-| `spec.l7_ddos_protection.clientside_action` | `clientside_action_none`, `clientside_action_javascript`, `clientside_action_captcha` | `clientside_action_none` | Client-side DDoS validation |
-| `spec.challenge` | `no_challenge`, `js_challenge`, `captcha_challenge` | `no_challenge` | Client challenge type |
-| `spec.advertising` | `advertise_on_public_default_vip`, `advertise_on_public`, `advertise_custom`, `do_not_advertise` | `advertise_on_public_default_vip` | Load balancer advertising |
+| Field                                             | Values                                                                                                | Default                           | Description                      |
+| ------------------------------------------------- | ----------------------------------------------------------------------------------------------------- | --------------------------------- | -------------------------------- |
+| `spec.https_auto_cert.tls_config`                 | `default_security`, `medium_security`, `low_security`, `custom_security`                              | `default_security`                | TLS security level               |
+| `spec.https_auto_cert.header_transformation_type` | `legacy_header_transformation`, `proper_header_transformation`, `preserve_case_header_transformation` | `legacy_header_transformation`    | HTTP header transformation       |
+| `spec.https_auto_cert.http_protocol_options`      | `http_protocol_enable_v1_only`, `http_protocol_enable_v1_v2`, `http_protocol_enable_v2_only`          | `http_protocol_enable_v1_v2`      | HTTP protocol versions           |
+| `spec.https_auto_cert.coalescing_options`         | `default_coalescing`, `disable_coalescing`, `enable_for_same_origin`                                  | `default_coalescing`              | HTTP/2 connection coalescing     |
+| `spec.load_balancing_algorithm`                   | `round_robin`, `least_request`, `ring_hash`, `random`                                                 | `round_robin`                     | Load balancing algorithm         |
+| `spec.l7_ddos_protection.mitigation`              | `mitigation_block`, `mitigation_challenge`, `mitigation_none`                                         | `mitigation_block`                | Layer 7 DDoS mitigation action   |
+| `spec.l7_ddos_protection.rps_threshold`           | `default_rps_threshold`, `custom_rps_threshold`                                                       | `default_rps_threshold`           | RPS threshold for DDoS detection |
+| `spec.l7_ddos_protection.clientside_action`       | `clientside_action_none`, `clientside_action_javascript`, `clientside_action_captcha`                 | `clientside_action_none`          | Client-side DDoS validation      |
+| `spec.challenge`                                  | `no_challenge`, `js_challenge`, `captcha_challenge`                                                   | `no_challenge`                    | Client challenge type            |
+| `spec.advertising`                                | `advertise_on_public_default_vip`, `advertise_on_public`, `advertise_custom`, `do_not_advertise`      | `advertise_on_public_default_vip` | Load balancer advertising        |
 
 ## Guided Workflow Integration
 
@@ -284,13 +291,13 @@ The enrichment pipeline adds `x-f5xc-guided-workflows` metadata at the spec leve
 
 A 5-step workflow for creating a fully configured HTTP load balancer with backend origin pool (defined in `config/guided_workflows.yaml`):
 
-| Step | Action | Resource | Required Fields | Optional |
-|------|--------|----------|-----------------|----------|
-| 1 | Create Origin Pool | `origin_pool` | `name`, `origin_servers`, `port` | No |
-| 2 | Configure Health Check | `healthcheck` | `name`, `http_health_check` | Yes |
-| 3 | Attach Health Check | - | - | Yes |
-| 4 | Create HTTP Load Balancer | `http_loadbalancer` | `name`, `domains`, `http.port` | No |
-| 5 | Verify Deployment | - | - | No |
+| Step | Action                    | Resource            | Required Fields                  | Optional |
+| ---- | ------------------------- | ------------------- | -------------------------------- | -------- |
+| 1    | Create Origin Pool        | `origin_pool`       | `name`, `origin_servers`, `port` | No       |
+| 2    | Configure Health Check    | `healthcheck`       | `name`, `http_health_check`      | Yes      |
+| 3    | Attach Health Check       | -                   | -                                | Yes      |
+| 4    | Create HTTP Load Balancer | `http_loadbalancer` | `name`, `domains`, `http.port`   | No       |
+| 5    | Verify Deployment         | -                   | -                                | No       |
 
 **Prerequisites**: Valid namespace in target tenant, backend application reachable via IP or DNS, SSL certificate (optional for HTTPS).
 
@@ -298,15 +305,15 @@ A 5-step workflow for creating a fully configured HTTP load balancer with backen
 
 A 7-step workflow for creating HTTPS load balancer with SSL/TLS termination:
 
-| Step | Action | Resource | Required Fields | Optional |
-|------|--------|----------|-----------------|----------|
-| 1 | Upload SSL Certificate | `certificate` | `name`, `certificate_chain`, `private_key` | No |
-| 2 | Create Origin Pool | `origin_pool` | `name`, `origin_servers` | No |
-| 3 | Configure Health Check | `healthcheck` | - | Yes |
-| 4 | Configure WAF Policy | `app_firewall` | - | Yes |
-| 5 | Create HTTPS Load Balancer | `http_loadbalancer` | `name`, `domains`, `https.tls_parameters` | No |
-| 6 | Attach WAF Policy | - | - | Yes |
-| 7 | Verify HTTPS Deployment | - | - | No |
+| Step | Action                     | Resource            | Required Fields                            | Optional |
+| ---- | -------------------------- | ------------------- | ------------------------------------------ | -------- |
+| 1    | Upload SSL Certificate     | `certificate`       | `name`, `certificate_chain`, `private_key` | No       |
+| 2    | Create Origin Pool         | `origin_pool`       | `name`, `origin_servers`                   | No       |
+| 3    | Configure Health Check     | `healthcheck`       | -                                          | Yes      |
+| 4    | Configure WAF Policy       | `app_firewall`      | -                                          | Yes      |
+| 5    | Create HTTPS Load Balancer | `http_loadbalancer` | `name`, `domains`, `https.tls_parameters`  | No       |
+| 6    | Attach WAF Policy          | -                   | -                                          | Yes      |
+| 7    | Verify HTTPS Deployment    | -                   | -                                          | No       |
 
 **Prerequisites**: Valid namespace in target tenant, SSL certificate and private key, backend application reachable.
 
@@ -339,11 +346,12 @@ viewshttp_loadbalancerCreateSpecType:
 **Type**: `object`
 
 Provides comprehensive metadata for creating minimal viable configurations. Includes:
+
 - Description
 - Required fields with constraints
 - Mutually exclusive groups
 - Example configurations (YAML, JSON)
-- curl command examples
+- cURL command examples
 
 ```yaml
 viewshttp_loadbalancerCreateSpecType:
@@ -356,7 +364,8 @@ viewshttp_loadbalancerCreateSpecType:
       - "spec.domains"
     mutually_exclusive_groups:
       - name: "lb_type"
-        fields: ["spec.http", "spec.https", "spec.https_auto_cert", "spec.http_https"]
+        fields:
+          ["spec.http", "spec.https", "spec.https_auto_cert", "spec.http_https"]
         reason: "Choose exactly one load balancer type"
     example_yaml: |
       ...
@@ -431,6 +440,7 @@ port:
 **Type**: `string`
 
 Provides alternative description lengths for different use cases:
+
 - `x-f5xc-description-short`: 60 characters max (CLI columns, badges)
 - `x-f5xc-description-medium`: 150 characters max (tooltips, summaries)
 
@@ -478,19 +488,19 @@ metadata.uid:
 
 ### OpenAPI Specifications
 
-| File | Content |
-|------|---------|
+| File                                   | Content                                        |
+| -------------------------------------- | ---------------------------------------------- |
 | `docs/specifications/api/virtual.json` | All http_loadbalancer schemas with enrichments |
-| `docs/specifications/api/openapi.json` | Merged specification with all schemas |
+| `docs/specifications/api/openapi.json` | Merged specification with all schemas          |
 
 ### Configuration Files
 
-| File | Purpose |
-|------|---------|
-| `config/minimum_configs.yaml` | Source of minimum configuration metadata |
-| `config/constraint_patterns.yaml` | Constraint pattern definitions |
-| `config/guided_workflows.yaml` | Guided workflow step definitions |
-| `config/domain_descriptions.yaml` | Domain-level description metadata |
+| File                              | Purpose                                  |
+| --------------------------------- | ---------------------------------------- |
+| `config/minimum_configs.yaml`     | Source of minimum configuration metadata |
+| `config/constraint_patterns.yaml` | Constraint pattern definitions           |
+| `config/guided_workflows.yaml`    | Guided workflow step definitions         |
+| `config/domain_descriptions.yaml` | Domain-level description metadata        |
 
 ### Schemas Enriched
 
@@ -507,7 +517,7 @@ metadata.uid:
 
 ## Changelog
 
-| Version | Date | Changes |
-|---------|------|---------|
-| 2.0.46 | 2026-04-18 | Added server-applied defaults, guided workflow integration, and expanded minimum config section |
-| 2.0.45 | 2026-01-20 | Initial http_loadbalancer enrichments documentation |
+| Version | Date       | Changes                                                                                         |
+| ------- | ---------- | ----------------------------------------------------------------------------------------------- |
+| 2.0.46  | 2026-04-18 | Added server-applied defaults, guided workflow integration, and expanded minimum config section |
+| 2.0.45  | 2026-01-20 | Initial http_loadbalancer enrichments documentation                                             |

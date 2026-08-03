@@ -47,9 +47,19 @@ Specifies fields required for each operation type per resource.
     },
     "resources": {
       "origin_pool": {
-        "create": ["metadata.name", "metadata.namespace", "spec.origin_servers", "spec.port"],
+        "create": [
+          "metadata.name",
+          "metadata.namespace",
+          "spec.origin_servers",
+          "spec.port"
+        ],
         "update": ["metadata.name", "metadata.namespace"],
-        "minimum_config": ["metadata.name", "metadata.namespace", "spec.origin_servers", "spec.port"]
+        "minimum_config": [
+          "metadata.name",
+          "metadata.namespace",
+          "spec.origin_servers",
+          "spec.port"
+        ]
       }
     }
   }
@@ -66,11 +76,26 @@ Defines allowed values for constrained fields.
     "loadbalancer_algorithm": {
       "description": "Load balancing algorithm for distributing traffic across origin servers",
       "values": [
-        {"value": "ROUND_ROBIN", "description": "Each healthy endpoint selected in round robin order"},
-        {"value": "LEAST_REQUEST", "description": "Endpoint with fewest active requests selected"},
-        {"value": "RING_HASH", "description": "Consistent hashing using ring hash of endpoint names"},
-        {"value": "RANDOM", "description": "Random healthy endpoint selection"},
-        {"value": "LB_OVERRIDE", "description": "Hash policy inherited from parent load balancer"}
+        {
+          "value": "ROUND_ROBIN",
+          "description": "Each healthy endpoint selected in round robin order"
+        },
+        {
+          "value": "LEAST_REQUEST",
+          "description": "Endpoint with fewest active requests selected"
+        },
+        {
+          "value": "RING_HASH",
+          "description": "Consistent hashing using ring hash of endpoint names"
+        },
+        {
+          "value": "RANDOM",
+          "description": "Random healthy endpoint selection"
+        },
+        {
+          "value": "LB_OVERRIDE",
+          "description": "Hash policy inherited from parent load balancer"
+        }
       ],
       "default": "ROUND_ROBIN"
     }
@@ -86,8 +111,8 @@ Type-level validation defaults and pattern-based rules.
 {
   "constraints": {
     "type_defaults": {
-      "string": {"minLength": 0, "maxLength": 1024},
-      "integer": {"minimum": 0, "maximum": 2147483647}
+      "string": { "minLength": 0, "maxLength": 1024 },
+      "integer": { "minimum": 0, "maximum": 2147483647 }
     }
   }
 }
@@ -102,7 +127,7 @@ Field name pattern-based validation rules with confidence scores.
   "patterns": [
     {
       "pattern": "\\bport$",
-      "constraints": {"minimum": 1, "maximum": 65535},
+      "constraints": { "minimum": 1, "maximum": 65535 },
       "confidence": 0.99,
       "description": "Valid TCP/UDP port range"
     },
@@ -113,7 +138,7 @@ Field name pattern-based validation rules with confidence scores.
         "maxLength": 63,
         "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$"
       },
-      "confidence": 0.90,
+      "confidence": 0.9,
       "description": "Kubernetes-style naming convention"
     }
   ]
@@ -199,15 +224,15 @@ All default values organized by resource type in a unified structure.
 
 #### Default Categories
 
-| Category | Description | Source |
-|----------|-------------|--------|
-| `server_applied` | Values the API applies when fields are omitted | Live API testing |
-| `recommended` | F5 XC web console pre-populated values | UI analysis |
-| `advanced_options` | Nested defaults within advanced_options objects | API discovery |
-| `oneof_choices` | Default OneOf variant selections | API behavior |
-| `oneof_recommended` | Recommended OneOf variants | Console defaults |
-| `nested_recommended` | Recommended values for nested schemas | UI analysis |
-| `ui_vs_server` | Cases where UI defaults differ from API defaults | Comparative analysis |
+| Category             | Description                                      | Source               |
+| -------------------- | ------------------------------------------------ | -------------------- |
+| `server_applied`     | Values the API applies when fields are omitted   | Live API testing     |
+| `recommended`        | F5 XC web console pre-populated values           | UI analysis          |
+| `advanced_options`   | Nested defaults within advanced_options objects  | API discovery        |
+| `oneof_choices`      | Default OneOf variant selections                 | API behavior         |
+| `oneof_recommended`  | Recommended OneOf variants                       | Console defaults     |
+| `nested_recommended` | Recommended values for nested schemas            | UI analysis          |
+| `ui_vs_server`       | Cases where UI defaults differ from API defaults | Comparative analysis |
 
 ### conditional_requirements
 
@@ -220,7 +245,11 @@ Mutually exclusive fields and conditional dependencies.
       "healthcheck": {
         "mutually_exclusive": [
           {
-            "fields": ["spec.http_health_check", "spec.tcp_health_check", "spec.udp_icmp_health_check"],
+            "fields": [
+              "spec.http_health_check",
+              "spec.tcp_health_check",
+              "spec.udp_icmp_health_check"
+            ],
             "reason": "Choose exactly one health check type"
           }
         ],
@@ -242,9 +271,11 @@ Minimum viable configurations with working examples.
       "origin_pool": {
         "description": "Backend origin servers for load balancing",
         "example": {
-          "metadata": {"name": "backend-pool", "namespace": "default"},
+          "metadata": { "name": "backend-pool", "namespace": "default" },
           "spec": {
-            "origin_servers": [{"public_name": {"dns_name": "backend1.example.com"}}],
+            "origin_servers": [
+              { "public_name": { "dns_name": "backend1.example.com" } }
+            ],
             "port": 8080
           }
         }
@@ -258,24 +289,24 @@ Minimum viable configurations with working examples.
 
 The enriched OpenAPI specs embed validation metadata using these extensions:
 
-| Extension | Purpose | Location |
-|-----------|---------|----------|
-| `x-f5xc-required-for` | Context-specific required fields | Schema properties |
-| `x-f5xc-server-default` | Marks server-applied defaults | Schema properties |
-| `x-f5xc-recommended-value` | Recommended default value | Schema properties |
-| `x-f5xc-recommended-oneof-variant` | Recommended OneOf variant | Schema definitions |
-| `x-f5xc-conditions` | Conditional requirements | Schema properties |
-| `x-f5xc-minimum-configuration` | Minimum config examples | Schema definitions |
-| `x-f5xc-validation` | Discovery-derived constraints | Schema properties |
+| Extension                          | Purpose                          | Location           |
+| ---------------------------------- | -------------------------------- | ------------------ |
+| `x-f5xc-required-for`              | Context-specific required fields | Schema properties  |
+| `x-f5xc-server-default`            | Marks server-applied defaults    | Schema properties  |
+| `x-f5xc-recommended-value`         | Recommended default value        | Schema properties  |
+| `x-f5xc-recommended-oneof-variant` | Recommended OneOf variant        | Schema definitions |
+| `x-f5xc-conditions`                | Conditional requirements         | Schema properties  |
+| `x-f5xc-minimum-configuration`     | Minimum config examples          | Schema definitions |
+| `x-f5xc-validation`                | Discovery-derived constraints    | Schema properties  |
 
 ## Data Access
 
 ### Publication URLs
 
-| Source | URL |
-|--------|-----|
-| GitHub Pages | `https://f5-sales-demo.github.io/api-specs-enriched/specifications/api/validation.json` |
-| Raw GitHub | `https://raw.githubusercontent.com/f5-sales-demo/api-specs-enriched/main/docs/specifications/api/validation.json` |
+| Source       | URL                                                                                                               |
+| ------------ | ----------------------------------------------------------------------------------------------------------------- |
+| GitHub Pages | `https://f5-sales-demo.github.io/api-specs-enriched/specifications/api/validation.json`                           |
+| Raw GitHub   | `https://raw.githubusercontent.com/f5-sales-demo/api-specs-enriched/main/docs/specifications/api/validation.json` |
 
 ### Local Path
 
@@ -285,11 +316,11 @@ After running the pipeline: `docs/specifications/api/validation.json`
 
 The validation spec follows semantic versioning in the `version` field:
 
-| Change Type | Version Bump | Example |
-|-------------|--------------|---------|
-| Breaking structure changes | Major | Field renames, removed sections |
-| New validation rules or resources | Minor | New resource defaults |
-| Bug fixes or description updates | Patch | Typo corrections |
+| Change Type                       | Version Bump | Example                         |
+| --------------------------------- | ------------ | ------------------------------- |
+| Breaking structure changes        | Major        | Field renames, removed sections |
+| New validation rules or resources | Minor        | New resource defaults           |
+| Bug fixes or description updates  | Patch        | Typo corrections                |
 
 ## Reconciliation Priority
 
@@ -308,9 +339,8 @@ When multiple sources provide constraints, the reconciliation priority is:
 
 ## Changelog
 
-| Version | Date | Changes |
-|---------|------|---------|
-| 2.1.2 | 2026-01-18 | Rewritten as pure API reference; added oneof_recommended and nested_recommended categories |
-| 2.1.0 | 2026-01-18 | Unified defaults structure replacing fragmented sections |
-| 2.0.0 | 2026-01-15 | Initial validation specification |
-
+| Version | Date       | Changes                                                                                    |
+| ------- | ---------- | ------------------------------------------------------------------------------------------ |
+| 2.1.2   | 2026-01-18 | Rewritten as pure API reference; added oneof_recommended and nested_recommended categories |
+| 2.1.0   | 2026-01-18 | Unified defaults structure replacing fragmented sections                                   |
+| 2.0.0   | 2026-01-15 | Initial validation specification                                                           |

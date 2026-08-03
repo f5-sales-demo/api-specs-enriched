@@ -19,12 +19,12 @@ All schemas matching `origin_pool.*SpecType` receive enrichments:
 
 ## Required Fields
 
-| Field | Required For | Notes |
-|-------|--------------|-------|
-| `metadata.name` | All operations | 1-63 chars, lowercase alphanumeric, pattern: `^[a-z0-9]([-a-z0-9]*[a-z0-9])?$` |
-| `metadata.namespace` | All operations | Namespace identifier |
-| `spec.origin_servers` | Create | Minimum 1 item |
-| `spec.port` | Create | 1-65535, no server default |
+| Field                 | Required For   | Notes                                                                          |
+| --------------------- | -------------- | ------------------------------------------------------------------------------ |
+| `metadata.name`       | All operations | 1-63 chars, lowercase alphanumeric, pattern: `^[a-z0-9]([-a-z0-9]*[a-z0-9])?$` |
+| `metadata.namespace`  | All operations | Namespace identifier                                                           |
+| `spec.origin_servers` | Create         | Minimum 1 item                                                                 |
+| `spec.port`           | Create         | 1-65535, no server default                                                     |
 
 ## Minimum Viable Configuration
 
@@ -53,123 +53,123 @@ Fields marked with `x-f5xc-server-default: true` have their `default` value appl
 
 ### Top-Level Fields
 
-| Field | Default Value | Type | Description |
-|-------|---------------|------|-------------|
-| `no_tls` | `{}` | object | TLS to origin disabled |
-| `healthcheck` | `[]` | array | No health checks configured |
-| `loadbalancer_algorithm` | `ROUND_ROBIN` | enum | Round-robin load balancing |
-| `endpoint_selection` | `DISTRIBUTED` | enum | Use all endpoints (local + remote) |
+| Field                    | Default Value | Type   | Description                        |
+| ------------------------ | ------------- | ------ | ---------------------------------- |
+| `no_tls`                 | `{}`          | object | TLS to origin disabled             |
+| `healthcheck`            | `[]`          | array  | No health checks configured        |
+| `loadbalancer_algorithm` | `ROUND_ROBIN` | enum   | Round-robin load balancing         |
+| `endpoint_selection`     | `DISTRIBUTED` | enum   | Use all endpoints (local + remote) |
 
 ### advanced_options Defaults
 
 When `advanced_options` is not specified, the server behaves as if these values were set:
 
-| Field | Default Value | Type | Description |
-|-------|---------------|------|-------------|
-| `connection_timeout` | `2000` | integer | Connection timeout in milliseconds |
-| `http_idle_timeout` | `300000` | integer | HTTP idle timeout in milliseconds (5 min) |
-| `same_as_endpoint_port` | `{}` | object | Health check uses endpoint port |
-| `default_circuit_breaker` | `{}` | object | Default circuit breaker settings |
-| `disable_outlier_detection` | `{}` | object | Outlier detection disabled |
-| `no_panic_threshold` | `{}` | object | No panic threshold |
-| `disable_subsets` | `{}` | object | Subset load balancing disabled |
-| `auto_http_config` | `{}` | object | Automatic HTTP protocol negotiation |
-| `disable_proxy_protocol` | `{}` | object | Proxy protocol disabled |
-| `disable_lb_source_ip_persistance` | `{}` | object | LB source IP persistence disabled |
+| Field                              | Default Value | Type    | Description                               |
+| ---------------------------------- | ------------- | ------- | ----------------------------------------- |
+| `connection_timeout`               | `2000`        | integer | Connection timeout in milliseconds        |
+| `http_idle_timeout`                | `300000`      | integer | HTTP idle timeout in milliseconds (5 min) |
+| `same_as_endpoint_port`            | `{}`          | object  | Health check uses endpoint port           |
+| `default_circuit_breaker`          | `{}`          | object  | Default circuit breaker settings          |
+| `disable_outlier_detection`        | `{}`          | object  | Outlier detection disabled                |
+| `no_panic_threshold`               | `{}`          | object  | No panic threshold                        |
+| `disable_subsets`                  | `{}`          | object  | Subset load balancing disabled            |
+| `auto_http_config`                 | `{}`          | object  | Automatic HTTP protocol negotiation       |
+| `disable_proxy_protocol`           | `{}`          | object  | Proxy protocol disabled                   |
+| `disable_lb_source_ip_persistance` | `{}`          | object  | LB source IP persistence disabled         |
 
 ### Nested Object Defaults
 
-| Path | Default Value | Description |
-|------|---------------|-------------|
-| `origin_servers[].labels` | `{}` | Empty labels object |
-| `origin_servers[].public_name.refresh_interval` | `0` | Use system default DNS refresh |
+| Path                                            | Default Value | Description                    |
+| ----------------------------------------------- | ------------- | ------------------------------ |
+| `origin_servers[].labels`                       | `{}`          | Empty labels object            |
+| `origin_servers[].public_name.refresh_interval` | `0`           | Use system default DNS refresh |
 
 ## UI vs Server Default Discrepancies
 
 The F5 XC web UI preselects different values than what the API applies when fields are omitted.
 
-| Field | UI Preselected | Server Applied | Note |
-|-------|-----------------|----------------|------|
-| `loadbalancer_algorithm` | `LB_OVERRIDE` | `ROUND_ROBIN` | UI-created and API-created resources differ when field is omitted |
+| Field                    | UI Preselected | Server Applied | Note                                                              |
+| ------------------------ | -------------- | -------------- | ----------------------------------------------------------------- |
+| `loadbalancer_algorithm` | `LB_OVERRIDE`  | `ROUND_ROBIN`  | UI-created and API-created resources differ when field is omitted |
 
 ## Enum Values
 
 ### loadbalancer_algorithm
 
-| Value | Description | Notes |
-|-------|-------------|-------|
-| `ROUND_ROBIN` | Each healthy endpoint selected in round-robin order | Server default |
-| `LEAST_REQUEST` | Endpoint with fewest active requests selected | |
-| `RING_HASH` | Consistent hashing using ring hash of endpoint names | |
-| `RANDOM` | Random healthy endpoint selection | |
-| `LB_OVERRIDE` | Hash policy inherited from parent load balancer | UI default |
+| Value           | Description                                          | Notes          |
+| --------------- | ---------------------------------------------------- | -------------- |
+| `ROUND_ROBIN`   | Each healthy endpoint selected in round-robin order  | Server default |
+| `LEAST_REQUEST` | Endpoint with fewest active requests selected        |                |
+| `RING_HASH`     | Consistent hashing using ring hash of endpoint names |                |
+| `RANDOM`        | Random healthy endpoint selection                    |                |
+| `LB_OVERRIDE`   | Hash policy inherited from parent load balancer      | UI default     |
 
 ### endpoint_selection
 
-| Value | Description | Notes |
-|-------|-------------|-------|
-| `DISTRIBUTED` | Consider both remote and local endpoints | Server default |
-| `LOCAL_ONLY` | Only local endpoints used | |
-| `LOCAL_PREFERRED` | Prefer local, fall back to remote if unavailable | |
+| Value             | Description                                      | Notes          |
+| ----------------- | ------------------------------------------------ | -------------- |
+| `DISTRIBUTED`     | Consider both remote and local endpoints         | Server default |
+| `LOCAL_ONLY`      | Only local endpoints used                        |                |
+| `LOCAL_PREFERRED` | Prefer local, fall back to remote if unavailable |                |
 
 ## OneOf Field Groups
 
 Mutually exclusive field groups. Only ONE field from each group can be specified:
 
-| Group | Fields | Server Default |
-|-------|--------|----------------|
-| Port Configuration | `port`, `automatic_port`, `lb_port` | `port` (explicit) |
-| TLS to Origin | `no_tls`, `use_tls` | `no_tls` |
-| Health Check Port | `same_as_endpoint_port`, `health_check_port` | `same_as_endpoint_port` |
-| Circuit Breaker | `default_circuit_breaker`, `disable_circuit_breaker`, `circuit_breaker` | `default_circuit_breaker` |
-| Outlier Detection | `disable_outlier_detection`, `outlier_detection` | `disable_outlier_detection` |
-| Panic Threshold | `no_panic_threshold`, `panic_threshold` | `no_panic_threshold` |
-| Subset LB | `disable_subsets`, `enable_subsets` | `disable_subsets` |
-| HTTP Protocol | `auto_http_config`, `http1_config`, `http2_options` | `auto_http_config` |
-| Proxy Protocol | `disable_proxy_protocol`, `proxy_protocol_v1`, `proxy_protocol_v2` | `disable_proxy_protocol` |
-| LB Source IP | `disable_lb_source_ip_persistance`, `enable_lb_source_ip_persistance` | `disable_lb_source_ip_persistance` |
-| Connection Pool | `enable_conn_pool_reuse`, `disable_conn_pool_reuse` | `enable_conn_pool_reuse` |
+| Group              | Fields                                                                  | Server Default                     |
+| ------------------ | ----------------------------------------------------------------------- | ---------------------------------- |
+| Port Configuration | `port`, `automatic_port`, `lb_port`                                     | `port` (explicit)                  |
+| TLS to Origin      | `no_tls`, `use_tls`                                                     | `no_tls`                           |
+| Health Check Port  | `same_as_endpoint_port`, `health_check_port`                            | `same_as_endpoint_port`            |
+| Circuit Breaker    | `default_circuit_breaker`, `disable_circuit_breaker`, `circuit_breaker` | `default_circuit_breaker`          |
+| Outlier Detection  | `disable_outlier_detection`, `outlier_detection`                        | `disable_outlier_detection`        |
+| Panic Threshold    | `no_panic_threshold`, `panic_threshold`                                 | `no_panic_threshold`               |
+| Subset LB          | `disable_subsets`, `enable_subsets`                                     | `disable_subsets`                  |
+| HTTP Protocol      | `auto_http_config`, `http1_config`, `http2_options`                     | `auto_http_config`                 |
+| Proxy Protocol     | `disable_proxy_protocol`, `proxy_protocol_v1`, `proxy_protocol_v2`      | `disable_proxy_protocol`           |
+| LB Source IP       | `disable_lb_source_ip_persistance`, `enable_lb_source_ip_persistance`   | `disable_lb_source_ip_persistance` |
+| Connection Pool    | `enable_conn_pool_reuse`, `disable_conn_pool_reuse`                     | `enable_conn_pool_reuse`           |
 
 ## Field Constraints
 
-| Field | Type | Constraint |
-|-------|------|------------|
-| `spec.port` | integer | 1-65535 |
-| `spec.advanced_options.connection_timeout` | integer | 0-1,800,000 ms |
-| `spec.advanced_options.http_idle_timeout` | integer | 0-600,000 ms |
-| `spec.advanced_options.panic_threshold` | integer | 0-100 (percentage) |
-| `metadata.name` | string | 1-63 chars, pattern: `^[a-z0-9]([-a-z0-9]*[a-z0-9])?$` |
+| Field                                      | Type    | Constraint                                             |
+| ------------------------------------------ | ------- | ------------------------------------------------------ |
+| `spec.port`                                | integer | 1-65535                                                |
+| `spec.advanced_options.connection_timeout` | integer | 0-1,800,000 ms                                         |
+| `spec.advanced_options.http_idle_timeout`  | integer | 0-600,000 ms                                           |
+| `spec.advanced_options.panic_threshold`    | integer | 0-100 (percentage)                                     |
+| `metadata.name`                            | string  | 1-63 chars, pattern: `^[a-z0-9]([-a-z0-9]*[a-z0-9])?$` |
 
 ## UI Configuration Options
 
 The F5 XC web console presents 15 configuration options for origin pools:
 
-| # | UI Label | API Field Path | Type | Server Default |
-|---|----------|----------------|------|----------------|
-| 1 | Origin Server Port | `spec.[port\|automatic_port\|lb_port]` | OneOf | `port` (explicit) |
-| 2 | Connection Pool Reuse | `spec.[enable_conn_pool_reuse\|disable_conn_pool_reuse]` | OneOf | `enable_conn_pool_reuse` |
-| 3 | Health Check Port | `spec.advanced_options.[same_as_endpoint_port\|health_check_port]` | OneOf | `same_as_endpoint_port` |
-| 4 | LoadBalancer Algorithm | `spec.loadbalancer_algorithm` | enum | `ROUND_ROBIN` |
-| 5 | Endpoint Selection | `spec.endpoint_selection` | enum | `DISTRIBUTED` |
-| 6 | TLS to Origin | `spec.[no_tls\|use_tls]` | OneOf | `no_tls` |
-| 7 | Connection Timeout | `spec.advanced_options.connection_timeout` | integer | 2000 ms |
-| 8 | HTTP Idle Timeout | `spec.advanced_options.http_idle_timeout` | integer | 300000 ms |
-| 9 | Circuit Breaker | `spec.advanced_options.[default_circuit_breaker\|disable_circuit_breaker\|circuit_breaker]` | OneOf | `default_circuit_breaker` |
-| 10 | Outlier Detection | `spec.advanced_options.[disable_outlier_detection\|outlier_detection]` | OneOf | `disable_outlier_detection` |
-| 11 | Panic Threshold | `spec.advanced_options.[no_panic_threshold\|panic_threshold]` | OneOf | `no_panic_threshold` |
-| 12 | Subset Load Balancing | `spec.advanced_options.[disable_subsets\|enable_subsets]` | OneOf | `disable_subsets` |
-| 13 | HTTP Protocol | `spec.advanced_options.[auto_http_config\|http1_config\|http2_options]` | OneOf | `auto_http_config` |
-| 14 | Proxy Protocol | `spec.advanced_options.[disable_proxy_protocol\|proxy_protocol_v1\|proxy_protocol_v2]` | OneOf | `disable_proxy_protocol` |
-| 15 | LB Source IP Persistence | `spec.advanced_options.[disable_lb_source_ip_persistance\|enable_lb_source_ip_persistance]` | OneOf | `disable_lb_source_ip_persistance` |
+| #   | UI Label                 | API Field Path                                                                              | Type    | Server Default                     |
+| --- | ------------------------ | ------------------------------------------------------------------------------------------- | ------- | ---------------------------------- |
+| 1   | Origin Server Port       | `spec.[port\|automatic_port\|lb_port]`                                                      | OneOf   | `port` (explicit)                  |
+| 2   | Connection Pool Reuse    | `spec.[enable_conn_pool_reuse\|disable_conn_pool_reuse]`                                    | OneOf   | `enable_conn_pool_reuse`           |
+| 3   | Health Check Port        | `spec.advanced_options.[same_as_endpoint_port\|health_check_port]`                          | OneOf   | `same_as_endpoint_port`            |
+| 4   | LoadBalancer Algorithm   | `spec.loadbalancer_algorithm`                                                               | enum    | `ROUND_ROBIN`                      |
+| 5   | Endpoint Selection       | `spec.endpoint_selection`                                                                   | enum    | `DISTRIBUTED`                      |
+| 6   | TLS to Origin            | `spec.[no_tls\|use_tls]`                                                                    | OneOf   | `no_tls`                           |
+| 7   | Connection Timeout       | `spec.advanced_options.connection_timeout`                                                  | integer | 2000 ms                            |
+| 8   | HTTP Idle Timeout        | `spec.advanced_options.http_idle_timeout`                                                   | integer | 300000 ms                          |
+| 9   | Circuit Breaker          | `spec.advanced_options.[default_circuit_breaker\|disable_circuit_breaker\|circuit_breaker]` | OneOf   | `default_circuit_breaker`          |
+| 10  | Outlier Detection        | `spec.advanced_options.[disable_outlier_detection\|outlier_detection]`                      | OneOf   | `disable_outlier_detection`        |
+| 11  | Panic Threshold          | `spec.advanced_options.[no_panic_threshold\|panic_threshold]`                               | OneOf   | `no_panic_threshold`               |
+| 12  | Subset Load Balancing    | `spec.advanced_options.[disable_subsets\|enable_subsets]`                                   | OneOf   | `disable_subsets`                  |
+| 13  | HTTP Protocol            | `spec.advanced_options.[auto_http_config\|http1_config\|http2_options]`                     | OneOf   | `auto_http_config`                 |
+| 14  | Proxy Protocol           | `spec.advanced_options.[disable_proxy_protocol\|proxy_protocol_v1\|proxy_protocol_v2]`      | OneOf   | `disable_proxy_protocol`           |
+| 15  | LB Source IP Persistence | `spec.advanced_options.[disable_lb_source_ip_persistance\|enable_lb_source_ip_persistance]` | OneOf   | `disable_lb_source_ip_persistance` |
 
 ## Data Access
 
 ### OpenAPI Specifications
 
-| File | Content |
-|------|---------|
+| File                                   | Content                                                                             |
+| -------------------------------------- | ----------------------------------------------------------------------------------- |
 | `docs/specifications/api/virtual.json` | `origin_poolCreateSpecType`, `origin_poolReplaceSpecType`, `origin_poolGetSpecType` |
-| `docs/specifications/api/openapi.json` | Merged specification with all schemas |
+| `docs/specifications/api/openapi.json` | Merged specification with all schemas                                               |
 
 ### validation.json Structure
 
@@ -188,10 +188,10 @@ Origin servers can be specified using different type variants. The type determin
 
 ### Implemented Types
 
-| Type | Description | Required Fields | Status |
-|------|-------------|-----------------|--------|
-| `public_name` | Origin server with public DNS name | `dns_name` | ✅ Complete |
-| `public_ip` | Origin server with public IP address | `ip` (IPv4) | ✅ Complete |
+| Type          | Description                          | Required Fields | Status      |
+| ------------- | ------------------------------------ | --------------- | ----------- |
+| `public_name` | Origin server with public DNS name   | `dns_name`      | ✅ Complete |
+| `public_ip`   | Origin server with public IP address | `ip` (IPv4)     | ✅ Complete |
 
 ### Example: public_name
 
@@ -225,12 +225,12 @@ Origin servers can be specified using different type variants. The type determin
 
 The following origin server types require "site" resource logic development before implementation:
 
-| Type | Description | Required Fields | Status |
-|------|-------------|-----------------|--------|
-| `private_ip` | Origin server with private/public IP and site info | `ip`, `site_locator`, `network_choice`, `snat_pool` | 🔲 Pending site logic |
-| `private_name` | Origin server with DNS name and site info | `dns_name`, `site_locator`, `network_choice`, `snat_pool` | 🔲 Pending site logic |
-| `k8s_service` | Kubernetes service with site info | `service_name`, `site_locator`, `network_choice` | 🔲 Pending site logic |
-| `consul_service` | HashiCorp Consul service with site info | `service_name`, `site_locator`, `network_choice` | 🔲 Pending site logic |
+| Type             | Description                                        | Required Fields                                           | Status                |
+| ---------------- | -------------------------------------------------- | --------------------------------------------------------- | --------------------- |
+| `private_ip`     | Origin server with private/public IP and site info | `ip`, `site_locator`, `network_choice`, `snat_pool`       | 🔲 Pending site logic |
+| `private_name`   | Origin server with DNS name and site info          | `dns_name`, `site_locator`, `network_choice`, `snat_pool` | 🔲 Pending site logic |
+| `k8s_service`    | Kubernetes service with site info                  | `service_name`, `site_locator`, `network_choice`          | 🔲 Pending site logic |
+| `consul_service` | HashiCorp Consul service with site info            | `service_name`, `site_locator`, `network_choice`          | 🔲 Pending site logic |
 
 ### Implementation Requirements
 
@@ -254,9 +254,9 @@ Before these types can be fully documented:
 
 ## Changelog
 
-| Version | Date | Changes |
-|---------|------|---------|
-| 2.1.2 | 2026-01-18 | Added origin server types section with public_name/public_ip; TODO markers for site-dependent types |
-| 2.1.1 | 2026-01-18 | Rewritten as pure API reference; removed downstream code examples |
-| 2.1.0 | 2026-01-18 | Updated to unified defaults structure in validation.json |
-| 2.0.33 | 2026-01-17 | Initial origin pool enhancements documentation |
+| Version | Date       | Changes                                                                                             |
+| ------- | ---------- | --------------------------------------------------------------------------------------------------- |
+| 2.1.2   | 2026-01-18 | Added origin server types section with public_name/public_ip; TODO markers for site-dependent types |
+| 2.1.1   | 2026-01-18 | Rewritten as pure API reference; removed downstream code examples                                   |
+| 2.1.0   | 2026-01-18 | Updated to unified defaults structure in validation.json                                            |
+| 2.0.33  | 2026-01-17 | Initial origin pool enhancements documentation                                                      |

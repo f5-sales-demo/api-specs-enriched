@@ -19,13 +19,13 @@ Replace iframe+Scalar rendering with the `starlight-openapi` Starlight plugin, w
 
 ### Current flow
 
-```
+```text
 Python pipeline → enriched JSON → Scalar HTML viewer → iframe in MDX → Starlight page
 ```
 
 ### Target flow
 
-```
+```text
 Python pipeline → enriched JSON → starlight-openapi → native .astro pages
 ```
 
@@ -93,7 +93,7 @@ The existing `docs/api-reference/index.mdx` card catalog page stays. Cards link 
 ## Changes to generate_api_viewer.py
 
 | Function | Action |
-|----------|--------|
+| ---------- | -------- |
 | `generate_viewer_html()` | Remove |
 | `generate_domain_mdx()` | Remove |
 | `generate_catalog_mdx()` | Keep — update `href` to match plugin routes |
