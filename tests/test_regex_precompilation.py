@@ -243,7 +243,7 @@ class TestDiscoveryEnricherPatterns:
 
         # Valid emails
         assert enricher._looks_like_email("user@example.com")
-        assert enricher._looks_like_email("test.user+tag@domain.co.uk")
+        assert enricher._looks_like_email("test.user+tag@example.co.uk")
 
         # Invalid emails
         assert not enricher._looks_like_email("not-an-email")
