@@ -20,7 +20,7 @@ def _source(
     *,
     path_ref: str | None = None,
 ) -> dict:
-    document = {
+    document: dict[str, Any] = {
         "openapi": "3.0.3",
         "info": {
             "title": f"F5 Distributed Cloud Services API for {owner}",

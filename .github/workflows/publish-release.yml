@@ -69,7 +69,7 @@ jobs:
       audit_needed: ${{ steps.publish.outputs.audit_needed }}
     steps:
       - name: Checkout full main history and tags
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.0.2
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           fetch-depth: 0
           fetch-tags: true
@@ -157,7 +157,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout release commit
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.0.2
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           ref: ${{ needs.reconcile.outputs.docs_commit }}
 
@@ -204,7 +204,7 @@ jobs:
       contents: write # checkout the publisher and append verified delivery receipts
     steps:
       - name: Checkout immutable publisher implementation
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.0.2
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           ref: ${{ needs.reconcile.outputs.docs_commit }}
 
@@ -258,7 +258,7 @@ jobs:
       failure_detail: ${{ steps.audit.outputs.failure_detail }}
     steps:
       - name: Checkout immutable publisher implementation
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.0.2
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           ref: ${{ needs.reconcile.outputs.docs_commit }}
 
@@ -325,7 +325,7 @@ jobs:
       contents: write # persist the completion receipt in the release body
     steps:
       - name: Checkout publisher
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.0.2
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           ref: ${{ needs.reconcile.outputs.docs_commit }}
           fetch-depth: 0
@@ -372,7 +372,7 @@ jobs:
       issues: write # create or update the deterministic publication failure issue
     steps:
       - name: Checkout repository
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.0.2
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
 
       - name: Setup Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0

@@ -43,7 +43,7 @@ def _write_manifest(published_at: str | None) -> None:
         "asset_size": 1,
         "asset_digest": "sha256:" + "0" * 64,
     }
-    payload = create_raw_manifest(
+    payload: dict[str, Any] = create_raw_manifest(
         release_receipt=receipt,
         source_dir=manifest_dir,
         files=["source.json"],

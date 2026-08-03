@@ -845,11 +845,11 @@ def test_main_completed_retry_rebuilds_authoritative_assets(
     reconciled: list[dict[str, Path]] = []
     monkeypatch.setattr(publication, "extract_snapshot", extract)
     monkeypatch.setattr(publication, "build_release_assets", lambda *_args: assets)
-    monkeypatch.setattr(
-        publication,
-        "reconcile_release",
-        lambda _repo, _tag, _version, _commit, built, *_args: reconciled.append(built) or release,
-    )
+    def _fake_reconcile(*_args):
+        reconciled.append(assets)
+        return release
+
+    monkeypatch.setattr(publication, "reconcile_release", _fake_reconcile)
     monkeypatch.setattr(publication, "release_docs_identity", lambda _commit: ("same-docs",))
     monkeypatch.setattr(
         publication,

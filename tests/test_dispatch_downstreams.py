@@ -474,11 +474,11 @@ def test_authoritative_release_is_queried_once_and_bound_to_tag_bytes(monkeypatc
 
     raw_calls: list[str] = []
     monkeypatch.setattr(delivery, "_github_json", github_json)
-    monkeypatch.setattr(
-        delivery,
-        "_github_raw",
-        lambda endpoint, _label: raw_calls.append(endpoint) or pin,
-    )
+    def _fake_raw(endpoint, _label):
+        raw_calls.append(endpoint)
+        return pin
+
+    monkeypatch.setattr(delivery, "_github_raw", _fake_raw)
     cache: set[str] = set()
 
     delivery._verify_authoritative_publication(target, evidence, cache)
@@ -513,11 +513,11 @@ def test_npm_authority_hashes_exact_registry_tarball_bytes(monkeypatch) -> None:
             "version": "9.8.7",
         },
     )
-    monkeypatch.setattr(
-        delivery,
-        "_download_bytes",
-        lambda url, _label: urls.append(url) or tarball,
-    )
+    def _fake_download(url, _label):
+        urls.append(url)
+        return tarball
+
+    monkeypatch.setattr(delivery, "_download_bytes", _fake_download)
 
     delivery._verify_npm(authority, evidence)
 
@@ -549,13 +549,11 @@ def test_marketplace_authority_hashes_both_public_vsix_artifacts(monkeypatch) ->
         "_http_json",
         lambda *_args: {"files": {"download": "https://open-vsx.example/xcsh.vsix"}},
     )
-    monkeypatch.setattr(
-        delivery,
-        "_download_bytes",
-        lambda url, _label: (
-            downloads.append(url) or (gzip.compress(vsix) if "marketplace.example" in url else vsix)
-        ),
-    )
+    def _fake_vsix_download(url, _label):
+        downloads.append(url)
+        return gzip.compress(vsix) if "marketplace.example" in url else vsix
+
+    monkeypatch.setattr(delivery, "_download_bytes", _fake_vsix_download)
 
     delivery._verify_marketplaces(authority, evidence)
 
@@ -976,11 +974,11 @@ def test_verify_only_rechecks_every_receipted_target_without_mutation(monkeypatc
     release = _release(commit, *markers)
     verified: list[str] = []
     monkeypatch.setattr(delivery, "github_release", lambda *_args: release)
-    monkeypatch.setattr(
-        delivery,
-        "receiver_has_delivery",
-        lambda target, *_args, **_kwargs: verified.append(target["repo"]) or True,
-    )
+    def _fake_verify(target, *_args, **_kwargs):
+        verified.append(target["repo"])
+        return True
+
+    monkeypatch.setattr(delivery, "receiver_has_delivery", _fake_verify)
     monkeypatch.setattr(
         delivery,
         "post_dispatch",
