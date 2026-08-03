@@ -87,11 +87,11 @@ if [ "$*" = "-m scripts.utils.version_calculator" ]; then
   echo "2.1.208"
 fi
 if [[ "$*" == *"-m scripts.stamp_release_version"* ]]; then
-  target_dir="$2"
+  target_dir="$1"
   target_ver="2.1.208"
-  shift 2
+  shift
   while [ "$#" -gt 0 ]; do
-    if [ "$1" = "--version" ]; then
+    if [ "$1" = "--version" ] || [ "$1" = "--check-version" ]; then
       target_ver="$2"
       break
     fi
