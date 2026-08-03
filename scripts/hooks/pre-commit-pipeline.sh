@@ -29,7 +29,9 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 # Detect Python interpreter
-if [ -d ".venv" ]; then
+if [ -n "${PYTHON:-}" ]; then
+  :
+elif [ -d ".venv" ]; then
   PYTHON=".venv/bin/python"
 elif command -v python3 &>/dev/null; then
   PYTHON="python3"
