@@ -19,33 +19,54 @@ usage() {
 
 while [ "$#" -gt 0 ]; do
   case "$1" in
-    --cached)
-      [ -z "$MODE" ] || { usage; exit 2; }
-      MODE="cached"
-      shift
-      ;;
-    --base)
-      [ "$#" -ge 2 ] || { usage; exit 2; }
-      [ -z "$BASE_REF" ] || { usage; exit 2; }
-      BASE_REF="$2"
-      shift 2
-      ;;
-    --head)
-      [ "$#" -ge 2 ] || { usage; exit 2; }
-      [ -z "$HEAD_REF" ] || { usage; exit 2; }
-      HEAD_REF="$2"
-      shift 2
-      ;;
-    --branch)
-      [ "$#" -ge 2 ] || { usage; exit 2; }
-      [ -z "$BRANCH" ] || { usage; exit 2; }
-      BRANCH="$2"
-      shift 2
-      ;;
-    *)
+  --cached)
+    [ -z "$MODE" ] || {
       usage
       exit 2
-      ;;
+    }
+    MODE="cached"
+    shift
+    ;;
+  --base)
+    [ "$#" -ge 2 ] || {
+      usage
+      exit 2
+    }
+    [ -z "$BASE_REF" ] || {
+      usage
+      exit 2
+    }
+    BASE_REF="$2"
+    shift 2
+    ;;
+  --head)
+    [ "$#" -ge 2 ] || {
+      usage
+      exit 2
+    }
+    [ -z "$HEAD_REF" ] || {
+      usage
+      exit 2
+    }
+    HEAD_REF="$2"
+    shift 2
+    ;;
+  --branch)
+    [ "$#" -ge 2 ] || {
+      usage
+      exit 2
+    }
+    [ -z "$BRANCH" ] || {
+      usage
+      exit 2
+    }
+    BRANCH="$2"
+    shift 2
+    ;;
+  *)
+    usage
+    exit 2
+    ;;
   esac
 done
 
@@ -88,10 +109,10 @@ fi
 OFFENDING=()
 while IFS= read -r -d '' path; do
   case "$path" in
-    CHANGELOG.md | release/api-catalog.json | \
-      docs/openapi-specs-config.json | docs/specifications/* | docs/api-reference/*)
-      OFFENDING+=("$path")
-      ;;
+  CHANGELOG.md | release/api-catalog.json | \
+    docs/openapi-specs-config.json | docs/specifications/* | docs/api-reference/*)
+    OFFENDING+=("$path")
+    ;;
   esac
 done <"$DIFF_OUTPUT"
 

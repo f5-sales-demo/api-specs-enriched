@@ -95,9 +95,9 @@ UNTRACKED_OUTPUT=$({
   git ls-files --others --ignored --exclude-standard -- "$OUTPUT_DIR"
   git ls-files --others --exclude-standard -- "$CATALOG_FILE"
 } | head -1)
-if ! git diff --quiet -- "$OUTPUT_DIR" || \
-  ! git diff --cached --quiet -- "$OUTPUT_DIR" || \
-  ! git diff --quiet -- "$CATALOG_FILE" || \
+if ! git diff --quiet -- "$OUTPUT_DIR" ||
+  ! git diff --cached --quiet -- "$OUTPUT_DIR" ||
+  ! git diff --quiet -- "$CATALOG_FILE" ||
   [ -n "$UNTRACKED_OUTPUT" ]; then
   echo -e "${RED}ERROR: generated output already has staged or unstaged changes.${NC}"
   echo -e "${RED}Commit or restore that work before running the pipeline hook.${NC}"
@@ -174,7 +174,7 @@ fi
 # reaches main and creates a version-stamped release PR. Promoting here would
 # smuggle changed content into main under the previous release version, leaving
 # the producer with no diff to publish.
-if [[ "$CURRENT_BRANCH" != release/v* ]] || \
+if [[ "$CURRENT_BRANCH" != release/v* ]] ||
   [[ ! "$CURRENT_BRANCH" =~ ^release/v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
   echo -e "${GREEN}Candidate output and lint verified; release artifacts were not modified.${NC}"
   exit 0
