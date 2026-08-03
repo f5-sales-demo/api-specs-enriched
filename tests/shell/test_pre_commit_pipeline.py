@@ -86,6 +86,20 @@ echo "[fake python] args: $*" >&2
 if [ "$*" = "-m scripts.utils.version_calculator" ]; then
   echo "2.1.208"
 fi
+if [[ "$*" == *"-m scripts.stamp_release_version"* ]]; then
+  target_dir="$2"
+  target_ver="2.1.208"
+  shift 2
+  while [ "$#" -gt 0 ]; do
+    if [ "$1" = "--version" ]; then
+      target_ver="$2"
+      break
+    fi
+    shift
+  done
+  mkdir -p "$target_dir/docs/specifications/api"
+  printf '{"version":"%s"}\n' "$target_ver" > "$target_dir/docs/specifications/api/domain.json"
+fi
 if [[ "$*" == *"-m scripts.pipeline"* ]]; then
   while [ "$#" -gt 0 ]; do
     if [ "$1" = "--output-dir" ]; then
