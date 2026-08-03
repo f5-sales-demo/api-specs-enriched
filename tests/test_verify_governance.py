@@ -223,6 +223,7 @@ class TestMain:
         "head_ref",
         [
             "governance/sync-managed-files",
+            "governance/sync-managed-files-05b3aea603b7-30784318975-1",
             "sync/exact-caller-0123456789ab-123-4",
         ],
     )
