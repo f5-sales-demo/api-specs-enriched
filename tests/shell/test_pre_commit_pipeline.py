@@ -75,10 +75,8 @@ def _invoke(cwd: Path, *, force: bool = False) -> subprocess.CompletedProcess[st
     env = {**os.environ}
     if force:
         env["FORCE_PIPELINE"] = "1"
-    # We point PYTHON at `true` so that if the hook DOES fall through to
-    # STEP 1 (pipeline run) it exits 0 without doing anything. Our assertions
-    # then key on stdout to distinguish skip vs. fall-through.
     env["PATH"] = f"{cwd}/_fakebin:{env.get('PATH', '')}"
+    env["PYTHON"] = f"{cwd}/_fakebin/python3"
     fakebin = cwd / "_fakebin"
     fakebin.mkdir(exist_ok=True)
     python_stub = fakebin / "python3"
