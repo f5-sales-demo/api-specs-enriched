@@ -25,7 +25,6 @@ _PROJECT_OWNERSHIP = Path(__file__).resolve().parents[2] / _OWNERSHIP_RELATIVE
 
 _GENERATED_PATHS = (
     "CHANGELOG.md",
-    ".github_release",
     "release/api-catalog.json",
     "docs/specifications/api/domain.json",
     "docs/api-reference/domain-api.mdx",
@@ -190,6 +189,26 @@ class TestRunPath:
 
         result = _invoke(repo)
         # The fake python stub exits 0, so the hook continues past STEP 1.
+        assert "Running F5 XC API enrichment pipeline" in result.stdout
+        assert "skipping enrichment + lint" not in result.stdout
+
+    def test_upstream_source_receipt_change_triggers_pipeline(self, tmp_path: Path) -> None:
+        hook_src = _project_hook()
+        repo = _setup_repo(tmp_path, hook_src)
+        receipt = {
+            "version": "2026.07.30-1",
+            "tag_name": "v2026.07.30-1",
+            "published_at": "2026-08-03T15:12:39Z",
+            "asset_name": "api-specs-v2026.07.30-1.zip",
+            "asset_size": 61_780_014,
+            "asset_digest": f"sha256:{'a' * 64}",
+        }
+        (repo / ".github_release").write_text(json.dumps(receipt) + "\n")
+        _run_cmd(["git", "add", ".github_release"], repo)
+
+        result = _invoke(repo)
+
+        assert result.returncode == 0, result.stderr
         assert "Running F5 XC API enrichment pipeline" in result.stdout
         assert "skipping enrichment + lint" not in result.stdout
 

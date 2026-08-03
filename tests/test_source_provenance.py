@@ -6,14 +6,12 @@ from __future__ import annotations
 
 import json
 import subprocess
-from typing import TYPE_CHECKING
+from pathlib import Path
 
 import pytest
 
 from scripts.release import source_provenance
-
-if TYPE_CHECKING:
-    from pathlib import Path
+from scripts.utils.github_release import load_release_receipt
 
 
 def _receipt(**overrides: object) -> dict[str, object]:
@@ -37,6 +35,13 @@ def _git(repo: Path, *args: str) -> str:
         capture_output=True,
         text=True,
     ).stdout.strip()
+
+
+def test_repository_source_receipt_has_exact_validated_schema() -> None:
+    """The committed default must bootstrap an exact immutable download."""
+    receipt_path = Path(".github_release")
+
+    assert load_release_receipt(receipt_path) == json.loads(receipt_path.read_bytes())
 
 
 def test_source_provenance_reads_exact_receipt_from_release_commit(

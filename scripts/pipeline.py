@@ -146,7 +146,6 @@ from scripts.utils.json_writer import write_json_file
 from scripts.utils.memory_profiler import MemoryProfiler
 from scripts.utils.minimal_defaults_exporter import MinimalDefaultsExporter
 from scripts.utils.namespace_profiles_exporter import NamespaceProfilesExporter
-from scripts.utils.resource_version_enricher import declare_resource_versions
 from scripts.utils.server_variables import ServerVariableHelper
 from scripts.utils.source_graph_validator import (
     HTTP_METHODS,
@@ -192,9 +191,6 @@ class PipelineStats:
     source_operations: int = 0
     canonical_operations: int = 0
     explicit_operation_aliases: int = 0
-    resource_version_get_responses: int = 0
-    resource_version_replace_requests: int = 0
-    resource_version_declarations: int = 0
     component_occurrences: int = 0
     component_canonical_keys: int = 0
     component_conflict_name_groups: int = 0
@@ -2032,10 +2028,6 @@ _EXPECTED_COMPONENT_CANONICAL_KEYS = 6287
 _EXPECTED_COMPONENT_CONFLICT_GROUPS = 61
 _EXPECTED_COMPONENT_RENAMED_OCCURRENCES = 869
 _EXPECTED_COMPONENT_SHARED_OCCURRENCES = 4981
-_EXPECTED_SOURCE_GET_RESPONSES = 202
-_EXPECTED_SOURCE_REPLACE_REQUESTS = 167
-_EXPECTED_OUTPUT_GET_RESPONSES = 411
-_EXPECTED_OUTPUT_REPLACE_REQUESTS = 339
 _OPERATION_METADATA_FIELDS = frozenset(
     {
         "purpose",
@@ -2062,7 +2054,6 @@ _FLAT_OPERATION_METADATA_FIELDS = frozenset(
 
 def _require_expected_accounting(
     canonical: CanonicalizationResult,
-    resource_version: dict[str, int],
     operations: dict[str, int],
 ) -> None:
     """Gate the measured upstream release contract before artifact projection."""
@@ -2077,8 +2068,6 @@ def _require_expected_accounting(
         "component_conflict_groups": totals.conflict_name_groups,
         "component_renamed_occurrences": totals.renamed_occurrences,
         "component_shared_occurrences": totals.shared_occurrences,
-        "source_get_responses": resource_version["get_responses"],
-        "source_replace_requests": resource_version["replace_requests"],
     }
     expected = {
         "source_files": _EXPECTED_SOURCE_FILES,
@@ -2090,71 +2079,11 @@ def _require_expected_accounting(
         "component_conflict_groups": _EXPECTED_COMPONENT_CONFLICT_GROUPS,
         "component_renamed_occurrences": _EXPECTED_COMPONENT_RENAMED_OCCURRENCES,
         "component_shared_occurrences": _EXPECTED_COMPONENT_SHARED_OCCURRENCES,
-        "source_get_responses": _EXPECTED_SOURCE_GET_RESPONSES,
-        "source_replace_requests": _EXPECTED_SOURCE_REPLACE_REQUESTS,
     }
     if measured != expected:
         raise RuntimeError(
             f"upstream release accounting changed: expected={expected}, measured={measured}"
         )
-
-
-def _count_output_resource_versions(specs: list[dict[str, Any]]) -> tuple[int, int]:
-    """Require every and only measured output shape to carry the optional token."""
-    get_responses = 0
-    replace_requests = 0
-    for spec in specs:
-        schemas = spec.get("components", {}).get("schemas")
-        if not isinstance(schemas, dict):
-            raise TypeError("generated OpenAPI graph has no components.schemas object")
-        for name, schema in schemas.items():
-            if not isinstance(schema, dict):
-                raise TypeError(f"generated schema {name!r} is not an object")
-            properties = schema.get("properties", {})
-            if not isinstance(properties, dict):
-                raise TypeError(f"generated schema {name!r} properties is not an object")
-            targeted = name.endswith(("GetResponse", "ReplaceRequest"))
-            declared = "resource_version" in properties
-            if targeted != declared:
-                raise RuntimeError(
-                    f"generated schema {name!r} resource_version declaration mismatch"
-                )
-            if not targeted:
-                continue
-            if schema.get("type") != "object":
-                raise RuntimeError(f"generated schema {name!r} is not an object schema")
-            declaration = properties["resource_version"]
-            if not isinstance(declaration, dict) or declaration.get("type") != "string":
-                raise RuntimeError(
-                    f"generated schema {name!r} resource_version is not a string schema"
-                )
-            required = schema.get("required", [])
-            if not isinstance(required, list):
-                raise TypeError(f"generated schema {name!r} required is not an array")
-            if "resource_version" in required:
-                raise RuntimeError(f"generated schema {name!r} requires resource_version")
-            if name.endswith("GetResponse"):
-                get_responses += 1
-            else:
-                replace_requests += 1
-    return get_responses, replace_requests
-
-
-def _require_expected_output_resource_versions(
-    specs: list[dict[str, Any]],
-) -> tuple[int, int]:
-    """Gate the exact generated optimistic-concurrency contract."""
-    measured = _count_output_resource_versions(specs)
-    expected = (
-        _EXPECTED_OUTPUT_GET_RESPONSES,
-        _EXPECTED_OUTPUT_REPLACE_REQUESTS,
-    )
-    if measured != expected:
-        raise RuntimeError(
-            "generated resource_version accounting changed: "
-            f"expected={expected}, measured={measured}"
-        )
-    return measured
 
 
 def _string_array(value: object) -> bool:
@@ -2433,24 +2362,18 @@ def run_pipeline(
                         f"processed source graph {filename} is invalid: {exc}"
                     ) from exc
 
-            resource_documents, resource_accounting = declare_resource_versions(processed_specs)
+            canonical = canonicalize_source_components(processed_specs)
             del processed_specs
-            canonical = canonicalize_source_components(resource_documents)
-            del resource_documents
             operation_accounting = validate_operation_alias_accounting(
                 canonical.documents,
                 load_operation_aliases(),
             )
             _require_expected_accounting(
                 canonical,
-                resource_accounting.to_dict(),
                 operation_accounting,
             )
 
             totals = canonical.accounting.totals
-            stats.resource_version_get_responses = resource_accounting.get_responses
-            stats.resource_version_replace_requests = resource_accounting.replace_requests
-            stats.resource_version_declarations = resource_accounting.total
             stats.component_occurrences = totals.occurrences
             stats.component_canonical_keys = totals.canonical_keys
             stats.component_conflict_name_groups = totals.conflict_name_groups
@@ -2492,7 +2415,6 @@ def run_pipeline(
             master_spec = release_specs["openapi.json"]
             domain_specs = {domain: release_specs[f"{domain}.json"] for domain in domain_specs}
 
-            _require_expected_output_resource_versions([master_spec, *domain_specs.values()])
             _require_complete_operation_metadata(release_specs)
             _validate_release_findings(release_specs, target_fields)
 
@@ -2539,7 +2461,6 @@ def print_summary(stats: PipelineStats) -> None:
     table.add_row("Source Operations", str(stats.source_operations))
     table.add_row("Canonical Operations", str(stats.canonical_operations))
     table.add_row("Explicit Operation Aliases", str(stats.explicit_operation_aliases))
-    table.add_row("Resource Version Declarations", str(stats.resource_version_declarations))
     table.add_row("Component Occurrences", str(stats.component_occurrences))
     table.add_row("Canonical Component Keys", str(stats.component_canonical_keys))
 
@@ -2583,9 +2504,6 @@ def generate_report(stats: PipelineStats, output_path: Path) -> None:
             "source_operations": stats.source_operations,
             "canonical_operations": stats.canonical_operations,
             "explicit_operation_aliases": stats.explicit_operation_aliases,
-            "resource_version_get_responses": stats.resource_version_get_responses,
-            "resource_version_replace_requests": stats.resource_version_replace_requests,
-            "resource_version_declarations": stats.resource_version_declarations,
             "component_occurrences": stats.component_occurrences,
             "component_canonical_keys": stats.component_canonical_keys,
             "component_conflict_name_groups": stats.component_conflict_name_groups,

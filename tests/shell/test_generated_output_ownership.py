@@ -14,7 +14,6 @@ _CHECK = _ROOT / "scripts" / "release" / "verify-generated-ownership.sh"
 
 _GENERATED_PATHS = (
     "CHANGELOG.md",
-    ".github_release",
     "release/api-catalog.json",
     "docs/specifications/api/domain.json",
     "docs/api-reference/domain-api.mdx",
@@ -71,6 +70,16 @@ def test_non_generated_source_change_is_allowed(tmp_path: Path) -> None:
     repo = _repo(tmp_path)
     (repo / "source.py").write_text("after\n")
     _git(repo, "add", "source.py")
+
+    result = _run(repo, "--cached", "--branch", "fix/source-change")
+
+    assert result.returncode == 0, result.stderr
+
+
+def test_upstream_source_receipt_change_is_allowed(tmp_path: Path) -> None:
+    repo = _repo(tmp_path)
+    (repo / ".github_release").write_text('{"asset_digest":"sha256:source"}\n')
+    _git(repo, "add", ".github_release")
 
     result = _run(repo, "--cached", "--branch", "fix/source-change")
 

@@ -58,7 +58,7 @@ if ! OWNERSHIP_ERROR=$(bash scripts/release/verify-generated-ownership.sh \
   exit 1
 fi
 
-PIPELINE_INPUT_PATTERN='^(scripts/|config/|specs/original/|pyproject\.toml$|uv\.lock$|\.github/workflows/sync-and-enrich\.yml$)'
+PIPELINE_INPUT_PATTERN='^(scripts/|config/|specs/original/|pyproject\.toml$|uv\.lock$|\.github_release$|\.github/workflows/sync-and-enrich\.yml$)'
 if [ "${FORCE_PIPELINE:-0}" != "1" ]; then
   STAGED_INPUTS=$(git diff --cached --name-only | grep -E "$PIPELINE_INPUT_PATTERN" | head -1 || true)
   if [ -z "$STAGED_INPUTS" ]; then
@@ -72,7 +72,7 @@ fi
 # source/config bytes that the commit will omit. specs/original is intentionally
 # release-downloaded and ignored, so only tracked pipeline code/config paths are
 # subject to this index/worktree equality guard.
-COMMIT_INPUT_PATTERN='^(scripts/|config/|pyproject\.toml$|uv\.lock$|\.github/workflows/sync-and-enrich\.yml$)'
+COMMIT_INPUT_PATTERN='^(scripts/|config/|pyproject\.toml$|uv\.lock$|\.github_release$|\.github/workflows/sync-and-enrich\.yml$)'
 UNSTAGED_INPUT=$({
   git diff --name-only
   git ls-files --others --exclude-standard

@@ -88,7 +88,7 @@ fi
 OFFENDING=()
 while IFS= read -r -d '' path; do
   case "$path" in
-    CHANGELOG.md | .github_release | release/api-catalog.json | \
+    CHANGELOG.md | release/api-catalog.json | \
       docs/openapi-specs-config.json | docs/specifications/* | docs/api-reference/*)
       OFFENDING+=("$path")
       ;;
