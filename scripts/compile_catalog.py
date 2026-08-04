@@ -39,6 +39,7 @@ def merge_spec_files(dir_path: Path) -> dict[str, Any]:
     """Read all OpenAPI JSON files in a directory and merge their paths and components."""
     merged_paths: dict[str, Any] = {}
     merged_schemas: dict[str, Any] = {}
+    collisions: list[dict[str, Any]] = []
 
     for spec_file in sorted(dir_path.glob("*.json")):
         try:
@@ -56,6 +57,34 @@ def merge_spec_files(dir_path: Path) -> dict[str, Any]:
                 continue
             if path not in merged_paths:
                 merged_paths[path] = {}
+            # Two specifications can claim the same path and method with different
+            # operationIds. update() is last-writer-wins, and files are read in
+            # filename order, so the loser used to vanish on alphabetical accident:
+            # ves.io.schema.discovery_cloud lost
+            # /api/discovery/namespaces/{namespace}/suggest-values to
+            # ves.io.schema.discovered_service, leaving 282 of 283 identities in the
+            # catalog with nothing recording the 283rd.
+            #
+            # The merge still resolves the same way — an OpenAPI document cannot hold
+            # two operations on one path and method — but the displacement is now
+            # recorded so it can be published rather than lost.
+            for method, incoming in path_item.items():
+                if method in _NON_OPERATION_KEYS or not isinstance(incoming, dict):
+                    continue
+                existing = merged_paths[path].get(method)
+                if not isinstance(existing, dict):
+                    continue
+                previous_id = existing.get("operationId") or ""
+                incoming_id = incoming.get("operationId") or ""
+                if previous_id and incoming_id and previous_id != incoming_id:
+                    collisions.append(
+                        {
+                            "path": path,
+                            "method": method.upper(),
+                            "winningOperationId": incoming_id,
+                            "losingOperationId": previous_id,
+                        },
+                    )
             merged_paths[path].update(path_item)
 
         # Merge components.schemas
@@ -66,6 +95,10 @@ def merge_spec_files(dir_path: Path) -> dict[str, Any]:
         "openapi": "3.0.3",
         "paths": merged_paths,
         "components": {"schemas": merged_schemas},
+        "x-f5xc-path-collisions": sorted(
+            collisions,
+            key=lambda c: (c["path"], c["method"], c["losingOperationId"]),
+        ),
     }
 
 
@@ -631,6 +664,218 @@ def _deduplicate_global_op_names(categories: list[dict[str, Any]]) -> None:
                 global_seen[op["name"]] = cat["name"]
 
 
+DEFAULT_EXCLUSIONS_CONFIG = Path("config/api_exclusions.yaml")
+
+# An operationId is "<identity>.<RpcContainer>.<Method>", where the identity is a
+# lowercase dotted run under ves.io.schema and the container is the first
+# CamelCase segment.
+#
+# The container is matched structurally, NOT by looking for "API". The published
+# specifications use 58 distinct container names, and four of them spell it "Api"
+# (UpgradeStatusCustomApi, SoftwareVersionOsImageCustomApi,
+# WafSignatureChangelogCustomApi, SignatureCustomApi). Splitting on a literal
+# ".API." silently loses seven operations across three identities; handling only
+# API/CustomAPI loses far more. Publishing the identity so no consumer has to
+# repeat this parse is the reason these sections exist.
+_API_OPERATION_ID = re.compile(
+    r"^(?P<identity>ves\.io\.schema(?:\.[a-z0-9_]+)*)"
+    r"\.(?P<container>[A-Z][A-Za-z0-9_]*)"
+    r"\.(?P<rpc>[A-Za-z0-9_]+)$",
+)
+
+# Path items hold these beside their operations; they are not operations.
+_NON_OPERATION_KEYS = frozenset(
+    {"parameters", "$ref", "summary", "description", "servers"},
+)
+
+
+def extract_api_identity(operation_id: str) -> tuple[str, str, str] | None:
+    """Split an operationId into (apiIdentity, rpcContainer, rpcMethod).
+
+    Returns None when the value is not a schema-qualified operationId.
+    """
+    match = _API_OPERATION_ID.match(operation_id or "")
+    if match is None:
+        return None
+    return match["identity"], match["container"], match["rpc"]
+
+
+def surface_from_path(path: str) -> str:
+    """Return the API surface a path is published on, e.g. "config" or "web".
+
+    The surface is the segment after /api/, read from the path rather than from
+    `tags` because the path is what a caller actually requests.
+
+    Not every published path sits under /api/ — `/no_auth/namespaces/...` is one
+    real example — so a path whose first segment is not "api" reports that first
+    segment as its surface.
+    """
+    segments = [segment for segment in (path or "").split("/") if segment]
+    if not segments:
+        raise ValueError(f"path does not carry an API surface: {path!r}")
+    if segments[0] != "api":
+        return segments[0]
+    if len(segments) < 2:
+        raise ValueError(f"path does not carry an API surface: {path!r}")
+    return segments[1]
+
+
+def _request_schema_key(operation: dict[str, Any]) -> str | None:
+    """Return the request body's schema key, or None when it takes no body."""
+    schema = (
+        (operation.get("requestBody") or {})
+        .get("content", {})
+        .get("application/json", {})
+        .get("schema", {})
+    )
+    ref = schema.get("$ref")
+    if not isinstance(ref, str) or not ref:
+        return None
+    return ref.rsplit("/", 1)[-1]
+
+
+def build_api_operations(paths: dict[str, Any]) -> list[dict[str, Any]]:
+    """Group every published operation under its ves.io.schema identity.
+
+    Ordering is total and independent of traversal order: identities sorted, then
+    operations by (method, path). An unparseable operationId or a duplicate one is
+    an error rather than a skip — silently dropping either is how a consumer ends
+    up with a contract that looks complete and is not.
+    """
+    grouped: dict[str, list[dict[str, Any]]] = {}
+    seen_operation_ids: dict[str, str] = {}
+
+    for path, path_item in (paths or {}).items():
+        if not isinstance(path_item, dict):
+            continue
+        for method, operation in path_item.items():
+            if method in _NON_OPERATION_KEYS or not isinstance(operation, dict):
+                continue
+            operation_id = operation.get("operationId") or ""
+            parsed = extract_api_identity(operation_id)
+            if parsed is None:
+                # An operationId that claims to be schema-qualified but does not
+                # parse is a hard error: that is the casing-and-format bug class
+                # this inventory exists to eliminate, and skipping it is exactly
+                # how a consumer ends up with a contract that looks complete.
+                #
+                # An operationId that makes no such claim is simply not an F5
+                # schema API — a hand-written endpoint, a fixture — and has no
+                # identity to publish, so it is not part of this section.
+                if operation_id.startswith("ves.io.schema"):
+                    raise ValueError(
+                        f"{method.upper()} {path} has a schema-qualified operationId "
+                        f"that does not parse: {operation_id!r}",
+                    )
+                continue
+            identity = parsed[0]
+            if operation_id in seen_operation_ids:
+                raise ValueError(
+                    f"duplicate operationId {operation_id!r}: "
+                    f"{seen_operation_ids[operation_id]} and {method.upper()} {path}",
+                )
+            seen_operation_ids[operation_id] = f"{method.upper()} {path}"
+
+            entry: dict[str, Any] = {
+                "method": method.upper(),
+                "path": path,
+                "operationId": operation_id,
+                "surface": surface_from_path(path),
+            }
+            request_schema = _request_schema_key(operation)
+            if request_schema is not None:
+                entry["requestSchema"] = request_schema
+            grouped.setdefault(identity, []).append(entry)
+
+    return [
+        {
+            "apiIdentity": identity,
+            "operations": sorted(operations, key=lambda o: (o["method"], o["path"])),
+        }
+        for identity, operations in sorted(grouped.items())
+    ]
+
+
+def collision_exclusions(
+    collisions: list[dict[str, Any]],
+    published_identities: set[str],
+) -> list[dict[str, Any]]:
+    """Turn displaced path claims into stated exclusions.
+
+    Only an identity that lost every claim it had is excluded. One that lost a
+    single path but still owns another stays published — excluding it would claim
+    the whole API is unavailable when one operation was displaced.
+    """
+    excluded: dict[str, dict[str, Any]] = {}
+    for collision in collisions or []:
+        parsed = extract_api_identity(collision.get("losingOperationId") or "")
+        if parsed is None:
+            continue
+        identity = parsed[0]
+        if identity in published_identities or identity in excluded:
+            continue
+        winner = extract_api_identity(collision.get("winningOperationId") or "")
+        winner_identity = winner[0] if winner else collision.get("winningOperationId")
+        excluded[identity] = {
+            "apiIdentity": identity,
+            "classification": "path-collision",
+            "reason": (
+                f"{collision['method']} {collision['path']} is claimed by both this API "
+                f"and {winner_identity}, which owns it in the published specification"
+            ),
+        }
+    return list(excluded.values())
+
+
+def build_api_exclusions(
+    config_path: Path,
+    published_identities: set[str],
+) -> list[dict[str, Any]]:
+    """Read the deliberately-withheld identities, if any are declared.
+
+    An absent configuration means nothing is withheld, which is a different
+    statement from "unknown" — that distinction is the reason consumers can tell a
+    deliberate exclusion from a missing API. Every entry must carry a
+    classification and a reason, and an identity cannot be both published and
+    excluded: the two sections partition the identity space or "excluded" means
+    nothing.
+    """
+    if not Path(config_path).exists():
+        return []
+
+    import yaml  # noqa: PLC0415 — optional dependency, only needed when configured
+
+    document = yaml.safe_load(Path(config_path).read_text(encoding="utf-8")) or {}
+    declared = document.get("exclusions") or []
+
+    exclusions: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    for item in declared:
+        identity = (item or {}).get("apiIdentity")
+        if not identity:
+            raise ValueError("every exclusion requires an apiIdentity")
+        classification = item.get("classification")
+        reason = item.get("reason")
+        if not classification or not reason:
+            raise ValueError(
+                f"exclusion {identity} requires both a classification and a reason",
+            )
+        if identity in seen:
+            raise ValueError(f"duplicate exclusion for {identity}")
+        if identity in published_identities:
+            raise ValueError(f"{identity} is both published and excluded")
+        seen.add(identity)
+        exclusions.append(
+            {
+                "apiIdentity": identity,
+                "classification": classification,
+                "reason": reason,
+            },
+        )
+
+    return sorted(exclusions, key=lambda entry: (entry["apiIdentity"], entry["classification"]))
+
+
 def compile_catalog(openapi: dict[str, Any]) -> dict[str, Any]:
     """Transform an OpenAPI 3.0 spec dict into xcsh api-catalog.json format."""
     paths = openapi.get("paths", {})
@@ -655,6 +900,20 @@ def compile_catalog(openapi: dict[str, Any]) -> dict[str, Any]:
     tag_version = get_version_from_tags()
     version = env_version or (tag_version if tag_version != "0.0.0" else "1.0.0")
 
+    # The operation inventory, keyed by the API's own ves.io.schema identity.
+    # `categories` groups operations for human browsing; this groups them by the
+    # identity a machine consumer keys on, and states each operation's exact
+    # method, path and surface so nothing has to be inferred from a name.
+    api_operations = build_api_operations(paths)
+    published_identities = {entry["apiIdentity"] for entry in api_operations}
+    api_exclusions = build_api_exclusions(DEFAULT_EXCLUSIONS_CONFIG, published_identities)
+    # Identities displaced by a path collision are stated here rather than lost.
+    api_exclusions = sorted(
+        api_exclusions
+        + collision_exclusions(openapi.get("x-f5xc-path-collisions") or [], published_identities),
+        key=lambda entry: (entry["apiIdentity"], entry["classification"]),
+    )
+
     return {
         "service": "f5xc",
         "displayName": "F5 Distributed Cloud",
@@ -663,6 +922,8 @@ def compile_catalog(openapi: dict[str, Any]) -> dict[str, Any]:
         "auth": F5XC_AUTH,
         "defaults": F5XC_DEFAULTS,
         "categories": categories,
+        "apiOperations": api_operations,
+        "apiExclusions": api_exclusions,
     }
 
 
