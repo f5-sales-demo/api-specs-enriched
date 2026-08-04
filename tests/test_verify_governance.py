@@ -22,6 +22,13 @@ from scripts.verify_governance import (
     verify,
 )
 
+STABLE_EXACT_CALLER_BRANCH = (
+    "sync/exact-caller-"
+    "0123456789abcdef0123456789abcdef01234567"
+    "89abcdef0123456789abcdef0123456789abcdef"
+    "fedcba9876543210fedcba9876543210fedcba98"
+)
+
 if TYPE_CHECKING:
     from pathlib import Path
 
@@ -224,7 +231,7 @@ class TestMain:
         [
             "governance/sync-managed-files",
             "governance/sync-managed-files-05b3aea603b7-30784318975-1",
-            "sync/exact-caller-0123456789ab-123-4",
+            STABLE_EXACT_CALLER_BRANCH,
         ],
     )
     def test_same_repository_automation_branch_is_authorized(
@@ -257,7 +264,7 @@ class TestMain:
         "head_ref",
         [
             "governance/sync-managed-files",
-            "sync/exact-caller-0123456789ab-123-4",
+            STABLE_EXACT_CALLER_BRANCH,
         ],
     )
     def test_same_ref_fork_is_not_authorized(
@@ -295,9 +302,10 @@ class TestMain:
         "head_ref",
         [
             "governance/sync-managed-files-lookalike",
-            "sync/exact-caller-0123456789ab-0-1",
-            "sync/exact-caller-0123456789ab-1-0",
-            "sync/exact-caller-0123456789ab-1-1-extra",
+            "sync/exact-caller-0123456789ab-123-4",
+            STABLE_EXACT_CALLER_BRANCH[:-1],
+            f"{STABLE_EXACT_CALLER_BRANCH}0",
+            f"{STABLE_EXACT_CALLER_BRANCH[:-1]}g",
         ],
     )
     def test_lookalike_automation_branch_is_not_authorized(
