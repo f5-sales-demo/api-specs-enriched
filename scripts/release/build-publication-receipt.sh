@@ -42,12 +42,24 @@ shift 2
   fail "commit must be a full lowercase 40-character Git SHA, got: ${commit}"
 
 digest() {
-  # sha256sum on the Linux runners, shasum on a macOS working copy.
+  # Emitted as "sha256:<hex>", the same form GitHub reports in
+  # .assets[].digest. A consumer can then compare the two for equality instead of
+  # reassembling a prefix at every call site, and the value is self-describing if
+  # the algorithm ever changes.
+  #
+  # It also keeps the digest out of the way of entropy-based secret scanners.
+  # Gitleaks' generic-api-key rule fires on a secret-ish keyword next to a
+  # high-entropy value, and asset filenames supply the keyword: measured on the
+  # bare-hex form, "api-catalog.json" and "openapi.json" were reported while
+  # "index.json" was not. Prefixed, the rule does not fire at all, so no consumer
+  # needs an allowlist to commit this data.
+  local hex
   if command -v sha256sum >/dev/null 2>&1; then
-    sha256sum "$1" | awk '{print $1}'
+    hex=$(sha256sum "$1" | awk '{print $1}')
   else
-    shasum -a 256 "$1" | awk '{print $1}'
+    hex=$(shasum -a 256 "$1" | awk '{print $1}')
   fi
+  printf 'sha256:%s' "$hex"
 }
 
 assets='{}'

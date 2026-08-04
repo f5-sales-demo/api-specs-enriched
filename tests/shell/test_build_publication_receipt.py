@@ -82,8 +82,35 @@ def test_emits_receipt_binding_digests_to_commit(tmp_path: Path) -> None:
     assert sorted(receipt["assets"]) == sorted(_asset_names(_VERSION))
 
     for path in paths:
-        expected = hashlib.sha256(path.read_bytes()).hexdigest()
+        expected = "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest()
         assert receipt["assets"][path.name] == expected, f"wrong digest for {path.name}"
+
+
+def test_digests_are_prefixed_algorithm_qualified(tmp_path: Path) -> None:
+    """Digests are "sha256:<hex>", matching GitHub's own .assets[].digest.
+
+    Two reasons this format is pinned by a test rather than left to taste.
+
+    A consumer compares the receipt against GitHub's reported digest directly;
+    with bare hex it has to reassemble the prefix at every call site, and one
+    site forgetting to is a comparison that silently never matches.
+
+    It also keeps the value away from entropy-based secret scanners. Gitleaks'
+    generic-api-key rule fires on a secret-ish keyword adjacent to a
+    high-entropy value, and the asset filenames supply the keyword: measured on
+    bare hex, "api-catalog.json" and "openapi.json" were reported while
+    "index.json" was not. Reverting to bare hex would hand every consumer that
+    commits this data a false positive it cannot suppress without a governance
+    exception.
+    """
+    paths = _write_assets(tmp_path, _asset_names(_VERSION))
+    result = _run(paths)
+    assert result.returncode == 0, result.stderr
+
+    receipt = _parse(result.stdout)
+    qualified = re.compile(r"^sha256:[0-9a-f]{64}$")
+    for name, value in receipt["assets"].items():
+        assert qualified.match(value), f"{name} digest is not algorithm-qualified: {value!r}"
 
 
 def test_receipt_is_a_single_line_of_compact_json(tmp_path: Path) -> None:
