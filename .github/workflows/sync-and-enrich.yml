@@ -57,6 +57,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
 
       - name: Setup Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
@@ -136,6 +138,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
+          persist-credentials: false
           fetch-depth: 0  # Full history needed for git describe --tags
           fetch-tags: true  # Explicitly fetch tags for version calculation
           token: ${{ secrets.VERSION_BUMP_PAT }}  # Use admin PAT for bypass permissions
@@ -626,6 +629,13 @@ jobs:
             git tag -a "v${VERSION}" -m "Release v${VERSION} (${BUMP_TYPE})"
             git push origin "v${VERSION}"
 
+            # The publication receipt in the release body must name the commit the
+            # tag resolves to. Capture it here, on the merge commit we just tagged,
+            # rather than re-deriving it in a later step where main may already have
+            # moved on — a receipt naming the wrong commit is rejected downstream
+            # after the release is immutable and can no longer be corrected.
+            echo "release_commit=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+
             echo "::notice::Released v${VERSION} via PR merge + tag"
           else
             echo "No changes to commit"
@@ -713,17 +723,40 @@ jobs:
             exit 0
           fi
 
+          # The exact five assets this release publishes. The receipt below must
+          # cover this same list, so it is declared once and reused for both.
+          ASSET_PATHS=(
+            "${zip_name}"
+            docs/specifications/api/openapi.json
+            docs/specifications/api/index.json
+            docs/specifications/api/minimal-export-defaults.json
+            release/api-catalog.json
+          )
+
+          # Publication receipt: binds each asset's SHA-256 to the commit the tag
+          # resolves to, so a consumer can prove the bundle it downloaded is the one
+          # this release published. Consumers refuse a release without it
+          # (f5-sales-demo/terraform-provider-xcsh#1460), and a release is immutable
+          # once created, so this has to be in the body from the start — it cannot be
+          # added afterwards.
+          if [ -z "${release_commit:-}" ]; then
+            echo "::error::release_commit was not captured while tagging; cannot build a publication receipt"
+            exit 1
+          fi
+          NOTES_FILE=$(mktemp)
+          trap 'rm -f "$NOTES_FILE"' EXIT
+          cat CHANGELOG.md > "$NOTES_FILE"
+          printf '\n' >> "$NOTES_FILE"
+          bash scripts/release/build-publication-receipt.sh \
+            "$VERSION" "$release_commit" "${ASSET_PATHS[@]}" >> "$NOTES_FILE"
+
           # Create release with ZIP package
           gh release create "v$VERSION" \
             --title "API Specs v$VERSION" \
-            --notes-file CHANGELOG.md \
-            "${zip_name}" \
-            docs/specifications/api/openapi.json \
-            docs/specifications/api/index.json \
-            docs/specifications/api/minimal-export-defaults.json \
-            release/api-catalog.json
+            --notes-file "$NOTES_FILE" \
+            "${ASSET_PATHS[@]}"
 
-          echo "::notice::Created release: v$VERSION"
+          echo "::notice::Created release: v$VERSION with publication receipt for ${release_commit}"
 
   deploy-docs:
     name: Deploy Documentation
@@ -772,6 +805,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
 
       - name: Install PyYAML
         run: pip install pyyaml
@@ -813,6 +848,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
 
       - name: Dispatch to ${{ matrix.downstream.repo }}
         env:
@@ -874,6 +911,8 @@ jobs:
       - name: Checkout repository
         if: steps.check_failure.outputs.has_failure == 'true'
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
 
       - name: Setup Python
         if: steps.check_failure.outputs.has_failure == 'true'
