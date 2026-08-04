@@ -22,6 +22,17 @@ on:
       - '.github/workflows/sync-and-enrich.yml'
       - 'docs/**/*.html'
   workflow_dispatch:
+    inputs:
+      force_release:
+        description: >-
+          Publish a release even when the enriched specifications are unchanged.
+          For changes to what this repository publishes ABOUT the specifications —
+          the api-catalog.json contract, the publication receipt — which produce no
+          diff under docs/specifications/api and so never trip the output-driven
+          gate. Generated output must still exist; this cannot publish an empty
+          bundle.
+        type: boolean
+        default: false
 
 # Read-only default; each job declares what it consumes. Traced per write:
 #   sync-and-enrich  contents: write   `gh release create` runs as GITHUB_TOKEN
@@ -300,6 +311,8 @@ jobs:
         id: detect
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Inert on every trigger except a dispatch that asks for it.
+          FORCE_RELEASE: ${{ inputs.force_release || false }}
         # Output-driven gate: compares the generated, tracked output in the
         # working tree against HEAD. Lives in a script so it can be unit
         # tested (tests/shell/test_detect_release_changes.py) — the inline
@@ -351,11 +364,11 @@ jobs:
               NEW_VERSION="${MAJOR}.${MINOR}.$((PATCH + 1))"
               BUMP_TYPE="patch"
             fi
-          elif [ "$CHANGE_TYPE" = "pipeline" ]; then
-            # Pipeline/config/dependency changes → patch bump
+          elif [ "$CHANGE_TYPE" = "pipeline" ] || [ "$CHANGE_TYPE" = "forced" ]; then
+            # Pipeline/config/dependency changes and explicit forced releases → patch bump
             NEW_VERSION="${MAJOR}.${MINOR}.$((PATCH + 1))"
             BUMP_TYPE="patch"
-            echo "::notice::Pipeline changes detected - patch bump"
+            echo "::notice::${CHANGE_TYPE^} release detected - patch bump"
           else
             # Fallback for unknown change types
             NEW_VERSION="${MAJOR}.${MINOR}.$((PATCH + 1))"

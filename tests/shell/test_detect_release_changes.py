@@ -168,7 +168,11 @@ def _setup_repo(
     return repo
 
 
-def _run(repo: Path, fake_gh: Path) -> tuple[subprocess.CompletedProcess[str], dict[str, str]]:
+def _run(
+    repo: Path,
+    fake_gh: Path,
+    extra_env: dict[str, str] | None = None,
+) -> tuple[subprocess.CompletedProcess[str], dict[str, str]]:
     """Run the detector inside ``repo`` and parse its ``$GITHUB_OUTPUT``."""
     script_copy = repo / _SCRIPT_RELATIVE
     script_copy.parent.mkdir(parents=True, exist_ok=True)
@@ -181,6 +185,7 @@ def _run(repo: Path, fake_gh: Path) -> tuple[subprocess.CompletedProcess[str], d
         **os.environ,
         "GITHUB_OUTPUT": str(output_file),
         "DETECT_RELEASE_GH": str(fake_gh),
+        **(extra_env or {}),
     }
     proc = subprocess.run(
         ["bash", _SCRIPT_RELATIVE],
@@ -485,3 +490,56 @@ def test_workflow_delegates_to_the_detector() -> None:
     body = _WORKFLOW.read_text()
     assert _SCRIPT_RELATIVE in body, "the workflow must call the detector script"
     assert "HEAD~1 HEAD" not in body, "no step may gate on a HEAD~1..HEAD comparison"
+
+
+# A change to what this repository publishes *about* the specifications — the
+# api-catalog.json contract, the publication receipt — produces no diff under
+# docs/specifications/api, so the output-driven gate can never release it. That is
+# how the apiOperations/apiExclusions contract from #1332 landed on main with no way
+# to reach a consumer short of an unrelated upstream spec change.
+#
+# FORCE_RELEASE is the explicit operator control for exactly that case. It is
+# audited (a dispatch input), it still requires generated output to exist, and it
+# reports its own change_type so a release built this way is distinguishable.
+
+
+def test_force_release_publishes_an_unchanged_tree(tmp_path: Path) -> None:
+    repo = _setup_repo(tmp_path)
+    proc, outputs = _run(repo, _write_fake_gh(tmp_path, release_lines=1), {"FORCE_RELEASE": "true"})
+    assert proc.returncode == 0, proc.stderr
+    assert outputs["has_changes"] == "true"
+    assert outputs["change_type"] == "forced"
+
+
+def test_workflow_versions_forced_releases_without_an_unknown_type_warning() -> None:
+    body = _WORKFLOW.read_text()
+    assert 'elif [ "$CHANGE_TYPE" = "pipeline" ] || [ "$CHANGE_TYPE" = "forced" ]; then' in body
+
+
+def test_force_release_accepts_the_numeric_form(tmp_path: Path) -> None:
+    repo = _setup_repo(tmp_path)
+    _, outputs = _run(repo, _write_fake_gh(tmp_path, release_lines=1), {"FORCE_RELEASE": "1"})
+    assert outputs["has_changes"] == "true"
+
+
+def test_force_release_is_inert_when_unset_or_false(tmp_path: Path) -> None:
+    """The default must remain output-driven, or every dispatch would release."""
+    repo = _setup_repo(tmp_path)
+    _, unset = _run(repo, _write_fake_gh(tmp_path, release_lines=1))
+    assert unset["has_changes"] == "false"
+
+    second = tmp_path / "second"
+    second.mkdir()
+    repo_two = _setup_repo(second)
+    _, explicit_false = _run(
+        repo_two, _write_fake_gh(tmp_path, release_lines=1), {"FORCE_RELEASE": "false"}
+    )
+    assert explicit_false["has_changes"] == "false"
+
+
+def test_force_release_cannot_publish_without_generated_output(tmp_path: Path) -> None:
+    """Forcing is not a licence to publish an empty or half-built bundle."""
+    repo = _setup_repo(tmp_path)
+    (repo / "docs" / "specifications" / "api" / "index.json").unlink()
+    _, outputs = _run(repo, _write_fake_gh(tmp_path, release_lines=1), {"FORCE_RELEASE": "true"})
+    assert outputs["has_changes"] == "false"
