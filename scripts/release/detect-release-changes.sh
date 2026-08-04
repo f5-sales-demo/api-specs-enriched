@@ -6,9 +6,10 @@
 #
 # Writes to $GITHUB_OUTPUT:
 #   has_changes   true|false  Whether the run should publish a release.
-#   change_type   source|pipeline
+#   change_type   source|pipeline|forced
 #                 `source`   a new upstream api-specs release is in play.
 #                 `pipeline` output moved without a new upstream release.
+#                 `forced`   an operator explicitly requested publication.
 #                 Omitted when the pipeline produced no output at all.
 #
 # Environment:
@@ -98,6 +99,26 @@ done
 if [ ! -f "$INDEX_FILE" ]; then
   emit "has_changes=false"
   echo "No enriched specs generated (${INDEX_FILE} is missing)"
+  exit 0
+fi
+
+# Deliberate operator release.
+#
+# The gate is output-driven, which is right for the common case but leaves a real
+# hole: a change to what this repository *publishes about* the specifications,
+# rather than to the specifications themselves, produces no diff under
+# "$OUTPUT_DIR" and can therefore never be released. api-catalog.json is built
+# into release/ and is outside the signal path entirely, so the apiOperations and
+# apiExclusions contract added in #1332 could not reach a consumer until some
+# unrelated upstream spec change happened to cut a release.
+#
+# Rather than widen the signal to cover generated artifacts that legitimately
+# churn, this is an explicit, audited control: an operator asks for a release and
+# says so. It still requires generated output to exist, so it cannot publish an
+# empty or half-built bundle.
+if [ "${FORCE_RELEASE:-false}" = "true" ] || [ "${FORCE_RELEASE:-0}" = "1" ]; then
+  emit "has_changes=true" "change_type=forced"
+  echo "Release forced by operator request (FORCE_RELEASE)"
   exit 0
 fi
 
