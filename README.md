@@ -28,7 +28,7 @@ Translation generation is deliberately suspended during prerelease iteration.
 
 ## Documentation
 
-Full documentation is available at **[https://f5-sales-demo.github.io/api-specs-enriched/](https://f5-sales-demo.github.io/api-specs-enriched/)**.
+Full documentation is available at __[https://f5-sales-demo.github.io/api-specs-enriched/](https://f5-sales-demo.github.io/api-specs-enriched/)__.
 
 ## Contributing
 
