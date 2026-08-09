@@ -91,9 +91,7 @@ class TestSchemaOverrideEnricher:
         result = synthetic_enricher.enrich_spec(test_spec)
         schema = result["components"]["schemas"]["testResourceCreateSpecType"]
         assert "variant_c" in schema["properties"]
-        assert schema["properties"]["variant_c"] == {
-            "$ref": "#/components/schemas/emptySchema"
-        }
+        assert schema["properties"]["variant_c"] == {"$ref": "#/components/schemas/emptySchema"}
 
     def test_updates_oneof_extension_array(self, synthetic_enricher, test_spec):
         result = synthetic_enricher.enrich_spec(test_spec)
@@ -109,9 +107,7 @@ class TestSchemaOverrideEnricher:
         assert "variant_a" in schema["properties"]
         assert "other_field" in schema["properties"]
 
-    def test_preserves_existing_variants_in_extension(
-        self, synthetic_enricher, test_spec
-    ):
+    def test_preserves_existing_variants_in_extension(self, synthetic_enricher, test_spec):
         result = synthetic_enricher.enrich_spec(test_spec)
         schema = result["components"]["schemas"]["testResourceCreateSpecType"]
         variants = schema["x-ves-oneof-field-variant_choice"]
@@ -190,9 +186,7 @@ class TestEdgeCases:
                         "properties": {
                             "variant_a": {"$ref": "#/components/schemas/typeA"},
                         },
-                        "x-ves-oneof-field-variant_choice": json.dumps(
-                            ["variant_a", "variant_b"]
-                        ),
+                        "x-ves-oneof-field-variant_choice": json.dumps(["variant_a", "variant_b"]),
                     },
                 },
             },
@@ -200,9 +194,7 @@ class TestEdgeCases:
         result = synthetic_enricher.enrich_spec(spec)
         schema = result["components"]["schemas"]["testResourceCreateSpecType"]
         ext_value = schema["x-ves-oneof-field-variant_choice"]
-        assert isinstance(
-            ext_value, str
-        ), f"Expected JSON string, got {type(ext_value)}"
+        assert isinstance(ext_value, str), f"Expected JSON string, got {type(ext_value)}"
         parsed = json.loads(ext_value)
         assert len(parsed) == 3
         assert "variant_c" in parsed
@@ -265,9 +257,7 @@ def test_oneof_free_injection_with_extension():
             "schemas": [
                 {
                     "pattern": "^fooReq$",
-                    "inject_properties": {
-                        "state": {"$ref": "#/components/schemas/barState"}
-                    },
+                    "inject_properties": {"state": {"$ref": "#/components/schemas/barState"}},
                     "inject_extensions": {"x-f5xc-action": "approve"},
                 }
             ]
@@ -277,9 +267,7 @@ def test_oneof_free_injection_with_extension():
     enricher._stats = enricher._empty_stats()
     spec = {
         "components": {
-            "schemas": {
-                "fooReq": {"type": "object", "properties": {"name": {"type": "string"}}}
-            }
+            "schemas": {"fooReq": {"type": "object", "properties": {"name": {"type": "string"}}}}
         }
     }
     out = enricher.enrich_spec(spec)
@@ -319,9 +307,7 @@ def requiredness_config(tmp_path):
                 "schemas": [
                     {
                         "pattern": "^probeApprovalReq$",
-                        "set_property_extensions": {
-                            "passport": {"x-ves-required": "true"}
-                        },
+                        "set_property_extensions": {"passport": {"x-ves-required": "true"}},
                     },
                 ],
             },
@@ -375,9 +361,7 @@ class TestRequirednessOverrides:
         # A sibling that IS enforced keeps its marker.
         assert props["version"]["x-ves-required"] == "true"
 
-    def test_sets_a_marker_the_api_does_enforce(
-        self, requiredness_config, requiredness_spec
-    ):
+    def test_sets_a_marker_the_api_does_enforce(self, requiredness_config, requiredness_spec):
         # Verified live 2026-07-30: POST .../registration/{name}/approve omitting
         # passport returns 500 "Validation approval: Passport is required"; with a
         # passport present it gets past that check and fails later on the state
@@ -412,9 +396,7 @@ class TestRequirednessOverrides:
                             # words — codespell rejects those, and the point here is only
                             # that the schema does not have them.
                             "remove_property_extensions": {"frce": ["x-ves-required"]},
-                            "set_property_extensions": {
-                                "vrsn": {"x-ves-required": "true"}
-                            },
+                            "set_property_extensions": {"vrsn": {"x-ves-required": "true"}},
                         },
                     ],
                 },
@@ -430,9 +412,7 @@ class TestRequirednessOverrides:
         assert stats["property_extensions_set"] == 0
         assert stats["property_extensions_removed"] == 0
 
-    def test_removing_an_absent_extension_is_not_a_miss(
-        self, tmp_path, requiredness_spec
-    ):
+    def test_removing_an_absent_extension_is_not_a_miss(self, tmp_path, requiredness_spec):
         # The property exists but carries no such extension: nothing to do, and
         # not an error — that is the state the override is driving towards, so it
         # must stay idempotent across reruns.
@@ -444,9 +424,7 @@ class TestRequirednessOverrides:
                     "schemas": [
                         {
                             "pattern": "^probeApprovalReq$",
-                            "remove_property_extensions": {
-                                "passport": ["x-ves-required"]
-                            },
+                            "remove_property_extensions": {"passport": ["x-ves-required"]},
                         },
                     ],
                 },
@@ -513,9 +491,7 @@ class TestShippedRequirednessCorrections:
             },
         }
 
-    def test_force_is_negated_on_both_upgrade_requests(
-        self, enricher, upstream_shaped_spec
-    ):
+    def test_force_is_negated_on_both_upgrade_requests(self, enricher, upstream_shaped_spec):
         result = enricher.enrich_spec(upstream_shaped_spec, corrections_only=True)
         for schema_name in ("siteUpgradeSWRequest", "siteUpgradeOSRequest"):
             props = result["components"]["schemas"][schema_name]["properties"]
@@ -526,21 +502,17 @@ class TestShippedRequirednessCorrections:
             # Negated, never deleted — a removal fails the contract-diff gate, and it
             # would erase the evidence that upstream asserted the opposite.
             assert "x-ves-required" in props["force"]
-            assert (
-                props["version"]["x-ves-required"] == "true"
-            ), f"{schema_name}.version must keep its marker — the API does enforce it"
+            assert props["version"]["x-ves-required"] == "true", (
+                f"{schema_name}.version must keep its marker — the API does enforce it"
+            )
 
-    def test_upgrade_path_parameters_keep_their_markers(
-        self, enricher, upstream_shaped_spec
-    ):
+    def test_upgrade_path_parameters_keep_their_markers(self, enricher, upstream_shaped_spec):
         result = enricher.enrich_spec(upstream_shaped_spec)
         props = result["components"]["schemas"]["siteUpgradeSWRequest"]["properties"]
         for path_param in ("name", "namespace"):
             assert props[path_param]["x-ves-required"] == "true"
 
-    def test_passport_gains_the_marker_the_api_enforces(
-        self, enricher, upstream_shaped_spec
-    ):
+    def test_passport_gains_the_marker_the_api_enforces(self, enricher, upstream_shaped_spec):
         result = enricher.enrich_spec(upstream_shaped_spec)
         props = result["components"]["schemas"]["registrationApprovalReq"]["properties"]
         assert props["passport"].get("x-ves-required") == "true", (
@@ -634,9 +606,9 @@ class TestNestedExtensionKeyRemoval:
         rules = result["components"]["schemas"]["probeRules"]["properties"]["force"][
             "x-ves-validation-rules"
         ]
-        assert (
-            rules["ves.io.schema.rules.some.other"] == "keep-me"
-        ), "removing the required rule must not discard the whole extension"
+        assert rules["ves.io.schema.rules.some.other"] == "keep-me", (
+            "removing the required rule must not discard the whole extension"
+        )
 
     def test_drops_the_extension_when_it_empties(self, nested_config, nested_spec):
         # An extension left as {} is noise a consumer may still read as "there are
@@ -715,9 +687,9 @@ class TestCorrectionsOnlyPass:
             "corrections_only must not inject properties: doing it this early puts "
             "them through the enrichment chain and changes their shape"
         )
-        assert (
-            "x-f5xc-action" not in schema
-        ), "corrections_only must not inject schema-level extensions either"
+        assert "x-f5xc-action" not in schema, (
+            "corrections_only must not inject schema-level extensions either"
+        )
 
     def test_the_full_pass_still_injects(self, enricher, split_spec):
         result = enricher.enrich_spec(split_spec)
@@ -804,9 +776,9 @@ class TestNestedExtensionKeySet:
         enricher = SchemaOverrideEnricher(config_path=negate_config)
         result = enricher.enrich_spec(negate_spec, corrections_only=True)
         force = result["components"]["schemas"]["probeRules"]["properties"]["force"]
-        assert (
-            "ves.io.schema.rules.message.required" in force["x-ves-validation-rules"]
-        ), "the key must remain present: a removal fails the contract-diff gate"
+        assert "ves.io.schema.rules.message.required" in force["x-ves-validation-rules"], (
+            "the key must remain present: a removal fails the contract-diff gate"
+        )
 
     def test_keeps_unrelated_sibling_rules(self, negate_config, negate_spec):
         enricher = SchemaOverrideEnricher(config_path=negate_config)
@@ -905,9 +877,9 @@ class TestMapOverridesRegression:
         schemas = result["components"]["schemas"]
 
         # Validate that string additionalProperties are injected correctly
-        assert schemas["schemaObjectMetaType"]["properties"]["labels"][
-            "additionalProperties"
-        ] == {"type": "string"}
+        assert schemas["schemaObjectMetaType"]["properties"]["labels"]["additionalProperties"] == {
+            "type": "string"
+        }
         assert schemas["schemaObjectMetaType"]["properties"]["annotations"][
             "additionalProperties"
         ] == {"type": "string"}
