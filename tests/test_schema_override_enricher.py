@@ -827,3 +827,62 @@ class TestNestedExtensionKeySet:
         enricher = SchemaOverrideEnricher(config_path=config_file)
         enricher.enrich_spec(negate_spec, corrections_only=True)
         assert enricher.get_stats()["property_overrides_missed"] == 1
+
+
+class TestMapOverridesRegression:
+    """Regression tests for nested map overrides from production schema_overrides.yaml."""
+
+    def test_nested_map_overrides_applied_correctly(self, enricher):
+        spec = {
+            "components": {
+                "schemas": {
+                    "schemaObjectMetaType": {
+                        "type": "object",
+                        "properties": {
+                            "labels": {"type": "object"},
+                            "annotations": {"type": "object"},
+                        },
+                    },
+                    "network_interfaceStaticIpParametersClusterType": {
+                        "type": "object",
+                        "properties": {
+                            "interface_ip_map": {"type": "object"},
+                        },
+                    },
+                    "schemasegmentEdgeData": {
+                        "type": "object",
+                        "properties": {
+                            "dst_labels": {"type": "object"},
+                            "src_labels": {"type": "object"},
+                        },
+                    },
+                    "tenantLastLoginMap": {
+                        "type": "object",
+                        "properties": {
+                            "last_login_map": {"type": "object"},
+                        },
+                    },
+                    "tenantLoginEventsMap": {
+                        "type": "object",
+                        "properties": {
+                            "login_events_map": {"type": "object"},
+                        },
+                    },
+                },
+            },
+        }
+
+        # Run enrichment
+        result = enricher.enrich_spec(spec)
+        schemas = result["components"]["schemas"]
+
+        # Validate that string additionalProperties are injected correctly
+        assert schemas["schemaObjectMetaType"]["properties"]["labels"]["additionalProperties"] == {"type": "string"}
+        assert schemas["schemaObjectMetaType"]["properties"]["annotations"]["additionalProperties"] == {"type": "string"}
+        assert schemas["network_interfaceStaticIpParametersClusterType"]["properties"]["interface_ip_map"]["additionalProperties"] == {"type": "string"}
+        assert schemas["schemasegmentEdgeData"]["properties"]["dst_labels"]["additionalProperties"] == {"type": "string"}
+        assert schemas["schemasegmentEdgeData"]["properties"]["src_labels"]["additionalProperties"] == {"type": "string"}
+        assert schemas["tenantLastLoginMap"]["properties"]["last_login_map"]["additionalProperties"] == {"type": "string"}
+
+        # Validate that heterogeneous/unoverridden maps remain untouched
+        assert "additionalProperties" not in schemas["tenantLoginEventsMap"]["properties"]["login_events_map"]

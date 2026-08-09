@@ -116,3 +116,36 @@ overrides:
               ves.io.schema.rules.message.required: "false"
             x-validation-rules:
               ves.io.schema.rules.message.required: "false"
+
+  nested_string_maps:
+    upstream_issue: "f5-sales-demo/api-specs-enriched#1391"
+    description: >-
+      Add explicit string additionalProperties contracts for shared metadata (labels, annotations)
+      and other true string maps to establish deterministic value types for downstream codegen.
+    schemas:
+      - pattern: "^schemaObjectMetaType$"
+        set_property_extensions:
+          labels:
+            additionalProperties:
+              type: "string"
+          annotations:
+            additionalProperties:
+              type: "string"
+      - pattern: "^network_interfaceStaticIpParametersClusterType$"
+        set_property_extensions:
+          interface_ip_map:
+            additionalProperties:
+              type: "string"
+      - pattern: "^schemasegmentEdgeData$"
+        set_property_extensions:
+          dst_labels:
+            additionalProperties:
+              type: "string"
+          src_labels:
+            additionalProperties:
+              type: "string"
+      - pattern: "^tenantLastLoginMap$"
+        set_property_extensions:
+          last_login_map:
+            additionalProperties:
+              type: "string"
