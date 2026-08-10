@@ -4,7 +4,7 @@ description: >-
   Fonte di riferimento autorevole per ogni estensione x-* nelle specifiche
   OpenAPI arricchite
 i18n:
-  sourceHash: 5d455612b759
+  sourceHash: c1de63db5c66
   translator: machine
 ---
 

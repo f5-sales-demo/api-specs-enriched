@@ -4,7 +4,7 @@ description: >-
   แหล่งข้อมูลหลักสำหรับส่วนขยาย x-* ทุกรายการในข้อกำหนด OpenAPI
   ที่เพิ่มประสิทธิภาพแล้ว
 i18n:
-  sourceHash: 5d455612b759
+  sourceHash: c1de63db5c66
   translator: machine
 ---
 

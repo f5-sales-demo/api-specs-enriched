@@ -2,7 +2,7 @@
 title: संवर्धन एक्सटेंशन कैटलॉग
 description: संवर्धित OpenAPI विनिर्देशों में प्रत्येक x-* एक्सटेंशन का सत्य का स्रोत
 i18n:
-  sourceHash: 5d455612b759
+  sourceHash: c1de63db5c66
   translator: machine
 ---
 

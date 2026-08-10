@@ -4,7 +4,7 @@ description: >-
   Source de vérité pour chaque extension x-* dans les spécifications OpenAPI
   enrichies
 i18n:
-  sourceHash: 5d455612b759
+  sourceHash: c1de63db5c66
   translator: machine
 ---
 

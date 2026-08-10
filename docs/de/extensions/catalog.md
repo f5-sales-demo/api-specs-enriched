@@ -4,7 +4,7 @@ description: >-
   Maßgebliche Referenz für jede x-* Erweiterung in den erweiterten
   OpenAPI-Spezifikationen
 i18n:
-  sourceHash: 5d455612b759
+  sourceHash: c1de63db5c66
   translator: machine
 ---
 
