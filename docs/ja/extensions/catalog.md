@@ -2,7 +2,7 @@
 title: エンリッチメント拡張機能カタログ
 description: エンリッチされた OpenAPI 仕様に含まれるすべての x-* 拡張機能の信頼できる情報源
 i18n:
-  sourceHash: 5d455612b759
+  sourceHash: c1de63db5c66
   translator: machine
 ---
 

@@ -2,7 +2,7 @@
 title: 扩展目录（Enrichment Extension Catalog）
 description: enriched OpenAPI 规范中所有 x-* 扩展的权威参考来源
 i18n:
-  sourceHash: 5d455612b759
+  sourceHash: c1de63db5c66
   translator: machine
 ---
 

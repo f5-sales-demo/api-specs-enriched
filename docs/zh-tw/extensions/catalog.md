@@ -2,7 +2,7 @@
 title: 擴充功能擴充目錄
 description: 豐富化 OpenAPI 規格中每個 x-* 擴充功能的真實來源
 i18n:
-  sourceHash: 5d455612b759
+  sourceHash: c1de63db5c66
   translator: machine
 ---
 
