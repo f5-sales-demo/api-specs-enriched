@@ -22,10 +22,34 @@ from scripts.verify_governance import (
     verify,
 )
 
-STABLE_EXACT_CALLER_BRANCH = (
+LEGACY_THREE_RECEIPT_EXACT_CALLER_BRANCH = (
     "sync/exact-caller-"
     "0123456789abcdef0123456789abcdef01234567"
     "89abcdef0123456789abcdef0123456789abcdef"
+    "fedcba9876543210fedcba9876543210fedcba98"
+)
+FOUR_RECEIPT_EXACT_CALLER_BRANCH = (
+    f"{LEGACY_THREE_RECEIPT_EXACT_CALLER_BRANCH}00112233445566778899aabbccddeeff00112233"
+)
+SKIPPED_AUDIT_EXACT_CALLER_BRANCH = (
+    "sync/exact-caller-"
+    "0123456789abcdef0123456789abcdef01234567"
+    "89abcdef0123456789abcdef0123456789abcdef"
+    "skipped"
+    "fedcba9876543210fedcba9876543210fedcba98"
+)
+SKIPPED_LINT_EXACT_CALLER_BRANCH = (
+    "sync/exact-caller-"
+    "0123456789abcdef0123456789abcdef01234567"
+    "skipped"
+    "89abcdef0123456789abcdef0123456789abcdef"
+    "fedcba9876543210fedcba9876543210fedcba98"
+)
+BOTH_OPTIONAL_RECEIPTS_SKIPPED_BRANCH = (
+    "sync/exact-caller-"
+    "0123456789abcdef0123456789abcdef01234567"
+    "skipped"
+    "skipped"
     "fedcba9876543210fedcba9876543210fedcba98"
 )
 
@@ -231,7 +255,10 @@ class TestMain:
         [
             "governance/sync-managed-files",
             "governance/sync-managed-files-05b3aea603b7-30784318975-1",
-            STABLE_EXACT_CALLER_BRANCH,
+            FOUR_RECEIPT_EXACT_CALLER_BRANCH,
+            SKIPPED_AUDIT_EXACT_CALLER_BRANCH,
+            SKIPPED_LINT_EXACT_CALLER_BRANCH,
+            BOTH_OPTIONAL_RECEIPTS_SKIPPED_BRANCH,
         ],
     )
     def test_same_repository_automation_branch_is_authorized(
@@ -264,7 +291,7 @@ class TestMain:
         "head_ref",
         [
             "governance/sync-managed-files",
-            STABLE_EXACT_CALLER_BRANCH,
+            FOUR_RECEIPT_EXACT_CALLER_BRANCH,
         ],
     )
     def test_same_ref_fork_is_not_authorized(
@@ -303,9 +330,12 @@ class TestMain:
         [
             "governance/sync-managed-files-lookalike",
             "sync/exact-caller-0123456789ab-123-4",
-            STABLE_EXACT_CALLER_BRANCH[:-1],
-            f"{STABLE_EXACT_CALLER_BRANCH}0",
-            f"{STABLE_EXACT_CALLER_BRANCH[:-1]}g",
+            LEGACY_THREE_RECEIPT_EXACT_CALLER_BRANCH,
+            FOUR_RECEIPT_EXACT_CALLER_BRANCH[:-1],
+            f"{FOUR_RECEIPT_EXACT_CALLER_BRANCH[:-1]}g",
+            f"{FOUR_RECEIPT_EXACT_CALLER_BRANCH}0",
+            SKIPPED_AUDIT_EXACT_CALLER_BRANCH.replace("skipped", "skip", 1),
+            SKIPPED_LINT_EXACT_CALLER_BRANCH.replace("skipped", "SKIPPED", 1),
         ],
     )
     def test_lookalike_automation_branch_is_not_authorized(
