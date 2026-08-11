@@ -27,7 +27,9 @@ STABLE_EXACT_CALLER_BRANCH = (
     "0123456789abcdef0123456789abcdef01234567"
     "89abcdef0123456789abcdef0123456789abcdef"
     "fedcba9876543210fedcba9876543210fedcba98"
+    "00112233445566778899aabbccddeeff00112233"
 )
+LEGACY_THREE_RECEIPT_BRANCH = STABLE_EXACT_CALLER_BRANCH[:-40]
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -303,6 +305,7 @@ class TestMain:
         [
             "governance/sync-managed-files-lookalike",
             "sync/exact-caller-0123456789ab-123-4",
+            LEGACY_THREE_RECEIPT_BRANCH,
             STABLE_EXACT_CALLER_BRANCH[:-1],
             f"{STABLE_EXACT_CALLER_BRANCH}0",
             f"{STABLE_EXACT_CALLER_BRANCH[:-1]}g",
