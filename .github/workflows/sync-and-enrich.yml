@@ -61,7 +61,7 @@ env:
 jobs:
   check-updates:
     name: Check for Updates
-    runs-on: [self-hosted, Linux, X64, api-specs-enriched]
+    runs-on: [self-hosted, Linux, X64, api-specs-enriched, ubuntu-24.04]
     outputs:
       has_updates: ${{ steps.check.outputs.updated }}
       etag: ${{ steps.check.outputs.etag }}
@@ -136,7 +136,7 @@ jobs:
     name: Sync and Enrich Specifications
     needs: check-updates
     if: needs.check-updates.outputs.has_updates == 'true'
-    runs-on: [self-hosted, Linux, X64, api-specs-enriched]
+    runs-on: [self-hosted, Linux, X64, api-specs-enriched, ubuntu-24.04]
     # `gh release create` runs as GITHUB_TOKEN and needs contents: write. The
     # branch pushes, PR create/merge/close and tag push all authenticate with
     # VERSION_BUMP_PAT instead, so no pull-requests scope is required here.
@@ -775,7 +775,7 @@ jobs:
     name: Deploy Documentation
     needs: sync-and-enrich
     if: needs.sync-and-enrich.outputs.has_changes == 'true'
-    runs-on: [self-hosted, Linux, X64, api-specs-enriched]
+    runs-on: [self-hosted, Linux, X64, api-specs-enriched, ubuntu-24.04]
     # actions/deploy-pages needs both of these; id-token is for its OIDC exchange.
     permissions:
       contents: read
@@ -811,7 +811,7 @@ jobs:
     name: Build Downstream Matrix
     needs: [sync-and-enrich]
     if: needs.sync-and-enrich.outputs.has_changes == 'true'
-    runs-on: [self-hosted, Linux, X64, api-specs-enriched]
+    runs-on: [self-hosted, Linux, X64, api-specs-enriched, ubuntu-24.04]
     outputs:
       matrix: ${{ steps.matrix.outputs.result }}
       has_targets: ${{ steps.matrix.outputs.has_targets }}
@@ -854,7 +854,7 @@ jobs:
     name: Notify Downstream Repositories
     needs: [sync-and-enrich, build-downstream-matrix]
     if: needs.build-downstream-matrix.outputs.has_targets == 'true'
-    runs-on: [self-hosted, Linux, X64, api-specs-enriched]
+    runs-on: [self-hosted, Linux, X64, api-specs-enriched, ubuntu-24.04]
     strategy:
       matrix: ${{ fromJSON(needs.build-downstream-matrix.outputs.matrix) }}
       fail-fast: false
@@ -891,7 +891,7 @@ jobs:
   # ==========================================================================
   monitor-failures:
     name: Monitor Workflow Failures
-    runs-on: [self-hosted, Linux, X64, api-specs-enriched]
+    runs-on: [self-hosted, Linux, X64, api-specs-enriched, ubuntu-24.04]
     needs: [check-updates, sync-and-enrich, deploy-docs, build-downstream-matrix, notify-downstream]
     if: always()
     # Ensures the monitoring labels exist and opens or updates the failure issue,
