@@ -22,16 +22,16 @@ env:
 jobs:
   pytest:
     name: Run pytest suite
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, api-specs-enriched]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
           fetch-depth: 0  # verify_governance needs base..head diff
 
       - name: Setup Python
-        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
@@ -67,18 +67,18 @@ jobs:
     # a spurious gate failure from the "Seed specs/original/ from
     # upstream" step which can't resolve inputs on release branches.
     if: ${{ !startsWith(github.head_ref, 'release/') }}
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, api-specs-enriched]
     permissions:
       contents: read
       pull-requests: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
       - name: Setup Python
-        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
@@ -220,7 +220,7 @@ jobs:
 
       - name: Upload contract-diff artifacts
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: contract-diff
           path: reports/contract_diff.*
@@ -229,7 +229,7 @@ jobs:
       - name: Post violations to PR
         if: failure() && github.event_name == 'pull_request'
         continue-on-error: true  # 64KB body cap is still possible
-        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           script: |
             const fs = require('fs');
