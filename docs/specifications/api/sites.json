@@ -33,17 +33,25 @@
           "message": "Site not responding",
           "resolution": "Check site connectivity and agent status",
           "prevention": "Configure monitoring for site health"
+        },
+        {
+          "code": 400,
+          "message": "Expanded Secure Mesh interfaces lack authoritative evidence",
+          "resolution": "Keep optional roles unconfigured and collect the sanitized CE evidence matrix",
+          "prevention": "Bind roles by Azure NIC position, MAC, IP configuration, subnet, and control-plane reference; never by guest interface name"
         }
       ],
       "security_notes": [
         "Rotate site tokens after initial registration",
         "Configure site-level firewall policies",
-        "Enable audit logging for site operations"
+        "Enable audit logging for site operations",
+        "Treat guest interface names as diagnostics only; they are not stable configuration identities"
       ],
       "performance_tips": [
         "Deploy sites close to workloads for low latency",
         "Configure appropriate resource allocation",
-        "Use site mesh for efficient inter-site communication"
+        "Use site mesh for efficient inter-site communication",
+        "Schedule interface additions or removals in a maintenance window because CE data-plane services restart"
       ]
     },
     "x-f5xc-guided-workflows": [
@@ -114,6 +122,72 @@
               "Site shows online status",
               "Tunnel connectivity established",
               "Services deployed successfully"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "evidence_gated_secure_mesh_interfaces",
+        "name": "Configure Evidence-Gated Secure Mesh Site v2 Interfaces",
+        "description": "Configure the mandatory SLO first and enable optional interface roles only after authoritative Azure and CE evidence agrees.",
+        "complexity": "high",
+        "estimated_steps": 5,
+        "prerequisites": [
+          "Three-node HA topology with identical declared role and VRF shape",
+          "Sanitized Azure and CE evidence including a replacement registration observation",
+          "Approved maintenance window for any interface addition or removal"
+        ],
+        "steps": [
+          {
+            "order": 1,
+            "action": "inventory_cloud_nics",
+            "name": "Inventory Azure NICs",
+            "description": "Record each node hostname, NIC position, MAC, IP configuration, subnet, and control-plane interface reference.",
+            "resource": "securemesh_site_v2"
+          },
+          {
+            "order": 2,
+            "action": "collect_runtime_evidence",
+            "name": "Collect CE Evidence",
+            "description": "Normalize supported CE diagnostics by MAC, IP, subnet, and control-plane role without using guest interface names as keys.",
+            "resource": "securemesh_site_v2",
+            "depends_on": [
+              1
+            ]
+          },
+          {
+            "order": 3,
+            "action": "validate_role_mapping",
+            "name": "Validate Role Mapping",
+            "description": "Require authoritative mapping confidence and provenance before optional roles become bindable.",
+            "resource": "securemesh_site_v2",
+            "depends_on": [
+              2
+            ]
+          },
+          {
+            "order": 4,
+            "action": "configure_slo",
+            "name": "Configure SLO",
+            "description": "Bind the first Azure NIC to the required Site Local Outside role; BGP may bind only to this role.",
+            "resource": "securemesh_site_v2",
+            "depends_on": [
+              3
+            ]
+          },
+          {
+            "order": 5,
+            "action": "enable_optional_roles",
+            "name": "Enable Approved Optional Roles",
+            "description": "During the maintenance window, configure external or SLI only where the approved contract declares their network option and VRF.",
+            "resource": "securemesh_site_v2",
+            "depends_on": [
+              4
+            ],
+            "verification": [
+              "Every HA node has the same role and VRF shape",
+              "BGP binds only to the SLO role",
+              "Evidence provenance is retained without credentials or raw diagnostics"
             ]
           }
         ]
@@ -101179,6 +101253,91 @@
           "forward_proxy_choice": "no_forward_proxy",
           "logs_receiver_choice": "logs_streaming_disabled"
         },
+        "x-f5xc-interface-contract": {
+          "version": "1.0.0",
+          "resource": "securemesh_site_v2",
+          "cloud": "azure",
+          "stable_identity": {
+            "required_fields": [
+              "node_hostname",
+              "cloud_nic_position",
+              "nic_mac",
+              "ip_configuration",
+              "subnet",
+              "control_plane_interface_reference"
+            ]
+          },
+          "roles": [
+            {
+              "name": "slo",
+              "required": true,
+              "bindable": true,
+              "network_option": "site_local_network",
+              "vrf": "site_local_outside",
+              "configuration_path": "azure.not_managed.node_list[].interface_list[]",
+              "identity_fields": [
+                "node_hostname",
+                "cloud_nic_position",
+                "nic_mac",
+                "ip_configuration",
+                "subnet",
+                "control_plane_interface_reference"
+              ]
+            },
+            {
+              "name": "external",
+              "required": false,
+              "bindable": false,
+              "network_option": null,
+              "vrf": null,
+              "configuration_path": null,
+              "identity_fields": [
+                "node_hostname",
+                "cloud_nic_position",
+                "nic_mac",
+                "ip_configuration",
+                "subnet",
+                "control_plane_interface_reference"
+              ]
+            },
+            {
+              "name": "sli",
+              "required": false,
+              "bindable": false,
+              "network_option": null,
+              "vrf": null,
+              "configuration_path": null,
+              "identity_fields": [
+                "node_hostname",
+                "cloud_nic_position",
+                "nic_mac",
+                "ip_configuration",
+                "subnet",
+                "control_plane_interface_reference"
+              ]
+            }
+          ],
+          "invariants": {
+            "first_azure_nic_is_slo_anchor": true,
+            "macs_unique_per_node": true,
+            "role_bindings_unique_per_node": true,
+            "homogeneous_ha_role_vrf_shape": true,
+            "bgp_bindable_roles": [
+              "slo"
+            ]
+          },
+          "runtime_evidence": {
+            "guest_interface_names": "observational_only",
+            "minimum_mapping_confidence": "authoritative",
+            "provenance_required": true,
+            "replacement_observation_required": true
+          },
+          "change_risk": {
+            "maintenance_window_required": true,
+            "restarts_ce_data_plane_services": true,
+            "adding_or_removing_interfaces_disruptive": true
+          }
+        },
         "x-f5xc-namespace-profile": {
           "constraint": {
             "allowed": [
@@ -102510,6 +102669,91 @@
           "forward_proxy_choice": "no_forward_proxy",
           "logs_receiver_choice": "logs_streaming_disabled"
         },
+        "x-f5xc-interface-contract": {
+          "version": "1.0.0",
+          "resource": "securemesh_site_v2",
+          "cloud": "azure",
+          "stable_identity": {
+            "required_fields": [
+              "node_hostname",
+              "cloud_nic_position",
+              "nic_mac",
+              "ip_configuration",
+              "subnet",
+              "control_plane_interface_reference"
+            ]
+          },
+          "roles": [
+            {
+              "name": "slo",
+              "required": true,
+              "bindable": true,
+              "network_option": "site_local_network",
+              "vrf": "site_local_outside",
+              "configuration_path": "azure.not_managed.node_list[].interface_list[]",
+              "identity_fields": [
+                "node_hostname",
+                "cloud_nic_position",
+                "nic_mac",
+                "ip_configuration",
+                "subnet",
+                "control_plane_interface_reference"
+              ]
+            },
+            {
+              "name": "external",
+              "required": false,
+              "bindable": false,
+              "network_option": null,
+              "vrf": null,
+              "configuration_path": null,
+              "identity_fields": [
+                "node_hostname",
+                "cloud_nic_position",
+                "nic_mac",
+                "ip_configuration",
+                "subnet",
+                "control_plane_interface_reference"
+              ]
+            },
+            {
+              "name": "sli",
+              "required": false,
+              "bindable": false,
+              "network_option": null,
+              "vrf": null,
+              "configuration_path": null,
+              "identity_fields": [
+                "node_hostname",
+                "cloud_nic_position",
+                "nic_mac",
+                "ip_configuration",
+                "subnet",
+                "control_plane_interface_reference"
+              ]
+            }
+          ],
+          "invariants": {
+            "first_azure_nic_is_slo_anchor": true,
+            "macs_unique_per_node": true,
+            "role_bindings_unique_per_node": true,
+            "homogeneous_ha_role_vrf_shape": true,
+            "bgp_bindable_roles": [
+              "slo"
+            ]
+          },
+          "runtime_evidence": {
+            "guest_interface_names": "observational_only",
+            "minimum_mapping_confidence": "authoritative",
+            "provenance_required": true,
+            "replacement_observation_required": true
+          },
+          "change_risk": {
+            "maintenance_window_required": true,
+            "restarts_ce_data_plane_services": true,
+            "adding_or_removing_interfaces_disruptive": true
+          }
+        },
         "x-f5xc-namespace-profile": {
           "constraint": {
             "allowed": [
@@ -103783,6 +104027,91 @@
           "network_policy_choice": "no_network_policy",
           "forward_proxy_choice": "no_forward_proxy",
           "logs_receiver_choice": "logs_streaming_disabled"
+        },
+        "x-f5xc-interface-contract": {
+          "version": "1.0.0",
+          "resource": "securemesh_site_v2",
+          "cloud": "azure",
+          "stable_identity": {
+            "required_fields": [
+              "node_hostname",
+              "cloud_nic_position",
+              "nic_mac",
+              "ip_configuration",
+              "subnet",
+              "control_plane_interface_reference"
+            ]
+          },
+          "roles": [
+            {
+              "name": "slo",
+              "required": true,
+              "bindable": true,
+              "network_option": "site_local_network",
+              "vrf": "site_local_outside",
+              "configuration_path": "azure.not_managed.node_list[].interface_list[]",
+              "identity_fields": [
+                "node_hostname",
+                "cloud_nic_position",
+                "nic_mac",
+                "ip_configuration",
+                "subnet",
+                "control_plane_interface_reference"
+              ]
+            },
+            {
+              "name": "external",
+              "required": false,
+              "bindable": false,
+              "network_option": null,
+              "vrf": null,
+              "configuration_path": null,
+              "identity_fields": [
+                "node_hostname",
+                "cloud_nic_position",
+                "nic_mac",
+                "ip_configuration",
+                "subnet",
+                "control_plane_interface_reference"
+              ]
+            },
+            {
+              "name": "sli",
+              "required": false,
+              "bindable": false,
+              "network_option": null,
+              "vrf": null,
+              "configuration_path": null,
+              "identity_fields": [
+                "node_hostname",
+                "cloud_nic_position",
+                "nic_mac",
+                "ip_configuration",
+                "subnet",
+                "control_plane_interface_reference"
+              ]
+            }
+          ],
+          "invariants": {
+            "first_azure_nic_is_slo_anchor": true,
+            "macs_unique_per_node": true,
+            "role_bindings_unique_per_node": true,
+            "homogeneous_ha_role_vrf_shape": true,
+            "bgp_bindable_roles": [
+              "slo"
+            ]
+          },
+          "runtime_evidence": {
+            "guest_interface_names": "observational_only",
+            "minimum_mapping_confidence": "authoritative",
+            "provenance_required": true,
+            "replacement_observation_required": true
+          },
+          "change_risk": {
+            "maintenance_window_required": true,
+            "restarts_ce_data_plane_services": true,
+            "adding_or_removing_interfaces_disruptive": true
+          }
         },
         "x-f5xc-namespace-profile": {
           "constraint": {
