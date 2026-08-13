@@ -90,6 +90,7 @@ from scripts.utils import (
     FieldDescriptionEnricher,
     GrammarImprover,
     GuidedWorkflowEnricher,
+    InterfaceContractEnricher,
     MinimumConfigurationEnricher,
     NamespaceProfileEnricher,
     OperationDescriptionEnricher,
@@ -1245,6 +1246,7 @@ def merge_specs_by_domain(
         "conflicts_with_added": 0,
         "schema_overrides_applied": 0,
         "namespace_profiles_added": 0,
+        "interface_contracts_applied": 0,
     }
 
     # Load description enricher for domain-specific descriptions
@@ -1279,6 +1281,9 @@ def merge_specs_by_domain(
     # Load schema override enricher (Issue #294)
     # Injects missing oneOf variants from schema_overrides.yaml before conflicts-with
     schema_override_enricher = SchemaOverrideEnricher()
+
+    # Add evidence-backed roles without making guest interface names configuration keys.
+    interface_contract_enricher = InterfaceContractEnricher()
 
     for domain, spec_list in sorted(domain_specs.items()):
         domain_title = domain.replace("_", " ").title()
@@ -1447,6 +1452,12 @@ def merge_specs_by_domain(
         so_stats = schema_override_enricher.get_stats()
         stats["schema_overrides_applied"] += so_stats.get("properties_injected", 0)
         schema_override_enricher.reset_stats()
+
+        # Interface contracts run before downstream code-generation consumers inspect schemas.
+        merged_spec = interface_contract_enricher.enrich_spec(merged_spec)
+        ic_stats = interface_contract_enricher.get_stats()
+        stats["interface_contracts_applied"] += ic_stats["contracts_applied"]
+        interface_contract_enricher.reset_stats()
 
         # Conflicts-with: auto-derive mutual exclusivity from x-ves-oneof-field-* (Issue #494)
         merged_spec = conflicts_with_enricher.enrich_spec(merged_spec)
