@@ -138,10 +138,13 @@ jobs:
     if: needs.check-updates.outputs.has_updates == 'true'
     runs-on: ubuntu-latest
     # `gh release create` runs as GITHUB_TOKEN and needs contents: write. The
-    # branch pushes, PR create/merge/close and tag push all authenticate with
-    # VERSION_BUMP_PAT instead, so no pull-requests scope is required here.
+    # release-branch exemption below posts the existing required linked-issue
+    # context with GITHUB_TOKEN. Branch pushes, PR create/merge/close and tag
+    # push all authenticate with VERSION_BUMP_PAT instead, so no pull-requests
+    # scope is required here.
     permissions:
       contents: write
+      statuses: write
     outputs:
       version: ${{ steps.version.outputs.new_version }}
       has_changes: ${{ steps.detect.outputs.has_changes }}
@@ -563,6 +566,7 @@ jobs:
         if: steps.detect.outputs.has_changes == 'true'
         env:
           GH_TOKEN: ${{ secrets.VERSION_BUMP_PAT }}
+          RELEASE_STATUS_TOKEN: ${{ github.token }}
           VERSION: ${{ steps.version.outputs.new_version }}
           BUMP_TYPE: ${{ steps.version.outputs.bump_type }}
         run: |
@@ -616,9 +620,22 @@ jobs:
             PR_URL=$(gh pr create \
               --base main \
               --head "$BRANCH" \
-              --title "chore: release v${VERSION} (${BUMP_TYPE})" \
               --body "Automated release v${VERSION} (${BUMP_TYPE}). Created by the sync-and-enrich workflow.")
 
+
+            # `release/**` is exempt from the linked-issue policy, but its
+            # normal status publisher is a best-effort scheduled workflow.
+            # The required `Check linked issues` context must therefore be
+            # posted synchronously for this exact release PR before auto-merge
+            # can evaluate it. Use GITHUB_TOKEN (not VERSION_BUMP_PAT) so the
+            # status has the GitHub Actions app identity pinned by protection.
+            PR_HEAD_SHA=$(gh pr view "$BRANCH" --json headRefOid --jq '.headRefOid')
+            GH_TOKEN="$RELEASE_STATUS_TOKEN" gh api \
+              --method POST \
+              "repos/${GITHUB_REPOSITORY}/statuses/${PR_HEAD_SHA}" \
+              -f state=success \
+              -f context='Check linked issues' \
+              -f description='Automated release branch is exempt'
             echo "Created release PR: ${PR_URL}"
 
             # Enable auto-merge (squash) — merges when required checks pass
