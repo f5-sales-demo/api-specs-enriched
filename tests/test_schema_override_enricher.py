@@ -97,6 +97,10 @@ class TestSchemaOverrideEnricher:
         spec = {
             "components": {
                 "schemas": {
+                    "registrationGetImageDownloadUrlReq": {
+                        "type": "object",
+                        "properties": {"provider": {"type": "string"}},
+                    },
                     "registrationGetImageDownloadUrlResp": {
                         "type": "object",
                         "properties": {
@@ -107,10 +111,14 @@ class TestSchemaOverrideEnricher:
                 }
             }
         }
-        schema = enricher.enrich_spec(spec)["components"]["schemas"][
+        schemas = enricher.enrich_spec(spec)["components"]["schemas"]
+        request = schemas["registrationGetImageDownloadUrlReq"]
+        schema = schemas[
             "registrationGetImageDownloadUrlResp"
         ]
+        assert request["properties"]["provider"]["x-f5xc-recommended-value"] == "Kvm"
         assert schema["x-f5xc-terraform-resource"] == "xcsh_site_image"
+        assert schema["x-f5xc-description-medium"].startswith("Signed Customer Edge image")
         assert schema["properties"]["image_download_url"]["x-f5xc-sensitive"] is True
         assert schema["properties"]["image_md5_download_url"]["x-f5xc-sensitive"] is True
 

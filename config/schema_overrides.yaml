@@ -23,9 +23,16 @@ overrides:
       sensitive so generated clients and Terraform providers protect them in
       diagnostics and state output.
     schemas:
+      - pattern: "^registrationGetImageDownloadUrlReq$"
+        set_property_extensions:
+          provider:
+            x-f5xc-recommended-value: "Kvm"
       - pattern: "^registrationGetImageDownloadUrlResp$"
         inject_extensions:
           x-f5xc-terraform-resource: "xcsh_site_image"
+          x-f5xc-description-medium: >-
+            Signed Customer Edge image and checksum URLs for a requested
+            deployment platform.
         set_property_extensions:
           image_download_url:
             x-f5xc-sensitive: true
