@@ -66,6 +66,7 @@ class OperationMetadataEnricher:
         self.config_path = config_path
         self.danger_levels: dict[str, Any] = {}
         self.required_fields_config: dict[str, Any] = {}
+        self.query_operations: dict[str, Any] = {}
         self.extension_prefix = "x-f5xc"
         self.stats = OperationEnrichmentStats()
 
@@ -83,6 +84,7 @@ class OperationMetadataEnricher:
 
             self.danger_levels = config.get("danger_levels", {})
             self.required_fields_config = config.get("required_fields", {})
+            self.query_operations = config.get("query_operations", {})
             self.extension_prefix = config.get("extension_prefix", "x-f5xc")
         except Exception:
             self._use_default_config()
@@ -121,6 +123,7 @@ class OperationMetadataEnricher:
         self.required_fields_config = {
             "standard_create_fields": ["metadata.name", "metadata.namespace"],
         }
+        self.query_operations = {}
 
         self.extension_prefix = "x-f5xc"
 
@@ -180,15 +183,30 @@ class OperationMetadataEnricher:
             path: API path
         """
         self.stats.operations_enriched += 1
+        operation_id = operation.get("operationId", "")
+        is_query = operation_id in self.query_operations
+        query_contract = self.query_operations.get(operation_id, {})
+        if is_query:
+            if method != "POST":
+                raise ValueError(f"query operation {operation_id} must use POST, got {method}")
+            if not self._request_schema_ref(operation):
+                raise ValueError(f"query operation {operation_id} must have a request schema")
+            if not self._response_schema_refs(operation):
+                raise ValueError(f"query operation {operation_id} must have a response schema")
+            operation[f"{self.extension_prefix}-operation-role"] = "query"
 
         # Extract and add required fields
-        required_fields = self._extract_required_fields(operation, method)
+        required_fields = (
+            list(query_contract.get("required_fields", []))
+            if is_query
+            else self._extract_required_fields(operation, method)
+        )
         if required_fields:
             operation[f"{self.extension_prefix}-required-fields"] = required_fields
             self.stats.required_fields_added += 1
 
         # Calculate and assign danger level
-        danger_level = self._calculate_danger_level(method, path, operation)
+        danger_level = "low" if is_query else self._calculate_danger_level(method, path, operation)
         operation[f"{self.extension_prefix}-danger-level"] = danger_level
         self.stats.danger_levels_assigned += 1
 
@@ -197,7 +215,7 @@ class OperationMetadataEnricher:
             operation[f"{self.extension_prefix}-confirmation-required"] = True
 
         # Determine and add side effects
-        side_effects = self._determine_side_effects(method, path, operation)
+        side_effects = {} if is_query else self._determine_side_effects(method, path, operation)
         if side_effects:
             operation[f"{self.extension_prefix}-side-effects"] = side_effects
             self.stats.side_effects_documented += 1
@@ -211,8 +229,36 @@ class OperationMetadataEnricher:
             danger_level,
             side_effects,
         )
+        if is_query:
+            comprehensive_metadata["conditions"]["postconditions"] = [
+                "Requested data returned",
+                "Tenant state unchanged",
+            ]
         if comprehensive_metadata:
             operation[f"{self.extension_prefix}-operation-metadata"] = comprehensive_metadata
+
+    @staticmethod
+    def _request_schema_ref(operation: dict[str, Any]) -> str | None:
+        schema = (
+            operation.get("requestBody", {})
+            .get("content", {})
+            .get("application/json", {})
+            .get("schema", {})
+        )
+        ref = schema.get("$ref") if isinstance(schema, dict) else None
+        return ref if isinstance(ref, str) and ref else None
+
+    @staticmethod
+    def _response_schema_refs(operation: dict[str, Any]) -> set[str]:
+        refs: set[str] = set()
+        for status, response in operation.get("responses", {}).items():
+            if not str(status).startswith("2") or not isinstance(response, dict):
+                continue
+            schema = response.get("content", {}).get("application/json", {}).get("schema", {})
+            ref = schema.get("$ref") if isinstance(schema, dict) else None
+            if isinstance(ref, str) and ref:
+                refs.add(ref)
+        return refs
 
     def _build_comprehensive_metadata(
         self,

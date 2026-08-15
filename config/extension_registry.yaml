@@ -231,6 +231,14 @@ schema_level:
 # PROPERTY-LEVEL EXTENSIONS (schema properties)
 # =============================================================================
 property_level:
+  x-f5xc-sensitive:
+    type: boolean
+    purpose: >-
+      Marks a credential, secret, signed URL, or other value that consumers must
+      redact from routine output and diagnostics.
+    consumers: [terraform, cli, mcp, ide]
+    example: true
+
   x-f5xc-description:
     type: string
     purpose: Enhanced field description with context
@@ -462,6 +470,15 @@ property_level:
 # OPERATION-LEVEL EXTENSIONS (path operations)
 # =============================================================================
 operation_level:
+  x-f5xc-operation-role:
+    type: string
+    purpose: >-
+      Classifies an operation whose HTTP method does not communicate its API
+      semantics. Query operations retrieve data without changing tenant state.
+    consumers: [terraform, cli, mcp]
+    allowed_values: [query]
+    example: "query"
+
   x-f5xc-required-fields:
     type: array
     items: string
