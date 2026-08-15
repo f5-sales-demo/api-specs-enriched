@@ -137,6 +137,7 @@ jobs:
     needs: check-updates
     if: needs.check-updates.outputs.has_updates == 'true'
     runs-on: ubuntu-latest
+    environment: release
     # `gh release create` runs as GITHUB_TOKEN and needs contents: write. The
     # release-branch exemption below posts the existing required linked-issue
     # context with GITHUB_TOKEN. Branch pushes, PR create/merge/close and tag
@@ -250,12 +251,9 @@ jobs:
           node-version: '22'
 
       - name: Install Spectral CLI
-        # Pinned: an unpinned `npm install -g` takes whatever was published at run
-        # time, which is the supply-chain exposure zizmor's adhoc-packages audit
-        # flags. Pre-existing; surfaced when a workflow file was next staged.
-        # zizmor: ignore[adhoc-packages] — a global CLI with no project lockfile to
-        # install from; pinning the version is the available mitigation.
-        run: npm install -g @stoplight/spectral-cli@6.16.2
+        run: |
+          npm ci --ignore-scripts
+          echo "$PWD/node_modules/.bin" >> "$GITHUB_PATH"
 
       - name: Check for Discovery Data
         id: check-discovery
@@ -873,6 +871,7 @@ jobs:
     needs: [sync-and-enrich, build-downstream-matrix]
     if: needs.build-downstream-matrix.outputs.has_targets == 'true'
     runs-on: ubuntu-latest
+    environment: downstream-dispatch
     strategy:
       matrix: ${{ fromJSON(needs.build-downstream-matrix.outputs.matrix) }}
       fail-fast: false
