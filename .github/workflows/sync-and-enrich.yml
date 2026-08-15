@@ -138,10 +138,13 @@ jobs:
     if: needs.check-updates.outputs.has_updates == 'true'
     runs-on: [self-hosted, Linux, X64, api-specs-enriched, ubuntu-24.04]
     # `gh release create` runs as GITHUB_TOKEN and needs contents: write. The
-    # branch pushes, PR create/merge/close and tag push all authenticate with
-    # VERSION_BUMP_PAT instead, so no pull-requests scope is required here.
+    # release-branch exemption below posts the existing required linked-issue
+    # context with GITHUB_TOKEN. Branch pushes, PR create/merge/close and tag
+    # push all authenticate with VERSION_BUMP_PAT instead, so no pull-requests
+    # scope is required here.
     permissions:
-      contents: write
+      contents: write # Publish the generated release and its tag with the workflow token.
+      statuses: write # Post the required linked-issue status on the release pull request head.
     outputs:
       version: ${{ steps.version.outputs.new_version }}
       has_changes: ${{ steps.detect.outputs.has_changes }}
@@ -563,8 +566,10 @@ jobs:
         if: steps.detect.outputs.has_changes == 'true'
         env:
           GH_TOKEN: ${{ secrets.VERSION_BUMP_PAT }}
+          RELEASE_STATUS_TOKEN: ${{ github.token }}
           VERSION: ${{ steps.version.outputs.new_version }}
           BUMP_TYPE: ${{ steps.version.outputs.bump_type }}
+          REPOSITORY: ${{ github.repository }}
         run: |
           set -e
 
@@ -572,7 +577,7 @@ jobs:
           git config --local user.name "github-actions[bot]"
 
           # Configure git to use VERSION_BUMP_PAT for authentication
-          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git"
+          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${REPOSITORY}.git"
 
           BRANCH="release/v${VERSION}"
 
@@ -616,9 +621,22 @@ jobs:
             PR_URL=$(gh pr create \
               --base main \
               --head "$BRANCH" \
-              --title "chore: release v${VERSION} (${BUMP_TYPE})" \
               --body "Automated release v${VERSION} (${BUMP_TYPE}). Created by the sync-and-enrich workflow.")
 
+
+            # `release/**` is exempt from the linked-issue policy, but its
+            # normal status publisher is a best-effort scheduled workflow.
+            # The required `Check linked issues` context must therefore be
+            # posted synchronously for this exact release PR before auto-merge
+            # can evaluate it. Use GITHUB_TOKEN (not VERSION_BUMP_PAT) so the
+            # status has the GitHub Actions app identity pinned by protection.
+            PR_HEAD_SHA=$(gh pr view "$BRANCH" --json headRefOid --jq '.headRefOid')
+            GH_TOKEN="$RELEASE_STATUS_TOKEN" gh api \
+              --method POST \
+              "repos/${GITHUB_REPOSITORY}/statuses/${PR_HEAD_SHA}" \
+              -f state=success \
+              -f context='Check linked issues' \
+              -f description='Automated release branch is exempt'
             echo "Created release PR: ${PR_URL}"
 
             # Enable auto-merge (squash) — merges when required checks pass
@@ -779,8 +797,8 @@ jobs:
     # actions/deploy-pages needs both of these; id-token is for its OIDC exchange.
     permissions:
       contents: read
-      pages: write
-      id-token: write
+      pages: write # Publish the generated documentation artifact to GitHub Pages.
+      id-token: write # Exchange an OIDC token with the GitHub Pages deployment service.
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -898,22 +916,28 @@ jobs:
     # both as GITHUB_TOKEN.
     permissions:
       contents: read
-      issues: write
+      issues: write # Create or update the repository issue that records workflow failures.
     steps:
       - name: Check for failures
         id: check_failure
+        env:
+          CHECK_UPDATES_RESULT: ${{ needs.check-updates.result }}
+          SYNC_AND_ENRICH_RESULT: ${{ needs.sync-and-enrich.result }}
+          DEPLOY_DOCS_RESULT: ${{ needs.deploy-docs.result }}
+          BUILD_DOWNSTREAM_MATRIX_RESULT: ${{ needs.build-downstream-matrix.result }}
+          NOTIFY_DOWNSTREAM_RESULT: ${{ needs.notify-downstream.result }}
         run: |
           # Check if any job failed or was cancelled
-          if [ "${{ needs.check-updates.result }}" = "failure" ] || \
-            [ "${{ needs.sync-and-enrich.result }}" = "failure" ] || \
-            [ "${{ needs.deploy-docs.result }}" = "failure" ] || \
-            [ "${{ needs.build-downstream-matrix.result }}" = "failure" ] || \
-            [ "${{ needs.notify-downstream.result }}" = "failure" ] || \
-            [ "${{ needs.check-updates.result }}" = "cancelled" ] || \
-            [ "${{ needs.sync-and-enrich.result }}" = "cancelled" ] || \
-            [ "${{ needs.deploy-docs.result }}" = "cancelled" ] || \
-            [ "${{ needs.build-downstream-matrix.result }}" = "cancelled" ] || \
-            [ "${{ needs.notify-downstream.result }}" = "cancelled" ]; then
+          if [ "$CHECK_UPDATES_RESULT" = "failure" ] || \
+            [ "$SYNC_AND_ENRICH_RESULT" = "failure" ] || \
+            [ "$DEPLOY_DOCS_RESULT" = "failure" ] || \
+            [ "$BUILD_DOWNSTREAM_MATRIX_RESULT" = "failure" ] || \
+            [ "$NOTIFY_DOWNSTREAM_RESULT" = "failure" ] || \
+            [ "$CHECK_UPDATES_RESULT" = "cancelled" ] || \
+            [ "$SYNC_AND_ENRICH_RESULT" = "cancelled" ] || \
+            [ "$DEPLOY_DOCS_RESULT" = "cancelled" ] || \
+            [ "$BUILD_DOWNSTREAM_MATRIX_RESULT" = "cancelled" ] || \
+            [ "$NOTIFY_DOWNSTREAM_RESULT" = "cancelled" ]; then
             echo "has_failure=true" >> "$GITHUB_OUTPUT"
             echo "::warning::Workflow failure detected - will create issue"
           else

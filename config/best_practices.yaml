@@ -226,14 +226,20 @@ domains:
         message: "Site not responding"
         resolution: "Check site connectivity and agent status"
         prevention: "Configure monitoring for site health"
+      - code: 400
+        message: "Expanded Secure Mesh interfaces lack authoritative evidence"
+        resolution: "Keep optional roles unconfigured and collect the sanitized CE evidence matrix"
+        prevention: "Bind roles by Azure NIC position, MAC, IP configuration, subnet, and control-plane reference; never by guest interface name"
     security_notes:
       - "Rotate site tokens after initial registration"
       - "Configure site-level firewall policies"
       - "Enable audit logging for site operations"
+      - "Treat guest interface names as diagnostics only; they are not stable configuration identities"
     performance_tips:
       - "Deploy sites close to workloads for low latency"
       - "Configure appropriate resource allocation"
       - "Use site mesh for efficient inter-site communication"
+      - "Schedule interface additions or removals in a maintenance window because CE data-plane services restart"
 
   authentication:
     common_errors:

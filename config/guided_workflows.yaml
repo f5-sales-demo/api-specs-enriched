@@ -402,6 +402,50 @@ workflows:
             - "Tunnel connectivity established"
             - "Services deployed successfully"
 
+    - id: evidence_gated_secure_mesh_interfaces
+      name: Configure Evidence-Gated Secure Mesh Site v2 Interfaces
+      description: Configure the mandatory SLO first and enable optional interface roles only after authoritative Azure and CE evidence agrees.
+      complexity: high
+      estimated_steps: 5
+      prerequisites:
+        - "Three-node HA topology with identical declared role and VRF shape"
+        - "Sanitized Azure and CE evidence including a replacement registration observation"
+        - "Approved maintenance window for any interface addition or removal"
+      steps:
+        - order: 1
+          action: inventory_cloud_nics
+          name: Inventory Azure NICs
+          description: Record each node hostname, NIC position, MAC, IP configuration, subnet, and control-plane interface reference.
+          resource: securemesh_site_v2
+        - order: 2
+          action: collect_runtime_evidence
+          name: Collect CE Evidence
+          description: Normalize supported CE diagnostics by MAC, IP, subnet, and control-plane role without using guest interface names as keys.
+          resource: securemesh_site_v2
+          depends_on: [1]
+        - order: 3
+          action: validate_role_mapping
+          name: Validate Role Mapping
+          description: Require authoritative mapping confidence and provenance before optional roles become bindable.
+          resource: securemesh_site_v2
+          depends_on: [2]
+        - order: 4
+          action: configure_slo
+          name: Configure SLO
+          description: Bind the first Azure NIC to the required Site Local Outside role; BGP may bind only to this role.
+          resource: securemesh_site_v2
+          depends_on: [3]
+        - order: 5
+          action: enable_optional_roles
+          name: Enable Approved Optional Roles
+          description: During the maintenance window, configure external or SLI only where the approved contract declares their network option and VRF.
+          resource: securemesh_site_v2
+          depends_on: [4]
+          verification:
+            - "Every HA node has the same role and VRF shape"
+            - "BGP binds only to the SLO role"
+            - "Evidence provenance is retained without credentials or raw diagnostics"
+
   authentication:
     - id: create_and_use_api_token
       name: Create and Use an API Token
