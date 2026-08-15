@@ -255,6 +255,7 @@ def lint_all_specs(
         "validation.json",
         "minimal-export-defaults.json",
         "namespace_profiles.json",
+        "resource_coverage.json",
     }
     spec_files = sorted(f for f in input_dir.glob("*.json") if f.name not in non_openapi_files)
     if not spec_files:

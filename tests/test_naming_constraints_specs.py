@@ -26,7 +26,14 @@ pytestmark = pytest.mark.skipif(
 
 
 def _domain_specs() -> list[Path]:
-    skip = {"index.json", "validation.json", "minimal-export-defaults.json", "other.json"}
+    skip = {
+        "index.json",
+        "validation.json",
+        "minimal-export-defaults.json",
+        "namespace_profiles.json",
+        "resource_coverage.json",
+        "other.json",
+    }
     return [p for p in sorted(SPECS_DIR.glob("*.json")) if p.name not in skip]
 
 

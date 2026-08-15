@@ -1999,3 +1999,31 @@ resources:
     classification:
       category: "observability"
       multi_tenant_pattern: "none"
+
+  # Canonical creates discovered from qualified operation identities. These
+  # entries make the profile explicit while namespace CRUD evidence is pending;
+  # restricted status keeps the classification advisory downstream.
+  addon_subscription: &qualified_create_default
+    constraint:
+      allowed: ["system"]
+    _verification: {status: restricted, method: operation_identity_default_deny, date: "2026-08-15"}
+    recommendation:
+      primary: "system"
+      rationale: "Canonical create identity pending namespace CRUD verification"
+    classification:
+      category: "application"
+      multi_tenant_pattern: "none"
+  alert_gen_policy: *qualified_create_default
+  alert_template: *qualified_create_default
+  allowed_tenant: *qualified_create_default
+  application_profiles: *qualified_create_default
+  bot_infrastructure: *qualified_create_default
+  child_tenant: *qualified_create_default
+  child_tenant_manager: *qualified_create_default
+  code_base_integration: *qualified_create_default
+  irule: *qualified_create_default
+  managed_tenant: *qualified_create_default
+  mobile_base_config: *qualified_create_default
+  receiver: *qualified_create_default
+  tenant_profile: *qualified_create_default
+  ticket_tracking_system: *qualified_create_default

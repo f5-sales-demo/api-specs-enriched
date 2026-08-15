@@ -67,6 +67,7 @@ def build_create_path_index(specs_dir: Path) -> dict[str, dict[str, str]]:
         if spec_path.name in {
             "index.json",
             "namespace_profiles.json",
+            "resource_coverage.json",
             "openapi.json",
             "minimal-export-defaults.json",
         }:

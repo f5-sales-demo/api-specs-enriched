@@ -5,12 +5,9 @@
 from __future__ import annotations
 
 import json
-from typing import TYPE_CHECKING
+from pathlib import Path
 
 from scripts.stamp_release_version import stamp_directory, stamp_document
-
-if TYPE_CHECKING:
-    from pathlib import Path
 
 
 def test_stamp_document_uses_openapi_info_version() -> None:
@@ -54,13 +51,27 @@ def test_stamp_directory_updates_only_build_version_artifacts(tmp_path: Path) ->
         "domain.json": {"openapi": "3.0.3", "info": {"version": "1.0.0"}},
         "index.json": {"version": "1.0.0"},
         "validation.json": {"$schema": "example", "version": "2.1.0"},
+        "resource_coverage.json": {"version": "1.0.0", "resources": {}},
         "unversioned.json": {"resources": {}},
     }
     for name, document in fixtures.items():
         (tmp_path / name).write_text(json.dumps(document))
 
-    assert stamp_directory(tmp_path, "2.0.0") == 2
+    assert stamp_directory(tmp_path, "2.0.0") == 3
     assert json.loads((tmp_path / "domain.json").read_text())["info"]["version"] == "2.0.0"
     assert json.loads((tmp_path / "index.json").read_text())["version"] == "2.0.0"
     assert json.loads((tmp_path / "validation.json").read_text()) == fixtures["validation.json"]
+    assert json.loads((tmp_path / "resource_coverage.json").read_text())["version"] == "2.0.0"
     assert json.loads((tmp_path / "unversioned.json").read_text()) == fixtures["unversioned.json"]
+
+
+def test_release_bundle_copies_resource_coverage_metadata() -> None:
+    workflow = Path(".github/workflows/sync-and-enrich.yml").read_text()
+
+    assert "for spec_file in docs/specifications/api/*.json" in workflow
+    assert (
+        '"resource_coverage.json"'
+        not in workflow.split("# Copy domain specifications", 1)[1].split(
+            "# Copy metadata index", 1
+        )[0]
+    )

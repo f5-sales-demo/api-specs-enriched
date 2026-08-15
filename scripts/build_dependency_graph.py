@@ -126,7 +126,12 @@ def main() -> int:
     specs_dir = Path("docs/specifications/api")
     specs: list[dict[str, Any]] = []
     for f in sorted(specs_dir.glob("*.json")):
-        if f.name == "index.json":
+        if f.name in {
+            "index.json",
+            "namespace_profiles.json",
+            "resource_coverage.json",
+            "validation.json",
+        }:
             continue
         try:
             specs.append(json.loads(f.read_text()))
