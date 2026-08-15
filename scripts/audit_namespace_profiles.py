@@ -61,7 +61,12 @@ def mine_description_signals(specs_dir: Path) -> dict[str, list[dict[str, str]]]
 
     for entry in sorted(specs_dir.iterdir()):
         fname = entry.name
-        if not fname.endswith(".json") or fname in ("index.json", "namespace_profiles.json"):
+        if not fname.endswith(".json") or fname in (
+            "index.json",
+            "namespace_profiles.json",
+            "resource_coverage.json",
+            "validation.json",
+        ):
             continue
         with (specs_dir / fname).open() as f:
             spec = json.load(f)
@@ -142,7 +147,12 @@ def mine_example_signals(specs_dir: Path) -> dict[str, list[dict[str, str]]]:
 
     for entry in sorted(specs_dir.iterdir()):
         fname = entry.name
-        if not fname.endswith(".json") or fname in ("index.json", "namespace_profiles.json"):
+        if not fname.endswith(".json") or fname in (
+            "index.json",
+            "namespace_profiles.json",
+            "resource_coverage.json",
+            "validation.json",
+        ):
             continue
         with (specs_dir / fname).open() as f:
             spec = json.load(f)

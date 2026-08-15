@@ -43,6 +43,13 @@ def merge_spec_files(dir_path: Path) -> dict[str, Any]:
     versions: set[str] = set()
 
     for spec_file in sorted(dir_path.glob("*.json")):
+        if spec_file.name in {
+            "index.json",
+            "namespace_profiles.json",
+            "resource_coverage.json",
+            "validation.json",
+        }:
+            continue
         try:
             with spec_file.open() as f:
                 spec = json.load(f)

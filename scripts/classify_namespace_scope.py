@@ -73,6 +73,7 @@ def _system_path_resources(specs_dir: Path) -> set[str]:
         if spec_path.name in {
             "index.json",
             "namespace_profiles.json",
+            "resource_coverage.json",
             "openapi.json",
             "minimal-export-defaults.json",
         }:
@@ -108,6 +109,7 @@ def _nl_system_resources(specs_dir: Path) -> set[str]:
         if spec_path.name in {
             "index.json",
             "namespace_profiles.json",
+            "resource_coverage.json",
             "openapi.json",
             "minimal-export-defaults.json",
         }:

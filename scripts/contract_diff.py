@@ -298,7 +298,13 @@ def _load_specs_from_dir(spec_dir: Path) -> list[tuple[str, dict]]:
     """
     loaded: list[tuple[str, dict]] = []
     for path in sorted(spec_dir.glob("*.json")):
-        if path.name in {"manifest.json", "index.json"}:
+        if path.name in {
+            "manifest.json",
+            "index.json",
+            "namespace_profiles.json",
+            "resource_coverage.json",
+            "validation.json",
+        }:
             continue
         try:
             doc = json.loads(path.read_text())
