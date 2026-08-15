@@ -39,7 +39,16 @@ def discover_all_endpoints() -> list[tuple[str, str, str, dict]]:
             allow_module_level=True,
         )
 
-    for spec_file in sorted(SPECS_DIR.glob("*.json")):
+    metadata_files = {
+        "index.json",
+        "minimal-export-defaults.json",
+        "namespace_profiles.json",
+        "resource_coverage.json",
+        "validation.json",
+    }
+    for spec_file in sorted(
+        path for path in SPECS_DIR.glob("*.json") if path.name not in metadata_files
+    ):
         try:
             with spec_file.open() as f:
                 spec = json.load(f)

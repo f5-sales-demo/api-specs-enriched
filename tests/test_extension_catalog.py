@@ -47,7 +47,12 @@ def _walk_x_keys(obj, acc: set[str]) -> None:
 def _enriched_x_keys() -> set[str]:
     keys: set[str] = set()
     for p in ENRICHED_DIR.glob("*.json"):
-        if p.name == "index.json":
+        if p.name in {
+            "index.json",
+            "namespace_profiles.json",
+            "resource_coverage.json",
+            "validation.json",
+        }:
             continue
         _walk_x_keys(json.loads(p.read_text()), keys)
     return keys

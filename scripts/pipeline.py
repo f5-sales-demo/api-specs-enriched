@@ -135,6 +135,7 @@ from scripts.utils.json_writer import write_json_file
 from scripts.utils.memory_profiler import MemoryProfiler
 from scripts.utils.minimal_defaults_exporter import MinimalDefaultsExporter
 from scripts.utils.namespace_profiles_exporter import NamespaceProfilesExporter
+from scripts.utils.resource_coverage_exporter import ResourceCoverageExporter
 from scripts.utils.server_variables import ServerVariableHelper
 
 console = Console()
@@ -1964,18 +1965,30 @@ def run_pipeline(
             # scope map consumed by downstream tree filtering (vscode-xcsh, xcsh).
             # Rides alongside the domain specs (like validation.json) and is read by
             # the consumer via an explicit path, not parsed as a domain spec.
-            try:
-                np_profiles_exporter = NamespaceProfilesExporter()
-                np_profiles_artifact = np_profiles_exporter.export(
-                    output_dir / "namespace_profiles.json",
-                    version=version,
-                )
-                console.print(
-                    f"[green]Exported namespace_profiles.json: "
-                    f"{len(np_profiles_artifact['resources'])} resource overrides + default[/green]",
-                )
-            except Exception as e:
-                console.print(f"[yellow]Warning: Failed to export namespace profiles: {e}[/yellow]")
+            np_profiles_exporter = NamespaceProfilesExporter()
+            np_profiles_artifact = np_profiles_exporter.export(
+                output_dir / "namespace_profiles.json",
+                version=version,
+            )
+            console.print(
+                f"[green]Exported namespace_profiles.json: "
+                f"{len(np_profiles_artifact['resources'])} resource overrides + default[/green]",
+            )
+
+            # Publish the fail-closed resource coverage contract only after the
+            # canonical candidates and namespace profiles can be proven complete.
+            coverage_artifact = ResourceCoverageExporter().export(
+                domain_specs.values(),
+                np_profiles_artifact,
+                output_dir / "resource_coverage.json",
+                version=version,
+            )
+            console.print(
+                f"[green]Exported resource_coverage.json: "
+                f"{coverage_artifact['coverage']['generated']} generated, "
+                f"{coverage_artifact['coverage']['manual']} manual, "
+                f"{coverage_artifact['coverage']['excluded']} excluded[/green]",
+            )
 
             console.print(f"[green]Created {len(domain_specs)} domain specs + master spec[/green]")
 

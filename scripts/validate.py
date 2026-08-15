@@ -459,7 +459,16 @@ async def validate_all_specs(
     """Validate all specification files in a directory."""
     stats = ValidationStats()
 
-    spec_files = sorted(specs_dir.glob("*.json"))
+    metadata_files = {
+        "index.json",
+        "minimal-export-defaults.json",
+        "namespace_profiles.json",
+        "resource_coverage.json",
+        "validation.json",
+    }
+    spec_files = sorted(
+        path for path in specs_dir.glob("*.json") if path.name not in metadata_files
+    )
     if not spec_files:
         console.print(f"[yellow]No specification files found in {specs_dir}[/yellow]")
         return stats
@@ -667,7 +676,16 @@ def main() -> int:
     if args.dry_run:
         # Just list endpoints without validation
         console.print("\n[blue]Dry run - listing endpoints without validation[/blue]")
-        spec_files = sorted(args.specs_dir.glob("*.json"))
+        metadata_files = {
+            "index.json",
+            "minimal-export-defaults.json",
+            "namespace_profiles.json",
+            "resource_coverage.json",
+            "validation.json",
+        }
+        spec_files = sorted(
+            path for path in args.specs_dir.glob("*.json") if path.name not in metadata_files
+        )
         total_endpoints = 0
         for spec_file in spec_files:
             with spec_file.open() as f:

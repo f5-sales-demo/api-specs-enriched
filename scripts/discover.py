@@ -110,7 +110,13 @@ def extract_endpoints_from_specs(specs_dir: Path) -> list[dict[str, Any]]:
         return endpoints
 
     for spec_file in sorted(specs_dir.glob("*.json")):
-        if spec_file.name in ("index.json", "openapi.json"):
+        if spec_file.name in (
+            "index.json",
+            "namespace_profiles.json",
+            "resource_coverage.json",
+            "validation.json",
+            "openapi.json",
+        ):
             continue
 
         try:
