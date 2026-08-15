@@ -107,15 +107,13 @@ class TestSchemaOverrideEnricher:
                             "image_download_url": {"type": "string"},
                             "image_md5_download_url": {"type": "string"},
                         },
-                    }
+                    },
                 }
             }
         }
         schemas = enricher.enrich_spec(spec)["components"]["schemas"]
         request = schemas["registrationGetImageDownloadUrlReq"]
-        schema = schemas[
-            "registrationGetImageDownloadUrlResp"
-        ]
+        schema = schemas["registrationGetImageDownloadUrlResp"]
         assert request["properties"]["provider"]["x-f5xc-recommended-value"] == "KVM"
         assert request["properties"]["provider"]["x-f5xc-description-medium"].startswith(
             "Deployment platform identifier"
