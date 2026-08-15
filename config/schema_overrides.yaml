@@ -26,10 +26,14 @@ overrides:
       - pattern: "^registrationGetImageDownloadUrlReq$"
         set_property_extensions:
           provider:
-            x-f5xc-recommended-value: "Kvm"
+            x-f5xc-recommended-value: "KVM"
+            x-f5xc-description-medium: >-
+              Deployment platform identifier for the requested Customer Edge
+              image.
       - pattern: "^registrationGetImageDownloadUrlResp$"
         inject_extensions:
           x-f5xc-terraform-resource: "xcsh_site_image"
+          x-f5xc-category: "Sites"
           x-f5xc-description-medium: >-
             Signed Customer Edge image and checksum URLs for a requested
             deployment platform.

@@ -116,8 +116,12 @@ class TestSchemaOverrideEnricher:
         schema = schemas[
             "registrationGetImageDownloadUrlResp"
         ]
-        assert request["properties"]["provider"]["x-f5xc-recommended-value"] == "Kvm"
+        assert request["properties"]["provider"]["x-f5xc-recommended-value"] == "KVM"
+        assert request["properties"]["provider"]["x-f5xc-description-medium"].startswith(
+            "Deployment platform identifier"
+        )
         assert schema["x-f5xc-terraform-resource"] == "xcsh_site_image"
+        assert schema["x-f5xc-category"] == "Sites"
         assert schema["x-f5xc-description-medium"].startswith("Signed Customer Edge image")
         assert schema["properties"]["image_download_url"]["x-f5xc-sensitive"] is True
         assert schema["properties"]["image_md5_download_url"]["x-f5xc-sensitive"] is True

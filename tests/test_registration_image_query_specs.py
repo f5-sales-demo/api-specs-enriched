@@ -29,8 +29,12 @@ def test_image_download_schema_marks_signed_urls_sensitive() -> None:
     response = schemas["registrationGetImageDownloadUrlResp"]
 
     assert request["properties"]["provider"]["x-ves-required"] == "true"
-    assert request["properties"]["provider"]["x-f5xc-recommended-value"] == "Kvm"
+    assert request["properties"]["provider"]["x-f5xc-recommended-value"] == "KVM"
+    assert request["properties"]["provider"]["x-f5xc-description-medium"] == (
+        "Deployment platform identifier for the requested Customer Edge image."
+    )
     assert response["x-f5xc-terraform-resource"] == "xcsh_site_image"
+    assert response["x-f5xc-category"] == "Sites"
     assert response["x-f5xc-description-medium"] == (
         "Signed Customer Edge image and checksum URLs for a requested deployment platform."
     )
