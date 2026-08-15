@@ -61,18 +61,18 @@ env:
 jobs:
   check-updates:
     name: Check for Updates
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, api-specs-enriched, ubuntu-24.04]
     outputs:
       has_updates: ${{ steps.check.outputs.updated }}
       etag: ${{ steps.check.outputs.etag }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
       - name: Setup Python
-        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
@@ -136,7 +136,7 @@ jobs:
     name: Sync and Enrich Specifications
     needs: check-updates
     if: needs.check-updates.outputs.has_updates == 'true'
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, api-specs-enriched, ubuntu-24.04]
     environment: release
     # `gh release create` runs as GITHUB_TOKEN and needs contents: write. The
     # release-branch exemption below posts the existing required linked-issue
@@ -151,7 +151,7 @@ jobs:
       has_changes: ${{ steps.detect.outputs.has_changes }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
           fetch-depth: 0  # Full history needed for git describe --tags
@@ -159,7 +159,7 @@ jobs:
           token: ${{ secrets.VERSION_BUMP_PAT }}  # Use admin PAT for bypass permissions
 
       - name: Setup Python
-        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
@@ -180,7 +180,7 @@ jobs:
       - name: Restore specs cache
         if: github.event_name == 'push'
         id: specs-cache
-        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: specs/original
           key: specs-original-${{ steps.release-info.outputs.release_tag }}
@@ -193,7 +193,7 @@ jobs:
 
       - name: Save specs cache
         if: steps.specs-cache.outputs.cache-hit != 'true' && github.event_name == 'push'
-        uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: specs/original
           key: specs-original-${{ steps.release-info.outputs.release_tag }}
@@ -220,7 +220,7 @@ jobs:
           echo "hash=$HASH" >> "$GITHUB_OUTPUT"
 
       - name: Setup Biome
-        uses: biomejs/setup-biome@4c91541eaada48f67d7dbd7833600ce162b68f51  # v2.7.1 — matches docs-control super-linter.yml
+        uses: biomejs/setup-biome@4c91541eaada48f67d7dbd7833600ce162b68f51 # v2.7.1
         with:
           version: latest
 
@@ -234,19 +234,20 @@ jobs:
       - name: Restore enriched output cache
         if: github.event_name != 'workflow_dispatch'
         id: enriched-cache
-        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: docs/specifications/api
           key: enriched-${{ steps.specs-fingerprint.outputs.hash }}-${{ steps.pipeline-fingerprint.outputs.hash }}-biome-${{ steps.biome.outputs.version }}
 
       - name: Install Java (for LanguageTool)
         if: steps.enriched-cache.outputs.cache-hit != 'true'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y default-jre
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          distribution: temurin
+          java-version: '17'
 
       - name: Setup Node.js for Spectral
-        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: '22'
 
@@ -290,7 +291,7 @@ jobs:
 
       - name: Save enriched output cache
         if: steps.enriched-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: docs/specifications/api
           key: enriched-${{ steps.specs-fingerprint.outputs.hash }}-${{ steps.pipeline-fingerprint.outputs.hash }}-biome-${{ steps.biome.outputs.version }}
@@ -791,7 +792,7 @@ jobs:
     name: Deploy Documentation
     needs: sync-and-enrich
     if: needs.sync-and-enrich.outputs.has_changes == 'true'
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, api-specs-enriched, ubuntu-24.04]
     # actions/deploy-pages needs both of these; id-token is for its OIDC exchange.
     permissions:
       contents: read
@@ -802,22 +803,22 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Download docs artifact
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: docs-site
           path: docs
 
       - name: Setup Pages
-        uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4.0.0
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
           path: docs
 
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5
+        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5.0.0
 
   # ==========================================================================
   # NOTIFY DOWNSTREAM REPOSITORIES
@@ -827,13 +828,13 @@ jobs:
     name: Build Downstream Matrix
     needs: [sync-and-enrich]
     if: needs.sync-and-enrich.outputs.has_changes == 'true'
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, api-specs-enriched, ubuntu-24.04]
     outputs:
       matrix: ${{ steps.matrix.outputs.result }}
       has_targets: ${{ steps.matrix.outputs.has_targets }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
@@ -870,14 +871,14 @@ jobs:
     name: Notify Downstream Repositories
     needs: [sync-and-enrich, build-downstream-matrix]
     if: needs.build-downstream-matrix.outputs.has_targets == 'true'
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, api-specs-enriched, ubuntu-24.04]
     environment: downstream-dispatch
     strategy:
       matrix: ${{ fromJSON(needs.build-downstream-matrix.outputs.matrix) }}
       fail-fast: false
     steps:
       - name: Checkout repository
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
@@ -908,7 +909,7 @@ jobs:
   # ==========================================================================
   monitor-failures:
     name: Monitor Workflow Failures
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, api-specs-enriched, ubuntu-24.04]
     needs: [check-updates, sync-and-enrich, deploy-docs, build-downstream-matrix, notify-downstream]
     if: always()
     # Ensures the monitoring labels exist and opens or updates the failure issue,
@@ -946,13 +947,13 @@ jobs:
 
       - name: Checkout repository
         if: steps.check_failure.outputs.has_failure == 'true'
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
       - name: Setup Python
         if: steps.check_failure.outputs.has_failure == 'true'
-        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
