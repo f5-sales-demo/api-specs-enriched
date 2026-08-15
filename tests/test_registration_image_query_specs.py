@@ -29,6 +29,7 @@ def test_image_download_schema_marks_signed_urls_sensitive() -> None:
     response = schemas["registrationGetImageDownloadUrlResp"]
 
     assert request["properties"]["provider"]["x-ves-required"] == "true"
+    assert response["x-f5xc-terraform-resource"] == "xcsh_site_image"
     for field in ("image_download_url", "image_md5_download_url"):
         assert response["properties"][field]["x-f5xc-sensitive"] is True
 

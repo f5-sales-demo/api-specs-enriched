@@ -110,6 +110,7 @@ class TestSchemaOverrideEnricher:
         schema = enricher.enrich_spec(spec)["components"]["schemas"][
             "registrationGetImageDownloadUrlResp"
         ]
+        assert schema["x-f5xc-terraform-resource"] == "xcsh_site_image"
         assert schema["properties"]["image_download_url"]["x-f5xc-sensitive"] is True
         assert schema["properties"]["image_md5_download_url"]["x-f5xc-sensitive"] is True
 
