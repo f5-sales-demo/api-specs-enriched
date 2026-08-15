@@ -137,6 +137,7 @@ jobs:
     needs: check-updates
     if: needs.check-updates.outputs.has_updates == 'true'
     runs-on: [self-hosted, Linux, X64, api-specs-enriched, ubuntu-24.04]
+    environment: release
     # `gh release create` runs as GITHUB_TOKEN and needs contents: write. The
     # release-branch exemption below posts the existing required linked-issue
     # context with GITHUB_TOKEN. Branch pushes, PR create/merge/close and tag
@@ -240,9 +241,10 @@ jobs:
 
       - name: Install Java (for LanguageTool)
         if: steps.enriched-cache.outputs.cache-hit != 'true'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y default-jre
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          distribution: temurin
+          java-version: '17'
 
       - name: Setup Node.js for Spectral
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
@@ -250,12 +252,9 @@ jobs:
           node-version: '22'
 
       - name: Install Spectral CLI
-        # Pinned: an unpinned `npm install -g` takes whatever was published at run
-        # time, which is the supply-chain exposure zizmor's adhoc-packages audit
-        # flags. Pre-existing; surfaced when a workflow file was next staged.
-        # zizmor: ignore[adhoc-packages] — a global CLI with no project lockfile to
-        # install from; pinning the version is the available mitigation.
-        run: npm install -g @stoplight/spectral-cli@6.16.2
+        run: |
+          npm ci --ignore-scripts
+          echo "$PWD/node_modules/.bin" >> "$GITHUB_PATH"
 
       - name: Check for Discovery Data
         id: check-discovery
@@ -873,6 +872,7 @@ jobs:
     needs: [sync-and-enrich, build-downstream-matrix]
     if: needs.build-downstream-matrix.outputs.has_targets == 'true'
     runs-on: [self-hosted, Linux, X64, api-specs-enriched, ubuntu-24.04]
+    environment: downstream-dispatch
     strategy:
       matrix: ${{ fromJSON(needs.build-downstream-matrix.outputs.matrix) }}
       fail-fast: false
