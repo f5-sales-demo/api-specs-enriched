@@ -46,6 +46,14 @@ side_effects:
     PATCH: 'modifies'
     DELETE: 'deletes'
 
+# POST operations that only retrieve data. HTTP method alone is insufficient to
+# classify these: each entry is an evidence-backed exception keyed by the exact
+# operation identity published by F5.
+query_operations:
+  ves.io.schema.registration.CustomAPI.GetImageDownloadUrl:
+    rationale: Returns signed Customer Edge image URLs without changing tenant state
+    required_fields: [provider]
+
 # Operation Metadata Extensions:
 # ===============================
 #

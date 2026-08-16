@@ -340,6 +340,78 @@ class TestSpecEnrichment:
         result = enricher.enrich_spec(spec)
         assert result == spec
 
+    def test_curated_post_query_is_low_danger_and_has_no_side_effects(self, enricher):
+        operation_id = "ves.io.schema.registration.CustomAPI.GetImageDownloadUrl"
+        spec = {
+            "paths": {
+                "/api/register/namespaces/system/get-image-download-url": {
+                    "post": {
+                        "operationId": operation_id,
+                        "x-f5xc-operation-metadata": {
+                            "purpose": "Retrieve signed Customer Edge image download URLs"
+                        },
+                        "requestBody": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/registrationGetImageDownloadUrlReq"
+                                    }
+                                }
+                            }
+                        },
+                        "responses": {
+                            "200": {
+                                "description": "ok",
+                                "content": {
+                                    "application/json": {
+                                        "schema": {
+                                            "$ref": "#/components/schemas/registrationGetImageDownloadUrlResp"
+                                        }
+                                    }
+                                },
+                            }
+                        },
+                    }
+                }
+            }
+        }
+
+        operation = enricher.enrich_spec(spec)["paths"][
+            "/api/register/namespaces/system/get-image-download-url"
+        ]["post"]
+        assert operation["x-f5xc-operation-role"] == "query"
+        assert operation["x-f5xc-danger-level"] == "low"
+        assert operation["x-f5xc-required-fields"] == ["provider"]
+        assert "x-f5xc-side-effects" not in operation
+        metadata = operation["x-f5xc-operation-metadata"]
+        assert metadata["purpose"] == "Retrieve signed Customer Edge image download URLs"
+        assert metadata["side_effects"] == {}
+        assert metadata["conditions"]["postconditions"] == [
+            "Requested data returned",
+            "Tenant state unchanged",
+        ]
+
+    @pytest.mark.parametrize("missing", ["requestBody", "responses"])
+    def test_curated_query_requires_request_and_response_schemas(self, enricher, missing):
+        operation = {
+            "operationId": "ves.io.schema.registration.CustomAPI.GetImageDownloadUrl",
+            "requestBody": {
+                "content": {
+                    "application/json": {"schema": {"$ref": "#/components/schemas/QueryReq"}}
+                }
+            },
+            "responses": {
+                "200": {
+                    "content": {
+                        "application/json": {"schema": {"$ref": "#/components/schemas/QueryResp"}}
+                    }
+                }
+            },
+        }
+        operation.pop(missing)
+        with pytest.raises(ValueError, match=r"must have a .* schema"):
+            enricher.enrich_spec({"paths": {"/api/register/query": {"post": operation}}})
+
 
 class TestEdgeCases:
     """Test edge cases and error conditions."""

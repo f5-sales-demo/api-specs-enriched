@@ -93,6 +93,37 @@ class TestSchemaOverrideEnricher:
         assert "variant_c" in schema["properties"]
         assert schema["properties"]["variant_c"] == {"$ref": "#/components/schemas/emptySchema"}
 
+    def test_marks_image_download_urls_sensitive(self, enricher):
+        spec = {
+            "components": {
+                "schemas": {
+                    "registrationGetImageDownloadUrlReq": {
+                        "type": "object",
+                        "properties": {"provider": {"type": "string"}},
+                    },
+                    "registrationGetImageDownloadUrlResp": {
+                        "type": "object",
+                        "properties": {
+                            "image_download_url": {"type": "string"},
+                            "image_md5_download_url": {"type": "string"},
+                        },
+                    },
+                }
+            }
+        }
+        schemas = enricher.enrich_spec(spec)["components"]["schemas"]
+        request = schemas["registrationGetImageDownloadUrlReq"]
+        schema = schemas["registrationGetImageDownloadUrlResp"]
+        assert request["properties"]["provider"]["x-f5xc-recommended-value"] == "KVM"
+        assert request["properties"]["provider"]["x-f5xc-description-medium"].startswith(
+            "Deployment platform identifier"
+        )
+        assert schema["x-f5xc-terraform-resource"] == "xcsh_site_image"
+        assert schema["x-f5xc-category"] == "Sites"
+        assert schema["x-f5xc-description-medium"].startswith("Signed Customer Edge image")
+        assert schema["properties"]["image_download_url"]["x-f5xc-sensitive"] is True
+        assert schema["properties"]["image_md5_download_url"]["x-f5xc-sensitive"] is True
+
     def test_updates_oneof_extension_array(self, synthetic_enricher, test_spec):
         result = synthetic_enricher.enrich_spec(test_spec)
         for schema_name in ["testResourceCreateSpecType", "testResourceGetSpecType"]:

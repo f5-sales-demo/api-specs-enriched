@@ -308,6 +308,18 @@ stubby as long as the `### x-name` header exists and the
 
 ## Injected — property-level
 
+### x-f5xc-sensitive
+
+- **Applied at:** schema property
+- **Purpose:** Marks credentials, secrets, and signed URLs that consumers must redact.
+- **Consumers:** Terraform, CLI, MCP, IDE
+- **Value type:** boolean
+- **Value schema:** `{"type": "boolean"}`
+- **Injected by:** scripts/utils/schema_override_enricher.py
+- **Driven by config:** config/schema_overrides.yaml
+- **Example:** `"x-f5xc-sensitive": true`
+- **Pass-through from upstream:** no
+
 ### x-f5xc-description
 
 - **Applied at:** schema property
@@ -549,6 +561,18 @@ stubby as long as the `### x-name` header exists and the
 - **Pass-through from upstream:** no
 
 ## Injected — operation-level
+
+### x-f5xc-operation-role
+
+- **Applied at:** operation
+- **Purpose:** Identifies read-only queries whose HTTP method does not communicate their semantics.
+- **Consumers:** Terraform, CLI, MCP
+- **Value type:** string
+- **Value schema:** `{"type": "string", "enum": ["query"]}`
+- **Injected by:** scripts/utils/operation_metadata_enricher.py
+- **Driven by config:** config/operation_metadata.yaml
+- **Example:** `"x-f5xc-operation-role": "query"`
+- **Pass-through from upstream:** no
 
 ### x-f5xc-required-fields
 

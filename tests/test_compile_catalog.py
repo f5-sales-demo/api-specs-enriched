@@ -6,6 +6,8 @@ import sys
 import tempfile
 from pathlib import Path
 
+import pytest
+
 from scripts.compile_catalog import (
     assign_danger_level,
     compile_catalog,
@@ -283,6 +285,31 @@ def test_merge_spec_files_combines_paths_from_multiple_files():
         assert len(merged["paths"]) == 2
 
 
+def test_merge_spec_files_preserves_the_release_version(tmp_path):
+    spec = {
+        "openapi": "3.0.3",
+        "info": {"version": "2.1.220"},
+        "paths": {"/api/widgets": {"get": {"responses": {}}}},
+    }
+    (tmp_path / "widgets.json").write_text(json.dumps(spec), encoding="utf-8")
+    (tmp_path / "duplicate.json").write_text(json.dumps(spec), encoding="utf-8")
+
+    assert merge_spec_files(tmp_path)["info"]["version"] == "2.1.220"
+
+
+def test_merge_spec_files_rejects_inconsistent_release_versions(tmp_path):
+    for name, version in (("one.json", "2.1.219"), ("two.json", "2.1.220")):
+        spec = {
+            "openapi": "3.0.3",
+            "info": {"version": version},
+            "paths": {f"/api/{name}": {"get": {"responses": {}}}},
+        }
+        (tmp_path / name).write_text(json.dumps(spec), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="inconsistent versions"):
+        merge_spec_files(tmp_path)
+
+
 def test_merge_spec_files_skips_non_spec_files():
     with tempfile.TemporaryDirectory() as tmpdir:
         spec = {"openapi": "3.0.3", "paths": {"/api/items": {"get": {"responses": {}}}}}
@@ -307,8 +334,6 @@ def test_merge_spec_files_handles_duplicate_paths():
 
 
 def test_compile_catalog_from_enriched_specs():
-    import pytest
-
     enriched_dir = Path("docs/specifications/api")
     if not enriched_dir.exists():
         pytest.skip("Enriched specs not available")
