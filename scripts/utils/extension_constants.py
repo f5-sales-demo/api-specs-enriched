@@ -84,6 +84,7 @@ X_F5XC_REQUIRES = "x-f5xc-requires"
 X_F5XC_REFERENCES = "x-f5xc-references"
 X_F5XC_FIELD_EXAMPLES = "x-f5xc-field-examples"
 X_F5XC_UNIQUENESS = "x-f5xc-uniqueness"
+X_F5XC_SENSITIVE = "x-f5xc-sensitive"
 
 # Original (misspelled) upstream property key, preserved when the buffer zone
 # renames the presented property name (api-specs #686)
@@ -100,6 +101,7 @@ X_F5XC_REQUIRED_FIELDS = "x-f5xc-required-fields"
 X_F5XC_DANGER_LEVEL = "x-f5xc-danger-level"
 X_F5XC_CONFIRMATION_REQUIRED = "x-f5xc-confirmation-required"
 X_F5XC_SIDE_EFFECTS = "x-f5xc-side-effects"
+X_F5XC_OPERATION_ROLE = "x-f5xc-operation-role"
 
 # Discovery-derived extensions for live API behavior (Issue #314)
 X_F5XC_DISCOVERED_RESPONSE_TIME = "x-f5xc-discovered-response-time"
@@ -251,12 +253,14 @@ VALID_X_F5XC_EXTENSIONS = frozenset(
         X_F5XC_REFERENCES,
         X_F5XC_FIELD_EXAMPLES,
         X_F5XC_UNIQUENESS,
+        X_F5XC_SENSITIVE,
         X_F5XC_WIRE_NAME,
         # Operation-level
         X_F5XC_REQUIRED_FIELDS,
         X_F5XC_DANGER_LEVEL,
         X_F5XC_CONFIRMATION_REQUIRED,
         X_F5XC_SIDE_EFFECTS,
+        X_F5XC_OPERATION_ROLE,
         # Discovery-derived (Issue #314)
         X_F5XC_DISCOVERED_RESPONSE_TIME,
         X_F5XC_DISCOVERED_RATE_LIMITS,

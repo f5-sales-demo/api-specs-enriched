@@ -40,6 +40,7 @@ def merge_spec_files(dir_path: Path) -> dict[str, Any]:
     merged_paths: dict[str, Any] = {}
     merged_schemas: dict[str, Any] = {}
     collisions: list[dict[str, Any]] = []
+    versions: set[str] = set()
 
     for spec_file in sorted(dir_path.glob("*.json")):
         if spec_file.name in {
@@ -58,6 +59,9 @@ def merge_spec_files(dir_path: Path) -> dict[str, Any]:
         paths = spec.get("paths")
         if not paths or not isinstance(paths, dict):
             continue
+        version = spec.get("info", {}).get("version")
+        if isinstance(version, str) and version:
+            versions.add(version)
 
         for path, path_item in paths.items():
             if not isinstance(path_item, dict):
@@ -98,7 +102,10 @@ def merge_spec_files(dir_path: Path) -> dict[str, Any]:
         schemas = spec.get("components", {}).get("schemas", {})
         merged_schemas.update(schemas)
 
-    return {
+    if len(versions) > 1:
+        raise ValueError(f"input specifications have inconsistent versions: {sorted(versions)}")
+
+    merged = {
         "openapi": "3.0.3",
         "paths": merged_paths,
         "components": {"schemas": merged_schemas},
@@ -107,6 +114,9 @@ def merge_spec_files(dir_path: Path) -> dict[str, Any]:
             key=lambda c: (c["path"], c["method"], c["losingOperationId"]),
         ),
     }
+    if versions:
+        merged["info"] = {"version": next(iter(versions))}
+    return merged
 
 
 _DANGER_MAP: dict[str, str] = {
@@ -741,6 +751,24 @@ def _request_schema_key(operation: dict[str, Any]) -> str | None:
     return ref.rsplit("/", 1)[-1]
 
 
+def _response_schema_key(operation: dict[str, Any]) -> str | None:
+    """Return the unique successful JSON response schema key, when referenced."""
+    refs: set[str] = set()
+    for status, response in (operation.get("responses") or {}).items():
+        if not str(status).startswith("2") or not isinstance(response, dict):
+            continue
+        schema = (response.get("content") or {}).get("application/json", {}).get("schema", {})
+        ref = schema.get("$ref") if isinstance(schema, dict) else None
+        if isinstance(ref, str) and ref:
+            refs.add(ref.rsplit("/", 1)[-1])
+    if len(refs) > 1:
+        operation_id = operation.get("operationId") or "<unknown>"
+        raise ValueError(
+            f"{operation_id} has ambiguous successful JSON response schemas: {sorted(refs)}"
+        )
+    return next(iter(refs), None)
+
+
 def build_api_operations(paths: dict[str, Any]) -> list[dict[str, Any]]:
     """Group every published operation under its ves.io.schema identity.
 
@@ -792,6 +820,24 @@ def build_api_operations(paths: dict[str, Any]) -> list[dict[str, Any]]:
             request_schema = _request_schema_key(operation)
             if request_schema is not None:
                 entry["requestSchema"] = request_schema
+            response_schema = _response_schema_key(operation)
+            if response_schema is not None:
+                entry["responseSchema"] = response_schema
+            operation_role = operation.get("x-f5xc-operation-role")
+            if operation_role is not None:
+                if operation_role != "query":
+                    raise ValueError(
+                        f"{operation_id} has unsupported x-f5xc-operation-role {operation_role!r}"
+                    )
+                if request_schema is None or response_schema is None:
+                    raise ValueError(
+                        f"query operation {operation_id} requires request and response schemas"
+                    )
+                if operation.get("x-f5xc-danger-level") != "low":
+                    raise ValueError(f"query operation {operation_id} must have low danger")
+                if operation.get("x-f5xc-side-effects"):
+                    raise ValueError(f"query operation {operation_id} must not have side effects")
+                entry["role"] = operation_role
             grouped.setdefault(identity, []).append(entry)
 
     return [

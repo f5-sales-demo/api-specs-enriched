@@ -2979,10 +2979,9 @@
           "register"
         ],
         "x-f5xc-operation-metadata": {
-          "purpose": "Resource creation operation",
+          "purpose": "Retrieve signed Customer Edge image download URLs",
           "required_fields": [
-            "metadata.name",
-            "metadata.namespace"
+            "provider"
           ],
           "optional_fields": [],
           "field_docs": {},
@@ -2991,16 +2990,12 @@
               "Active namespace"
             ],
             "postconditions": [
-              "Get-image-download-url resource created",
-              "Resource assigned unique identifier"
+              "Requested data returned",
+              "Tenant state unchanged"
             ]
           },
-          "side_effects": {
-            "creates": [
-              "get-image-download-url"
-            ]
-          },
-          "danger_level": "medium",
+          "side_effects": {},
+          "danger_level": "low",
           "confirmation_required": false,
           "common_errors": [
             {
@@ -3039,16 +3034,11 @@
             "resource_usage": "low"
           }
         },
+        "x-f5xc-operation-role": "query",
         "x-f5xc-required-fields": [
-          "metadata.name",
-          "metadata.namespace"
+          "provider"
         ],
-        "x-f5xc-danger-level": "medium",
-        "x-f5xc-side-effects": {
-          "creates": [
-            "get-image-download-url"
-          ]
-        },
+        "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
           "p95_ms": 3000,
@@ -29815,6 +29805,8 @@
             "x-ves-validation-rules": {
               "ves.io.schema.rules.message.required": "true"
             },
+            "x-f5xc-recommended-value": "KVM",
+            "x-f5xc-description-medium": "Deployment platform identifier for the requested Customer Edge image.",
             "x-f5xc-example": "kvm",
             "x-validation-rules": {
               "ves.io.schema.rules.message.required": "true"
@@ -29881,6 +29873,7 @@
             "description": "URL of image download.",
             "title": "Image Download Url",
             "x-displayname": "Image Download URL.",
+            "x-f5xc-sensitive": true,
             "maxLength": 1024,
             "x-f5xc-constraints": {
               "constraintType": "string",
@@ -29904,6 +29897,7 @@
             "description": "URL of image md5 download.",
             "title": "Image Md5 Download Url",
             "x-displayname": "Image Md5 Download URL.",
+            "x-f5xc-sensitive": true,
             "maxLength": 1024,
             "x-f5xc-constraints": {
               "constraintType": "string",
@@ -29934,6 +29928,9 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"image_download_url\": \"value\",\n    \"image_md5_download_url\": \"value\"\n  }\n}"
         },
         "x-f5xc-cli-domain": "ce_management",
+        "x-f5xc-terraform-resource": "xcsh_site_image",
+        "x-f5xc-category": "Sites",
+        "x-f5xc-description-medium": "Signed Customer Edge image and checksum URLs for a requested deployment platform.",
         "x-f5xc-namespace-profile": {
           "constraint": {
             "allowed": [

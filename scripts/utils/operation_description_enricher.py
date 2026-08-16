@@ -15,9 +15,10 @@ Description Tiers:
 - long: max 500 chars - Full documentation, AI context
 
 Matching Strategy:
-1. Exact resource match (e.g., "http_loadbalancer")
-2. Pattern-based match (regex against resource type)
-3. HTTP method fallback (generic descriptions by method)
+1. Exact operation-ID match for non-CRUD semantics
+2. Exact resource match (e.g., "http_loadbalancer")
+3. Pattern-based match (regex against resource type)
+4. HTTP method fallback (generic descriptions by method)
 
 Usage:
     enricher = OperationDescriptionEnricher()
@@ -89,6 +90,7 @@ class OperationDescriptionEnricher:
             )
 
         self.config_path = config_path
+        self.operations: dict[str, dict[str, str]] = {}
         self.resources: dict[str, dict[str, str]] = {}
         self.patterns: list[dict[str, Any]] = []
         self.method_fallbacks: dict[str, dict[str, str]] = {}
@@ -109,6 +111,15 @@ class OperationDescriptionEnricher:
             self.enabled = config.get("enabled", False)
             if not self.enabled:
                 return
+
+            operations = config.get("operations", {})
+            for operation_id, operation_config in operations.items():
+                if isinstance(operation_config, dict):
+                    self.operations[operation_id] = {
+                        "short": operation_config.get("short", ""),
+                        "medium": operation_config.get("medium", ""),
+                        "long": operation_config.get("long", ""),
+                    }
 
             # Load explicit resource configurations
             resources = config.get("resources", {})
@@ -192,6 +203,13 @@ class OperationDescriptionEnricher:
 
         return None
 
+    def get_operation_description(self, operation_id: str, tier: str = "short") -> str | None:
+        """Return an exact operation description for non-CRUD API semantics."""
+        description = self.operations.get(operation_id)
+        if description is None:
+            return None
+        return description.get(tier, "")
+
     def _extract_resource_type(self, path: str) -> str | None:
         """Extract resource type from API path.
 
@@ -264,7 +282,9 @@ class OperationDescriptionEnricher:
                 metadata = operation["x-f5xc-operation-metadata"]
 
                 # Get description using matching strategy (use 'short' tier for purpose)
-                description = self.get_description(resource_type, method, tier="short")
+                description = self.get_operation_description(
+                    operation.get("operationId", ""), tier="short"
+                ) or self.get_description(resource_type, method, tier="short")
 
                 # Preserve existing purpose - only set if not already present (Issue #408)
                 existing_purpose = metadata.get("purpose")

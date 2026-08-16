@@ -31,11 +31,15 @@ from scripts.compile_catalog import (
 )
 
 
-def _operation(operation_id, request_ref=None):
+def _operation(operation_id, request_ref=None, response_ref=None):
     operation = {"operationId": operation_id, "responses": {"200": {"description": "ok"}}}
     if request_ref is not None:
         operation["requestBody"] = {
             "content": {"application/json": {"schema": {"$ref": request_ref}}},
+        }
+    if response_ref is not None:
+        operation["responses"]["200"]["content"] = {
+            "application/json": {"schema": {"$ref": response_ref}}
         }
     return operation
 
@@ -220,6 +224,76 @@ def test_request_schema_is_recorded_only_when_the_operation_takes_a_body():
     get = next(o for o in crawler["operations"] if o["method"] == "GET")
     assert post["requestSchema"] == "api_crawlerCreateRequest"
     assert "requestSchema" not in get
+
+
+def test_response_schema_is_recorded_only_for_a_referenced_success_body():
+    paths = {
+        "/api/register/query": {
+            "post": _operation(
+                "ves.io.schema.registration.CustomAPI.Query",
+                "#/components/schemas/QueryReq",
+                "#/components/schemas/QueryResp",
+            )
+        },
+        "/api/register/inline": {
+            "get": {
+                "operationId": "ves.io.schema.registration.CustomAPI.Inline",
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "content": {"application/json": {"schema": {"type": "object"}}},
+                    }
+                },
+            }
+        },
+    }
+    operations = build_api_operations(paths)[0]["operations"]
+    by_id = {operation["operationId"]: operation for operation in operations}
+    assert by_id["ves.io.schema.registration.CustomAPI.Query"]["responseSchema"] == "QueryResp"
+    assert "responseSchema" not in by_id["ves.io.schema.registration.CustomAPI.Inline"]
+
+
+def test_ambiguous_success_response_schemas_are_rejected():
+    operation = _operation(
+        "ves.io.schema.registration.CustomAPI.Query",
+        "#/components/schemas/QueryReq",
+        "#/components/schemas/QueryResp",
+    )
+    operation["responses"]["201"] = {
+        "description": "other",
+        "content": {"application/json": {"schema": {"$ref": "#/components/schemas/OtherResp"}}},
+    }
+    with pytest.raises(ValueError, match="ambiguous successful JSON response schemas"):
+        build_api_operations({"/api/register/query": {"post": operation}})
+
+
+def test_query_role_requires_read_only_metadata_and_schema_pair():
+    operation = _operation(
+        "ves.io.schema.registration.CustomAPI.Query",
+        "#/components/schemas/QueryReq",
+        "#/components/schemas/QueryResp",
+    )
+    operation.update(
+        {
+            "x-f5xc-operation-role": "query",
+            "x-f5xc-danger-level": "low",
+        }
+    )
+    query = build_api_operations({"/api/register/query": {"post": operation}})[0]["operations"][0]
+    assert query["role"] == "query"
+    assert query["requestSchema"] == "QueryReq"
+    assert query["responseSchema"] == "QueryResp"
+
+    operation["x-f5xc-side-effects"] = {"creates": ["query"]}
+    with pytest.raises(ValueError, match="must not have side effects"):
+        build_api_operations({"/api/register/query": {"post": operation}})
+
+
+def test_unknown_operation_role_is_rejected():
+    operation = _operation("ves.io.schema.registration.CustomAPI.Query")
+    operation["x-f5xc-operation-role"] = "lookup"
+    with pytest.raises(ValueError, match="unsupported x-f5xc-operation-role"):
+        build_api_operations({"/api/register/query": {"post": operation}})
 
 
 def test_duplicate_operation_ids_are_rejected():
