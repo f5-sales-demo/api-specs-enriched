@@ -20,6 +20,7 @@ from scripts.utils.extension_constants import (
     X_F5XC_RESPONSE_TIME_MS,
 )
 from scripts.utils.path_config import PathConfig
+from scripts.utils.pii_sanitizer import sanitize_discovery_payload
 from scripts.utils.report_base import BaseReporter
 from scripts.utils.server_variables_markdown import ServerVariablesMarkdownHelper
 
@@ -190,7 +191,7 @@ class ReportGenerator(BaseReporter):
                 if self.include_examples and endpoint.examples:
                     operation["responses"][str(endpoint.status_code or 200)]["content"][
                         "application/json"
-                    ]["example"] = endpoint.examples[0]
+                    ]["example"] = sanitize_discovery_payload(endpoint.examples[0])
 
                 if endpoint.response_time_ms:
                     operation[X_F5XC_RESPONSE_TIME_MS] = round(endpoint.response_time_ms, 2)

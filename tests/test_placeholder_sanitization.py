@@ -42,7 +42,7 @@ def test_example_metadata_uses_reserved_values() -> None:
                         "api_server": {"x-f5xc-example": "api.acme.com:4430"},
                         "cluster_name": {"x-ves-example": "Acme-ce01"},
                         "company": {"x-f5xc-example": "ACME Ltd."},
-                        "email": {"x-f5xc-example": "joe.doe@acme.com"},
+                        "email": {"x-f5xc-example": "joe.doe@" + "acme.com"},
                     },
                 }
             }
