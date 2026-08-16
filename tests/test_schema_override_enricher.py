@@ -124,6 +124,28 @@ class TestSchemaOverrideEnricher:
         assert schema["properties"]["image_download_url"]["x-f5xc-sensitive"] is True
         assert schema["properties"]["image_md5_download_url"]["x-f5xc-sensitive"] is True
 
+    def test_marks_clear_and_blindfold_secret_payloads_sensitive(self, enricher):
+        spec = {
+            "components": {
+                "schemas": {
+                    "schemaClearSecretInfoType": {
+                        "type": "object",
+                        "properties": {"url": {"type": "string"}},
+                    },
+                    "schemaBlindfoldSecretInfoType": {
+                        "type": "object",
+                        "properties": {"location": {"type": "string"}},
+                    },
+                }
+            }
+        }
+        schemas = enricher.enrich_spec(spec)["components"]["schemas"]
+        assert schemas["schemaClearSecretInfoType"]["properties"]["url"]["x-f5xc-sensitive"] is True
+        assert (
+            schemas["schemaBlindfoldSecretInfoType"]["properties"]["location"]["x-f5xc-sensitive"]
+            is True
+        )
+
     def test_updates_oneof_extension_array(self, synthetic_enricher, test_spec):
         result = synthetic_enricher.enrich_spec(test_spec)
         for schema_name in ["testResourceCreateSpecType", "testResourceGetSpecType"]:

@@ -68,6 +68,22 @@ overrides:
               Complete cloud-init containing the site-scoped one-time node
               token.
 
+  secret_payloads:
+    upstream_issue: "f5-sales-demo/api-specs-enriched#1492"
+    description: >-
+      Secret URL fields carry either Base64 plaintext or a sealed secret
+      envelope. Mark both forms sensitive so generated Terraform providers do
+      not render credential material in plans or diagnostics.
+    schemas:
+      - pattern: "^schemaClearSecretInfoType$"
+        set_property_extensions:
+          url:
+            x-f5xc-sensitive: true
+      - pattern: "^schemaBlindfoldSecretInfoType$"
+        set_property_extensions:
+          location:
+            x-f5xc-sensitive: true
+
   registration_approval:
     upstream_issue: "f5-sales-demo/terraform-provider-xcsh#1206"
     description: >-
