@@ -28,9 +28,7 @@ def test_downstream_matrix_sets_up_python_before_installing_pyyaml() -> None:
         "\n  notify-downstream:\n", maxsplit=1
     )[0]
 
-    setup_python = (
-        "uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97"
-    )
+    setup_python = "uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97"
     install = "run: python -m pip install pyyaml"
 
     assert setup_python in job
