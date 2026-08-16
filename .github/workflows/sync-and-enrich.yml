@@ -168,36 +168,13 @@ jobs:
       - name: Install Python dependencies
         run: pip install -r requirements.txt
 
-      - name: Read release tag for cache key
-        id: release-info
-        run: |
-          if [ -f .github_release ]; then
-            TAG=$(jq -r '.tag_name // "unknown"' .github_release)
-          else
-            TAG="unknown"
-          fi
-          echo "release_tag=$TAG" >> "$GITHUB_OUTPUT"
-
-      - name: Restore specs cache
-        if: github.event_name == 'push'
-        id: specs-cache
-        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: specs/original
-          key: specs-original-${{ steps.release-info.outputs.release_tag }}
-
+      # A release-producing event must consume fresh upstream bytes. The old
+      # specs/original cache could make a forced push or dispatch silently
+      # enrich the previous upstream release.
       - name: Download specifications from GitHub Releases
-        if: steps.specs-cache.outputs.cache-hit != 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python -m scripts.download --force
-
-      - name: Save specs cache
-        if: steps.specs-cache.outputs.cache-hit != 'true' && github.event_name == 'push'
-        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: specs/original
-          key: specs-original-${{ steps.release-info.outputs.release_tag }}
 
       - name: Compute specs fingerprint
         id: specs-fingerprint
@@ -582,57 +559,90 @@ jobs:
 
           BRANCH="release/v${VERSION}"
 
-          # Pre-clean: if a prior run left behind a stale release PR + branch
-          # (auto-merge timeout, push rejection, Super-Linter failure, etc.),
-          # the next run hits `! [rejected] ... (non-fast-forward)` on push.
-          # This workflow owns the `release/v${VERSION}` branch name, so
-          # force-cleanup is safe — no other producer ever pushes here.
-          STALE_PR=$(gh pr list --state open --head "$BRANCH" --json number --jq '.[0].number // empty' 2>/dev/null || true)
-          if [ -n "$STALE_PR" ]; then
-            echo "Found stale PR #${STALE_PR} on ${BRANCH}; closing with --delete-branch"
-            gh pr close "$STALE_PR" --delete-branch --comment "Superseded by sync-and-enrich run ${GITHUB_RUN_ID}" || true
+          # A retry must preserve the exact release PR that an earlier run
+          # created. In particular, never close or delete an OPEN release PR:
+          # its required checks may simply outlive this runner's wait budget.
+          # A later forced retry resumes from the merged PR's immutable commit.
+          publish_tag() {
+            TARGET_COMMIT="$1"
+            git fetch --tags origin main
+            git merge-base --is-ancestor "$TARGET_COMMIT" origin/main || {
+              echo "::error::Release PR merge commit is not reachable from main"
+              exit 1
+            }
+            if git rev-parse -q --verify "refs/tags/v${VERSION}" >/dev/null; then
+              TAG_COMMIT=$(git rev-parse "v${VERSION}^{}")
+              [ "$TAG_COMMIT" = "$TARGET_COMMIT" ] || {
+                echo "::error::Existing v${VERSION} tag names a different commit"
+                exit 1
+              }
+            else
+              git tag -a "v${VERSION}" "$TARGET_COMMIT" -m "Release v${VERSION} (${BUMP_TYPE})"
+              git push origin "v${VERSION}"
+            fi
+            git checkout --detach "$TARGET_COMMIT"
+            echo "release_commit=${TARGET_COMMIT}" >> "$GITHUB_ENV"
+            echo "target_commit=${TARGET_COMMIT}" >> "$GITHUB_OUTPUT"
+            echo "::notice::Released v${VERSION} from immutable merge ${TARGET_COMMIT}"
+          }
+
+          EXISTING_PR=$(gh pr list --state all --head "$BRANCH" \
+            --json number,state,mergeCommit --jq '.[0] // empty')
+          if [ -n "$EXISTING_PR" ]; then
+            RELEASE_PR=$(printf '%s' "$EXISTING_PR" | jq -r '.number')
+            RELEASE_STATE=$(printf '%s' "$EXISTING_PR" | jq -r '.state')
+            case "$RELEASE_STATE" in
+            MERGED)
+              TARGET_COMMIT=$(printf '%s' "$EXISTING_PR" | jq -er '.mergeCommit.oid')
+              publish_tag "$TARGET_COMMIT"
+              ;;
+            OPEN)
+              # Preserve the existing PR and let its currently running checks
+              # finish. Enable auto-merge only if the original run did not.
+              AUTO_MERGE=$(gh pr view "$RELEASE_PR" --json autoMergeRequest \
+                --jq 'if .autoMergeRequest then "true" else "false" end')
+              if [ "$AUTO_MERGE" != true ]; then
+                gh pr merge "$RELEASE_PR" --squash --auto --delete-branch
+              fi
+              WAIT_FOR_MERGE_MAX_TOTAL=1800 bash scripts/release/wait-for-merge.sh "$RELEASE_PR"
+              TARGET_COMMIT=$(gh pr view "$RELEASE_PR" --json state,mergeCommit \
+                --jq 'if .state == "MERGED" then .mergeCommit.oid else empty end')
+              [ -n "$TARGET_COMMIT" ] || {
+                echo "::error::Release PR did not produce a merge commit"
+                exit 1
+              }
+              publish_tag "$TARGET_COMMIT"
+              ;;
+            CLOSED)
+              echo "::error::Release PR #${RELEASE_PR} closed without merging; refusing to supersede it"
+              exit 1
+              ;;
+            *)
+              echo "::error::Unexpected release PR state: ${RELEASE_STATE}"
+              exit 1
+              ;;
+            esac
           else
-            # No stale PR, but the branch may still linger (e.g. the push
-            # succeeded but PR creation or auto-merge failed later).
-            git push origin ":$BRANCH" 2>/dev/null || true
-          fi
+            # Create a new release PR only when this version has no prior PR.
+            git checkout -b "$BRANCH"
+            git add -f CHANGELOG.md .github_release docs/specifications/api/ docs/api-reference/
+            if git diff --staged --quiet; then
+              echo "::error::Release detector requested v${VERSION}, but no generated output is staged"
+              exit 1
+            fi
 
-          # Create release branch from current state
-          git checkout -b "$BRANCH"
-
-          # Stage enriched outputs
-          # Use -f to add docs/specifications/api/ and docs/api-reference/ which are in .gitignore
-          git add -f CHANGELOG.md .github_release docs/specifications/api/ docs/api-reference/
-
-          if ! git diff --staged --quiet; then
-            # No [skip ci]: Super-Linter is a required check on main and
-            # is only triggered by pull_request events that do NOT carry a
-            # [skip ci] marker. The push trigger's paths: filter above
-            # (scripts/**, config/**, requirements.txt, this workflow file,
-            # docs/**/*.html) already excludes every path the release
-            # commit touches — CHANGELOG.md, .github_release, the
-            # docs/specifications/api/** and docs/api-reference/** trees —
-            # so the merge commit will NOT re-trigger this workflow.
             git commit -m "chore: release v${VERSION} (${BUMP_TYPE})"
-
-            # Push release branch
             git push origin "$BRANCH"
-
-            # Create PR (release/* branches are excluded from linked-issue check)
             PR_URL=$(gh pr create \
               --base main \
               --head "$BRANCH" \
               --title "chore: release v${VERSION} (${BUMP_TYPE})" \
               --body "Automated release v${VERSION} (${BUMP_TYPE}). Created by the sync-and-enrich workflow.")
-
+            RELEASE_PR=$(gh pr view "$BRANCH" --json number --jq '.number')
 
             # `release/**` is exempt from the linked-issue policy, but its
-            # normal status publisher is a best-effort scheduled workflow.
-            # The required `Check linked issues` context must therefore be
-            # posted synchronously for this exact release PR before auto-merge
-            # can evaluate it. Use GITHUB_TOKEN (not VERSION_BUMP_PAT) so the
-            # status has the GitHub Actions app identity pinned by protection.
-            PR_HEAD_SHA=$(gh pr view "$BRANCH" --json headRefOid --jq '.headRefOid')
+            # required context must be posted synchronously before auto-merge.
+            PR_HEAD_SHA=$(gh pr view "$RELEASE_PR" --json headRefOid --jq '.headRefOid')
             GH_TOKEN="$RELEASE_STATUS_TOKEN" gh api \
               --method POST \
               "repos/${GITHUB_REPOSITORY}/statuses/${PR_HEAD_SHA}" \
@@ -641,39 +651,15 @@ jobs:
               -f description='Automated release branch is exempt'
             echo "Created release PR: ${PR_URL}"
 
-            # Enable auto-merge (squash) — merges when required checks pass
-            gh pr merge "$BRANCH" --squash --auto --delete-branch
-
-            # Wait for PR to merge with exponential backoff (60 s warm-up + up
-            # to 30 min total). The 30-min ceiling accommodates the enforcing
-            # Contract-diff gate which runs the full enrichment pipeline
-            # (~21 min) as the long-pole check. Replaces a prior hardcoded
-            # 30×10 s loop that timed out whenever Super-Linter ran longer
-            # than 5 min, leaving the release PR orphaned. Exits non-zero on
-            # CLOSED-without-merge or on timeout; emits diagnostic JSON to
-            # stderr on failure.
-            WAIT_FOR_MERGE_MAX_TOTAL=1800 bash scripts/release/wait-for-merge.sh "$BRANCH"
-
-            # Switch back to main and pull the merge commit
-            git checkout main
-            git pull origin main
-
-            # Create annotated tag on the merge commit
-            git tag -a "v${VERSION}" -m "Release v${VERSION} (${BUMP_TYPE})"
-            git push origin "v${VERSION}"
-
-            # The publication receipt in the release body must name the commit the
-            # tag resolves to. Capture it here, on the merge commit we just tagged,
-            # rather than re-deriving it in a later step where main may already have
-            # moved on — a receipt naming the wrong commit is rejected downstream
-            # after the release is immutable and can no longer be corrected.
-            TARGET_COMMIT=$(git rev-parse HEAD)
-            echo "release_commit=${TARGET_COMMIT}" >> "$GITHUB_ENV"
-            echo "target_commit=${TARGET_COMMIT}" >> "$GITHUB_OUTPUT"
-
-            echo "::notice::Released v${VERSION} via PR merge + tag"
-          else
-            echo "No changes to commit"
+            gh pr merge "$RELEASE_PR" --squash --auto --delete-branch
+            WAIT_FOR_MERGE_MAX_TOTAL=1800 bash scripts/release/wait-for-merge.sh "$RELEASE_PR"
+            TARGET_COMMIT=$(gh pr view "$RELEASE_PR" --json state,mergeCommit \
+              --jq 'if .state == "MERGED" then .mergeCommit.oid else empty end')
+            [ -n "$TARGET_COMMIT" ] || {
+              echo "::error::Release PR did not produce a merge commit"
+              exit 1
+            }
+            publish_tag "$TARGET_COMMIT"
           fi
 
       - name: Create release package
