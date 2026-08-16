@@ -1889,18 +1889,28 @@
           "register"
         ],
         "x-f5xc-operation-metadata": {
-          "purpose": "Resource retrieval operation",
-          "required_fields": [],
+          "purpose": "Issue site-scoped Customer Edge cloud-init",
+          "required_fields": [
+            "provider",
+            "site_name"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
             "prerequisites": [
               "Active namespace"
             ],
-            "postconditions": []
+            "postconditions": [
+              "One-time site node token issued",
+              "Credential returned only in the response"
+            ]
           },
-          "side_effects": {},
-          "danger_level": "low",
+          "side_effects": {
+            "creates": [
+              "site_node_token"
+            ]
+          },
+          "danger_level": "medium",
           "confirmation_required": false,
           "common_errors": [
             {
@@ -1939,7 +1949,17 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-danger-level": "low",
+        "x-f5xc-operation-role": "issuance",
+        "x-f5xc-required-fields": [
+          "provider",
+          "site_name"
+        ],
+        "x-f5xc-danger-level": "medium",
+        "x-f5xc-side-effects": {
+          "creates": [
+            "site_node_token"
+          ]
+        },
         "x-discovered-response-time-ms": 153.29,
         "x-discovered-sample-size": 1,
         "x-f5xc-discovered-response-time": {
@@ -8264,6 +8284,8 @@
             "description": "Cloud-init config.",
             "title": "cloud-init config",
             "x-displayname": "Cloud-init config.",
+            "x-f5xc-sensitive": true,
+            "x-f5xc-description-medium": "Complete cloud-init containing the site-scoped one-time node token.",
             "maxLength": 1024,
             "x-f5xc-constraints": {
               "constraintType": "string",
@@ -8296,6 +8318,9 @@
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"cloud_init_config\": \"value\"\n  }\n}"
         },
         "x-f5xc-cli-domain": "users",
+        "x-f5xc-terraform-resource": "xcsh_site_cloud_init",
+        "x-f5xc-category": "Sites",
+        "x-f5xc-description-medium": "Site-scoped Customer Edge cloud-init containing a one-time Secure Mesh v2 node registration token.",
         "x-f5xc-namespace-profile": {
           "constraint": {
             "allowed": [

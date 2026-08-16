@@ -40,8 +40,33 @@ overrides:
         set_property_extensions:
           image_download_url:
             x-f5xc-sensitive: true
+            x-f5xc-description-medium: >-
+              Signed URL for the requested Customer Edge image.
           image_md5_download_url:
             x-f5xc-sensitive: true
+            x-f5xc-description-medium: >-
+              Signed URL for the requested Customer Edge image MD5 checksum.
+
+  token_cloud_init:
+    upstream_issue: "f5-sales-demo/api-specs-enriched#1485"
+    description: >-
+      Secure Mesh v2 cloud-init contains a one-time site node token. Mark the
+      response sensitive and publish it as a generated create-once Terraform
+      resource.
+    schemas:
+      - pattern: "^tokenGetCloudInitConfigResp$"
+        inject_extensions:
+          x-f5xc-terraform-resource: "xcsh_site_cloud_init"
+          x-f5xc-category: "Sites"
+          x-f5xc-description-medium: >-
+            Site-scoped Customer Edge cloud-init containing a one-time Secure
+            Mesh v2 node registration token.
+        set_property_extensions:
+          cloud_init_config:
+            x-f5xc-sensitive: true
+            x-f5xc-description-medium: >-
+              Complete cloud-init containing the site-scoped one-time node
+              token.
 
   registration_approval:
     upstream_issue: "f5-sales-demo/terraform-provider-xcsh#1206"

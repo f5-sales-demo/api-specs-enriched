@@ -825,18 +825,44 @@ def build_api_operations(paths: dict[str, Any]) -> list[dict[str, Any]]:
                 entry["responseSchema"] = response_schema
             operation_role = operation.get("x-f5xc-operation-role")
             if operation_role is not None:
-                if operation_role != "query":
+                if operation_role not in {"query", "issuance"}:
                     raise ValueError(
                         f"{operation_id} has unsupported x-f5xc-operation-role {operation_role!r}"
                     )
-                if request_schema is None or response_schema is None:
+                method_upper = method.upper()
+                has_query_parameters = any(
+                    isinstance(parameter, dict) and parameter.get("in") == "query"
+                    for parameter in operation.get("parameters", [])
+                )
+                if response_schema is None:
                     raise ValueError(
-                        f"query operation {operation_id} requires request and response schemas"
+                        f"{operation_role} operation {operation_id} requires a response schema"
                     )
-                if operation.get("x-f5xc-danger-level") != "low":
-                    raise ValueError(f"query operation {operation_id} must have low danger")
-                if operation.get("x-f5xc-side-effects"):
-                    raise ValueError(f"query operation {operation_id} must not have side effects")
+                if method_upper == "POST" and request_schema is None:
+                    raise ValueError(
+                        f"POST {operation_role} operation {operation_id} requires a request schema"
+                    )
+                if method_upper == "GET" and not has_query_parameters:
+                    raise ValueError(
+                        f"GET {operation_role} operation {operation_id} requires query parameters"
+                    )
+                if method_upper not in {"GET", "POST"}:
+                    raise ValueError(
+                        f"{operation_role} operation {operation_id} must use GET or POST, got {method_upper}"
+                    )
+                if operation_role == "query":
+                    if operation.get("x-f5xc-danger-level") != "low":
+                        raise ValueError(f"query operation {operation_id} must have low danger")
+                    if operation.get("x-f5xc-side-effects"):
+                        raise ValueError(f"query operation {operation_id} must not have side effects")
+                else:
+                    if operation.get("x-f5xc-danger-level") != "medium":
+                        raise ValueError(f"issuance operation {operation_id} must have medium danger")
+                    creates = (operation.get("x-f5xc-side-effects") or {}).get("creates", [])
+                    if not creates:
+                        raise ValueError(
+                            f"issuance operation {operation_id} must declare a created credential"
+                        )
                 entry["role"] = operation_role
             grouped.setdefault(identity, []).append(entry)
 
