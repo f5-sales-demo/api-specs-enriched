@@ -294,16 +294,17 @@ stubby as long as the `### x-name` header exists and the
 - **Example:** `"x-f5xc-action": "approve"`
 - **Pass-through from upstream:** no
 
-### x-f5xc-interface-contract
+### x-f5xc-ce-automation-contract
 
 - **Applied at:** schema
-- **Purpose:** Evidence-backed cloud NIC and control-plane role contract for Secure Mesh Site v2; guest interface names remain observational only.
+- **Purpose:** Checksum-bound Secure Mesh Site v2 automation contract. It identifies the real
+  collection and item paths, the required system namespace, and provider support evidence.
 - **Consumers:** Terraform, CLI, MCP, IDE, documentation
 - **Value type:** object
-- **Value schema:** `{"type":"object","required":["version","stable_identity","roles","invariants","runtime_evidence","change_risk"]}`
+- **Value schema:** `{"type":"object","required":["version","contract_id","resource","api","providers"]}`
 - **Injected by:** scripts/utils/interface_contract_enricher.py
 - **Driven by config:** config/interface_contracts.yaml
-- **Example:** `"x-f5xc-interface-contract":{"version":"1.0.0","roles":[{"name":"slo","bindable":true}]}`
+- **Example:** `"x-f5xc-ce-automation-contract":{"contract_id":"f5xc-ce-automation/v1","providers":{"aws":{"availability":"schema_only"}}}`
 - **Pass-through from upstream:** no
 
 ## Injected — property-level

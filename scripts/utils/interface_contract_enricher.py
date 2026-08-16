@@ -10,7 +10,7 @@ from typing import Any
 
 import yaml
 
-from .extension_constants import X_F5XC_INTERFACE_CONTRACT
+from .extension_constants import X_F5XC_CE_AUTOMATION_CONTRACT
 
 CONFIG_PATH = Path(__file__).parent.parent.parent / "config" / "interface_contracts.yaml"
 SUPPORTED_ROLES = frozenset({"slo", "external", "sli"})
@@ -44,7 +44,7 @@ class InterfaceContractStats:
 
 
 class InterfaceContractEnricher:
-    """Inject validated ``x-f5xc-interface-contract`` schema extensions.
+    """Inject the validated Secure Mesh Site v2 automation contract.
 
     The contract intentionally describes cloud and control-plane identities,
     never Linux guest interface names. An optional role can only become bindable
@@ -107,14 +107,47 @@ class InterfaceContractEnricher:
         return value
 
     def _validate_contract(self, resource: str, contract: dict[str, Any]) -> None:
-        if contract.get("version") != "1.0.0":
+        if contract.get("version") != "2.0.0":
             raise InterfaceContractValidationError(f"{resource}: unsupported contract version")
         if contract.get("resource") != resource:
             raise InterfaceContractValidationError(
                 f"{resource}: resource identity must match its key"
             )
-        if contract.get("cloud") != "azure":
-            raise InterfaceContractValidationError(f"{resource}: cloud profile must be azure")
+        if contract.get("contract_id") != "f5xc-ce-automation/v1":
+            raise InterfaceContractValidationError(f"{resource}: invalid contract identity")
+        api = self._required_object(contract, "api", resource=resource)
+        if api != {
+            "collection_path": "/api/config/namespaces/{namespace}/securemesh_site_v2s",
+            "item_path": "/api/config/namespaces/{namespace}/securemesh_site_v2s/{name}",
+            "namespace": "system",
+        }:
+            raise InterfaceContractValidationError(f"{resource}: API paths must match SMSv2")
+        providers = self._required_object(contract, "providers", resource=resource)
+        if set(providers) != {"aws", "azure"}:
+            raise InterfaceContractValidationError(f"{resource}: providers must be aws and azure")
+        azure = providers["azure"]
+        aws = providers["aws"]
+        if not isinstance(azure, dict) or not isinstance(aws, dict):
+            raise InterfaceContractValidationError(f"{resource}: provider profiles must be objects")
+        self._validate_aws_profile(resource, aws)
+        self._validate_interface_profile(resource, azure)
+
+    def _validate_aws_profile(self, resource: str, profile: dict[str, Any]) -> None:
+        if profile.get("node_list_path") != "aws.not_managed.node_list[]":
+            raise InterfaceContractValidationError(f"{resource}: AWS node path is not schema-backed")
+        if profile.get("interface_list_path") != "aws.not_managed.node_list[].interface_list[]":
+            raise InterfaceContractValidationError(f"{resource}: AWS interface path is not schema-backed")
+        if profile.get("availability") != "schema_only":
+            raise InterfaceContractValidationError(f"{resource}: AWS availability must be schema_only")
+        unsupported = profile.get("unavailable_capabilities")
+        if unsupported != ["bootstrap_checkout", "direct-eni", "nlb-ingress", "tgw-static", "tgw-connect"]:
+            raise InterfaceContractValidationError(
+                f"{resource}: AWS unsupported capabilities must fail closed"
+            )
+
+    def _validate_interface_profile(self, resource: str, contract: dict[str, Any]) -> None:
+        if contract.get("availability") != "evidence_backed":
+            raise InterfaceContractValidationError(f"{resource}: Azure availability must be evidence_backed")
 
         stable_identity = self._required_object(contract, "stable_identity", resource=resource)
         fields = stable_identity.get("required_fields")
@@ -256,7 +289,7 @@ class InterfaceContractEnricher:
             self.stats.schemas_processed += 1
             for patterns, contract in self.contracts:
                 if any(pattern.search(schema_name) for pattern in patterns):
-                    schema[X_F5XC_INTERFACE_CONTRACT] = copy.deepcopy(contract)
+                    schema[X_F5XC_CE_AUTOMATION_CONTRACT] = copy.deepcopy(contract)
                     self.stats.schemas_matched += 1
                     self.stats.contracts_applied += 1
                     break
