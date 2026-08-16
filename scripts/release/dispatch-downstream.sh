@@ -10,8 +10,7 @@ required=(
   EVENT_TYPE
   VERSION
   SOURCE_REPOSITORY
-  SOURCE_UPDATED_AT
-  SOURCE_RUN_ID
+  SOURCE_TARGET_COMMIT
 )
 
 for name in "${required[@]}"; do
@@ -41,12 +40,8 @@ if [[ ! "$SOURCE_REPOSITORY" =~ ^[A-Za-z0-9-]+/[A-Za-z0-9._-]+$ ]]; then
   echo "[ERROR] SOURCE_REPOSITORY is malformed" >&2
   exit 2
 fi
-if [[ ! "$SOURCE_UPDATED_AT" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$ ]]; then
-  echo "[ERROR] SOURCE_UPDATED_AT is malformed" >&2
-  exit 2
-fi
-if [[ ! "$SOURCE_RUN_ID" =~ ^[1-9][0-9]*$ ]]; then
-  echo "[ERROR] SOURCE_RUN_ID is malformed" >&2
+if [[ ! "$SOURCE_TARGET_COMMIT" =~ ^[0-9a-f]{40}$ ]]; then
+  echo "[ERROR] SOURCE_TARGET_COMMIT is malformed" >&2
   exit 2
 fi
 
@@ -56,23 +51,42 @@ if ! command -v "$dispatch_gh" >/dev/null 2>&1; then
   exit 2
 fi
 
+target="${TARGET_OWNER}/${TARGET_REPO}"
+tag="v${VERSION}"
+
+delivery_id=$(jq -cn \
+  --arg commit "$SOURCE_TARGET_COMMIT" \
+  --arg event_type "$EVENT_TYPE" \
+  --arg source "$SOURCE_REPOSITORY" \
+  --arg tag "$tag" \
+  --arg target "$target" \
+  --arg version "$VERSION" \
+  '{
+    commit: $commit,
+    event_type: $event_type,
+    source: $source,
+    tag: $tag,
+    target: $target,
+    version: $version
+  }' | sha256sum | awk '{print $1}')
+
 jq -cn \
   --arg event_type "$EVENT_TYPE" \
   --arg version "$VERSION" \
   --arg source_repository "$SOURCE_REPOSITORY" \
-  --arg timestamp "$SOURCE_UPDATED_AT" \
-  --arg run_id "$SOURCE_RUN_ID" \
+  --arg target_commit "$SOURCE_TARGET_COMMIT" \
+  --arg delivery_id "$delivery_id" \
   '{
     event_type: $event_type,
     client_payload: {
-      version: $version,
+      delivery_id: $delivery_id,
       release_tag: ("v" + $version),
       release_url: (
         "https://github.com/" + $source_repository + "/releases/tag/v" + $version
       ),
-      timestamp: $timestamp,
+      target_commit: $target_commit,
       trigger_source: $source_repository,
-      run_id: $run_id
+      version: $version
     }
   }' |
   "$dispatch_gh" api --method POST \
