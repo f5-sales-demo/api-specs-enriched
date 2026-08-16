@@ -854,10 +854,14 @@ def build_api_operations(paths: dict[str, Any]) -> list[dict[str, Any]]:
                     if operation.get("x-f5xc-danger-level") != "low":
                         raise ValueError(f"query operation {operation_id} must have low danger")
                     if operation.get("x-f5xc-side-effects"):
-                        raise ValueError(f"query operation {operation_id} must not have side effects")
+                        raise ValueError(
+                            f"query operation {operation_id} must not have side effects"
+                        )
                 else:
                     if operation.get("x-f5xc-danger-level") != "medium":
-                        raise ValueError(f"issuance operation {operation_id} must have medium danger")
+                        raise ValueError(
+                            f"issuance operation {operation_id} must have medium danger"
+                        )
                     creates = (operation.get("x-f5xc-side-effects") or {}).get("creates", [])
                     if not creates:
                         raise ValueError(

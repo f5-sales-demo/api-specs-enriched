@@ -306,9 +306,9 @@ def test_get_issuance_role_uses_parameters_without_inventing_a_request_schema():
         }
     )
 
-    query = build_api_operations({"/api/register/cloud-init": {"get": operation}})[0][
-        "operations"
-    ][0]
+    query = build_api_operations({"/api/register/cloud-init": {"get": operation}})[0]["operations"][
+        0
+    ]
     assert query == {
         "method": "GET",
         "path": "/api/register/cloud-init",
@@ -347,9 +347,7 @@ def test_issuance_role_requires_mutating_metadata(danger, side_effects, message)
         "ves.io.schema.token.CustomAPI.GetCloudInitConfig",
         response_ref="#/components/schemas/CloudInitResp",
     )
-    operation["parameters"] = [
-        {"name": "site_name", "in": "query", "schema": {"type": "string"}}
-    ]
+    operation["parameters"] = [{"name": "site_name", "in": "query", "schema": {"type": "string"}}]
     operation["x-f5xc-operation-role"] = "issuance"
     operation["x-f5xc-danger-level"] = danger
     if side_effects is not None:
