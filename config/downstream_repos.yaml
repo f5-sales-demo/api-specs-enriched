@@ -10,6 +10,7 @@
 #    with the matching event_type
 # 3. The DOWNSTREAM_DISPATCH_TOKEN secret must have write access to the repo
 
+---
 downstream_repositories:
   # F5 XC Shell (xcsh) - CLI tool for F5 XC
   - owner: f5-sales-demo
@@ -39,12 +40,14 @@ downstream_repositories:
     enabled: true
     description: Schema-driven inventory of the F5 XC console UI
 
-# Payload sent to downstream repositories (for documentation):
+# Canonical client_payload sent to downstream repositories (for documentation):
+# delivery_id is target-specific: SHA-256 of compact, key-sorted JSON containing
+# {commit, event_type, source, tag, target, version}, where target is owner/repo.
 # {
-#   "version": "1.0.82",
-#   "release_tag": "v1.0.82",
-#   "release_url": "https://github.com/f5-sales-demo/api-specs-enriched/releases/tag/v1.0.82",
-#   "timestamp": "2025-01-01T00:00:00Z",
+#   "delivery_id": "<64-character lowercase SHA-256>",
+#   "release_tag": "v2.1.220",
+#   "release_url": "https://github.com/f5-sales-demo/api-specs-enriched/releases/tag/v2.1.220",
+#   "target_commit": "b3130b919b421a60b3f527c1cea686aebdd59bc3",
 #   "trigger_source": "f5-sales-demo/api-specs-enriched",
-#   "run_id": "12345678"
+#   "version": "2.1.220"
 # }
