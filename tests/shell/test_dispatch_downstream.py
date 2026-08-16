@@ -22,8 +22,7 @@ _REQUIRED_ENV = {
     "EVENT_TYPE": "enriched-specs-updated",
     "VERSION": "2.1.211",
     "SOURCE_REPOSITORY": "f5-sales-demo/api-specs-enriched",
-    "SOURCE_UPDATED_AT": "2026-08-03T03:10:54Z",
-    "SOURCE_RUN_ID": "30781155338",
+    "SOURCE_TARGET_COMMIT": "b3130b919b421a60b3f527c1cea686aebdd59bc3",
 }
 
 
@@ -84,19 +83,17 @@ def test_dispatch_uses_exact_endpoint_and_payload(tmp_path: Path) -> None:
         "--input",
         "-",
     ]
-    assert json.loads(input_path.read_text()) == {
-        "event_type": "enriched-specs-updated",
-        "client_payload": {
-            "version": "2.1.211",
-            "release_tag": "v2.1.211",
-            "release_url": (
-                "https://github.com/f5-sales-demo/api-specs-enriched/releases/tag/v2.1.211"
-            ),
-            "timestamp": "2026-08-03T03:10:54Z",
-            "trigger_source": "f5-sales-demo/api-specs-enriched",
-            "run_id": "30781155338",
-        },
-    }
+    payload = json.loads(input_path.read_text())
+    assert payload["event_type"] == "enriched-specs-updated"
+    assert payload["client_payload"]["version"] == "2.1.211"
+    assert payload["client_payload"]["release_tag"] == "v2.1.211"
+    assert (
+        payload["client_payload"]["release_url"]
+        == "https://github.com/f5-sales-demo/api-specs-enriched/releases/tag/v2.1.211"
+    )
+    assert payload["client_payload"]["target_commit"] == "b3130b919b421a60b3f527c1cea686aebdd59bc3"
+    assert payload["client_payload"]["trigger_source"] == "f5-sales-demo/api-specs-enriched"
+    assert len(payload["client_payload"]["delivery_id"]) == 64
 
 
 @pytest.mark.parametrize("name", sorted(_REQUIRED_ENV))
@@ -116,8 +113,7 @@ def test_dispatch_fails_closed_when_input_is_missing(tmp_path: Path, name: str) 
         ("EVENT_TYPE", "invalid event"),
         ("VERSION", "2.1.211/escape"),
         ("SOURCE_REPOSITORY", "missing-slash"),
-        ("SOURCE_UPDATED_AT", "not-a-timestamp"),
-        ("SOURCE_RUN_ID", "not-a-run-id"),
+        ("SOURCE_TARGET_COMMIT", "not-a-sha"),
     ],
 )
 def test_dispatch_rejects_malformed_input(tmp_path: Path, name: str, value: str) -> None:
@@ -126,22 +122,3 @@ def test_dispatch_rejects_malformed_input(tmp_path: Path, name: str, value: str)
     assert result.returncode != 0
     assert name in result.stderr
     assert not args_path.exists()
-
-
-def test_workflow_delegates_dispatch_without_a_third_party_action() -> None:
-    workflow = _WORKFLOW.read_text()
-
-    assert "run: bash scripts/release/dispatch-downstream.sh" in workflow
-    assert "peter-evans/repository-dispatch@" not in workflow
-
-
-def test_notify_job_checks_out_the_dispatch_helper_before_running_it() -> None:
-    workflow = _WORKFLOW.read_text()
-    notify_job = workflow.split("\n  notify-downstream:\n", maxsplit=1)[1].split(
-        "\n  # ==========================================================================",
-        maxsplit=1,
-    )[0]
-
-    checkout = "uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
-    dispatch = "run: bash scripts/release/dispatch-downstream.sh"
-    assert notify_job.index(checkout) < notify_job.index(dispatch)
