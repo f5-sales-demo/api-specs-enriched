@@ -54,6 +54,14 @@ query_operations:
     rationale: Returns signed Customer Edge image URLs without changing tenant state
     required_fields: [provider]
 
+# Operations that issue a new credential. These are not reads: consumers must
+# persist the first response and must not refresh the operation on every plan.
+issuance_operations:
+  ves.io.schema.token.CustomAPI.GetCloudInitConfig:
+    rationale: Issues site-scoped Customer Edge cloud-init with a one-time node token
+    required_fields: [provider, site_name]
+    creates: [site_node_token]
+
 # Operation Metadata Extensions:
 # ===============================
 #

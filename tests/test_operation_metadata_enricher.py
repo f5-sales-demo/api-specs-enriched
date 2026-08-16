@@ -391,6 +391,45 @@ class TestSpecEnrichment:
             "Tenant state unchanged",
         ]
 
+    def test_curated_get_issuance_records_credential_side_effect(self, enricher):
+        operation_id = "ves.io.schema.token.CustomAPI.GetCloudInitConfig"
+        spec = {
+            "paths": {
+                "/api/register/namespaces/system/get-cloud-init-config": {
+                    "get": {
+                        "operationId": operation_id,
+                        "parameters": [
+                            {"name": "provider", "in": "query", "schema": {"type": "string"}},
+                            {"name": "site_name", "in": "query", "schema": {"type": "string"}},
+                        ],
+                        "responses": {
+                            "200": {
+                                "content": {
+                                    "application/json": {
+                                        "schema": {
+                                            "$ref": "#/components/schemas/tokenGetCloudInitConfigResp"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                    }
+                }
+            }
+        }
+
+        operation = enricher.enrich_spec(spec)["paths"][
+            "/api/register/namespaces/system/get-cloud-init-config"
+        ]["get"]
+        assert operation["x-f5xc-operation-role"] == "issuance"
+        assert operation["x-f5xc-danger-level"] == "medium"
+        assert operation["x-f5xc-required-fields"] == ["provider", "site_name"]
+        assert operation["x-f5xc-side-effects"] == {"creates": ["site_node_token"]}
+        assert operation["x-f5xc-operation-metadata"]["conditions"]["postconditions"] == [
+            "One-time site node token issued",
+            "Credential returned only in the response",
+        ]
+
     @pytest.mark.parametrize("missing", ["requestBody", "responses"])
     def test_curated_query_requires_request_and_response_schemas(self, enricher, missing):
         operation = {
@@ -411,6 +450,20 @@ class TestSpecEnrichment:
         operation.pop(missing)
         with pytest.raises(ValueError, match=r"must have a .* schema"):
             enricher.enrich_spec({"paths": {"/api/register/query": {"post": operation}}})
+
+    def test_curated_get_issuance_requires_query_parameters(self, enricher):
+        operation = {
+            "operationId": "ves.io.schema.token.CustomAPI.GetCloudInitConfig",
+            "responses": {
+                "200": {
+                    "content": {
+                        "application/json": {"schema": {"$ref": "#/components/schemas/QueryResp"}}
+                    }
+                }
+            },
+        }
+        with pytest.raises(ValueError, match="must have query parameters"):
+            enricher.enrich_spec({"paths": {"/api/register/query": {"get": operation}}})
 
 
 class TestEdgeCases:

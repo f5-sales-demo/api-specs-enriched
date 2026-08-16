@@ -67,6 +67,7 @@ class OperationMetadataEnricher:
         self.danger_levels: dict[str, Any] = {}
         self.required_fields_config: dict[str, Any] = {}
         self.query_operations: dict[str, Any] = {}
+        self.issuance_operations: dict[str, Any] = {}
         self.extension_prefix = "x-f5xc"
         self.stats = OperationEnrichmentStats()
 
@@ -85,6 +86,7 @@ class OperationMetadataEnricher:
             self.danger_levels = config.get("danger_levels", {})
             self.required_fields_config = config.get("required_fields", {})
             self.query_operations = config.get("query_operations", {})
+            self.issuance_operations = config.get("issuance_operations", {})
             self.extension_prefix = config.get("extension_prefix", "x-f5xc")
         except Exception:
             self._use_default_config()
@@ -124,6 +126,7 @@ class OperationMetadataEnricher:
             "standard_create_fields": ["metadata.name", "metadata.namespace"],
         }
         self.query_operations = {}
+        self.issuance_operations = {}
 
         self.extension_prefix = "x-f5xc"
 
@@ -185,20 +188,32 @@ class OperationMetadataEnricher:
         self.stats.operations_enriched += 1
         operation_id = operation.get("operationId", "")
         is_query = operation_id in self.query_operations
-        query_contract = self.query_operations.get(operation_id, {})
-        if is_query:
-            if method != "POST":
-                raise ValueError(f"query operation {operation_id} must use POST, got {method}")
-            if not self._request_schema_ref(operation):
-                raise ValueError(f"query operation {operation_id} must have a request schema")
+        is_issuance = operation_id in self.issuance_operations
+        if is_query and is_issuance:
+            raise ValueError(f"operation {operation_id} cannot be both query and issuance")
+        special_contract = self.query_operations.get(
+            operation_id, self.issuance_operations.get(operation_id, {})
+        )
+        if is_query or is_issuance:
+            if method not in {"GET", "POST"}:
+                raise ValueError(
+                    f"{('query' if is_query else 'issuance')} operation {operation_id} "
+                    f"must use GET or POST, got {method}"
+                )
+            if method == "POST" and not self._request_schema_ref(operation):
+                raise ValueError(f"POST operation {operation_id} must have a request schema")
+            if method == "GET" and not self._query_parameters(operation):
+                raise ValueError(f"GET operation {operation_id} must have query parameters")
             if not self._response_schema_refs(operation):
-                raise ValueError(f"query operation {operation_id} must have a response schema")
-            operation[f"{self.extension_prefix}-operation-role"] = "query"
+                raise ValueError(f"operation {operation_id} must have a response schema")
+            operation[f"{self.extension_prefix}-operation-role"] = (
+                "query" if is_query else "issuance"
+            )
 
         # Extract and add required fields
         required_fields = (
-            list(query_contract.get("required_fields", []))
-            if is_query
+            list(special_contract.get("required_fields", []))
+            if is_query or is_issuance
             else self._extract_required_fields(operation, method)
         )
         if required_fields:
@@ -206,7 +221,13 @@ class OperationMetadataEnricher:
             self.stats.required_fields_added += 1
 
         # Calculate and assign danger level
-        danger_level = "low" if is_query else self._calculate_danger_level(method, path, operation)
+        danger_level = (
+            "low"
+            if is_query
+            else "medium"
+            if is_issuance
+            else self._calculate_danger_level(method, path, operation)
+        )
         operation[f"{self.extension_prefix}-danger-level"] = danger_level
         self.stats.danger_levels_assigned += 1
 
@@ -215,7 +236,13 @@ class OperationMetadataEnricher:
             operation[f"{self.extension_prefix}-confirmation-required"] = True
 
         # Determine and add side effects
-        side_effects = {} if is_query else self._determine_side_effects(method, path, operation)
+        side_effects = (
+            {}
+            if is_query
+            else {"creates": list(special_contract.get("creates", []))}
+            if is_issuance
+            else self._determine_side_effects(method, path, operation)
+        )
         if side_effects:
             operation[f"{self.extension_prefix}-side-effects"] = side_effects
             self.stats.side_effects_documented += 1
@@ -233,6 +260,11 @@ class OperationMetadataEnricher:
             comprehensive_metadata["conditions"]["postconditions"] = [
                 "Requested data returned",
                 "Tenant state unchanged",
+            ]
+        elif is_issuance:
+            comprehensive_metadata["conditions"]["postconditions"] = [
+                "One-time site node token issued",
+                "Credential returned only in the response",
             ]
         if comprehensive_metadata:
             operation[f"{self.extension_prefix}-operation-metadata"] = comprehensive_metadata
@@ -259,6 +291,14 @@ class OperationMetadataEnricher:
             if isinstance(ref, str) and ref:
                 refs.add(ref)
         return refs
+
+    @staticmethod
+    def _query_parameters(operation: dict[str, Any]) -> list[dict[str, Any]]:
+        return [
+            parameter
+            for parameter in operation.get("parameters", [])
+            if isinstance(parameter, dict) and parameter.get("in") == "query"
+        ]
 
     def _build_comprehensive_metadata(
         self,

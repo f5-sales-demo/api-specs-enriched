@@ -289,6 +289,74 @@ def test_query_role_requires_read_only_metadata_and_schema_pair():
         build_api_operations({"/api/register/query": {"post": operation}})
 
 
+def test_get_issuance_role_uses_parameters_without_inventing_a_request_schema():
+    operation = _operation(
+        "ves.io.schema.token.CustomAPI.GetCloudInitConfig",
+        response_ref="#/components/schemas/CloudInitResp",
+    )
+    operation["parameters"] = [
+        {"name": "provider", "in": "query", "schema": {"type": "string"}},
+        {"name": "site_name", "in": "query", "schema": {"type": "string"}},
+    ]
+    operation.update(
+        {
+            "x-f5xc-operation-role": "issuance",
+            "x-f5xc-danger-level": "medium",
+            "x-f5xc-side-effects": {"creates": ["site_node_token"]},
+        }
+    )
+
+    query = build_api_operations({"/api/register/cloud-init": {"get": operation}})[0]["operations"][
+        0
+    ]
+    assert query == {
+        "method": "GET",
+        "path": "/api/register/cloud-init",
+        "operationId": "ves.io.schema.token.CustomAPI.GetCloudInitConfig",
+        "surface": "register",
+        "responseSchema": "CloudInitResp",
+        "role": "issuance",
+    }
+
+
+def test_get_issuance_role_requires_query_parameters():
+    operation = _operation(
+        "ves.io.schema.token.CustomAPI.GetCloudInitConfig",
+        response_ref="#/components/schemas/CloudInitResp",
+    )
+    operation.update(
+        {
+            "x-f5xc-operation-role": "issuance",
+            "x-f5xc-danger-level": "medium",
+            "x-f5xc-side-effects": {"creates": ["site_node_token"]},
+        }
+    )
+    with pytest.raises(ValueError, match="requires query parameters"):
+        build_api_operations({"/api/register/cloud-init": {"get": operation}})
+
+
+@pytest.mark.parametrize(
+    ("danger", "side_effects", "message"),
+    [
+        ("low", {"creates": ["site_node_token"]}, "must have medium danger"),
+        ("medium", None, "must declare a created credential"),
+    ],
+)
+def test_issuance_role_requires_mutating_metadata(danger, side_effects, message):
+    operation = _operation(
+        "ves.io.schema.token.CustomAPI.GetCloudInitConfig",
+        response_ref="#/components/schemas/CloudInitResp",
+    )
+    operation["parameters"] = [{"name": "site_name", "in": "query", "schema": {"type": "string"}}]
+    operation["x-f5xc-operation-role"] = "issuance"
+    operation["x-f5xc-danger-level"] = danger
+    if side_effects is not None:
+        operation["x-f5xc-side-effects"] = side_effects
+
+    with pytest.raises(ValueError, match=message):
+        build_api_operations({"/api/register/cloud-init": {"get": operation}})
+
+
 def test_unknown_operation_role_is_rejected():
     operation = _operation("ves.io.schema.registration.CustomAPI.Query")
     operation["x-f5xc-operation-role"] = "lookup"

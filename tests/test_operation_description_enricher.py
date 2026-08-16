@@ -74,6 +74,12 @@ class TestOperationDescriptionEnricherBasics:
             == "Retrieve signed Customer Edge image download URLs"
         )
 
+    def test_cloud_init_issuance_has_an_issuance_description(self, enricher):
+        assert (
+            enricher.get_operation_description("ves.io.schema.token.CustomAPI.GetCloudInitConfig")
+            == "Issue site-scoped Customer Edge cloud-init"
+        )
+
     def test_disabled_enricher(self, tmp_path):
         """Test enricher respects enabled flag."""
         config_path = tmp_path / "disabled_config.yaml"
