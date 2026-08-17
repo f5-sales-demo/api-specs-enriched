@@ -55,8 +55,8 @@ X_F5XC_TERRAFORM_RESOURCE = "x-f5xc-terraform-resource"
 X_F5XC_DISPLAY_NAME = "x-f5xc-display-name"
 X_F5XC_ACTION = "x-f5xc-action"
 
-# Evidence-backed multi-interface role contract (Issue #1441)
-X_F5XC_INTERFACE_CONTRACT = "x-f5xc-interface-contract"
+# Checksum-bound Secure Mesh Site v2 automation contract (Issue #1508)
+X_F5XC_CE_AUTOMATION_CONTRACT = "x-f5xc-ce-automation-contract"
 
 # Console UI enrichment (Issue #679)
 X_F5XC_CONSOLE = "x-f5xc-console"
@@ -232,7 +232,7 @@ VALID_X_F5XC_EXTENSIONS = frozenset(
         X_F5XC_TERRAFORM_RESOURCE,
         X_F5XC_DISPLAY_NAME,
         X_F5XC_ACTION,
-        X_F5XC_INTERFACE_CONTRACT,
+        X_F5XC_CE_AUTOMATION_CONTRACT,
         # Property-level
         X_F5XC_DESCRIPTION,
         X_F5XC_VALIDATION,

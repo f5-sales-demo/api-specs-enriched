@@ -2222,9 +2222,13 @@ namespace: default
 project: demo
 account: value
 extension_namespace: x-f5xc-
+tenant: x-f5xc-tenant
+namespace: x-f5xc-tenant-namespace
 example_namespace: user_namespace
 security_namespace: security
 domain: tenant_and_identity
+display_name: xc container services
+person_name: xc kubernetes service
 empty_tenant: {}
 empty_namespace: []
 zip_code: '90210'
@@ -2232,6 +2236,12 @@ EOF
 git -C "$repo" add fixture.yaml
 git -C "$repo" commit -qm schematic
 assert_clean "generic environment, schema identities, and reserved records" "$repo" --scope head --mode enforce
+
+repo=$(new_repo x-f5xc-customer-identifier)
+printf 'tenant: x-f5xc-real-customer\n' >"${repo}/fixture.yaml"
+git -C "$repo" add fixture.yaml
+git -C "$repo" commit -qm x-f5xc-customer
+assert_violation "x-f5xc customer identifiers remain enforced" "$repo" --scope head --mode enforce
 
 repo=$(new_repo composite-schematic-identities)
 cat >"${repo}/fixture.yaml" <<'EOF'
@@ -2276,6 +2286,12 @@ printf '%s\n' \
 git -C "$repo" add fixture.json
 git -C "$repo" commit -qm json-scalar-identity
 assert_violation "JSON scalar identity values remain enforced" "$repo" --scope head --mode enforce
+
+repo=$(new_repo json-array-identity)
+printf '%s\n' '{"tenant":["customer-selected"]}' >"${repo}/fixture.json"
+git -C "$repo" add fixture.json
+git -C "$repo" commit -qm json-array-identity
+assert_violation "JSON identity arrays remain enforced" "$repo" --scope head --mode enforce
 
 repo=$(new_repo sensitive-query)
 printf 'redirect=/done?email=person%%40customer.local\n' >"${repo}/config.ini"

@@ -415,8 +415,6 @@ SAFE_PERSON_NAMES = {
     "amal b.",
     "noam k.",
     "rosario l.",
-    "xc container services",
-    "xc kubernetes service",
 }
 SCHEMA_SENTINELS = {
     "*",
@@ -453,8 +451,17 @@ SAFE_IDENTITY_VALUES = {
     "tenant or organization identifier",
     "tenant_and_identity",
     "user_namespace",
+    "xc container services",
+    "xc kubernetes service",
 }
 SAFE_PERSONAL_VALUES = {"90210"}
+SAFE_XC_EXTENSION_PLACEHOLDERS = {
+    "x-f5xc-",
+    "x-f5xc-namespace",
+    "x-f5xc-tenant",
+    "x-f5xc-tenant-namespace",
+    "x-f5xc-user",
+}
 DOCUMENTATION_NETWORKS = (
     ipaddress.ip_network("192.0.2.0/24"),
     ipaddress.ip_network("198.51.100.0/24"),
@@ -1108,6 +1115,15 @@ def unwrapped_identity_value(value: str) -> str:
     return unwrapped_identity_value(alias.group(1)) if alias else value
 
 
+def schema_placeholder_value(lower: str) -> bool:
+    """Return whether a normalized value is a safe schema placeholder."""
+    if lower in SCHEMA_SENTINELS:
+        return True
+    if lower in SAFE_IDENTITY_VALUES_LOWER:
+        return True
+    return lower in SAFE_XC_EXTENSION_PLACEHOLDERS
+
+
 def placeholder_value(value: str) -> bool:
     """Return whether a value is synthetic, schematic, or schema syntax."""
     value = unwrapped_identity_value(value)
@@ -1118,9 +1134,7 @@ def placeholder_value(value: str) -> bool:
         return snippet_safety
     lower = value.lower()
     if (
-        lower in SCHEMA_SENTINELS
-        or lower in SAFE_IDENTITY_VALUES_LOWER
-        or bool(re.fullmatch(r"x-f5xc-(?:[a-z0-9]+-)*", lower))
+        schema_placeholder_value(lower)
         or lower in {"false", "true", "~"}
         or decimal_numeric_value(value) == 0
         or bool(re.fullmatch(r"[|>](?:[+-]?[1-9]?|[1-9][+-])", value))
@@ -1957,13 +1971,50 @@ def is_json_structured_literal(
     """
     value = normalized_value(structured_field_value(path, line, match))
     json_path = PurePosixPath(path).suffix.lower() == ".json"
-    if (json_path and value.startswith(("{", "["))) or value in {"{", "["}:
+    if (json_path and value.startswith("{")) or value == "{":
         return False
     if not json_path or VSCODE_WHEN_PROPERTY_RE.search(line):
         return True
     key_start = match.start("key")
     key_end = match.end("key")
-    return not (key_start == 0 or line[key_start - 1] != '"' or line[key_end : key_end + 1] != '"')
+    key_starts_with_quote = key_start > 0 and line[key_start - 1] == '"'
+    key_ends_with_quote = line[key_end : key_end + 1] == '"'
+    return key_starts_with_quote and key_ends_with_quote
+
+
+def is_literal_structured_identity_field(
+    path: str,
+    line: str,
+    match: re.Match[str],
+) -> bool:
+    """Return whether an identity field has a scalar, literal JSON representation."""
+    if not is_structured_identity_field(path, line, match):
+        return False
+    return is_json_structured_literal(path, line, match)
+
+
+def has_literal_structured_value(
+    path: str,
+    line: str,
+    match: re.Match[str],
+    context: LineScanContext,
+    value: str,
+) -> bool:
+    """Return whether a structured value is scalar data rather than source syntax."""
+    if not is_json_structured_literal(path, line, match):
+        return False
+    return not is_nonliteral_code_expression(
+        line,
+        match,
+        source_code=context.source_code,
+        jq_spans=context.jq_spans,
+        value_override=value,
+    )
+
+
+def explicitly_safe_personal_value(value: str) -> bool:
+    """Return whether a value is an explicitly documented synthetic personal value."""
+    return normalized_value(value) in SAFE_PERSONAL_VALUES
 
 
 def scan_contacts(
@@ -2052,11 +2103,9 @@ def scan_structured_identity(
     for match in IDENTITY_FIELD_RE.finditer(line):
         if match_is_in_spans(match, context.localization_spans):
             continue
-        if not is_structured_identity_field(path, line, match):
+        if not is_literal_structured_identity_field(path, line, match):
             continue
         value = structured_field_value(path, line, match)
-        if not is_json_structured_literal(path, line, match):
-            continue
         if numeric_enum_member(match, value, context):
             continue
         in_jq_span = match_is_in_spans(match, context.jq_spans)
@@ -2096,17 +2145,9 @@ def scan_structured_identity(
 
     for match in ADDRESS_FIELD_RE.finditer(line):
         value = structured_field_value(path, line, match)
-        if not is_json_structured_literal(path, line, match):
+        if not has_literal_structured_value(path, line, match, context, value):
             continue
-        if is_nonliteral_code_expression(
-            line,
-            match,
-            source_code=context.source_code,
-            jq_spans=context.jq_spans,
-            value_override=value,
-        ):
-            continue
-        if not placeholder_value(value) and normalized_value(value) not in SAFE_PERSONAL_VALUES:
+        if not (placeholder_value(value) or explicitly_safe_personal_value(value)):
             add_finding(
                 findings,
                 path=path,
