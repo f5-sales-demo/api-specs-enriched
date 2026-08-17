@@ -94,3 +94,13 @@ def test_release_retry_reuses_existing_pr_and_publishes_its_merge() -> None:
     assert 'gh pr list --state all --head "$BRANCH"' in release_job
     assert "MERGED)" in release_job
     assert 'git checkout --detach "$TARGET_COMMIT"' in release_job
+
+
+def test_release_pr_wait_tolerates_shared_runner_queueing() -> None:
+    """A queued release PR must not time out at the old 30-minute ceiling."""
+
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+
+    assert workflow.count(
+        'WAIT_FOR_MERGE_MAX_TOTAL=7200 bash scripts/release/wait-for-merge.sh'
+    ) == 2

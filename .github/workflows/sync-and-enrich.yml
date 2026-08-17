@@ -604,7 +604,11 @@ jobs:
               if [ "$AUTO_MERGE" != true ]; then
                 gh pr merge "$RELEASE_PR" --squash --auto --delete-branch
               fi
-              WAIT_FOR_MERGE_MAX_TOTAL=1800 bash scripts/release/wait-for-merge.sh "$RELEASE_PR"
+              # Shared self-hosted capacity can defer the release PR's checks
+              # beyond the normal 30-minute contract-diff window. Keep this
+              # bounded below the job limit, but long enough for a queued PR
+              # to drain without manufacturing a second release identity.
+              WAIT_FOR_MERGE_MAX_TOTAL=7200 bash scripts/release/wait-for-merge.sh "$RELEASE_PR"
               TARGET_COMMIT=$(gh pr view "$RELEASE_PR" --json state,mergeCommit \
                 --jq 'if .state == "MERGED" then .mergeCommit.oid else empty end')
               [ -n "$TARGET_COMMIT" ] || {
@@ -652,7 +656,9 @@ jobs:
             echo "Created release PR: ${PR_URL}"
 
             gh pr merge "$RELEASE_PR" --squash --auto --delete-branch
-            WAIT_FOR_MERGE_MAX_TOTAL=1800 bash scripts/release/wait-for-merge.sh "$RELEASE_PR"
+            # See the existing-PR path above: release PR checks share the
+            # organization runner pool and can be queued behind normal work.
+            WAIT_FOR_MERGE_MAX_TOTAL=7200 bash scripts/release/wait-for-merge.sh "$RELEASE_PR"
             TARGET_COMMIT=$(gh pr view "$RELEASE_PR" --json state,mergeCommit \
               --jq 'if .state == "MERGED" then .mergeCommit.oid else empty end')
             [ -n "$TARGET_COMMIT" ] || {
