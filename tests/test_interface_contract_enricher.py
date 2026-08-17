@@ -11,7 +11,7 @@ from typing import Any
 import pytest
 import yaml
 
-from scripts.utils.extension_constants import X_F5XC_INTERFACE_CONTRACT
+from scripts.utils.extension_constants import X_F5XC_CE_AUTOMATION_CONTRACT
 from scripts.utils.interface_contract_enricher import (
     InterfaceContractEnricher,
     InterfaceContractValidationError,
@@ -51,12 +51,17 @@ def _contract(config: dict[str, Any]) -> dict[str, Any]:
     return config["contracts"]["securemesh_site_v2"]["contract"]
 
 
+def _azure_contract(config: dict[str, Any]) -> dict[str, Any]:
+    return _contract(config)["providers"]["azure"]
+
+
 def test_emits_contract_for_only_securemesh_request_schemas(sms_spec: dict[str, Any]) -> None:
     enriched = InterfaceContractEnricher().enrich_spec(copy.deepcopy(sms_spec))
     schemas = enriched["components"]["schemas"]
-    assert X_F5XC_INTERFACE_CONTRACT in schemas["viewssecuremesh_site_v2CreateSpecType"]
-    assert X_F5XC_INTERFACE_CONTRACT in schemas["viewssecuremesh_site_v2GetSpecType"]
-    assert X_F5XC_INTERFACE_CONTRACT not in schemas["unrelatedSchema"]
+    assert X_F5XC_CE_AUTOMATION_CONTRACT in schemas["viewssecuremesh_site_v2CreateSpecType"]
+    assert X_F5XC_CE_AUTOMATION_CONTRACT in schemas["viewssecuremesh_site_v2GetSpecType"]
+    assert "x-f5xc-interface-contract" not in schemas["viewssecuremesh_site_v2CreateSpecType"]
+    assert X_F5XC_CE_AUTOMATION_CONTRACT not in schemas["unrelatedSchema"]
 
 
 def test_contract_is_deterministic_and_guest_names_are_not_authoritative(
@@ -65,22 +70,31 @@ def test_contract_is_deterministic_and_guest_names_are_not_authoritative(
     enricher = InterfaceContractEnricher()
     once = enricher.enrich_spec(copy.deepcopy(sms_spec))
     twice = enricher.enrich_spec(copy.deepcopy(sms_spec))
-    create_contract = once["components"]["schemas"]["viewssecuremesh_site_v2CreateSpecType"][
-        X_F5XC_INTERFACE_CONTRACT
-    ]
+    create_contract = once["components"]["schemas"]["viewssecuremesh_site_v2CreateSpecType"]
     assert once == twice
-    assert create_contract["runtime_evidence"]["guest_interface_names"] == "observational_only"
+    assert (
+        create_contract[X_F5XC_CE_AUTOMATION_CONTRACT]["providers"]["azure"]["runtime_evidence"][
+            "guest_interface_names"
+        ]
+        == "observational_only"
+    )
+    assert create_contract[X_F5XC_CE_AUTOMATION_CONTRACT]["contract_id"] == "f5xc-ce-automation/v1"
     assert "eth" not in json.dumps(create_contract).lower()
 
 
 def test_contract_defines_stable_identity_and_role_invariants() -> None:
     enricher = InterfaceContractEnricher()
     contract = enricher.contracts[0][1]
-    assert contract["stable_identity"]["required_fields"]
-    assert [role["name"] for role in contract["roles"]] == ["slo", "external", "sli"]
-    assert contract["invariants"]["bgp_bindable_roles"] == ["slo"]
-    assert contract["change_risk"]["maintenance_window_required"] is True
-    assert contract["change_risk"]["restarts_ce_data_plane_services"] is True
+    azure = contract["providers"]["azure"]
+    assert contract["contract_id"] == "f5xc-ce-automation/v1"
+    assert contract["api"]["namespace"] == "system"
+    assert contract["providers"]["aws"]["availability"] == "schema_only"
+    assert "tgw-connect" in contract["providers"]["aws"]["unavailable_capabilities"]
+    assert azure["stable_identity"]["required_fields"]
+    assert [role["name"] for role in azure["roles"]] == ["slo", "external", "sli"]
+    assert azure["invariants"]["bgp_bindable_roles"] == ["slo"]
+    assert azure["change_risk"]["maintenance_window_required"] is True
+    assert azure["change_risk"]["restarts_ce_data_plane_services"] is True
 
 
 Mutation = Callable[[dict[str, Any]], Any]
@@ -94,21 +108,21 @@ Mutation = Callable[[dict[str, Any]], Any]
             "contract must be an object",
         ),
         (
-            lambda config: _contract(config)["roles"].append(
-                copy.deepcopy(_contract(config)["roles"][0])
+            lambda config: _azure_contract(config)["roles"].append(
+                copy.deepcopy(_azure_contract(config)["roles"][0])
             ),
             "duplicate role",
         ),
         (
-            lambda config: _contract(config)["roles"][1].update({"name": "unknown"}),
+            lambda config: _azure_contract(config)["roles"][1].update({"name": "unknown"}),
             "unknown role",
         ),
         (
-            lambda config: _contract(config)["roles"][2].pop("identity_fields"),
+            lambda config: _azure_contract(config)["roles"][2].pop("identity_fields"),
             "lacks the complete stable identity",
         ),
         (
-            lambda config: _contract(config)["runtime_evidence"].update(
+            lambda config: _azure_contract(config)["runtime_evidence"].update(
                 {"guest_interface_names": "authoritative"}
             ),
             "guest interface names must be observational only",
@@ -131,7 +145,7 @@ def test_rejects_bindable_optional_role_without_authoritative_evidence(
     tmp_path: Path, contract_config: dict[str, Any]
 ) -> None:
     invalid = copy.deepcopy(contract_config)
-    external = _contract(invalid)["roles"][1]
+    external = _azure_contract(invalid)["roles"][1]
     external.update(
         {
             "bindable": True,
@@ -140,8 +154,19 @@ def test_rejects_bindable_optional_role_without_authoritative_evidence(
             "configuration_path": "azure.not_managed.node_list[].interface_list[]",
         }
     )
-    _contract(invalid)["runtime_evidence"]["minimum_mapping_confidence"] = "advisory"
+    _azure_contract(invalid)["runtime_evidence"]["minimum_mapping_confidence"] = "advisory"
     with pytest.raises(InterfaceContractValidationError, match="authoritative evidence provenance"):
+        InterfaceContractEnricher(_write_config(tmp_path, invalid))
+
+
+def test_rejects_aws_profile_that_claims_unverified_automation(
+    tmp_path: Path, contract_config: dict[str, Any]
+) -> None:
+    invalid = copy.deepcopy(contract_config)
+    _contract(invalid)["providers"]["aws"]["availability"] = "supported"
+    with pytest.raises(
+        InterfaceContractValidationError, match="AWS availability must be schema_only"
+    ):
         InterfaceContractEnricher(_write_config(tmp_path, invalid))
 
 
