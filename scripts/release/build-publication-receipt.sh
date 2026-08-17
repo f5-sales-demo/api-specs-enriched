@@ -17,9 +17,9 @@
 # without a receipt is undeliverable downstream, so every failure here is fatal
 # rather than a warning.
 #
-# The five-asset set is enforced here, not just downstream: a receipt attesting
-# to four assets, or to a bundle named for a different version, is worse than no
-# receipt because it looks authoritative while covering the wrong release.
+# The release asset set is enforced here, not just downstream. It includes the
+# SMSv2 manifest, contract, and sanitized evidence receipt; a partial receipt is
+# worse than none because it looks authoritative while covering the wrong release.
 set -euo pipefail
 
 fail() {
@@ -75,10 +75,10 @@ for path in "$@"; do
 done
 
 expected=$(jq -cnS --arg bundle "f5xc-api-specs-v${version}.zip" \
-  '["api-catalog.json", $bundle, "index.json", "minimal-export-defaults.json", "openapi.json"] | sort')
+  '["api-catalog.json", $bundle, "index.json", "minimal-export-defaults.json", "openapi.json", "smsv2-contract.json", "smsv2-evidence-receipt.json", "smsv2-contract-manifest.json"] | sort')
 actual=$(jq -cS 'keys | sort' <<<"$assets")
 if [ "$actual" != "$expected" ]; then
-  fail "asset set does not match the five-asset contract for v${version}"$'\n'"  expected: ${expected}"$'\n'"  actual:   ${actual}"
+  fail "asset set does not match the release asset contract for v${version}"$'\n'"  expected: ${expected}"$'\n'"  actual:   ${actual}"
 fi
 
 # -c keeps it on one line, which the consumer's line-anchored regex requires;

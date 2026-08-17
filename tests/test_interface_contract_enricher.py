@@ -88,8 +88,12 @@ def test_contract_defines_stable_identity_and_role_invariants() -> None:
     azure = contract["providers"]["azure"]
     assert contract["contract_id"] == "f5xc-ce-automation/v1"
     assert contract["api"]["namespace"] == "system"
-    assert contract["providers"]["aws"]["availability"] == "schema_only"
-    assert "tgw-connect" in contract["providers"]["aws"]["unavailable_capabilities"]
+    assert contract["api"]["operations"] == ["create", "read", "replace", "delete"]
+    assert contract["providers"]["aws"]["availability"] == "evidence_backed"
+    assert contract["providers"]["aws"]["capabilities"] == {
+        "aws_ce_create": "available", "runtime_status": "unavailable", "tgw_connect": "unavailable"
+    }
+    assert contract["providers"]["aws"]["bootstrap"]["mode"] == "interactive_console_only"
     assert azure["stable_identity"]["required_fields"]
     assert [role["name"] for role in azure["roles"]] == ["slo", "external", "sli"]
     assert azure["invariants"]["bgp_bindable_roles"] == ["slo"]
@@ -163,9 +167,9 @@ def test_rejects_aws_profile_that_claims_unverified_automation(
     tmp_path: Path, contract_config: dict[str, Any]
 ) -> None:
     invalid = copy.deepcopy(contract_config)
-    _contract(invalid)["providers"]["aws"]["availability"] = "supported"
+    _contract(invalid)["providers"]["aws"]["capabilities"]["tgw_connect"] = "available"
     with pytest.raises(
-        InterfaceContractValidationError, match="AWS availability must be schema_only"
+        InterfaceContractValidationError, match="AWS capability model must fail closed"
     ):
         InterfaceContractEnricher(_write_config(tmp_path, invalid))
 
@@ -180,3 +184,17 @@ def test_site_guidance_describes_the_evidence_gate() -> None:
     assert any(
         workflow["id"] == "evidence_gated_secure_mesh_interfaces" for workflow in site_workflows
     )
+
+
+def test_rejects_headless_aws_bootstrap_contract(tmp_path: Path, contract_config: dict[str, Any]) -> None:
+    invalid = copy.deepcopy(contract_config)
+    _contract(invalid)["providers"]["aws"]["bootstrap"]["mode"] = "headless"
+    with pytest.raises(InterfaceContractValidationError, match="bootstrap must remain console-only"):
+        InterfaceContractEnricher(_write_config(tmp_path, invalid))
+
+
+def test_rejects_unsanitized_aws_evidence(tmp_path: Path, contract_config: dict[str, Any]) -> None:
+    invalid = copy.deepcopy(contract_config)
+    _contract(invalid)["providers"]["aws"]["evidence"]["receipts"][0]["sanitized"] = False
+    with pytest.raises(InterfaceContractValidationError, match="evidence receipt is invalid"):
+        InterfaceContractEnricher(_write_config(tmp_path, invalid))

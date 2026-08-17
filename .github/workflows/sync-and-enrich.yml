@@ -685,8 +685,14 @@ jobs:
 
           echo "::notice::Creating release package: ${ZIP_NAME}"
 
-          # Create release directory structure
+          # Create release directory structure and the independently verifiable
+          # SMSv2 contract assets. The manifest binds the contract and sanitized
+          # evidence receipt to the exact commit that was tagged above.
           mkdir -p "$RELEASE_DIR/domains"
+          python -m scripts.smsv2_release_assets \
+            --output-dir "$RELEASE_DIR" \
+            --version "v${VERSION}" \
+            --commit "${release_commit:?release commit is required}"
 
           # Copy master specification
           cp docs/specifications/api/openapi.json "$RELEASE_DIR/"
@@ -750,14 +756,18 @@ jobs:
             exit 0
           fi
 
-          # The exact five assets this release publishes. The receipt below must
-          # cover this same list, so it is declared once and reused for both.
+          # The exact release assets. The receipt below covers this same list,
+          # including the checksum-bound SMSv2 contract manifest and its sanitized
+          # evidence receipt, so a consumer never has to trust mutable branch data.
           ASSET_PATHS=(
             "${zip_name}"
             docs/specifications/api/openapi.json
             docs/specifications/api/index.json
             docs/specifications/api/minimal-export-defaults.json
             release/api-catalog.json
+            release-package/smsv2-contract.json
+            release-package/smsv2-evidence-receipt.json
+            release-package/smsv2-contract-manifest.json
           )
 
           # Publication receipt: binds each asset's SHA-256 to the commit the tag
