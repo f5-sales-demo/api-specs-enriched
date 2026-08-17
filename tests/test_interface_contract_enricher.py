@@ -78,10 +78,7 @@ def test_contract_is_deterministic_and_guest_names_are_not_authoritative(
         ]
         == "observational_only"
     )
-    assert (
-        create_contract[X_F5XC_CE_AUTOMATION_CONTRACT]["contract_id"]
-        == "f5xc-ce-automation/v1"
-    )
+    assert create_contract[X_F5XC_CE_AUTOMATION_CONTRACT]["contract_id"] == "f5xc-ce-automation/v1"
     assert "eth" not in json.dumps(create_contract).lower()
 
 

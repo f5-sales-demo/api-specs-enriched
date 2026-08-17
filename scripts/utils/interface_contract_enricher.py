@@ -134,20 +134,34 @@ class InterfaceContractEnricher:
 
     def _validate_aws_profile(self, resource: str, profile: dict[str, Any]) -> None:
         if profile.get("node_list_path") != "aws.not_managed.node_list[]":
-            raise InterfaceContractValidationError(f"{resource}: AWS node path is not schema-backed")
+            raise InterfaceContractValidationError(
+                f"{resource}: AWS node path is not schema-backed"
+            )
         if profile.get("interface_list_path") != "aws.not_managed.node_list[].interface_list[]":
-            raise InterfaceContractValidationError(f"{resource}: AWS interface path is not schema-backed")
+            raise InterfaceContractValidationError(
+                f"{resource}: AWS interface path is not schema-backed"
+            )
         if profile.get("availability") != "schema_only":
-            raise InterfaceContractValidationError(f"{resource}: AWS availability must be schema_only")
+            raise InterfaceContractValidationError(
+                f"{resource}: AWS availability must be schema_only"
+            )
         unsupported = profile.get("unavailable_capabilities")
-        if unsupported != ["bootstrap_checkout", "direct-eni", "nlb-ingress", "tgw-static", "tgw-connect"]:
+        if unsupported != [
+            "bootstrap_checkout",
+            "direct-eni",
+            "nlb-ingress",
+            "tgw-static",
+            "tgw-connect",
+        ]:
             raise InterfaceContractValidationError(
                 f"{resource}: AWS unsupported capabilities must fail closed"
             )
 
     def _validate_interface_profile(self, resource: str, contract: dict[str, Any]) -> None:
         if contract.get("availability") != "evidence_backed":
-            raise InterfaceContractValidationError(f"{resource}: Azure availability must be evidence_backed")
+            raise InterfaceContractValidationError(
+                f"{resource}: Azure availability must be evidence_backed"
+            )
 
         stable_identity = self._required_object(contract, "stable_identity", resource=resource)
         fields = stable_identity.get("required_fields")
