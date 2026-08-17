@@ -17923,7 +17923,7 @@
             },
             "readOnly": true,
             "x-field-mutability": "read-only",
-            "minLength": 12,
+            "minLength": 6,
             "x-reconciled-from-discovery": true,
             "x-reconciled-at": "2026-08-11T22:31:45+00:00"
           },
@@ -22569,7 +22569,7 @@
             },
             "readOnly": true,
             "x-field-mutability": "read-only",
-            "minLength": 12,
+            "minLength": 6,
             "x-reconciled-from-discovery": true,
             "x-reconciled-at": "2026-08-11T22:31:45+00:00"
           }
@@ -26629,7 +26629,7 @@
               "read": false
             },
             "x-field-mutability": "read-only",
-            "minLength": 12,
+            "minLength": 6,
             "x-reconciled-from-discovery": true,
             "x-reconciled-at": "2026-08-11T22:31:45+00:00"
           },
@@ -35583,7 +35583,7 @@
                 "source": "api-probed",
                 "confidence": 0.99,
                 "category": "tls",
-                "note": "Required when use_tls is selected — API returns 400 if nil",
+                "note": "Required when use_tls is selected \u2014 API returns 400 if nil",
                 "validatedAt": "2026-08-11T22:31:45+00:00"
               }
             },
@@ -43515,7 +43515,7 @@
               "read": false
             },
             "x-field-mutability": "read-only",
-            "minLength": 12,
+            "minLength": 6,
             "x-reconciled-from-discovery": true,
             "x-reconciled-at": "2026-08-11T22:31:45+00:00"
           },
@@ -53234,7 +53234,7 @@
               "read": false
             },
             "x-field-mutability": "read-only",
-            "minLength": 12,
+            "minLength": 6,
             "x-reconciled-from-discovery": true,
             "x-reconciled-at": "2026-08-11T22:31:45+00:00"
           },
@@ -57083,7 +57083,7 @@
               "read": false
             },
             "x-field-mutability": "read-only",
-            "minLength": 12,
+            "minLength": 6,
             "x-reconciled-from-discovery": true,
             "x-reconciled-at": "2026-08-11T22:31:45+00:00"
           },
@@ -58168,7 +58168,7 @@
           },
           "pending_requests": {
             "type": "integer",
-            "description": "The maximum number of requests that will be queued while waiting for a ready connection pool connection.\nSince HTTP/2 requests are sent over a single connection, this circuit breaker only comes into play as the\ninitial connection is created, as requests will be multiplexed immediately afterwards. For HTTP/1.1, requests\nare added to the list of pending requests whenever there aren’t enough upstream connections available to\nimmediately dispatch the request, so this circuit breaker will remain in play for the lifetime of the process.\nRemove endpoint out of load balancing decision, if pending request reach pending_request.",
+            "description": "The maximum number of requests that will be queued while waiting for a ready connection pool connection.\nSince HTTP/2 requests are sent over a single connection, this circuit breaker only comes into play as the\ninitial connection is created, as requests will be multiplexed immediately afterwards. For HTTP/1.1, requests\nare added to the list of pending requests whenever there aren\u2019t enough upstream connections available to\nimmediately dispatch the request, so this circuit breaker will remain in play for the lifetime of the process.\nRemove endpoint out of load balancing decision, if pending request reach pending_request.",
             "title": "pending_requests",
             "format": "int64",
             "x-displayname": "Pending Requests.",
@@ -58466,7 +58466,7 @@
       },
       "clusterLoadbalancerAlgorithm": {
         "type": "string",
-        "description": "Different load balancing algorithms supported\nWhen a connection to a endpoint in an upstream cluster is required, the load balancer uses loadbalancer_algorithm\nto determine which host is selected.\n\n- ROUND_ROBIN: ROUND_ROBIN\n\nPolicy in which each healthy/available upstream endpoint is selected in round robin order.\n- LEAST_REQUEST: LEAST_REQUEST\n\nPolicy in which loadbalancer picks the upstream endpoint which has the fewest active requests\n- RING_HASH: RING_HASH\n\nPolicy implements consistent hashing to upstream endpoints using ring hash of endpoint names\nHash of the incoming request is calculated using request hash policy.\nThe ring/modulo hash load balancer implements consistent hashing to upstream hosts.\nThe algorithm is based on mapping all hosts onto a circle such that the addition or\nremoval of a host from the host set changes only affect 1/N requests. This technique\nis also commonly known as “ketama” hashing. A consistent hashing load balancer is only\neffective when protocol routing is used that specifies a value to hash on. The minimum\nring size governs the replication factor for each host in the ring. For example, if the\nminimum ring size is 1024 and there are 16 hosts, each host will be replicated 64 times.\n- RANDOM: RANDOM\n\nPolicy in which each available upstream endpoint is selected in random order.\nThe random load balancer selects a random healthy host. The random load balancer generally\nperforms better than round robin if no health checking policy is configured. Random selection\navoids bias towards the host in the set that comes after a failed host.\n- LB_OVERRIDE: Load Balancer Override\n\nHash policy is taken from from the load balancer which is using this origin pool.",
+        "description": "Different load balancing algorithms supported\nWhen a connection to a endpoint in an upstream cluster is required, the load balancer uses loadbalancer_algorithm\nto determine which host is selected.\n\n- ROUND_ROBIN: ROUND_ROBIN\n\nPolicy in which each healthy/available upstream endpoint is selected in round robin order.\n- LEAST_REQUEST: LEAST_REQUEST\n\nPolicy in which loadbalancer picks the upstream endpoint which has the fewest active requests\n- RING_HASH: RING_HASH\n\nPolicy implements consistent hashing to upstream endpoints using ring hash of endpoint names\nHash of the incoming request is calculated using request hash policy.\nThe ring/modulo hash load balancer implements consistent hashing to upstream hosts.\nThe algorithm is based on mapping all hosts onto a circle such that the addition or\nremoval of a host from the host set changes only affect 1/N requests. This technique\nis also commonly known as \u201cketama\u201d hashing. A consistent hashing load balancer is only\neffective when protocol routing is used that specifies a value to hash on. The minimum\nring size governs the replication factor for each host in the ring. For example, if the\nminimum ring size is 1024 and there are 16 hosts, each host will be replicated 64 times.\n- RANDOM: RANDOM\n\nPolicy in which each available upstream endpoint is selected in random order.\nThe random load balancer selects a random healthy host. The random load balancer generally\nperforms better than round robin if no health checking policy is configured. Random selection\navoids bias towards the host in the set that comes after a failed host.\n- LB_OVERRIDE: Load Balancer Override\n\nHash policy is taken from from the load balancer which is using this origin pool.",
         "title": "LoadbalancerAlgorithm",
         "enum": [
           "ROUND_ROBIN",
@@ -58552,7 +58552,7 @@
           },
           "consecutive_5xx": {
             "type": "integer",
-            "description": "If an upstream endpoint returns some number of consecutive 5xx, it will be ejected.\nNote that in this case a 5xx means an actual 5xx respond code, or an event that would\ncause the HTTP router to return one on the upstream’s behalf(reset, connection failure, etc.)\nconsecutive_5xx indicates the number of consecutive 5xx responses required before\na consecutive 5xx ejection occurs. Defaults to 5.",
+            "description": "If an upstream endpoint returns some number of consecutive 5xx, it will be ejected.\nNote that in this case a 5xx means an actual 5xx respond code, or an event that would\ncause the HTTP router to return one on the upstream\u2019s behalf(reset, connection failure, etc.)\nconsecutive_5xx indicates the number of consecutive 5xx responses required before\na consecutive 5xx ejection occurs. Defaults to 5.",
             "title": "consecutive_5xx",
             "format": "int64",
             "x-displayname": "Consecutive 5xx Count.",
@@ -58565,7 +58565,7 @@
               "ves.io.schema.rules.uint32.lte": "1024"
             },
             "x-f5xc-description-short": "If an upstream endpoint returns some number of consecutive 5xx, it will be ejected.",
-            "x-f5xc-description-medium": "If an upstream endpoint returns some number of consecutive 5xx, it will be ejected. Note that in this case a 5xx means an actual 5xx respond code, or an event that would cause the HTTP router to return one on the upstream’s behalf(reset, connection failure, etc.) consecutive_5xx indicates the...",
+            "x-f5xc-description-medium": "If an upstream endpoint returns some number of consecutive 5xx, it will be ejected. Note that in this case a 5xx means an actual 5xx respond code, or an event that would cause the HTTP router to return one on the upstream\u2019s behalf(reset, connection failure, etc.) consecutive_5xx indicates the...",
             "x-f5xc-constraints": {
               "constraintType": "number",
               "category": "discovery",
@@ -58586,7 +58586,7 @@
           },
           "consecutive_gateway_failure": {
             "type": "integer",
-            "description": "If an upstream endpoint returns some number of consecutive “gateway errors”\n(502, 503 or 504 status code), it will be ejected. Note that this includes events\nthat would cause the HTTP router to return one of these status codes on the\nupstream’s behalf (reset, connection failure, etc.).\nConsecutive_gateway_failure indicates the number of consecutive gateway failures\nbefore a consecutive gateway failure ejection occurs. Defaults to 5.",
+            "description": "If an upstream endpoint returns some number of consecutive \u201cgateway errors\u201d\n(502, 503 or 504 status code), it will be ejected. Note that this includes events\nthat would cause the HTTP router to return one of these status codes on the\nupstream\u2019s behalf (reset, connection failure, etc.).\nConsecutive_gateway_failure indicates the number of consecutive gateway failures\nbefore a consecutive gateway failure ejection occurs. Defaults to 5.",
             "title": "consecutive_gateway_failure",
             "format": "int64",
             "x-displayname": "Consecutive Gateway Failure.",
@@ -58598,8 +58598,8 @@
             "x-validation-rules": {
               "ves.io.schema.rules.uint32.lte": "1024"
             },
-            "x-f5xc-description-short": "If an upstream endpoint returns some number of consecutive “gateway errors” (502, 503 or 504 status code), it will be ejected.",
-            "x-f5xc-description-medium": "If an upstream endpoint returns some number of consecutive “gateway errors” (502, 503 or 504 status code), it will be ejected. Note that this includes events that would cause the HTTP router to return one of these status codes on the upstream’s behalf (reset, connection failure, etc.)...",
+            "x-f5xc-description-short": "If an upstream endpoint returns some number of consecutive \u201cgateway errors\u201d (502, 503 or 504 status code), it will be ejected.",
+            "x-f5xc-description-medium": "If an upstream endpoint returns some number of consecutive \u201cgateway errors\u201d (502, 503 or 504 status code), it will be ejected. Note that this includes events that would cause the HTTP router to return one of these status codes on the upstream\u2019s behalf (reset, connection failure, etc.)...",
             "x-f5xc-constraints": {
               "constraintType": "number",
               "category": "discovery",
@@ -63511,7 +63511,7 @@
               "read": false
             },
             "x-field-mutability": "read-only",
-            "minLength": 12,
+            "minLength": 6,
             "x-reconciled-from-discovery": true,
             "x-reconciled-at": "2026-08-11T22:31:45+00:00"
           },
@@ -63835,7 +63835,7 @@
           },
           "append_server_name": {
             "type": "string",
-            "description": "Exclusive with [default_header pass_through server_name]\nDefine the header value for the header name “server”.\nIf header value is already present, it is not overwritten and passed as-is.",
+            "description": "Exclusive with [default_header pass_through server_name]\nDefine the header value for the header name \u201cserver\u201d.\nIf header value is already present, it is not overwritten and passed as-is.",
             "title": "append_server_name",
             "maxLength": 8096,
             "x-displayname": "Append header value.",
@@ -63846,8 +63846,8 @@
               "ves.io.schema.rules.string.max_len": "8096"
             },
             "x-f5xc-example": "example-resource",
-            "x-f5xc-description-short": "Exclusive with [default_header pass_through server_name] Define the header value for the header name “server”.",
-            "x-f5xc-description-medium": "Exclusive with [default_header pass_through server_name] Define the header value for the header name “server”. If header value is already present, it is not overwritten and passed as-is.",
+            "x-f5xc-description-short": "Exclusive with [default_header pass_through server_name] Define the header value for the header name \u201cserver\u201d.",
+            "x-f5xc-description-medium": "Exclusive with [default_header pass_through server_name] Define the header value for the header name \u201cserver\u201d. If header value is already present, it is not overwritten and passed as-is.",
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "discovery",
@@ -64138,7 +64138,7 @@
           },
           "server_name": {
             "type": "string",
-            "description": "Exclusive with [append_server_name default_header pass_through]\nDefine the header value for the header name “server”.\nThis will overwrite existing values, if any, for the server header.",
+            "description": "Exclusive with [append_server_name default_header pass_through]\nDefine the header value for the header name \u201cserver\u201d.\nThis will overwrite existing values, if any, for the server header.",
             "title": "server_name",
             "maxLength": 8096,
             "x-displayname": "Modify header value.",
@@ -64149,8 +64149,8 @@
               "ves.io.schema.rules.string.max_len": "8096"
             },
             "x-f5xc-example": "example-resource",
-            "x-f5xc-description-short": "Exclusive with [append_server_name default_header pass_through] Define the header value for the header name “server”.",
-            "x-f5xc-description-medium": "Exclusive with [append_server_name default_header pass_through] Define the header value for the header name “server”. This will overwrite existing values, if any, for the server header.",
+            "x-f5xc-description-short": "Exclusive with [append_server_name default_header pass_through] Define the header value for the header name \u201cserver\u201d.",
+            "x-f5xc-description-medium": "Exclusive with [append_server_name default_header pass_through] Define the header value for the header name \u201cserver\u201d. This will overwrite existing values, if any, for the server header.",
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "discovery",
@@ -64287,7 +64287,7 @@
           },
           "append_server_name": {
             "type": "string",
-            "description": "Exclusive with [default_header pass_through server_name]\nDefine the header value for the header name “server”.\nIf header value is already present, it is not overwritten and passed as-is.",
+            "description": "Exclusive with [default_header pass_through server_name]\nDefine the header value for the header name \u201cserver\u201d.\nIf header value is already present, it is not overwritten and passed as-is.",
             "title": "append_server_name",
             "maxLength": 8096,
             "x-displayname": "Append header value.",
@@ -64298,8 +64298,8 @@
               "ves.io.schema.rules.string.max_len": "8096"
             },
             "x-f5xc-example": "example-resource",
-            "x-f5xc-description-short": "Exclusive with [default_header pass_through server_name] Define the header value for the header name “server”.",
-            "x-f5xc-description-medium": "Exclusive with [default_header pass_through server_name] Define the header value for the header name “server”. If header value is already present, it is not overwritten and passed as-is.",
+            "x-f5xc-description-short": "Exclusive with [default_header pass_through server_name] Define the header value for the header name \u201cserver\u201d.",
+            "x-f5xc-description-medium": "Exclusive with [default_header pass_through server_name] Define the header value for the header name \u201cserver\u201d. If header value is already present, it is not overwritten and passed as-is.",
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "discovery",
@@ -64642,7 +64642,7 @@
           },
           "server_name": {
             "type": "string",
-            "description": "Exclusive with [append_server_name default_header pass_through]\nDefine the header value for the header name “server”.\nThis will overwrite existing values, if any, for the server header.",
+            "description": "Exclusive with [append_server_name default_header pass_through]\nDefine the header value for the header name \u201cserver\u201d.\nThis will overwrite existing values, if any, for the server header.",
             "title": "server_name",
             "maxLength": 8096,
             "x-displayname": "Modify header value.",
@@ -64653,8 +64653,8 @@
               "ves.io.schema.rules.string.max_len": "8096"
             },
             "x-f5xc-example": "example-resource",
-            "x-f5xc-description-short": "Exclusive with [append_server_name default_header pass_through] Define the header value for the header name “server”.",
-            "x-f5xc-description-medium": "Exclusive with [append_server_name default_header pass_through] Define the header value for the header name “server”. This will overwrite existing values, if any, for the server header.",
+            "x-f5xc-description-short": "Exclusive with [append_server_name default_header pass_through] Define the header value for the header name \u201cserver\u201d.",
+            "x-f5xc-description-medium": "Exclusive with [append_server_name default_header pass_through] Define the header value for the header name \u201cserver\u201d. This will overwrite existing values, if any, for the server header.",
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "discovery",
@@ -76304,7 +76304,7 @@
                   "resource": "protected_domain",
                   "scope": "same_namespace"
                 },
-                "reason": "Client-Side Defense requires a protected_domain (eTLD+1) registered in the load balancer's OWN namespace — F5 XC generates the per-namespace CSD JS configuration from it. Enabling client_side_defense without one fails with 500 'Failed to get CSD JS Configuration for <tenant>. Please ensure the domain to protect is configured in Client-Side Defense before proceeding'. Verified via live API 2026-07."
+                "reason": "Client-Side Defense requires a protected_domain (eTLD+1) registered in the load balancer's OWN namespace \u2014 F5 XC generates the per-namespace CSD JS configuration from it. Enabling client_side_defense without one fails with 500 'Failed to get CSD JS Configuration for <tenant>. Please ensure the domain to protect is configured in Client-Side Defense before proceeding'. Verified via live API 2026-07."
               }
             ]
           },
@@ -78580,7 +78580,7 @@
                   "resource": "protected_domain",
                   "scope": "same_namespace"
                 },
-                "reason": "Client-Side Defense requires a protected_domain (eTLD+1) registered in the load balancer's OWN namespace — F5 XC generates the per-namespace CSD JS configuration from it. Enabling client_side_defense without one fails with 500 'Failed to get CSD JS Configuration for <tenant>. Please ensure the domain to protect is configured in Client-Side Defense before proceeding'. Verified via live API 2026-07."
+                "reason": "Client-Side Defense requires a protected_domain (eTLD+1) registered in the load balancer's OWN namespace \u2014 F5 XC generates the per-namespace CSD JS configuration from it. Enabling client_side_defense without one fails with 500 'Failed to get CSD JS Configuration for <tenant>. Please ensure the domain to protect is configured in Client-Side Defense before proceeding'. Verified via live API 2026-07."
               }
             ]
           },
@@ -80855,7 +80855,7 @@
                   "resource": "protected_domain",
                   "scope": "same_namespace"
                 },
-                "reason": "Client-Side Defense requires a protected_domain (eTLD+1) registered in the load balancer's OWN namespace — F5 XC generates the per-namespace CSD JS configuration from it. Enabling client_side_defense without one fails with 500 'Failed to get CSD JS Configuration for <tenant>. Please ensure the domain to protect is configured in Client-Side Defense before proceeding'. Verified via live API 2026-07."
+                "reason": "Client-Side Defense requires a protected_domain (eTLD+1) registered in the load balancer's OWN namespace \u2014 F5 XC generates the per-namespace CSD JS configuration from it. Enabling client_side_defense without one fails with 500 'Failed to get CSD JS Configuration for <tenant>. Please ensure the domain to protect is configured in Client-Side Defense before proceeding'. Verified via live API 2026-07."
               }
             ]
           },
@@ -83312,7 +83312,7 @@
       },
       "virtual_hostCompressionType": {
         "type": "object",
-        "description": "Enables loadbalancer to compress dispatched data from an upstream service upon client request.\nThe content is compressed and then sent to the client with the appropriate headers if either response and request allow.\nOnly GZIP compression is supported.\n\nBy default compression will be skipped when:\n\nA request does NOT contain accept-encoding header.\nA request includes accept-encoding header, but it does not contain “gzip” or “*”.\nA request includes accept-encoding with “gzip” or “*” with the weight “q=0”. Note that the “gzip” will have a higher weight then “*”. For example, if accept-encoding is “gzip;q=0,*;q=1”, the filter will not compress. But if the header is set to “*;q=0,gzip;q=1”, the filter will compress.\nA request whose accept-encoding header includes “identity”.\nA response contains a content-encoding header.\nA response contains a cache-control header whose value includes “no-transform”.\nA response contains a transfer-encoding header whose value includes “gzip”.\nA response does not contain a content-type value that matches one of the selected mime-types, which default to application/javascript, application/JSON, application/xhtml+XML, image/svg+XML, text/CSS, text/HTML, text/plain, text/XML.\nNeither content-length nor transfer-encoding headers are present in the response.\nResponse size is smaller than 30 bytes (only applicable when transfer-encoding is not chunked).\n\nWhen compression is applied:\n\nThe content-length is removed from response headers.\nResponse headers contain “transfer-encoding: chunked” and do not contain “content-encoding” header.\nThe “vary: accept-encoding” header is inserted on every response.\n\nGZIP Compression Level:\n\nA value which is optimal balance between speed of compression and amount of compression is chosen.",
+        "description": "Enables loadbalancer to compress dispatched data from an upstream service upon client request.\nThe content is compressed and then sent to the client with the appropriate headers if either response and request allow.\nOnly GZIP compression is supported.\n\nBy default compression will be skipped when:\n\nA request does NOT contain accept-encoding header.\nA request includes accept-encoding header, but it does not contain \u201cgzip\u201d or \u201c*\u201d.\nA request includes accept-encoding with \u201cgzip\u201d or \u201c*\u201d with the weight \u201cq=0\u201d. Note that the \u201cgzip\u201d will have a higher weight then \u201c*\u201d. For example, if accept-encoding is \u201cgzip;q=0,*;q=1\u201d, the filter will not compress. But if the header is set to \u201c*;q=0,gzip;q=1\u201d, the filter will compress.\nA request whose accept-encoding header includes \u201cidentity\u201d.\nA response contains a content-encoding header.\nA response contains a cache-control header whose value includes \u201cno-transform\u201d.\nA response contains a transfer-encoding header whose value includes \u201cgzip\u201d.\nA response does not contain a content-type value that matches one of the selected mime-types, which default to application/javascript, application/JSON, application/xhtml+XML, image/svg+XML, text/CSS, text/HTML, text/plain, text/XML.\nNeither content-length nor transfer-encoding headers are present in the response.\nResponse size is smaller than 30 bytes (only applicable when transfer-encoding is not chunked).\n\nWhen compression is applied:\n\nThe content-length is removed from response headers.\nResponse headers contain \u201ctransfer-encoding: chunked\u201d and do not contain \u201ccontent-encoding\u201d header.\nThe \u201cvary: accept-encoding\u201d header is inserted on every response.\n\nGZIP Compression Level:\n\nA value which is optimal balance between speed of compression and amount of compression is chosen.",
         "title": "CompressionType",
         "x-displayname": "Compression Parameters.",
         "x-ves-proto-message": "ves.io.schema.virtual_host.CompressionType",

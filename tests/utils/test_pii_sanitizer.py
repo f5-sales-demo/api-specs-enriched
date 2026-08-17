@@ -1,6 +1,10 @@
 """Tests for generated-artifact PII sanitization."""
 
-from scripts.utils.pii_sanitizer import sanitize_discovery_payload, sanitize_emails
+from scripts.utils.pii_sanitizer import (
+    sanitize_api_url,
+    sanitize_discovery_payload,
+    sanitize_emails,
+)
 
 
 def test_sanitize_emails_preserves_reserved_domains() -> None:
@@ -15,7 +19,7 @@ def test_sanitize_emails_preserves_reserved_domains() -> None:
         "safe": "dana@example.org",
         "unsafe": "redacted1@example.com",
         "nested": ["Contact redacted1@example.com for access."],
-        "short": "redacted1@example.com",
+        "short": "redacted2@example.com",
     }
 
 
@@ -68,3 +72,37 @@ def test_sanitize_discovery_payload_preserves_structural_namespaces() -> None:
         "shared_resource": {"namespace": "shared"},
         "tenant_resource": {"namespace": "default"},
     }
+
+
+def test_sanitize_emails_preserves_distinct_addresses_across_payload_fields() -> None:
+    first_email = "first@" + "sample.invalid"
+    second_email = "second@" + "sample.invalid"
+
+    assert sanitize_emails(
+        {"owner_email": first_email, "admin_email": second_email, "repeat": first_email},
+    ) == {
+        "owner_email": "redacted1@example.com",
+        "admin_email": "redacted2@example.com",
+        "repeat": "redacted1@example.com",
+    }
+
+
+def test_sanitize_discovery_payload_redacts_nested_identity_and_contact_values() -> None:
+    captured_tenant = "captured-" + "tenant"
+    captured_user = "captured-" + "user"
+    value = {
+        "tenant": {"name": captured_tenant, "id": 42, "enabled": True},
+        "owner": {"username": captured_user, "phone": "12" + "345"},
+    }
+
+    assert sanitize_discovery_payload(value) == {
+        "tenant": {"name": "example-corp", "id": 0, "enabled": True},
+        "owner": {"username": "Example", "phone": "Example"},
+    }
+
+
+def test_sanitize_api_url_replaces_live_hosts_and_preserves_safe_examples() -> None:
+    captured_url = "https://" + "captured-tenant" + ".console.example.invalid/api"
+
+    assert sanitize_api_url(captured_url) == "https://api.example.com/api"
+    assert sanitize_api_url("https://api.example.com/api") == "https://api.example.com/api"
