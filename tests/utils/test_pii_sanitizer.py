@@ -13,10 +13,18 @@ def test_sanitize_emails_preserves_reserved_domains() -> None:
 
     assert sanitize_emails(value) == {
         "safe": "dana@example.org",
-        "unsafe": "dana@example.com",
-        "nested": ["Contact dana@example.com for access."],
-        "short": "dana@example.com",
+        "unsafe": "redacted1@example.com",
+        "nested": ["Contact redacted1@example.com for access."],
+        "short": "redacted1@example.com",
     }
+
+
+def test_sanitize_emails_preserves_distinct_addresses_in_one_text() -> None:
+    value = "Allow first@" + "sample.invalid and second@" + "sample.invalid access."
+
+    assert sanitize_emails(value) == (
+        "Allow redacted1@example.com and redacted2@example.com access."
+    )
 
 
 def test_sanitize_discovery_payload_replaces_live_identity_values() -> None:
@@ -44,4 +52,19 @@ def test_sanitize_discovery_payload_replaces_live_identity_values() -> None:
         },
         "customer": False,
         "schema": {"namespace": {"type": "string"}},
+    }
+
+
+def test_sanitize_discovery_payload_preserves_structural_namespaces() -> None:
+    captured_namespace = "captured-" + "namespace"
+    value = {
+        "system_resource": {"namespace": "system"},
+        "shared_resource": {"namespace": "shared"},
+        "tenant_resource": {"namespace": captured_namespace},
+    }
+
+    assert sanitize_discovery_payload(value) == {
+        "system_resource": {"namespace": "system"},
+        "shared_resource": {"namespace": "shared"},
+        "tenant_resource": {"namespace": "default"},
     }

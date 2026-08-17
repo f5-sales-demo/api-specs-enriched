@@ -12,6 +12,7 @@ EMAIL_RE = re.compile(
     r"[A-Za-z]{2,63}"
 )
 SAFE_EMAIL_DOMAINS = {"example.com", "example.net", "example.org"}
+STRUCTURAL_NAMESPACES = {"shared", "system"}
 IDENTITY_KEYS = {
     "tenant",
     "tenant_name",
@@ -55,11 +56,18 @@ def _safe_email(value: str) -> bool:
 
 
 def sanitize_email_text(value: str) -> str:
-    """Replace non-reserved email addresses with a fictional reserved address."""
-    return EMAIL_RE.sub(
-        lambda match: match.group(0) if _safe_email(match.group(0)) else "dana@example.com",
-        value,
-    )
+    """Replace unsafe emails with distinct fictional reserved addresses."""
+    replacement_index = 0
+
+    def replace_email(match: re.Match[str]) -> str:
+        nonlocal replacement_index
+        email = match.group(0)
+        if _safe_email(email):
+            return email
+        replacement_index += 1
+        return f"redacted{replacement_index}@example.com"
+
+    return EMAIL_RE.sub(replace_email, value)
 
 
 def sanitize_emails(value: Any) -> Any:
@@ -80,7 +88,13 @@ def sanitize_discovery_payload(value: Any) -> Any:
         for key, item in value.items():
             normalized_key = key.lower() if isinstance(key, str) else ""
             scalar = isinstance(item, (str, int, float)) and not isinstance(item, bool)
-            if normalized_key in IDENTITY_KEYS and scalar:
+            if (
+                normalized_key == "namespace"
+                and isinstance(item, str)
+                and item.lower() in STRUCTURAL_NAMESPACES
+            ):
+                result[key] = item
+            elif normalized_key in IDENTITY_KEYS and scalar:
                 result[key] = "default" if normalized_key == "namespace" else "example-corp"
             elif normalized_key in PERSON_KEYS and isinstance(item, str):
                 result[key] = "Example"
