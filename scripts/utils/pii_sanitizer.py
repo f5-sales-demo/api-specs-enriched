@@ -80,7 +80,12 @@ def sanitize_email_text(value: str, replacements: dict[str, str] | None = None) 
 def _sanitize_emails(value: Any, replacements: dict[str, str]) -> Any:
     """Recursively sanitize email addresses without changing non-string values."""
     if isinstance(value, dict):
-        return {key: _sanitize_emails(item, replacements) for key, item in value.items()}
+        return {
+            sanitize_email_text(key, replacements)
+            if isinstance(key, str)
+            else key: _sanitize_emails(item, replacements)
+            for key, item in value.items()
+        }
     if isinstance(value, list):
         return [_sanitize_emails(item, replacements) for item in value]
     if isinstance(value, str):
@@ -127,20 +132,17 @@ def sanitize_discovery_payload(
         result: dict[Any, Any] = {}
         for key, item in value.items():
             normalized_key = key.lower() if isinstance(key, str) else ""
-            if (
+            is_schema_dict = isinstance(item, dict) and any(
+                schema_key in item for schema_key in ("type", "properties", "items", "$ref")
+            )
+            if is_schema_dict:
+                result[key] = sanitize_discovery_payload(item, replacements)
+            elif (
                 normalized_key == "namespace"
                 and isinstance(item, str)
                 and item.lower() in STRUCTURAL_NAMESPACES
             ):
                 result[key] = item
-            elif (
-                normalized_key == "namespace"
-                and isinstance(item, dict)
-                and any(
-                    schema_key in item for schema_key in ("type", "properties", "items", "$ref")
-                )
-            ):
-                result[key] = sanitize_discovery_payload(item, replacements)
             elif normalized_key in IDENTITY_KEYS:
                 result[key] = _sanitize_identity_value(
                     item,
@@ -168,6 +170,8 @@ def sanitize_api_url(value: str) -> str:
     if not value:
         return value
     parsed = urlsplit(value)
-    if parsed.hostname and parsed.hostname.lower().endswith(tuple(SAFE_EMAIL_DOMAINS)):
-        return value
+    if parsed.hostname:
+        host = parsed.hostname.casefold()
+        if any(host == domain or host.endswith(f".{domain}") for domain in SAFE_EMAIL_DOMAINS):
+            return value
     return urlunsplit((parsed.scheme or "https", "api.example.com", parsed.path or "", "", ""))

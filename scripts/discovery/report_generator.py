@@ -253,10 +253,12 @@ class ReportGenerator(BaseReporter):
         reports_dir = self.path_config.reports_dir
         reports_dir.mkdir(parents=True, exist_ok=True)
 
-        safe_namespaces = [
-            sanitize_discovery_payload({"namespace": namespace})["namespace"]
-            for namespace in session.namespaces
-        ]
+        safe_namespaces = list(
+            dict.fromkeys(
+                sanitize_discovery_payload({"namespace": namespace})["namespace"]
+                for namespace in session.namespaces
+            )
+        )
         lines = [
             "# F5 XC API Discovery Report",
             "",
@@ -377,10 +379,12 @@ class ReportGenerator(BaseReporter):
         Returns:
             Path to summary file
         """
-        safe_namespaces = [
-            sanitize_discovery_payload({"namespace": namespace})["namespace"]
-            for namespace in session.namespaces
-        ]
+        safe_namespaces = list(
+            dict.fromkeys(
+                sanitize_discovery_payload({"namespace": namespace})["namespace"]
+                for namespace in session.namespaces
+            )
+        )
         summary = {
             "started_at": session.started_at.isoformat(),
             "completed_at": (session.completed_at.isoformat() if session.completed_at else None),

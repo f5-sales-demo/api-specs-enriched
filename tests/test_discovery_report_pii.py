@@ -20,7 +20,10 @@ def test_report_generator_sanitizes_live_api_url_in_all_persisted_outputs(tmp_pa
         ),
     )
     captured_namespace = "captured-" + "namespace"
-    session = DiscoverySession(api_url=captured_url, namespaces=[captured_namespace, "shared"])
+    session = DiscoverySession(
+        api_url=captured_url,
+        namespaces=[captured_namespace, "shared", captured_namespace],
+    )
 
     openapi_path = generator.generate_openapi(session)
     markdown_path = generator.generate_markdown_report(session)
@@ -38,6 +41,7 @@ def test_report_generator_sanitizes_live_api_url_in_all_persisted_outputs(tmp_pa
     assert summary["api_url"] == "https://api.example.com/api"
     assert summary["namespaces"] == ["default", "shared"]
     assert "https://api.example.com/api" in markdown
+    assert markdown.count("| Namespaces | default, shared |") == 1
     assert captured_url not in openapi_path.read_text(encoding="utf-8")
     assert captured_url not in summary_path.read_text(encoding="utf-8")
     assert captured_url not in markdown

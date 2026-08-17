@@ -106,3 +106,24 @@ def test_sanitize_api_url_replaces_live_hosts_and_preserves_safe_examples() -> N
 
     assert sanitize_api_url(captured_url) == "https://api.example.com/api"
     assert sanitize_api_url("https://api.example.com/api") == "https://api.example.com/api"
+
+
+def test_sanitize_emails_redacts_email_addresses_in_mapping_keys() -> None:
+    captured_email = "owner@" + "customer.invalid"
+
+    assert sanitize_emails({captured_email: {"contact": captured_email}}) == {
+        "redacted1@example.com": {"contact": "redacted1@example.com"},
+    }
+
+
+def test_sanitize_discovery_payload_preserves_schema_dicts_for_identity_keys() -> None:
+    assert sanitize_discovery_payload(
+        {"tenant": {"type": "string", "description": "Tenant identifier"}},
+    ) == {"tenant": {"type": "string", "description": "Tenant identifier"}}
+
+
+def test_sanitize_api_url_requires_exact_safe_domain_boundary() -> None:
+    misleading_url = "https://notexample.com/api"
+
+    assert sanitize_api_url(misleading_url) == "https://api.example.com/api"
+    assert sanitize_api_url("https://docs.example.com/api") == "https://docs.example.com/api"
