@@ -34,13 +34,16 @@ _RECEIPT_LINE = re.compile(r"^<!-- publication-receipt:(.*) -->$")
 
 
 def _asset_names(version: str) -> list[str]:
-    """The five-asset contract, exactly as consumers require it."""
+    """The release asset contract, exactly as consumers require it."""
     return [
         "api-catalog.json",
         f"f5xc-api-specs-v{version}.zip",
         "index.json",
         "minimal-export-defaults.json",
         "openapi.json",
+        "smsv2-contract.json",
+        "smsv2-evidence-receipt.json",
+        "smsv2-contract-manifest.json",
     ]
 
 
@@ -150,7 +153,7 @@ def test_rejects_incomplete_asset_set(tmp_path: Path) -> None:
     paths = _write_assets(tmp_path, names)
     result = _run(paths)
     assert result.returncode != 0
-    assert "five-asset" in result.stderr or "asset set" in result.stderr
+    assert "release asset" in result.stderr or "asset set" in result.stderr
 
 
 def test_rejects_unexpected_asset(tmp_path: Path) -> None:
@@ -158,7 +161,7 @@ def test_rejects_unexpected_asset(tmp_path: Path) -> None:
     paths = _write_assets(tmp_path, names)
     result = _run(paths)
     assert result.returncode != 0
-    assert "five-asset" in result.stderr or "asset set" in result.stderr
+    assert "release asset" in result.stderr or "asset set" in result.stderr
 
 
 def test_rejects_bundle_named_for_another_version(tmp_path: Path) -> None:
@@ -167,7 +170,7 @@ def test_rejects_bundle_named_for_another_version(tmp_path: Path) -> None:
     paths = _write_assets(tmp_path, names)
     result = _run(paths)
     assert result.returncode != 0
-    assert "five-asset" in result.stderr or "asset set" in result.stderr
+    assert "release asset" in result.stderr or "asset set" in result.stderr
 
 
 def test_rejects_malformed_version(tmp_path: Path) -> None:
