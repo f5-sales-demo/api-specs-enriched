@@ -101,6 +101,6 @@ def test_release_pr_wait_tolerates_shared_runner_queueing() -> None:
 
     workflow = WORKFLOW.read_text(encoding="utf-8")
 
-    assert workflow.count(
-        "WAIT_FOR_MERGE_MAX_TOTAL=7200 bash scripts/release/wait-for-merge.sh"
-    ) == 2
+    assert (
+        workflow.count("WAIT_FOR_MERGE_MAX_TOTAL=7200 bash scripts/release/wait-for-merge.sh") == 2
+    )

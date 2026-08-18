@@ -496,8 +496,11 @@ class TestHTTPMethodEnrichment:
                     f"DELETE should have high danger level: {path}"
                 )
             elif method == "get":
-                assert metadata["danger_level"] == "low", (
-                    f"GET should have low danger level: {path}"
+                expected_danger = (
+                    "medium" if operation.get("x-f5xc-operation-role") == "issuance" else "low"
+                )
+                assert metadata["danger_level"] == expected_danger, (
+                    f"GET should have {expected_danger} danger level: {path}"
                 )
 
 

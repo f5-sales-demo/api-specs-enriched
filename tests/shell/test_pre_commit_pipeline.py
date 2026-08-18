@@ -190,7 +190,9 @@ exit 0
         )
 
         assert result.returncode == 1
-        assert (repo / "docs/specifications/api/index.json").read_text() == '{"version":"2.1.208"}\n'
+        assert (
+            repo / "docs/specifications/api/index.json"
+        ).read_text() == '{"version":"2.1.208"}\n'
         assert _git_diff_is_empty(repo, "docs/specifications/api")
         assert _git_diff_is_empty(repo, "--cached", "docs/specifications/api")
 
@@ -213,7 +215,9 @@ exit 0
         )
 
         assert result.returncode == 1
-        assert (repo / "docs/specifications/api/index.json").read_text() == '{"version":"2.1.208"}\n'
+        assert (
+            repo / "docs/specifications/api/index.json"
+        ).read_text() == '{"version":"2.1.208"}\n'
         assert _git_diff_is_empty(repo, "docs/specifications/api")
         assert _git_diff_is_empty(repo, "--cached", "docs/specifications/api")
 
@@ -235,7 +239,9 @@ exit 0
 
         assert result.returncode == 1
         assert "does not match release branch" in result.stdout
-        assert (repo / "docs/specifications/api/index.json").read_text() == '{"version":"2.1.208"}\n'
+        assert (
+            repo / "docs/specifications/api/index.json"
+        ).read_text() == '{"version":"2.1.208"}\n'
         assert _git_diff_is_empty(repo, "--cached", "docs/specifications/api")
 
 
@@ -250,6 +256,8 @@ def _git_diff_is_empty(repo: Path, *args: str) -> bool:
         check=True,
     )
     return result.stdout == ""
+
+
 def _project_hook() -> Path:
     """Path to the repo's own copy of the hook."""
     return _PROJECT_HOOK

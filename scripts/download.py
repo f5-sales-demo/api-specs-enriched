@@ -70,6 +70,7 @@ def verify_release_asset_digest(archive: Path, asset: dict) -> str:
         raise ValueError("downloaded release asset digest does not match GitHub metadata")
     return actual
 
+
 # Default configuration (fallback if config file not found)
 DEFAULT_CONFIG = {
     "source": {
