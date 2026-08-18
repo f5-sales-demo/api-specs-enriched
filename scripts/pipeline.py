@@ -135,6 +135,7 @@ from scripts.utils.json_writer import write_json_file
 from scripts.utils.memory_profiler import MemoryProfiler
 from scripts.utils.minimal_defaults_exporter import MinimalDefaultsExporter
 from scripts.utils.namespace_profiles_exporter import NamespaceProfilesExporter
+from scripts.utils.pii_sanitizer import sanitize_emails
 from scripts.utils.resource_coverage_exporter import ResourceCoverageExporter
 from scripts.utils.server_variables import ServerVariableHelper
 
@@ -848,7 +849,7 @@ def _sanitize_documentation_examples(
     """
     result = transformer.transform_spec(spec, ["x-f5xc-example"])
     result, _ = _normalize_domain_names(result, ["x-f5xc-example"])
-    return _sanitize_embedded_examples(result, transformer)
+    return sanitize_emails(_sanitize_embedded_examples(result, transformer))
 
 
 def _sanitize_embedded_examples(

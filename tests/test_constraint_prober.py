@@ -168,7 +168,7 @@ class TestResultToDict:
         result = ResourceAuditResult(
             resource_type="healthcheck",
             timestamp="2026-01-01T00:00:00Z",
-            namespace="test",
+            namespace="default",
         )
         d = _result_to_dict(result)
         assert isinstance(d, dict)
@@ -187,7 +187,7 @@ class TestResultToDict:
         result = ResourceAuditResult(
             resource_type="healthcheck",
             timestamp="2026-01-01T00:00:00Z",
-            namespace="test",
+            namespace="default",
             fields=[field_result],
         )
         d = _result_to_dict(result)

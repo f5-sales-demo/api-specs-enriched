@@ -17,6 +17,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from scripts.utils.pii_sanitizer import sanitize_emails
 from scripts.utils.version_calculator import get_version_from_tags
 
 DEFAULT_INPUT = Path("specs/discovered/openapi.json")
@@ -1047,7 +1048,7 @@ def main() -> int:
         with DEFAULT_INPUT.open(encoding="utf-8") as f:
             openapi = json.load(f)
 
-    catalog = compile_catalog(openapi)
+    catalog = sanitize_emails(compile_catalog(openapi))
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
     with args.output.open("w", encoding="utf-8") as f:

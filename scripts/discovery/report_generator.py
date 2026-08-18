@@ -20,6 +20,7 @@ from scripts.utils.extension_constants import (
     X_F5XC_RESPONSE_TIME_MS,
 )
 from scripts.utils.path_config import PathConfig
+from scripts.utils.pii_sanitizer import sanitize_api_url, sanitize_discovery_payload
 from scripts.utils.report_base import BaseReporter
 from scripts.utils.server_variables_markdown import ServerVariablesMarkdownHelper
 
@@ -150,6 +151,7 @@ class ReportGenerator(BaseReporter):
         Returns:
             Path to generated spec file
         """
+        api_url = sanitize_api_url(session.api_url)
         spec: dict[str, Any] = {
             "openapi": "3.0.3",
             "info": {
@@ -157,9 +159,9 @@ class ReportGenerator(BaseReporter):
                 "version": datetime.now(timezone.utc).strftime("%Y%m%d%H%M"),
                 "description": "API specification discovered from live API exploration",
                 X_F5XC_DISCOVERED_AT: session.started_at.isoformat(),
-                X_F5XC_API_URL: session.api_url,
+                X_F5XC_API_URL: api_url,
             },
-            "servers": [{"url": session.api_url}] if session.api_url else [],
+            "servers": [{"url": api_url}] if session.api_url else [],
             "paths": {},
             "components": {"schemas": {}},
         }
@@ -190,7 +192,7 @@ class ReportGenerator(BaseReporter):
                 if self.include_examples and endpoint.examples:
                     operation["responses"][str(endpoint.status_code or 200)]["content"][
                         "application/json"
-                    ]["example"] = endpoint.examples[0]
+                    ]["example"] = sanitize_discovery_payload(endpoint.examples[0])
 
                 if endpoint.response_time_ms:
                     operation[X_F5XC_RESPONSE_TIME_MS] = round(endpoint.response_time_ms, 2)
@@ -251,11 +253,17 @@ class ReportGenerator(BaseReporter):
         reports_dir = self.path_config.reports_dir
         reports_dir.mkdir(parents=True, exist_ok=True)
 
+        safe_namespaces = list(
+            dict.fromkeys(
+                sanitize_discovery_payload({"namespace": namespace})["namespace"]
+                for namespace in session.namespaces
+            )
+        )
         lines = [
             "# F5 XC API Discovery Report",
             "",
             f"**Generated**: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}",
-            f"**API URL**: {session.api_url}",
+            f"**API URL**: {sanitize_api_url(session.api_url)}",
             f"**Duration**: {session.duration_seconds:.1f} seconds",
             "",
             "---",
@@ -266,7 +274,7 @@ class ReportGenerator(BaseReporter):
             "|--------|-------|",
             f"| Endpoints Explored | {len(session.endpoints)} |",
             f"| Success Rate | {session.success_rate:.1f}% |",
-            f"| Namespaces | {', '.join(session.namespaces)} |",
+            f"| Namespaces | {', '.join(safe_namespaces)} |",
             "",
         ]
 
@@ -371,12 +379,18 @@ class ReportGenerator(BaseReporter):
         Returns:
             Path to summary file
         """
+        safe_namespaces = list(
+            dict.fromkeys(
+                sanitize_discovery_payload({"namespace": namespace})["namespace"]
+                for namespace in session.namespaces
+            )
+        )
         summary = {
             "started_at": session.started_at.isoformat(),
             "completed_at": (session.completed_at.isoformat() if session.completed_at else None),
             "duration_seconds": session.duration_seconds,
-            "api_url": session.api_url,
-            "namespaces": session.namespaces,
+            "api_url": sanitize_api_url(session.api_url),
+            "namespaces": safe_namespaces,
             "statistics": {
                 "endpoints_total": len(session.endpoints),
                 "endpoints_successful": len(

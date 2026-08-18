@@ -245,13 +245,13 @@ Test your own constraints:
 
 ```bash
 # Test custom pattern
-curl -X POST "${F5XC_API_URL}/api/config/namespaces/test/http_loadbalancers" \
+curl -X POST "${F5XC_API_URL}/api/config/namespaces/default/http_loadbalancers" \
     -H "Authorization: APIToken ${F5XC_API_TOKEN}" \
     -H "Content-Type: application/json" \
     -d '{
         "metadata": {
             "name": "your-test-value",
-            "namespace": "test"
+            "namespace": "default"
         },
         "spec": {}
     }'
