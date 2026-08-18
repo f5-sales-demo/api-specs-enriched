@@ -4,9 +4,13 @@ from __future__ import annotations
 
 import json
 from types import SimpleNamespace
+from typing import TYPE_CHECKING, cast
 
 from scripts.discovery.report_generator import DiscoverySession, ReportGenerator
 from scripts.utils.extension_constants import X_F5XC_API_URL
+
+if TYPE_CHECKING:
+    from scripts.utils.path_config import PathConfig
 
 
 def test_report_generator_sanitizes_live_api_url_in_all_persisted_outputs(tmp_path) -> None:
@@ -14,9 +18,12 @@ def test_report_generator_sanitizes_live_api_url_in_all_persisted_outputs(tmp_pa
     reports_dir = tmp_path / "reports"
     generator = ReportGenerator(
         output_dir=tmp_path / "discovered",
-        path_config=SimpleNamespace(
-            reports_dir=reports_dir,
-            discovery_report=reports_dir / "discovery-report.md",
+        path_config=cast(
+            "PathConfig",
+            SimpleNamespace(
+                reports_dir=reports_dir,
+                discovery_report=reports_dir / "discovery-report.md",
+            ),
         ),
     )
     captured_namespace = "captured-" + "namespace"
