@@ -541,12 +541,16 @@ class ConstraintEnricher:
 
                     try:
                         value = int(rule_value)
-                        constraints[constraint_field] = value
-
-                        # Handle exclusive bounds
                         if rule_def.get("exclusive"):
-                            exclusive_field = f"exclusive{constraint_field.capitalize()}"
-                            constraints[exclusive_field] = True
+                            # The discovery rule families are integer-only. Convert
+                            # exclusive limits to their exact inclusive equivalent so
+                            # downstream consumers do not need a second bounds model.
+                            if constraint_field == "minimum":
+                                value += 1
+                            elif constraint_field == "maximum":
+                                value -= 1
+
+                        constraints[constraint_field] = value
 
                         if rule_def.get("source"):
                             source_override = rule_def["source"]
@@ -856,116 +860,6 @@ class ConstraintEnricher:
                 "validatedAt": artifact_timestamp(),
             },
         }
-
-    def _merge_discovery_constraints(
-        self,
-        schema: dict,
-        discovery_data: dict | None,
-    ) -> dict | None:
-        """Merge constraints from discovery data.
-
-        Args:
-            schema: Property schema
-            discovery_data: Discovery validation rules
-
-        Returns:
-            Merged constraints or None
-        """
-        if not discovery_data:
-            return None
-
-        # Extract x-ves-validation-rules
-        ves_rules = schema.get("x-ves-validation-rules", {})
-        if not ves_rules:
-            return None
-
-        self.stats["discovery_merges"] += 1
-
-        constraints = {}
-        field_type = schema.get("type")
-
-        # Map based on field type
-        if field_type == "string":
-            constraints = self._map_string_discovery_rules(ves_rules)
-        elif field_type == "array":
-            constraints = self._map_array_discovery_rules(ves_rules)
-        elif field_type in ("integer", "number"):
-            constraints = self._map_numeric_discovery_rules(ves_rules)
-
-        if constraints:
-            constraint_type = "number" if field_type in ("integer", "number") else field_type
-            return {
-                "constraintType": constraint_type,
-                "category": "discovery",
-                **constraints,
-                "metadata": {
-                    "source": "discovery",
-                    "confidence": 0.99,
-                    "validatedAt": artifact_timestamp(),
-                },
-                "deterministic": True,
-            }
-
-        return None
-
-    def _map_string_discovery_rules(self, ves_rules: dict) -> dict:
-        """Map x-ves-validation-rules to string constraints."""
-        mapping = self.config.get("discovery_mapping", {}).get("string_rules", [])
-        constraints = {}
-
-        for rule in mapping:
-            ves_rule = rule.get("ves_rule")
-            constraint_field = rule.get("constraint_field")
-            constraint_value = rule.get("constraint_value")
-
-            if ves_rule in ves_rules:
-                if constraint_value:
-                    constraints[constraint_field] = constraint_value
-                else:
-                    constraints[constraint_field] = ves_rules[ves_rule]
-
-        return constraints
-
-    def _map_array_discovery_rules(self, ves_rules: dict) -> dict:
-        """Map x-ves-validation-rules to array constraints."""
-        mapping = self.config.get("discovery_mapping", {}).get("array_rules", [])
-        constraints = {}
-
-        for rule in mapping:
-            ves_rule = rule.get("ves_rule")
-            constraint_field = rule.get("constraint_field")
-            constraint_value = rule.get("constraint_value")
-
-            if ves_rule in ves_rules:
-                if constraint_value is not None:
-                    constraints[constraint_field] = constraint_value
-                else:
-                    constraints[constraint_field] = ves_rules[ves_rule]
-
-        return constraints
-
-    def _map_numeric_discovery_rules(self, ves_rules: dict) -> dict:
-        """Map x-ves-validation-rules to numeric constraints."""
-        mapping = self.config.get("discovery_mapping", {}).get("number_rules", [])
-        constraints = {}
-
-        for rule in mapping:
-            ves_rule = rule.get("ves_rule")
-            constraint_field = rule.get("constraint_field")
-            exclusive = rule.get("exclusive", False)
-
-            if ves_rule in ves_rules:
-                value = ves_rules[ves_rule]
-                if exclusive:
-                    # Adjust for exclusive bounds
-                    if "minimum" in constraint_field:
-                        constraints["minimum"] = value + 1
-                    elif "maximum" in constraint_field:
-                        constraints["maximum"] = value - 1
-                else:
-                    constraints[constraint_field] = value
-
-        return constraints
 
     def get_stats(self) -> dict[str, Any]:
         """Get enrichment statistics.
