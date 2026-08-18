@@ -176,6 +176,88 @@ def test_rejects_aws_profile_that_claims_unverified_automation(
         InterfaceContractEnricher(_write_config(tmp_path, invalid))
 
 
+def test_accepts_additive_v1_contract_fields_and_revision(
+    tmp_path: Path, contract_config: dict[str, Any]
+) -> None:
+    compatible = copy.deepcopy(contract_config)
+    contract = _contract(compatible)
+    contract["version"] = "2.7.9"
+    contract["api"]["status_path"] = (
+        "/api/config/namespaces/{namespace}/securemesh_site_v2s/{name}/status"
+    )
+    contract["api"]["operations"].append("status")
+    contract["providers"]["aws"]["future_additive_field"] = {"safe": True}
+    contract["providers"]["aws"]["capabilities"]["future_capability"] = "unavailable"
+    contract["providers"]["aws"]["unavailable_capabilities"].append("future_capability")
+    contract["providers"]["gcp"] = {"availability": "schema_only"}
+
+    enricher = InterfaceContractEnricher(_write_config(tmp_path, compatible))
+
+    assert enricher.contracts[0][1]["version"] == "2.7.9"
+    assert enricher.contracts[0][1]["providers"]["gcp"]["availability"] == "schema_only"
+
+
+@pytest.mark.parametrize("version", ["2", "2.1", "02.1.0", "2.1.0-dev", "3.0.0"])
+def test_rejects_malformed_or_incompatible_schema_versions(
+    tmp_path: Path, contract_config: dict[str, Any], version: str
+) -> None:
+    incompatible = copy.deepcopy(contract_config)
+    _contract(incompatible)["version"] = version
+
+    with pytest.raises(InterfaceContractValidationError, match="unsupported contract version"):
+        InterfaceContractEnricher(_write_config(tmp_path, incompatible))
+
+
+def test_rejects_unknown_contract_identity_major(
+    tmp_path: Path, contract_config: dict[str, Any]
+) -> None:
+    incompatible = copy.deepcopy(contract_config)
+    _contract(incompatible)["contract_id"] = "f5xc-ce-automation/v2"
+
+    with pytest.raises(InterfaceContractValidationError, match="invalid contract identity"):
+        InterfaceContractEnricher(_write_config(tmp_path, incompatible))
+
+
+def test_accepts_schema_only_aws_when_every_capability_fails_closed(
+    tmp_path: Path, contract_config: dict[str, Any]
+) -> None:
+    compatible = copy.deepcopy(contract_config)
+    aws = _contract(compatible)["providers"]["aws"]
+    aws["availability"] = "schema_only"
+    aws["capabilities"] = dict.fromkeys(aws["capabilities"], "unavailable")
+    aws["unavailable_capabilities"] = list(aws["capabilities"])
+    aws.pop("bootstrap")
+    aws.pop("evidence")
+
+    InterfaceContractEnricher(_write_config(tmp_path, compatible))
+
+
+def test_rejects_schema_only_aws_automation_claims(
+    tmp_path: Path, contract_config: dict[str, Any]
+) -> None:
+    invalid = copy.deepcopy(contract_config)
+    aws = _contract(invalid)["providers"]["aws"]
+    aws["availability"] = "schema_only"
+
+    with pytest.raises(
+        InterfaceContractValidationError,
+        match="schema-only AWS capabilities must fail closed",
+    ):
+        InterfaceContractEnricher(_write_config(tmp_path, invalid))
+
+
+def test_evidence_backed_aws_requires_provenance(
+    tmp_path: Path, contract_config: dict[str, Any]
+) -> None:
+    invalid = copy.deepcopy(contract_config)
+    _contract(invalid)["providers"]["aws"]["evidence"].pop("provenance")
+
+    with pytest.raises(
+        InterfaceContractValidationError, match="AWS evidence provenance is required"
+    ):
+        InterfaceContractEnricher(_write_config(tmp_path, invalid))
+
+
 def test_site_guidance_describes_the_evidence_gate() -> None:
     root = Path(__file__).parent.parent
     best_practices = yaml.safe_load((root / "config" / "best_practices.yaml").read_text())

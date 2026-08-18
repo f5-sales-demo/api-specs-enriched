@@ -34539,7 +34539,7 @@
               "read": false
             },
             "x-field-mutability": "read-only",
-            "minLength": 6,
+            "minLength": 12,
             "x-reconciled-from-discovery": true,
             "x-reconciled-at": "2026-08-18T01:54:51+00:00"
           },
@@ -39519,7 +39519,7 @@
             },
             "readOnly": true,
             "x-field-mutability": "read-only",
-            "minLength": 6,
+            "minLength": 12,
             "x-reconciled-from-discovery": true,
             "x-reconciled-at": "2026-08-18T01:54:51+00:00"
           },
@@ -42806,7 +42806,7 @@
               "read": false
             },
             "x-field-mutability": "read-only",
-            "minLength": 6,
+            "minLength": 12,
             "x-reconciled-from-discovery": true,
             "x-reconciled-at": "2026-08-18T01:54:51+00:00"
           },
@@ -44001,7 +44001,7 @@
             },
             "readOnly": true,
             "x-field-mutability": "read-only",
-            "minLength": 6,
+            "minLength": 12,
             "x-reconciled-from-discovery": true,
             "x-reconciled-at": "2026-08-18T01:54:51+00:00"
           }
@@ -53683,7 +53683,7 @@
               "read": false
             },
             "x-field-mutability": "read-only",
-            "minLength": 6,
+            "minLength": 12,
             "x-reconciled-from-discovery": true,
             "x-reconciled-at": "2026-08-18T01:54:51+00:00"
           },
@@ -61849,7 +61849,7 @@
           },
           "space_reserve": {
             "type": "string",
-            "description": "Space reservation mode; \u201cnone\u201d (thin) or \u201cvolume\u201d (thick)",
+            "description": "Space reservation mode; “none” (thin) or “volume” (thick)",
             "title": "Space Reservation Mode",
             "x-displayname": "Space Reservation Mode.",
             "x-ves-example": "Thick",
@@ -61860,7 +61860,7 @@
             "x-validation-rules": {
               "ves.io.schema.rules.string.in": "[\\\"none\\\",\\\"thick\\\"]"
             },
-            "x-f5xc-description-short": "Space reservation mode; \u201cnone\u201d (thin) or \u201cvolume\u201d (thick).",
+            "x-f5xc-description-short": "Space reservation mode; “none” (thin) or “volume” (thick).",
             "maxLength": 1024,
             "enum": [
               "none",
@@ -72813,7 +72813,7 @@
               "read": false
             },
             "x-field-mutability": "read-only",
-            "minLength": 6,
+            "minLength": 12,
             "x-reconciled-from-discovery": true,
             "x-reconciled-at": "2026-08-18T01:54:51+00:00"
           },
@@ -80189,7 +80189,7 @@
               "read": false
             },
             "x-field-mutability": "read-only",
-            "minLength": 6,
+            "minLength": 12,
             "x-reconciled-from-discovery": true,
             "x-reconciled-at": "2026-08-18T01:54:51+00:00"
           },
@@ -89276,7 +89276,7 @@
               "read": false
             },
             "x-field-mutability": "read-only",
-            "minLength": 6,
+            "minLength": 12,
             "x-reconciled-from-discovery": true,
             "x-reconciled-at": "2026-08-18T01:54:51+00:00"
           },
@@ -93184,7 +93184,7 @@
               "read": false
             },
             "x-field-mutability": "read-only",
-            "minLength": 6,
+            "minLength": 12,
             "x-reconciled-from-discovery": true,
             "x-reconciled-at": "2026-08-18T01:54:51+00:00"
           },
@@ -97971,7 +97971,7 @@
               "read": false
             },
             "x-field-mutability": "read-only",
-            "minLength": 6,
+            "minLength": 12,
             "x-reconciled-from-discovery": true,
             "x-reconciled-at": "2026-08-18T01:54:51+00:00"
           },
@@ -101256,25 +101256,58 @@
           "logs_receiver_choice": "logs_streaming_disabled"
         },
         "x-f5xc-ce-automation-contract": {
-          "version": "2.0.0",
+          "version": "2.1.0",
           "contract_id": "f5xc-ce-automation/v1",
           "resource": "securemesh_site_v2",
           "api": {
             "collection_path": "/api/config/namespaces/{namespace}/securemesh_site_v2s",
             "item_path": "/api/config/namespaces/{namespace}/securemesh_site_v2s/{name}",
-            "namespace": "system"
+            "namespace": "system",
+            "operations": [
+              "create",
+              "read",
+              "replace",
+              "delete"
+            ]
           },
           "providers": {
             "aws": {
-              "availability": "schema_only",
+              "availability": "evidence_backed",
               "node_list_path": "aws.not_managed.node_list[]",
               "interface_list_path": "aws.not_managed.node_list[].interface_list[]",
+              "capabilities": {
+                "aws_ce_create": "available",
+                "runtime_status": "unavailable",
+                "tgw_connect": "unavailable"
+              },
+              "bootstrap": {
+                "mode": "interactive_console_only",
+                "reference": "session_bound_opaque_one_use",
+                "headless_checkout": "unavailable"
+              },
+              "evidence": {
+                "provenance": "f5-distributed-cloud-smsv2-system-namespace",
+                "observed_at": "2026-08-17T00:00:00Z",
+                "profiles": [
+                  "aws-shaped-ce-configuration"
+                ],
+                "receipts": [
+                  {
+                    "source_url": "https://docs.cloud.f5.com/docs-v2/api",
+                    "operations": [
+                      "create",
+                      "read",
+                      "replace",
+                      "delete"
+                    ],
+                    "sanitized": true,
+                    "redaction": "no tenant response, token, bootstrap material, or resource identifier"
+                  }
+                ]
+              },
               "unavailable_capabilities": [
-                "bootstrap_checkout",
-                "direct-eni",
-                "nlb-ingress",
-                "tgw-static",
-                "tgw-connect"
+                "runtime_status",
+                "tgw_connect"
               ]
             },
             "azure": {
@@ -102694,25 +102727,58 @@
           "logs_receiver_choice": "logs_streaming_disabled"
         },
         "x-f5xc-ce-automation-contract": {
-          "version": "2.0.0",
+          "version": "2.1.0",
           "contract_id": "f5xc-ce-automation/v1",
           "resource": "securemesh_site_v2",
           "api": {
             "collection_path": "/api/config/namespaces/{namespace}/securemesh_site_v2s",
             "item_path": "/api/config/namespaces/{namespace}/securemesh_site_v2s/{name}",
-            "namespace": "system"
+            "namespace": "system",
+            "operations": [
+              "create",
+              "read",
+              "replace",
+              "delete"
+            ]
           },
           "providers": {
             "aws": {
-              "availability": "schema_only",
+              "availability": "evidence_backed",
               "node_list_path": "aws.not_managed.node_list[]",
               "interface_list_path": "aws.not_managed.node_list[].interface_list[]",
+              "capabilities": {
+                "aws_ce_create": "available",
+                "runtime_status": "unavailable",
+                "tgw_connect": "unavailable"
+              },
+              "bootstrap": {
+                "mode": "interactive_console_only",
+                "reference": "session_bound_opaque_one_use",
+                "headless_checkout": "unavailable"
+              },
+              "evidence": {
+                "provenance": "f5-distributed-cloud-smsv2-system-namespace",
+                "observed_at": "2026-08-17T00:00:00Z",
+                "profiles": [
+                  "aws-shaped-ce-configuration"
+                ],
+                "receipts": [
+                  {
+                    "source_url": "https://docs.cloud.f5.com/docs-v2/api",
+                    "operations": [
+                      "create",
+                      "read",
+                      "replace",
+                      "delete"
+                    ],
+                    "sanitized": true,
+                    "redaction": "no tenant response, token, bootstrap material, or resource identifier"
+                  }
+                ]
+              },
               "unavailable_capabilities": [
-                "bootstrap_checkout",
-                "direct-eni",
-                "nlb-ingress",
-                "tgw-static",
-                "tgw-connect"
+                "runtime_status",
+                "tgw_connect"
               ]
             },
             "azure": {
@@ -104075,25 +104141,58 @@
           "logs_receiver_choice": "logs_streaming_disabled"
         },
         "x-f5xc-ce-automation-contract": {
-          "version": "2.0.0",
+          "version": "2.1.0",
           "contract_id": "f5xc-ce-automation/v1",
           "resource": "securemesh_site_v2",
           "api": {
             "collection_path": "/api/config/namespaces/{namespace}/securemesh_site_v2s",
             "item_path": "/api/config/namespaces/{namespace}/securemesh_site_v2s/{name}",
-            "namespace": "system"
+            "namespace": "system",
+            "operations": [
+              "create",
+              "read",
+              "replace",
+              "delete"
+            ]
           },
           "providers": {
             "aws": {
-              "availability": "schema_only",
+              "availability": "evidence_backed",
               "node_list_path": "aws.not_managed.node_list[]",
               "interface_list_path": "aws.not_managed.node_list[].interface_list[]",
+              "capabilities": {
+                "aws_ce_create": "available",
+                "runtime_status": "unavailable",
+                "tgw_connect": "unavailable"
+              },
+              "bootstrap": {
+                "mode": "interactive_console_only",
+                "reference": "session_bound_opaque_one_use",
+                "headless_checkout": "unavailable"
+              },
+              "evidence": {
+                "provenance": "f5-distributed-cloud-smsv2-system-namespace",
+                "observed_at": "2026-08-17T00:00:00Z",
+                "profiles": [
+                  "aws-shaped-ce-configuration"
+                ],
+                "receipts": [
+                  {
+                    "source_url": "https://docs.cloud.f5.com/docs-v2/api",
+                    "operations": [
+                      "create",
+                      "read",
+                      "replace",
+                      "delete"
+                    ],
+                    "sanitized": true,
+                    "redaction": "no tenant response, token, bootstrap material, or resource identifier"
+                  }
+                ]
+              },
               "unavailable_capabilities": [
-                "bootstrap_checkout",
-                "direct-eni",
-                "nlb-ingress",
-                "tgw-static",
-                "tgw-connect"
+                "runtime_status",
+                "tgw_connect"
               ]
             },
             "azure": {
@@ -106434,7 +106533,7 @@
               "read": false
             },
             "x-field-mutability": "read-only",
-            "minLength": 6,
+            "minLength": 12,
             "x-reconciled-from-discovery": true,
             "x-reconciled-at": "2026-08-18T01:54:51+00:00"
           },
@@ -121450,7 +121549,7 @@
               "read": false
             },
             "x-field-mutability": "read-only",
-            "minLength": 6,
+            "minLength": 12,
             "x-reconciled-from-discovery": true,
             "x-reconciled-at": "2026-08-18T01:54:51+00:00"
           },
@@ -129208,9 +129307,9 @@
           },
           "volumeHandle": {
             "type": "string",
-            "description": "VolumeHandle is the unique volume name returned by the CSI volume\nplugin\u2019s CreateVolume to refer to the volume on all subsequent calls.\nRequired.",
-            "x-f5xc-description-short": "VolumeHandle is the unique volume name returned by the CSI volume plugin\u2019s CreateVolume to refer to the volume on all subsequent calls.",
-            "x-f5xc-description-medium": "VolumeHandle is the unique volume name returned by the CSI volume plugin\u2019s CreateVolume to refer to the volume on all subsequent calls. Required.",
+            "description": "VolumeHandle is the unique volume name returned by the CSI volume\nplugin’s CreateVolume to refer to the volume on all subsequent calls.\nRequired.",
+            "x-f5xc-description-short": "VolumeHandle is the unique volume name returned by the CSI volume plugin’s CreateVolume to refer to the volume on all subsequent calls.",
+            "x-f5xc-description-medium": "VolumeHandle is the unique volume name returned by the CSI volume plugin’s CreateVolume to refer to the volume on all subsequent calls. Required.",
             "maxLength": 1024,
             "x-f5xc-constraints": {
               "constraintType": "string",
@@ -145130,7 +145229,7 @@
               "read": false
             },
             "x-field-mutability": "read-only",
-            "minLength": 6,
+            "minLength": 12,
             "x-reconciled-from-discovery": true,
             "x-reconciled-at": "2026-08-18T01:54:51+00:00"
           },
@@ -164545,7 +164644,7 @@
               "read": false
             },
             "x-field-mutability": "read-only",
-            "minLength": 6,
+            "minLength": 12,
             "x-reconciled-from-discovery": true,
             "x-reconciled-at": "2026-08-18T01:54:51+00:00"
           },
@@ -165708,13 +165807,13 @@
                 "CUSTOMER_EDGE",
                 "NGINX_ONE"
               ],
-              "description": "Type of sites to select \u2014 CUSTOMER_EDGE for CE/SMSv2 sites, REGIONAL_EDGE for cloud PoPs"
+              "description": "Type of sites to select — CUSTOMER_EDGE for CE/SMSv2 sites, REGIONAL_EDGE for cloud PoPs"
             }
           }
         },
         "x-f5xc-description-short": "Create a virtual site object in given namespace.",
         "x-f5xc-minimum-configuration": {
-          "description": "Label-based site selector for grouping RE and CE sites \u2014 used as advertise_where target for HTTP LBs",
+          "description": "Label-based site selector for grouping RE and CE sites — used as advertise_where target for HTTP LBs",
           "required_fields": [
             "metadata.name",
             "metadata.namespace",
@@ -165791,13 +165890,13 @@
                 "CUSTOMER_EDGE",
                 "NGINX_ONE"
               ],
-              "description": "Type of sites to select \u2014 CUSTOMER_EDGE for CE/SMSv2 sites, REGIONAL_EDGE for cloud PoPs"
+              "description": "Type of sites to select — CUSTOMER_EDGE for CE/SMSv2 sites, REGIONAL_EDGE for cloud PoPs"
             }
           }
         },
         "x-f5xc-description-short": "GET a virtual site object in given namespace.",
         "x-f5xc-minimum-configuration": {
-          "description": "Label-based site selector for grouping RE and CE sites \u2014 used as advertise_where target for HTTP LBs",
+          "description": "Label-based site selector for grouping RE and CE sites — used as advertise_where target for HTTP LBs",
           "required_fields": [
             "metadata.name",
             "metadata.namespace",
@@ -165837,7 +165936,7 @@
         "x-ves-proto-message": "ves.io.schema.virtual_site.ReplaceSpecType",
         "x-f5xc-description-short": "Replace a given virtual site object in a given namespace.",
         "x-f5xc-minimum-configuration": {
-          "description": "Label-based site selector for grouping RE and CE sites \u2014 used as advertise_where target for HTTP LBs",
+          "description": "Label-based site selector for grouping RE and CE sites — used as advertise_where target for HTTP LBs",
           "required_fields": [
             "metadata.name",
             "metadata.namespace",
@@ -165906,7 +166005,7 @@
           }
         },
         "x-f5xc-minimum-configuration": {
-          "description": "Label-based site selector for grouping RE and CE sites \u2014 used as advertise_where target for HTTP LBs",
+          "description": "Label-based site selector for grouping RE and CE sites — used as advertise_where target for HTTP LBs",
           "required_fields": [
             "metadata.name",
             "metadata.namespace",
@@ -166702,7 +166801,7 @@
               "read": false
             },
             "x-field-mutability": "read-only",
-            "minLength": 6,
+            "minLength": 12,
             "x-reconciled-from-discovery": true,
             "x-reconciled-at": "2026-08-18T01:54:51+00:00"
           },
@@ -166818,7 +166917,7 @@
           }
         },
         "x-f5xc-minimum-configuration": {
-          "description": "Label-based site selector for grouping RE and CE sites \u2014 used as advertise_where target for HTTP LBs",
+          "description": "Label-based site selector for grouping RE and CE sites — used as advertise_where target for HTTP LBs",
           "required_fields": [
             "metadata.name",
             "metadata.namespace",
@@ -167030,7 +167129,7 @@
               "read": false
             },
             "x-field-mutability": "read-only",
-            "minLength": 6,
+            "minLength": 12,
             "x-reconciled-from-discovery": true,
             "x-reconciled-at": "2026-08-18T01:54:51+00:00"
           }
