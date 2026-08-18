@@ -63,7 +63,9 @@ def test_builds_deterministic_sanitized_assets(tmp_path: Path) -> None:
 def test_validates_stable_receipted_release(tmp_path: Path) -> None:
     assets = _assets(tmp_path)
     manifest = json.loads(assets[MANIFEST_FILE])
-    contract = validate_release_assets(assets[MANIFEST_FILE], assets, _release(), _receipt(manifest), now=_NOW)
+    contract = validate_release_assets(
+        assets[MANIFEST_FILE], assets, _release(), _receipt(manifest), now=_NOW
+    )
     assert contract["providers"]["aws"]["capabilities"]["aws_ce_create"] == "available"
 
 
@@ -93,7 +95,9 @@ def test_rejects_unavailable_or_tampered_release(
     if asset_name:
         assets[asset_name] += b"tampered"
     with pytest.raises(Smsv2ReleaseValidationError, match=message):
-        validate_release_assets(assets[MANIFEST_FILE], assets, _release(**release_overrides), receipt, now=_NOW)
+        validate_release_assets(
+            assets[MANIFEST_FILE], assets, _release(**release_overrides), receipt, now=_NOW
+        )
 
 
 def test_rejects_malformed_manifest_and_sensitive_evidence(tmp_path: Path) -> None:
@@ -117,5 +121,9 @@ def test_rejects_release_race_with_changed_tag(tmp_path: Path) -> None:
     manifest = json.loads(assets[MANIFEST_FILE])
     with pytest.raises(Smsv2ReleaseValidationError, match="tag"):
         validate_release_assets(
-            assets[MANIFEST_FILE], assets, _release(tag_name="v2.1.223"), _receipt(manifest), now=_NOW
+            assets[MANIFEST_FILE],
+            assets,
+            _release(tag_name="v2.1.223"),
+            _receipt(manifest),
+            now=_NOW,
         )

@@ -29,7 +29,9 @@ class Smsv2ReleaseValidationError(ValueError):
 
 def canonical_json(value: Any) -> bytes:
     """Encode a release value deterministically."""
-    return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode("utf-8")
+    return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode(
+        "utf-8"
+    )
 
 
 def digest(value: bytes) -> str:
@@ -78,12 +80,16 @@ def _evidence(contract: dict[str, Any]) -> dict[str, Any]:
 def _assert_sanitized_evidence(value: object) -> None:
     encoded = canonical_json(value).decode("ascii")
     if _FORBIDDEN_EVIDENCE.search(encoded):
-        raise Smsv2ReleaseValidationError("evidence receipt contains sensitive or identifying material")
+        raise Smsv2ReleaseValidationError(
+            "evidence receipt contains sensitive or identifying material"
+        )
     if '"sanitized":true' not in encoded:
         raise Smsv2ReleaseValidationError("evidence receipt is not explicitly sanitized")
 
 
-def build_release_assets(config_path: Path, output_dir: Path, version: str, commit: str) -> dict[str, bytes]:
+def build_release_assets(
+    config_path: Path, output_dir: Path, version: str, commit: str
+) -> dict[str, bytes]:
     """Build the three checksummed release assets from the validated config."""
     if not _VERSION.fullmatch(version):
         raise Smsv2ReleaseValidationError("release tag must be a stable vMAJOR.MINOR.PATCH tag")
@@ -102,7 +108,11 @@ def build_release_assets(config_path: Path, output_dir: Path, version: str, comm
     }
     manifest_bytes = canonical_json(manifest)
     output_dir.mkdir(parents=True, exist_ok=True)
-    assets = {CONTRACT_FILE: contract_bytes, EVIDENCE_FILE: evidence_bytes, MANIFEST_FILE: manifest_bytes}
+    assets = {
+        CONTRACT_FILE: contract_bytes,
+        EVIDENCE_FILE: evidence_bytes,
+        MANIFEST_FILE: manifest_bytes,
+    }
     for name, content in assets.items():
         (output_dir / name).write_bytes(content)
     return assets
@@ -142,26 +152,43 @@ def validate_release_assets(
     if not isinstance(commit, str) or not _COMMIT.fullmatch(commit):
         raise Smsv2ReleaseValidationError("release commit identity is malformed")
     if release_identity.get("commit") != commit or receipt.get("commit") != commit:
-        raise Smsv2ReleaseValidationError("release commit identity does not match manifest and receipt")
+        raise Smsv2ReleaseValidationError(
+            "release commit identity does not match manifest and receipt"
+        )
     expected = manifest.get("assets")
     if not isinstance(expected, dict) or set(expected) != {CONTRACT_FILE, EVIDENCE_FILE}:
         raise Smsv2ReleaseValidationError("contract manifest asset set is invalid")
     for name, expected_digest in expected.items():
         content = assets.get(name)
-        if not isinstance(expected_digest, str) or not _SHA256.fullmatch(expected_digest) or content is None:
+        if (
+            not isinstance(expected_digest, str)
+            or not _SHA256.fullmatch(expected_digest)
+            or content is None
+        ):
             raise Smsv2ReleaseValidationError("contract release asset is missing or malformed")
-        if digest(content) != expected_digest or receipt.get("assets", {}).get(name) != expected_digest:
-            raise Smsv2ReleaseValidationError("contract release checksum does not match manifest and receipt")
+        if (
+            digest(content) != expected_digest
+            or receipt.get("assets", {}).get(name) != expected_digest
+        ):
+            raise Smsv2ReleaseValidationError(
+                "contract release checksum does not match manifest and receipt"
+            )
     try:
         contract = json.loads(assets[CONTRACT_FILE])
         evidence = json.loads(assets[EVIDENCE_FILE])
     except json.JSONDecodeError as error:
         raise Smsv2ReleaseValidationError("contract release asset JSON is malformed") from error
     _assert_sanitized_evidence(evidence)
-    if contract.get("contract_id") != manifest.get("contract_id") or contract.get("version") != manifest.get("contract_version"):
+    if contract.get("contract_id") != manifest.get("contract_id") or contract.get(
+        "version"
+    ) != manifest.get("contract_version"):
         raise Smsv2ReleaseValidationError("contract identity does not match manifest")
     capabilities = contract.get("providers", {}).get("aws", {}).get("capabilities")
-    if capabilities != {"aws_ce_create": "available", "runtime_status": "unavailable", "tgw_connect": "unavailable"}:
+    if capabilities != {
+        "aws_ce_create": "available",
+        "runtime_status": "unavailable",
+        "tgw_connect": "unavailable",
+    }:
         raise Smsv2ReleaseValidationError("AWS SMSv2 capability model is unavailable or unproven")
     return contract
 

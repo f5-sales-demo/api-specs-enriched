@@ -125,7 +125,9 @@ class InterfaceContractEnricher:
         if any(api.get(field) != value for field, value in required_api.items()):
             raise InterfaceContractValidationError(f"{resource}: API paths must match SMSv2")
         if api.get("operations") != ["create", "read", "replace", "delete"]:
-            raise InterfaceContractValidationError(f"{resource}: CRUD operations must be demonstrated")
+            raise InterfaceContractValidationError(
+                f"{resource}: CRUD operations must be demonstrated"
+            )
         providers = self._required_object(contract, "providers", resource=resource)
         if set(providers) != {"aws", "azure"}:
             raise InterfaceContractValidationError(f"{resource}: providers must be aws and azure")
@@ -146,31 +148,52 @@ class InterfaceContractEnricher:
                 f"{resource}: AWS interface path is not schema-backed"
             )
         if profile.get("availability") != "evidence_backed":
-            raise InterfaceContractValidationError(f"{resource}: AWS availability must be evidence_backed")
+            raise InterfaceContractValidationError(
+                f"{resource}: AWS availability must be evidence_backed"
+            )
         capabilities = self._required_object(profile, "capabilities", resource=resource)
         expected_capabilities = {
             "aws_ce_create": "available",
             "runtime_status": "unavailable",
             "tgw_connect": "unavailable",
         }
-        if capabilities != expected_capabilities or not set(capabilities.values()) <= CAPABILITY_STATES:
-            raise InterfaceContractValidationError(f"{resource}: AWS capability model must fail closed")
+        if (
+            capabilities != expected_capabilities
+            or not set(capabilities.values()) <= CAPABILITY_STATES
+        ):
+            raise InterfaceContractValidationError(
+                f"{resource}: AWS capability model must fail closed"
+            )
         bootstrap = self._required_object(profile, "bootstrap", resource=resource)
         if bootstrap != {
             "mode": "interactive_console_only",
             "reference": "session_bound_opaque_one_use",
             "headless_checkout": "unavailable",
         }:
-            raise InterfaceContractValidationError(f"{resource}: AWS bootstrap must remain console-only")
+            raise InterfaceContractValidationError(
+                f"{resource}: AWS bootstrap must remain console-only"
+            )
         evidence = self._required_object(profile, "evidence", resource=resource)
         if not isinstance(evidence.get("provenance"), str) or not evidence["provenance"]:
-            raise InterfaceContractValidationError(f"{resource}: AWS evidence provenance is required")
-        if not isinstance(evidence.get("observed_at"), str) or not evidence["observed_at"].endswith("Z"):
-            raise InterfaceContractValidationError(f"{resource}: AWS evidence timestamp is required")
+            raise InterfaceContractValidationError(
+                f"{resource}: AWS evidence provenance is required"
+            )
+        if not isinstance(evidence.get("observed_at"), str) or not evidence["observed_at"].endswith(
+            "Z"
+        ):
+            raise InterfaceContractValidationError(
+                f"{resource}: AWS evidence timestamp is required"
+            )
         if evidence.get("profiles") != ["aws-shaped-ce-configuration"]:
-            raise InterfaceContractValidationError(f"{resource}: AWS evidence profile is incomplete")
+            raise InterfaceContractValidationError(
+                f"{resource}: AWS evidence profile is incomplete"
+            )
         receipts = evidence.get("receipts")
-        if not isinstance(receipts, list) or len(receipts) != 1 or not isinstance(receipts[0], dict):
+        if (
+            not isinstance(receipts, list)
+            or len(receipts) != 1
+            or not isinstance(receipts[0], dict)
+        ):
             raise InterfaceContractValidationError(f"{resource}: AWS evidence receipt is required")
         receipt = receipts[0]
         if (
