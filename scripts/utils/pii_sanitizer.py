@@ -15,6 +15,19 @@ EMAIL_RE = re.compile(
 SAFE_EMAIL_DOMAINS = {"example.com", "example.net", "example.org"}
 STRUCTURAL_NAMESPACES = {"shared", "system"}
 OPENAPI_SCHEMA_TYPES = {"array", "boolean", "integer", "null", "number", "object", "string"}
+OPENAPI_SCHEMA_CONTEXT_KEYS = {
+    "$defs",
+    "additionalProperties",
+    "allOf",
+    "anyOf",
+    "items",
+    "not",
+    "oneOf",
+    "prefixItems",
+    "properties",
+    "schema",
+    "schemas",
+}
 IDENTITY_KEYS = {
     "tenant",
     "tenant_name",
@@ -123,47 +136,45 @@ def _sanitize_identity_value(value: Any, replacement: str) -> Any:
     return replacement
 
 
-def _is_openapi_schema(value: dict[Any, Any]) -> bool:
-    """Return whether a mapping has an unambiguous OpenAPI schema shape."""
+def _has_openapi_type(value: dict[Any, Any]) -> bool:
+    """Return whether *value* declares a supported OpenAPI schema type."""
     schema_type = value.get("type")
-    if isinstance(schema_type, str) and schema_type.lower() in OPENAPI_SCHEMA_TYPES:
-        return True
-    if (
+    if isinstance(schema_type, str):
+        return schema_type.lower() in OPENAPI_SCHEMA_TYPES
+    return (
         isinstance(schema_type, list)
-        and schema_type
+        and bool(schema_type)
         and all(
             isinstance(item, str) and item.lower() in OPENAPI_SCHEMA_TYPES for item in schema_type
         )
-    ):
-        return True
+    )
+
+
+def _is_openapi_schema(value: dict[Any, Any]) -> bool:
+    """Return whether a mapping has an unambiguous OpenAPI schema shape."""
     if isinstance(value.get("$ref"), str) and value["$ref"]:
         return True
+    if not _has_openapi_type(value):
+        return False
 
-    for key in ("items", "additionalProperties"):
-        nested = value.get(key)
-        if isinstance(nested, dict) and _is_openapi_schema(nested):
-            return True
+    if isinstance(value.get("properties"), dict):
+        return True
+    if isinstance(value.get("items"), dict):
+        return True
+    if isinstance(value.get("additionalProperties"), (bool, dict)):
+        return True
 
     for key in ("allOf", "anyOf", "oneOf", "prefixItems"):
         nested = value.get(key)
-        if (
-            isinstance(nested, list)
-            and nested
-            and all(isinstance(item, dict) and _is_openapi_schema(item) for item in nested)
-        ):
+        if isinstance(nested, list) and nested and all(isinstance(item, dict) for item in nested):
             return True
-
-    properties = value.get("properties")
-    return (
-        bool(properties)
-        and isinstance(properties, dict)
-        and all(isinstance(item, dict) and _is_openapi_schema(item) for item in properties.values())
-    )
+    return False
 
 
 def sanitize_discovery_payload(
     value: Any,
     replacements: dict[str, str] | None = None,
+    schema_context: bool = False,
 ) -> Any:
     """Replace identities and personal records captured from live discovery."""
     replacements = replacements if replacements is not None else {}
@@ -171,9 +182,12 @@ def sanitize_discovery_payload(
         result: dict[Any, Any] = {}
         for key, item in value.items():
             normalized_key = key.lower() if isinstance(key, str) else ""
-            is_schema_dict = isinstance(item, dict) and _is_openapi_schema(item)
+            child_schema_context = schema_context or normalized_key in OPENAPI_SCHEMA_CONTEXT_KEYS
+            is_schema_dict = isinstance(item, dict) and (
+                child_schema_context or _is_openapi_schema(item)
+            )
             if is_schema_dict:
-                result[key] = sanitize_discovery_payload(item, replacements)
+                result[key] = sanitize_discovery_payload(item, replacements, schema_context=True)
             elif (
                 normalized_key == "namespace"
                 and isinstance(item, str)
@@ -193,10 +207,10 @@ def sanitize_discovery_payload(
                     "90210" if normalized_key in {"postal_code", "zip_code"} else "example",
                 )
             else:
-                result[key] = sanitize_discovery_payload(item, replacements)
+                result[key] = sanitize_discovery_payload(item, replacements, schema_context)
         return result
     if isinstance(value, list):
-        return [sanitize_discovery_payload(item, replacements) for item in value]
+        return [sanitize_discovery_payload(item, replacements, schema_context) for item in value]
     if isinstance(value, str):
         return sanitize_email_text(value, replacements)
     return value

@@ -118,8 +118,23 @@ def test_sanitize_emails_redacts_email_addresses_in_mapping_keys() -> None:
 
 def test_sanitize_discovery_payload_preserves_schema_dicts_for_identity_keys() -> None:
     assert sanitize_discovery_payload(
-        {"tenant": {"type": "string", "description": "Tenant identifier"}},
-    ) == {"tenant": {"type": "string", "description": "Tenant identifier"}}
+        {"schema": {"tenant": {"type": "string", "description": "Tenant identifier"}}},
+    ) == {"schema": {"tenant": {"type": "string", "description": "Tenant identifier"}}}
+
+
+def test_sanitize_discovery_payload_redacts_identity_payloads_with_openapi_type_values() -> None:
+    captured_tenant = "captured-" + "tenant"
+    captured_customer = "captured-" + "customer"
+
+    assert sanitize_discovery_payload(
+        {
+            "tenant": {"type": "string", "id": captured_tenant},
+            "customer": {"type": "object", "items": [captured_customer]},
+        },
+    ) == {
+        "tenant": {"type": "example-corp", "id": "example-corp"},
+        "customer": {"type": "example-corp", "items": ["example-corp"]},
+    }
 
 
 def test_sanitize_discovery_payload_redacts_identity_payloads_with_schema_like_keys() -> None:
