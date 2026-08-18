@@ -97,7 +97,6 @@ if ! $PYTHON -m scripts.pipeline; then
   exit 1
 fi
 
-
 # =============================================================================
 # STEP 2: Run Spectral Linting on ALL generated specs (same as GitHub Actions)
 # =============================================================================
