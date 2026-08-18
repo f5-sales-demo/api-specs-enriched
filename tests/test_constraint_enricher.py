@@ -548,6 +548,57 @@ class TestConstraintEnricher:
         assert c["metadata"]["source"] == "discovery"
         assert c["metadata"]["source"] != "api-probed"
 
+    @pytest.mark.parametrize(
+        ("rule_family", "rule_suffix", "raw_value", "constraint_field", "expected"),
+        [
+            ("int32", "gt", "0", "minimum", 1),
+            ("int32", "lt", "10", "maximum", 9),
+            ("int64", "gt", "-2", "minimum", -1),
+            ("int64", "lt", "10", "maximum", 9),
+            ("uint32", "gt", "0", "minimum", 1),
+            ("uint32", "lt", "10", "maximum", 9),
+            ("uint64", "gt", "0", "minimum", 1),
+            ("uint64", "lt", "10", "maximum", 9),
+        ],
+    )
+    def test_enrich_exclusive_integer_bounds(
+        self,
+        enricher,
+        rule_family,
+        rule_suffix,
+        raw_value,
+        constraint_field,
+        expected,
+    ):
+        """Exclusive integer rules map to exact inclusive minimum/maximum values."""
+        rule = f"ves.io.schema.rules.{rule_family}.{rule_suffix}"
+        spec = {
+            "components": {
+                "schemas": {
+                    "IfSpec": {
+                        "type": "object",
+                        "properties": {
+                            "priority": {
+                                "type": "integer",
+                                "x-ves-validation-rules": {rule: raw_value},
+                            },
+                        },
+                    },
+                },
+            },
+        }
+
+        enriched = enricher.enrich_spec(spec)
+        constraints = enriched["components"]["schemas"]["IfSpec"]["properties"]["priority"][
+            "x-f5xc-constraints"
+        ]
+
+        assert constraints[constraint_field] == expected
+        assert "exclusiveMinimum" not in constraints
+        assert "exclusiveMaximum" not in constraints
+        expected_source = "api-probed" if rule_family.startswith("uint") else "discovery"
+        assert constraints["metadata"]["source"] == expected_source
+
     def test_enrich_uint32_ranges_discontinuous(self, enricher):
         """A discontinuous uint32.ranges yields maximum only (no single minimum)."""
         spec = {
