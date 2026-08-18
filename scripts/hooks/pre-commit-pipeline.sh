@@ -68,6 +68,7 @@ if [ -d "$OUTPUT_DIR" ]; then
   OUTPUT_EXISTED=true
 fi
 
+# shellcheck disable=SC2317,SC2329 # Invoked by the EXIT/INT/TERM traps below.
 restore_generated_output() {
   local status=$?
   trap - EXIT INT TERM
