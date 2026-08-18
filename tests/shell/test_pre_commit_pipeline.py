@@ -37,8 +37,12 @@ def _setup_repo(tmp_path: Path, hook_copy: Path) -> Path:
     (tmp_path / "specs" / "original").mkdir(parents=True)
     (tmp_path / ".github" / "workflows").mkdir(parents=True)
     (tmp_path / "README.md").write_text("readme\n")
+    (tmp_path / ".gitignore").write_text("docs/specifications/api/\n")
     (tmp_path / "requirements.txt").write_text("pytest\n")
     (tmp_path / "pyproject.toml").write_text("[project]\nname='x'\n")
+    generated = tmp_path / "docs" / "specifications" / "api"
+    generated.mkdir(parents=True)
+    (generated / "index.json").write_text('{"version":"2.1.208"}\n')
 
     hook_target = tmp_path / _HOOK_RELATIVE
     hook_target.parent.mkdir(parents=True, exist_ok=True)
@@ -50,7 +54,13 @@ def _setup_repo(tmp_path: Path, hook_copy: Path) -> Path:
     return tmp_path
 
 
-def _invoke(cwd: Path, *, force: bool = False) -> subprocess.CompletedProcess[str]:
+def _invoke(
+    cwd: Path,
+    *,
+    force: bool = False,
+    python_script: str = '#!/usr/bin/env bash\necho "[fake python] args: $*" >&2\nexit 0\n',
+    spectral_script: str = "#!/usr/bin/env bash\nexit 0\n",
+) -> subprocess.CompletedProcess[str]:
     env = {**os.environ}
     if force:
         env["FORCE_PIPELINE"] = "1"
@@ -61,12 +71,10 @@ def _invoke(cwd: Path, *, force: bool = False) -> subprocess.CompletedProcess[st
     fakebin = cwd / "_fakebin"
     fakebin.mkdir(exist_ok=True)
     python_stub = fakebin / "python3"
-    python_stub.write_text(
-        '#!/usr/bin/env bash\necho "[fake python] args: $*" >&2\nexit 0\n'.replace("'", '"')
-    )
+    python_stub.write_text(python_script)
     python_stub.chmod(python_stub.stat().st_mode | stat.S_IEXEC)
     spectral_stub = fakebin / "spectral"
-    spectral_stub.write_text("#!/usr/bin/env bash\nexit 0\n")
+    spectral_stub.write_text(spectral_script)
     spectral_stub.chmod(spectral_stub.stat().st_mode | stat.S_IEXEC)
 
     return subprocess.run(
@@ -157,6 +165,170 @@ class TestForceOverride:
         result = _invoke(repo, force=True)
         assert "Running F5 XC API enrichment pipeline" in result.stdout
         assert "skipping enrichment + lint" not in result.stdout
+
+
+class TestGeneratedOutputRecovery:
+    """Pipeline failures cannot leave generated specs modified or staged."""
+
+    @staticmethod
+    def _stage_pipeline_input(repo: Path) -> None:
+        (repo / "config" / "thing.yaml").write_text("key: value\n")
+        _run_cmd(["git", "add", "config/thing.yaml"], repo)
+
+    def test_pipeline_failure_restores_generated_output(self, tmp_path: Path) -> None:
+        repo = _setup_repo(tmp_path, _project_hook())
+        self._stage_pipeline_input(repo)
+
+        result = _invoke(
+            repo,
+            python_script="""#!/usr/bin/env bash
+if [ "$1" = "-m" ]; then
+  printf '{"version":"2.1.207"}\\n' > docs/specifications/api/index.json
+  exit 1
+fi
+exit 0
+""",
+        )
+
+        assert result.returncode == 1
+        assert (
+            repo / "docs/specifications/api/index.json"
+        ).read_text() == '{"version":"2.1.208"}\n'
+        assert _git_diff_is_empty(repo, "docs/specifications/api")
+        assert _git_diff_is_empty(repo, "--cached", "docs/specifications/api")
+        assert not _is_indexed(repo, "docs/specifications/api/index.json")
+
+    def test_lint_failure_restores_generated_output_before_staging(self, tmp_path: Path) -> None:
+        repo = _setup_repo(tmp_path, _project_hook())
+        self._stage_pipeline_input(repo)
+
+        result = _invoke(
+            repo,
+            python_script="""#!/usr/bin/env bash
+if [ "$1" = "-m" ]; then
+  printf '{"version":"2.1.207"}\\n' > docs/specifications/api/index.json
+  exit 0
+fi
+if [ "$1" = "scripts/lint.py" ]; then
+  exit 1
+fi
+exit 0
+""",
+        )
+
+        assert result.returncode == 1
+        assert (
+            repo / "docs/specifications/api/index.json"
+        ).read_text() == '{"version":"2.1.208"}\n'
+        assert _git_diff_is_empty(repo, "docs/specifications/api")
+        assert _git_diff_is_empty(repo, "--cached", "docs/specifications/api")
+        assert not _is_indexed(repo, "docs/specifications/api/index.json")
+
+    def test_release_branch_rejects_and_restores_version_downgrade(self, tmp_path: Path) -> None:
+        repo = _setup_repo(tmp_path, _project_hook())
+        _run_cmd(["git", "checkout", "-q", "-b", "release/v2.1.208"], repo)
+        self._stage_pipeline_input(repo)
+
+        result = _invoke(
+            repo,
+            python_script="""#!/usr/bin/env bash
+if [ "$1" = "-m" ]; then
+  printf '{"version":"2.1.207"}\\n' > docs/specifications/api/index.json
+  exit 0
+fi
+exit 0
+""",
+        )
+
+        assert result.returncode == 1
+        assert "does not match release branch" in result.stdout
+        assert (
+            repo / "docs/specifications/api/index.json"
+        ).read_text() == '{"version":"2.1.208"}\n'
+        assert _git_diff_is_empty(repo, "--cached", "docs/specifications/api")
+        assert not _is_indexed(repo, "docs/specifications/api/index.json")
+
+    def test_success_force_stages_ignored_generated_output(self, tmp_path: Path) -> None:
+        repo = _setup_repo(tmp_path, _project_hook())
+        self._stage_pipeline_input(repo)
+
+        result = _invoke(
+            repo,
+            python_script="""#!/usr/bin/env bash
+if [ "$1" = "-m" ]; then
+  printf '{"version":"2.1.207"}\n' > docs/specifications/api/index.json
+fi
+exit 0
+""",
+        )
+
+        assert result.returncode == 0, result.stderr
+        assert _is_indexed(repo, "docs/specifications/api/index.json")
+        assert (
+            _run_output(["git", "show", ":docs/specifications/api/index.json"], repo)
+            == '{"version":"2.1.207"}\n'
+        )
+
+    def test_interrupt_restores_ignored_generated_output_and_index(self, tmp_path: Path) -> None:
+        repo = _setup_repo(tmp_path, _project_hook())
+        self._stage_pipeline_input(repo)
+
+        result = _invoke(
+            repo,
+            python_script="""#!/usr/bin/env bash
+if [ "$1" = "-m" ]; then
+  printf '{"version":"2.1.207"}\n' > docs/specifications/api/index.json
+  kill -TERM "$PPID"
+fi
+exit 0
+""",
+        )
+
+        assert result.returncode == 143
+        assert (
+            repo / "docs/specifications/api/index.json"
+        ).read_text() == '{"version":"2.1.208"}\n'
+        assert not _is_indexed(repo, "docs/specifications/api/index.json")
+
+
+def _git_diff_is_empty(repo: Path, *args: str) -> bool:
+    """Return whether one git-diff invocation has no output."""
+
+    result = subprocess.run(
+        ["git", "diff", *args],
+        cwd=repo,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    return result.stdout == ""
+
+
+def _is_indexed(repo: Path, path: str) -> bool:
+    """Return whether ``path`` has an entry in the git index."""
+
+    return (
+        subprocess.run(
+            ["git", "ls-files", "--error-unmatch", path],
+            cwd=repo,
+            capture_output=True,
+            text=True,
+            check=False,
+        ).returncode
+        == 0
+    )
+
+
+def _run_output(cmd: list[str], cwd: Path) -> str:
+    """Run a command and return its standard output."""
+
+    return subprocess.run(
+        cmd,
+        cwd=cwd,
+        capture_output=True,
+        text=True,
+        check=True,
+    ).stdout
 
 
 def _project_hook() -> Path:

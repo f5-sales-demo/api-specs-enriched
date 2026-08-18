@@ -20,7 +20,7 @@
 # This ensures idempotent, deterministic output between local and CI/CD.
 # Linting is NEVER skipped - Spectral must be installed.
 
-set -e
+set -euo pipefail
 
 # Colors for output
 RED='\033[0;31m'
@@ -56,6 +56,48 @@ if [ "${FORCE_PIPELINE:-0}" != "1" ]; then
 fi
 
 # =============================================================================
+# Keep generated output transactional: a failing, interrupted, or rejected
+# pipeline must leave the working tree and index exactly as it was before this
+# hook began. Staging is deliberately deferred until all validation succeeds.
+OUTPUT_DIR="docs/specifications/api"
+BACKUP_DIR=$(mktemp -d)
+OUTPUT_EXISTED=false
+INDEX_EXISTED=false
+PIPELINE_COMPLETED=false
+if [ -d "$OUTPUT_DIR" ]; then
+  cp -a "$OUTPUT_DIR" "$BACKUP_DIR/api"
+  OUTPUT_EXISTED=true
+fi
+INDEX_PATH=$(git rev-parse --git-path index)
+if [ -f "$INDEX_PATH" ]; then
+  cp "$INDEX_PATH" "$BACKUP_DIR/index"
+  INDEX_EXISTED=true
+fi
+
+# shellcheck disable=SC2317,SC2329 # Invoked by the EXIT/INT/TERM traps below.
+restore_generated_output() {
+  local status=$?
+  trap - EXIT INT TERM
+  if [ "$PIPELINE_COMPLETED" != true ]; then
+    echo -e "${YELLOW}Restoring generated specs after unsuccessful pre-commit pipeline.${NC}"
+    rm -rf "$OUTPUT_DIR"
+    if [ "$OUTPUT_EXISTED" = true ]; then
+      mkdir -p "$(dirname "$OUTPUT_DIR")"
+      cp -a "$BACKUP_DIR/api" "$OUTPUT_DIR"
+    fi
+    if [ "$INDEX_EXISTED" = true ]; then
+      cp "$BACKUP_DIR/index" "$INDEX_PATH"
+    else
+      rm -f "$INDEX_PATH"
+    fi
+  fi
+  rm -rf "$BACKUP_DIR"
+  exit "$status"
+}
+trap restore_generated_output EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
+
 # STEP 1: Run Enrichment Pipeline
 # =============================================================================
 echo -e "${YELLOW}[1/2] Running F5 XC API enrichment pipeline...${NC}"
@@ -64,19 +106,6 @@ echo -e "${YELLOW}Executing: $PYTHON -m scripts.pipeline${NC}"
 if ! $PYTHON -m scripts.pipeline; then
   echo -e "${RED}Pipeline failed! Please fix errors before committing.${NC}"
   exit 1
-fi
-
-# Stage any changes to enriched specs (output is directly in docs/)
-# Note: openapi.json is in .gitignore (too large for GitHub), so we only stage domain specs
-ENRICHED_CHANGES=$(git diff --name-only -- 'docs/specifications/api/*.json' 2>/dev/null | wc -l | tr -d ' ')
-
-if [ "$ENRICHED_CHANGES" -gt 0 ]; then
-  echo -e "${YELLOW}Staging $ENRICHED_CHANGES updated enriched spec files...${NC}"
-  # Use --ignore-errors to skip ignored files like openapi.json
-  git add --ignore-errors docs/specifications/api/*.json 2>/dev/null || true
-  echo -e "${GREEN}Enriched specs updated and staged.${NC}"
-else
-  echo -e "${GREEN}No enriched spec changes detected.${NC}"
 fi
 
 # =============================================================================
@@ -105,5 +134,56 @@ else
   exit $LINT_EXIT_CODE
 fi
 
+verify_release_stamps() {
+  local branch expected_version spec actual_version
+  branch=$(git branch --show-current)
+  case "$branch" in
+  release/v*) expected_version=${branch#release/v} ;;
+  *) return 0 ;;
+  esac
+
+  if ! command -v jq >/dev/null 2>&1; then
+    echo -e "${RED}ERROR: jq is required to verify release-stamped artifacts.${NC}"
+    return 1
+  fi
+
+  for spec in "$OUTPUT_DIR"/*.json; do
+    [ -e "$spec" ] || continue
+    actual_version=$(jq -r '
+      if type != "object" or has("$schema") then empty
+      elif ((has("openapi") or has("swagger")) and (.info | type == "object")) then .info.version // empty
+      elif has("version") then .version // empty
+      else empty
+      end
+    ' "$spec")
+    if [ -n "$actual_version" ] && [ "$actual_version" != "$expected_version" ]; then
+      echo -e "${RED}ERROR: $(basename "$spec") version ${actual_version} does not match release branch ${expected_version}.${NC}"
+      return 1
+    fi
+  done
+}
+
+if ! verify_release_stamps; then
+  echo -e "${RED}Refusing to stage generated specs with a release-version mismatch.${NC}"
+  exit 1
+fi
+
+# Stage only validated enriched specs. The generated directory is ignored, so
+# `git diff` cannot discover fresh output. Force-add every validated JSON file
+# after all checks pass; unchanged tracked files leave the index untouched.
+# The saved index above makes any later failure transactional as well.
+ENRICHED_SPECS=()
+if [ -d "$OUTPUT_DIR" ]; then
+  mapfile -d '' -t ENRICHED_SPECS < <(find "$OUTPUT_DIR" -maxdepth 1 -type f -name '*.json' -print0)
+fi
+if [ "${#ENRICHED_SPECS[@]}" -gt 0 ]; then
+  echo -e "${YELLOW}Staging ${#ENRICHED_SPECS[@]} validated enriched spec files...${NC}"
+  git add -f --ignore-errors -- "${ENRICHED_SPECS[@]}"
+  echo -e "${GREEN}Enriched specs updated and staged.${NC}"
+else
+  echo -e "${GREEN}No enriched spec changes detected.${NC}"
+fi
+
+PIPELINE_COMPLETED=true
 echo -e "${GREEN}Pre-commit pipeline complete.${NC}"
 exit 0

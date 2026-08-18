@@ -10,6 +10,7 @@ from unittest.mock import Mock, patch
 import pytest
 import requests
 
+from scripts.download import verify_release_asset_digest
 from scripts.utils.github_release import (
     check_for_updates,
     download_release_asset,
@@ -93,6 +94,7 @@ class TestSaveReleaseMetadata:
             release_data,
             "api-specs-v2026.01.22-2.zip",
             5971024,
+            "a" * 64,
             version_file,
         )
 
@@ -104,6 +106,7 @@ class TestSaveReleaseMetadata:
         assert metadata["published_at"] == "2026-01-26T10:30:00Z"
         assert metadata["asset_name"] == "api-specs-v2026.01.22-2.zip"
         assert metadata["asset_size"] == 5971024
+        assert metadata["asset_sha256"] == "a" * 64
 
         # .github_release is tracked, so a per-run wall-clock stamp made every
         # download dirty the working tree with a change that says nothing about the
@@ -119,7 +122,49 @@ class TestSaveReleaseMetadata:
             "published_at",
             "asset_name",
             "asset_size",
+            "asset_sha256",
         }
+
+
+class TestReleaseAssetDigest:
+    """Downloaded archive bytes must match the immutable release digest."""
+
+    def test_matching_release_digest_is_recorded(self, tmp_path):
+        archive = tmp_path / "api-specs.zip"
+        archive.write_bytes(b"verified archive")
+
+        digest = verify_release_asset_digest(
+            archive,
+            {"digest": "sha256:040a1170825ade3ff37b189dd280153ecfafb99ee929d1cbebb40fe135afdf26"},
+        )
+
+        assert digest == "040a1170825ade3ff37b189dd280153ecfafb99ee929d1cbebb40fe135afdf26"
+
+    def test_missing_release_digest_is_tolerated_and_recorded(self, tmp_path):
+        archive = tmp_path / "api-specs.zip"
+        archive.write_bytes(b"verified archive")
+
+        assert verify_release_asset_digest(archive, {}) == (
+            "040a1170825ade3ff37b189dd280153ecfafb99ee929d1cbebb40fe135afdf26"
+        )
+
+    @pytest.mark.parametrize(
+        "digest",
+        ["sha256:", "sha256:" + "z" * 64, "md5:" + "0" * 32, 42],
+    )
+    def test_malformed_release_digest_is_rejected(self, tmp_path, digest):
+        archive = tmp_path / "api-specs.zip"
+        archive.write_bytes(b"verified archive")
+
+        with pytest.raises(ValueError, match="malformed"):
+            verify_release_asset_digest(archive, {"digest": digest})
+
+    def test_mismatched_release_digest_is_rejected(self, tmp_path):
+        archive = tmp_path / "api-specs.zip"
+        archive.write_bytes(b"verified archive")
+
+        with pytest.raises(ValueError, match="digest"):
+            verify_release_asset_digest(archive, {"digest": "sha256:" + "0" * 64})
 
 
 class TestFindReleaseAsset:

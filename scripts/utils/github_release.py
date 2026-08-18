@@ -176,6 +176,7 @@ def save_release_metadata(
     release_data: dict[str, Any],
     asset_name: str,
     asset_size: int,
+    asset_sha256: str,
     version_file: Path,
 ) -> None:
     """Save release metadata to local tracking file.
@@ -187,6 +188,7 @@ def save_release_metadata(
         release_data: GitHub release metadata from get_latest_release().
         asset_name: Name of downloaded asset file.
         asset_size: Size of downloaded asset in bytes.
+        asset_sha256: SHA-256 of the downloaded asset bytes.
         version_file: Path to .github_release tracking file.
     """
     version_file.parent.mkdir(parents=True, exist_ok=True)
@@ -203,6 +205,7 @@ def save_release_metadata(
         "published_at": release_data["published_at"],
         "asset_name": asset_name,
         "asset_size": asset_size,
+        "asset_sha256": asset_sha256,
     }
 
     with version_file.open("w") as f:
