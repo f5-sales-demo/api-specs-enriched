@@ -14,6 +14,7 @@ EMAIL_RE = re.compile(
 )
 SAFE_EMAIL_DOMAINS = {"example.com", "example.net", "example.org"}
 STRUCTURAL_NAMESPACES = {"shared", "system"}
+OPENAPI_SCHEMA_TYPES = {"array", "boolean", "integer", "null", "number", "object", "string"}
 IDENTITY_KEYS = {
     "tenant",
     "tenant_name",
@@ -122,6 +123,44 @@ def _sanitize_identity_value(value: Any, replacement: str) -> Any:
     return replacement
 
 
+def _is_openapi_schema(value: dict[Any, Any]) -> bool:
+    """Return whether a mapping has an unambiguous OpenAPI schema shape."""
+    schema_type = value.get("type")
+    if isinstance(schema_type, str) and schema_type.lower() in OPENAPI_SCHEMA_TYPES:
+        return True
+    if (
+        isinstance(schema_type, list)
+        and schema_type
+        and all(
+            isinstance(item, str) and item.lower() in OPENAPI_SCHEMA_TYPES for item in schema_type
+        )
+    ):
+        return True
+    if isinstance(value.get("$ref"), str) and value["$ref"]:
+        return True
+
+    for key in ("items", "additionalProperties"):
+        nested = value.get(key)
+        if isinstance(nested, dict) and _is_openapi_schema(nested):
+            return True
+
+    for key in ("allOf", "anyOf", "oneOf", "prefixItems"):
+        nested = value.get(key)
+        if (
+            isinstance(nested, list)
+            and nested
+            and all(isinstance(item, dict) and _is_openapi_schema(item) for item in nested)
+        ):
+            return True
+
+    properties = value.get("properties")
+    return (
+        bool(properties)
+        and isinstance(properties, dict)
+        and all(isinstance(item, dict) and _is_openapi_schema(item) for item in properties.values())
+    )
+
+
 def sanitize_discovery_payload(
     value: Any,
     replacements: dict[str, str] | None = None,
@@ -132,9 +171,7 @@ def sanitize_discovery_payload(
         result: dict[Any, Any] = {}
         for key, item in value.items():
             normalized_key = key.lower() if isinstance(key, str) else ""
-            is_schema_dict = isinstance(item, dict) and any(
-                schema_key in item for schema_key in ("type", "properties", "items", "$ref")
-            )
+            is_schema_dict = isinstance(item, dict) and _is_openapi_schema(item)
             if is_schema_dict:
                 result[key] = sanitize_discovery_payload(item, replacements)
             elif (

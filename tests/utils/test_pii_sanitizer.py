@@ -122,6 +122,21 @@ def test_sanitize_discovery_payload_preserves_schema_dicts_for_identity_keys() -
     ) == {"tenant": {"type": "string", "description": "Tenant identifier"}}
 
 
+def test_sanitize_discovery_payload_redacts_identity_payloads_with_schema_like_keys() -> None:
+    captured_tenant = "captured-" + "tenant"
+    captured_customer = "captured-" + "customer"
+
+    assert sanitize_discovery_payload(
+        {
+            "tenant": {"type": "ORGANIZATION", "id": captured_tenant},
+            "customer": {"items": [captured_customer]},
+        },
+    ) == {
+        "tenant": {"type": "example-corp", "id": "example-corp"},
+        "customer": {"items": ["example-corp"]},
+    }
+
+
 def test_sanitize_api_url_requires_exact_safe_domain_boundary() -> None:
     misleading_url = "https://notexample.com/api"
 
