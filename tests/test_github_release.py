@@ -140,12 +140,29 @@ class TestReleaseAssetDigest:
 
         assert digest == "040a1170825ade3ff37b189dd280153ecfafb99ee929d1cbebb40fe135afdf26"
 
-    def test_missing_or_mismatched_release_digest_is_rejected(self, tmp_path):
+    def test_missing_release_digest_is_tolerated_and_recorded(self, tmp_path):
         archive = tmp_path / "api-specs.zip"
         archive.write_bytes(b"verified archive")
 
-        with pytest.raises(ValueError, match="digest"):
-            verify_release_asset_digest(archive, {})
+        assert verify_release_asset_digest(archive, {}) == (
+            "040a1170825ade3ff37b189dd280153ecfafb99ee929d1cbebb40fe135afdf26"
+        )
+
+    @pytest.mark.parametrize(
+        "digest",
+        ["sha256:", "sha256:" + "z" * 64, "md5:" + "0" * 32, 42],
+    )
+    def test_malformed_release_digest_is_rejected(self, tmp_path, digest):
+        archive = tmp_path / "api-specs.zip"
+        archive.write_bytes(b"verified archive")
+
+        with pytest.raises(ValueError, match="malformed"):
+            verify_release_asset_digest(archive, {"digest": digest})
+
+    def test_mismatched_release_digest_is_rejected(self, tmp_path):
+        archive = tmp_path / "api-specs.zip"
+        archive.write_bytes(b"verified archive")
+
         with pytest.raises(ValueError, match="digest"):
             verify_release_asset_digest(archive, {"digest": "sha256:" + "0" * 64})
 

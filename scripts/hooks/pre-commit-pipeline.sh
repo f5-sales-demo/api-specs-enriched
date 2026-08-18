@@ -62,10 +62,16 @@ fi
 OUTPUT_DIR="docs/specifications/api"
 BACKUP_DIR=$(mktemp -d)
 OUTPUT_EXISTED=false
+INDEX_EXISTED=false
 PIPELINE_COMPLETED=false
 if [ -d "$OUTPUT_DIR" ]; then
   cp -a "$OUTPUT_DIR" "$BACKUP_DIR/api"
   OUTPUT_EXISTED=true
+fi
+INDEX_PATH=$(git rev-parse --git-path index)
+if [ -f "$INDEX_PATH" ]; then
+  cp "$INDEX_PATH" "$BACKUP_DIR/index"
+  INDEX_EXISTED=true
 fi
 
 # shellcheck disable=SC2317,SC2329 # Invoked by the EXIT/INT/TERM traps below.
@@ -78,6 +84,11 @@ restore_generated_output() {
     if [ "$OUTPUT_EXISTED" = true ]; then
       mkdir -p "$(dirname "$OUTPUT_DIR")"
       cp -a "$BACKUP_DIR/api" "$OUTPUT_DIR"
+    fi
+    if [ "$INDEX_EXISTED" = true ]; then
+      cp "$BACKUP_DIR/index" "$INDEX_PATH"
+    else
+      rm -f "$INDEX_PATH"
     fi
   fi
   rm -rf "$BACKUP_DIR"
@@ -157,12 +168,17 @@ if ! verify_release_stamps; then
   exit 1
 fi
 
-# Stage only validated enriched specs. This is deliberately after linting and
-# release-stamp verification, so a failed hook never mutates the index.
-ENRICHED_CHANGES=$(git diff --name-only -- "$OUTPUT_DIR"/*.json 2>/dev/null | wc -l | tr -d ' ')
-if [ "$ENRICHED_CHANGES" -gt 0 ]; then
-  echo -e "${YELLOW}Staging $ENRICHED_CHANGES updated enriched spec files...${NC}"
-  git add --ignore-errors "$OUTPUT_DIR"/*.json
+# Stage only validated enriched specs. The generated directory is ignored, so
+# `git diff` cannot discover fresh output. Force-add every validated JSON file
+# after all checks pass; unchanged tracked files leave the index untouched.
+# The saved index above makes any later failure transactional as well.
+ENRICHED_SPECS=()
+if [ -d "$OUTPUT_DIR" ]; then
+  mapfile -d '' -t ENRICHED_SPECS < <(find "$OUTPUT_DIR" -maxdepth 1 -type f -name '*.json' -print0)
+fi
+if [ "${#ENRICHED_SPECS[@]}" -gt 0 ]; then
+  echo -e "${YELLOW}Staging ${#ENRICHED_SPECS[@]} validated enriched spec files...${NC}"
+  git add -f --ignore-errors -- "${ENRICHED_SPECS[@]}"
   echo -e "${GREEN}Enriched specs updated and staged.${NC}"
 else
   echo -e "${GREEN}No enriched spec changes detected.${NC}"

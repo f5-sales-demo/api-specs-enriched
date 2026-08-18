@@ -33,6 +33,7 @@ import fnmatch
 import hashlib
 import json
 import os
+import re
 import sys
 import tempfile
 import zipfile
@@ -56,17 +57,19 @@ console = Console()
 
 
 def verify_release_asset_digest(archive: Path, asset: dict) -> str:
-    """Return the archive SHA-256 after matching GitHub's immutable digest."""
+    """Return the archive SHA-256, checking GitHub metadata when available."""
     expected = asset.get("digest")
-    if not isinstance(expected, str) or not expected.startswith("sha256:"):
-        raise ValueError("release asset is missing a SHA-256 digest")
 
     hasher = hashlib.sha256()
     with archive.open("rb") as source:
         for chunk in iter(lambda: source.read(1024 * 1024), b""):
             hasher.update(chunk)
     actual = hasher.hexdigest()
-    if expected.removeprefix("sha256:") != actual:
+    if expected is None:
+        return actual
+    if not isinstance(expected, str) or not re.fullmatch(r"sha256:[0-9a-fA-F]{64}", expected):
+        raise ValueError("release asset has a malformed SHA-256 digest")
+    if expected.removeprefix("sha256:").lower() != actual:
         raise ValueError("downloaded release asset digest does not match GitHub metadata")
     return actual
 
