@@ -14,6 +14,13 @@ from .extension_constants import X_F5XC_CE_AUTOMATION_CONTRACT
 
 CONFIG_PATH = Path(__file__).parent.parent.parent / "config" / "interface_contracts.yaml"
 SUPPORTED_ROLES = frozenset({"slo", "external", "sli"})
+SUPPORTED_CONTRACT_MAJOR = 1
+SUPPORTED_SCHEMA_MAJOR = 2
+CONTRACT_ID_PATTERN = re.compile(r"^f5xc-ce-automation/v(?P<major>[1-9][0-9]*)$")
+SEMVER_PATTERN = re.compile(
+    r"^(?P<major>0|[1-9][0-9]*)\.(?P<minor>0|[1-9][0-9]*)\.(?P<patch>0|[1-9][0-9]*)$"
+)
+CAPABILITY_STATES = frozenset({"available", "unavailable"})
 STABLE_IDENTITY_FIELDS = frozenset(
     {
         "node_hostname",
@@ -107,24 +114,43 @@ class InterfaceContractEnricher:
         return value
 
     def _validate_contract(self, resource: str, contract: dict[str, Any]) -> None:
-        if contract.get("version") != "2.0.0":
+        version = contract.get("version")
+        version_match = SEMVER_PATTERN.fullmatch(version) if isinstance(version, str) else None
+        if not version_match or int(version_match["major"]) != SUPPORTED_SCHEMA_MAJOR:
             raise InterfaceContractValidationError(f"{resource}: unsupported contract version")
         if contract.get("resource") != resource:
             raise InterfaceContractValidationError(
                 f"{resource}: resource identity must match its key"
             )
-        if contract.get("contract_id") != "f5xc-ce-automation/v1":
+        contract_id = contract.get("contract_id")
+        identity_match = (
+            CONTRACT_ID_PATTERN.fullmatch(contract_id) if isinstance(contract_id, str) else None
+        )
+        if not identity_match or int(identity_match["major"]) != SUPPORTED_CONTRACT_MAJOR:
             raise InterfaceContractValidationError(f"{resource}: invalid contract identity")
         api = self._required_object(contract, "api", resource=resource)
-        if api != {
+        required_api = {
             "collection_path": "/api/config/namespaces/{namespace}/securemesh_site_v2s",
             "item_path": "/api/config/namespaces/{namespace}/securemesh_site_v2s/{name}",
             "namespace": "system",
-        }:
+        }
+        if any(api.get(field) != value for field, value in required_api.items()):
             raise InterfaceContractValidationError(f"{resource}: API paths must match SMSv2")
+        operations = api.get("operations")
+        required_operations = {"create", "read", "replace", "delete"}
+        if (
+            not isinstance(operations, list)
+            or not required_operations.issubset(operations)
+            or any(not isinstance(operation, str) or not operation for operation in operations)
+        ):
+            raise InterfaceContractValidationError(
+                f"{resource}: CRUD operations must be demonstrated"
+            )
         providers = self._required_object(contract, "providers", resource=resource)
-        if set(providers) != {"aws", "azure"}:
-            raise InterfaceContractValidationError(f"{resource}: providers must be aws and azure")
+        if not {"aws", "azure"}.issubset(providers):
+            raise InterfaceContractValidationError(
+                f"{resource}: providers must include aws and azure"
+            )
         azure = providers["azure"]
         aws = providers["aws"]
         if not isinstance(azure, dict) or not isinstance(aws, dict):
@@ -141,21 +167,95 @@ class InterfaceContractEnricher:
             raise InterfaceContractValidationError(
                 f"{resource}: AWS interface path is not schema-backed"
             )
-        if profile.get("availability") != "schema_only":
+        availability = profile.get("availability")
+        if availability not in {"schema_only", "evidence_backed"}:
+            raise InterfaceContractValidationError(f"{resource}: AWS availability is invalid")
+
+        capabilities = self._required_object(profile, "capabilities", resource=resource)
+        if availability == "schema_only" and any(
+            state != "unavailable" for state in capabilities.values()
+        ):
             raise InterfaceContractValidationError(
-                f"{resource}: AWS availability must be schema_only"
+                f"{resource}: schema-only AWS capabilities must fail closed"
             )
+        required_capabilities = {
+            "aws_ce_create": "available" if availability == "evidence_backed" else "unavailable",
+            "runtime_status": "unavailable",
+            "tgw_connect": "unavailable",
+        }
+        if (
+            any(capabilities.get(name) != state for name, state in required_capabilities.items())
+            or not set(capabilities.values()) <= CAPABILITY_STATES
+            or any(
+                state != "unavailable"
+                for name, state in capabilities.items()
+                if name not in required_capabilities
+            )
+        ):
+            raise InterfaceContractValidationError(
+                f"{resource}: AWS capability model must fail closed"
+            )
+
         unsupported = profile.get("unavailable_capabilities")
-        if unsupported != [
-            "bootstrap_checkout",
-            "direct-eni",
-            "nlb-ingress",
-            "tgw-static",
-            "tgw-connect",
-        ]:
+        unavailable = {name for name, state in capabilities.items() if state == "unavailable"}
+        if (
+            not isinstance(unsupported, list)
+            or not unsupported
+            or any(not isinstance(capability, str) or not capability for capability in unsupported)
+            or len(unsupported) != len(set(unsupported))
+            or not unavailable.issubset(unsupported)
+        ):
             raise InterfaceContractValidationError(
                 f"{resource}: AWS unsupported capabilities must fail closed"
             )
+
+        if availability == "schema_only":
+            if set(capabilities.values()) != {"unavailable"}:
+                raise InterfaceContractValidationError(
+                    f"{resource}: schema-only AWS capabilities must fail closed"
+                )
+            return
+
+        bootstrap = self._required_object(profile, "bootstrap", resource=resource)
+        required_bootstrap = {
+            "mode": "interactive_console_only",
+            "reference": "session_bound_opaque_one_use",
+            "headless_checkout": "unavailable",
+        }
+        if any(bootstrap.get(field) != value for field, value in required_bootstrap.items()):
+            raise InterfaceContractValidationError(
+                f"{resource}: AWS bootstrap must remain console-only"
+            )
+        evidence = self._required_object(profile, "evidence", resource=resource)
+        if not isinstance(evidence.get("provenance"), str) or not evidence["provenance"]:
+            raise InterfaceContractValidationError(
+                f"{resource}: AWS evidence provenance is required"
+            )
+        if not isinstance(evidence.get("observed_at"), str) or not evidence["observed_at"].endswith(
+            "Z"
+        ):
+            raise InterfaceContractValidationError(
+                f"{resource}: AWS evidence timestamp is required"
+            )
+        if evidence.get("profiles") != ["aws-shaped-ce-configuration"]:
+            raise InterfaceContractValidationError(
+                f"{resource}: AWS evidence profile is incomplete"
+            )
+        receipts = evidence.get("receipts")
+        if (
+            not isinstance(receipts, list)
+            or len(receipts) != 1
+            or not isinstance(receipts[0], dict)
+        ):
+            raise InterfaceContractValidationError(f"{resource}: AWS evidence receipt is required")
+        receipt = receipts[0]
+        if (
+            not isinstance(receipt.get("source_url"), str)
+            or receipt.get("operations") != ["create", "read", "replace", "delete"]
+            or receipt.get("sanitized") is not True
+            or not isinstance(receipt.get("redaction"), str)
+        ):
+            raise InterfaceContractValidationError(f"{resource}: AWS evidence receipt is invalid")
 
     def _validate_interface_profile(self, resource: str, contract: dict[str, Any]) -> None:
         if contract.get("availability") != "evidence_backed":

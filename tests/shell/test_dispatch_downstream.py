@@ -150,6 +150,14 @@ def test_dispatch_fails_closed_when_input_is_missing(tmp_path: Path, name: str) 
     assert not args_path.exists()
 
 
+def test_dispatch_fails_closed_when_target_commit_is_empty(tmp_path: Path) -> None:
+    result, args_path, _ = _run(tmp_path, overrides={"SOURCE_TARGET_COMMIT": ""})
+
+    assert result.returncode != 0
+    assert "SOURCE_TARGET_COMMIT" in result.stderr
+    assert not args_path.exists()
+
+
 @pytest.mark.parametrize(
     ("name", "value"),
     [

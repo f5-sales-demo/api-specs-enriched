@@ -30,8 +30,10 @@ Environment:
 
 import argparse
 import fnmatch
+import hashlib
 import json
 import os
+import re
 import sys
 import tempfile
 import zipfile
@@ -52,6 +54,25 @@ from scripts.utils.github_release import (
 from scripts.utils.version_calculator import get_version_from_tags
 
 console = Console()
+
+
+def verify_release_asset_digest(archive: Path, asset: dict) -> str:
+    """Return the archive SHA-256, checking GitHub metadata when available."""
+    expected = asset.get("digest")
+
+    hasher = hashlib.sha256()
+    with archive.open("rb") as source:
+        for chunk in iter(lambda: source.read(1024 * 1024), b""):
+            hasher.update(chunk)
+    actual = hasher.hexdigest()
+    if expected is None:
+        return actual
+    if not isinstance(expected, str) or not re.fullmatch(r"sha256:[0-9a-fA-F]{64}", expected):
+        raise ValueError("release asset has a malformed SHA-256 digest")
+    if expected.removeprefix("sha256:").lower() != actual:
+        raise ValueError("downloaded release asset digest does not match GitHub metadata")
+    return actual
+
 
 # Default configuration (fallback if config file not found)
 DEFAULT_CONFIG = {
@@ -374,6 +395,13 @@ def download_from_github_release(config: dict, force: bool = False) -> tuple[boo
     if not success:
         return False, None
 
+    try:
+        asset_sha256 = verify_release_asset_digest(temp_zip, asset)
+    except ValueError as error:
+        console.print(f"[red]❌ {error}[/red]")
+        temp_zip.unlink(missing_ok=True)
+        return False, None
+
     # Extract
     output_dir = Path(paths_config["original"])
     try:
@@ -388,6 +416,7 @@ def download_from_github_release(config: dict, force: bool = False) -> tuple[boo
             release_data,
             asset["name"],
             asset["size"],
+            asset_sha256,
             version_file,
         )
 

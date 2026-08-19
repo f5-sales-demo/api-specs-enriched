@@ -1,0 +1,228 @@
+"""Sanitize PII-shaped values before generated artifacts are persisted."""
+
+from __future__ import annotations
+
+import re
+from typing import Any
+from urllib.parse import urlsplit, urlunsplit
+
+EMAIL_RE = re.compile(
+    r"(?<![-A-Za-z0-9._%+/])"
+    r"[A-Za-z0-9](?:[-A-Za-z0-9.!#$%&'*+=?^_`{|}~]*[A-Za-z0-9])?@"
+    r"(?:[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?\.)+"
+    r"[A-Za-z]{2,63}"
+)
+SAFE_EMAIL_DOMAINS = {"example.com", "example.net", "example.org"}
+STRUCTURAL_NAMESPACES = {"shared", "system"}
+OPENAPI_SCHEMA_TYPES = {"array", "boolean", "integer", "null", "number", "object", "string"}
+OPENAPI_SCHEMA_CONTEXT_KEYS = {
+    "$defs",
+    "additionalProperties",
+    "allOf",
+    "anyOf",
+    "items",
+    "not",
+    "oneOf",
+    "prefixItems",
+    "properties",
+    "schema",
+    "schemas",
+}
+IDENTITY_KEYS = {
+    "tenant",
+    "tenant_name",
+    "tenant_id",
+    "customer",
+    "customer_name",
+    "customer_id",
+    "account",
+    "account_name",
+    "account_id",
+    "subscription",
+    "subscription_name",
+    "subscription_id",
+    "project",
+    "project_name",
+    "project_id",
+    "namespace",
+}
+PERSON_KEYS = {
+    "address",
+    "creator",
+    "display_name",
+    "family_name",
+    "full_name",
+    "first_name",
+    "last_name",
+    "given_name",
+    "owner",
+    "phone",
+    "username",
+}
+PERSONAL_RECORD_KEYS = {
+    "street_address",
+    "postal_address",
+    "postal_code",
+    "zip_code",
+    "date_of_birth",
+    "dob",
+    "social_security_number",
+    "ssn",
+}
+
+
+def _safe_email(value: str) -> bool:
+    return value.rsplit("@", 1)[-1].lower() in SAFE_EMAIL_DOMAINS
+
+
+def sanitize_email_text(value: str, replacements: dict[str, str] | None = None) -> str:
+    """Replace unsafe emails with distinct fictional reserved addresses."""
+    replacements = replacements if replacements is not None else {}
+
+    def replace_email(match: re.Match[str]) -> str:
+        email = match.group(0)
+        if _safe_email(email):
+            return email
+        normalized_email = email.casefold()
+        if normalized_email not in replacements:
+            replacements[normalized_email] = f"redacted{len(replacements) + 1}@example.com"
+        return replacements[normalized_email]
+
+    return EMAIL_RE.sub(replace_email, value)
+
+
+def _sanitize_emails(value: Any, replacements: dict[str, str]) -> Any:
+    """Recursively sanitize email addresses without changing non-string values."""
+    if isinstance(value, dict):
+        return {
+            sanitize_email_text(key, replacements)
+            if isinstance(key, str)
+            else key: _sanitize_emails(item, replacements)
+            for key, item in value.items()
+        }
+    if isinstance(value, list):
+        return [_sanitize_emails(item, replacements) for item in value]
+    if isinstance(value, str):
+        return sanitize_email_text(value, replacements)
+    return value
+
+
+def sanitize_emails(value: Any) -> Any:
+    """Recursively sanitize emails with stable placeholders per payload."""
+    return _sanitize_emails(value, {})
+
+
+def _sanitize_identity_value(value: Any, replacement: str) -> Any:
+    """Preserve a sensitive value's shape without retaining its live identity."""
+    if isinstance(value, dict):
+        return {
+            key: (
+                item
+                if key.lower() == "namespace"
+                and isinstance(item, str)
+                and item.lower() in STRUCTURAL_NAMESPACES
+                else _sanitize_identity_value(item, replacement)
+            )
+            for key, item in value.items()
+        }
+    if isinstance(value, list):
+        return [_sanitize_identity_value(item, replacement) for item in value]
+    if isinstance(value, str):
+        return replacement
+    if isinstance(value, bool) or value is None:
+        return value
+    if isinstance(value, (int, float)):
+        return 0
+    return replacement
+
+
+def _has_openapi_type(value: dict[Any, Any]) -> bool:
+    """Return whether *value* declares a supported OpenAPI schema type."""
+    schema_type = value.get("type")
+    if isinstance(schema_type, str):
+        return schema_type.lower() in OPENAPI_SCHEMA_TYPES
+    return (
+        isinstance(schema_type, list)
+        and bool(schema_type)
+        and all(
+            isinstance(item, str) and item.lower() in OPENAPI_SCHEMA_TYPES for item in schema_type
+        )
+    )
+
+
+def _is_openapi_schema(value: dict[Any, Any]) -> bool:
+    """Return whether a mapping has an unambiguous OpenAPI schema shape."""
+    if isinstance(value.get("$ref"), str) and value["$ref"]:
+        return True
+    if not _has_openapi_type(value):
+        return False
+
+    if isinstance(value.get("properties"), dict):
+        return True
+    if isinstance(value.get("items"), dict):
+        return True
+    if isinstance(value.get("additionalProperties"), (bool, dict)):
+        return True
+
+    for key in ("allOf", "anyOf", "oneOf", "prefixItems"):
+        nested = value.get(key)
+        if isinstance(nested, list) and nested and all(isinstance(item, dict) for item in nested):
+            return True
+    return False
+
+
+def sanitize_discovery_payload(
+    value: Any,
+    replacements: dict[str, str] | None = None,
+    schema_context: bool = False,
+) -> Any:
+    """Replace identities and personal records captured from live discovery."""
+    replacements = replacements if replacements is not None else {}
+    if isinstance(value, dict):
+        result: dict[Any, Any] = {}
+        for key, item in value.items():
+            normalized_key = key.lower() if isinstance(key, str) else ""
+            child_schema_context = schema_context or normalized_key in OPENAPI_SCHEMA_CONTEXT_KEYS
+            is_schema_dict = isinstance(item, dict) and (
+                child_schema_context or _is_openapi_schema(item)
+            )
+            if is_schema_dict:
+                result[key] = sanitize_discovery_payload(item, replacements, schema_context=True)
+            elif (
+                normalized_key == "namespace"
+                and isinstance(item, str)
+                and item.lower() in STRUCTURAL_NAMESPACES
+            ):
+                result[key] = item
+            elif normalized_key in IDENTITY_KEYS:
+                result[key] = _sanitize_identity_value(
+                    item,
+                    "default" if normalized_key == "namespace" else "example-corp",
+                )
+            elif normalized_key in PERSON_KEYS:
+                result[key] = _sanitize_identity_value(item, "Example")
+            elif normalized_key in PERSONAL_RECORD_KEYS:
+                result[key] = _sanitize_identity_value(
+                    item,
+                    "90210" if normalized_key in {"postal_code", "zip_code"} else "example",
+                )
+            else:
+                result[key] = sanitize_discovery_payload(item, replacements, schema_context)
+        return result
+    if isinstance(value, list):
+        return [sanitize_discovery_payload(item, replacements, schema_context) for item in value]
+    if isinstance(value, str):
+        return sanitize_email_text(value, replacements)
+    return value
+
+
+def sanitize_api_url(value: str) -> str:
+    """Replace a live discovery endpoint with a documentation-safe URL."""
+    if not value:
+        return value
+    parsed = urlsplit(value)
+    if parsed.hostname:
+        host = parsed.hostname.casefold()
+        if any(host == domain or host.endswith(f".{domain}") for domain in SAFE_EMAIL_DOMAINS):
+            return value
+    return urlunsplit((parsed.scheme or "https", "api.example.com", parsed.path or "", "", ""))

@@ -1090,9 +1090,9 @@ class TestPathParameterResolutionEdgeCases:
 
         # Path with parameter
         path = "/api/namespaces/{namespace}/config"
-        resolved = resolve_path_params(path, namespace="test")
+        resolved = resolve_path_params(path, namespace="default")
 
-        assert resolved == "/api/namespaces/test/config"
+        assert resolved == "/api/namespaces/default/config"
 
 
 class TestEndpointFilteringEdgeCases:
