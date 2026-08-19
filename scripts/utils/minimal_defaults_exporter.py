@@ -120,10 +120,10 @@ class MinimalDefaultsExporter:
         if not matches:
             return None
         for marker in _SCHEMA_PREFERENCE:
-            preferred = sorted(n for n in matches if marker in n)
+            preferred = [name for name in matches if marker in name]
             if preferred:
-                return preferred[0]
-        return sorted(matches)[0]
+                return min(preferred)
+        return min(matches)
 
     # -- marker collection --------------------------------------------------
 

@@ -55,11 +55,20 @@ if [ -n "$PY_FILES" ]; then
 fi
 
 # --- Python type checking (mypy) ---
+MYPY=""
+if [ -x "${REPO_ROOT}/.venv/bin/mypy" ]; then
+  MYPY="${REPO_ROOT}/.venv/bin/mypy"
+elif command -v mypy &>/dev/null; then
+  MYPY="$(command -v mypy)"
+fi
+
 PY_FILES_NO_TESTS=$(echo "$STAGED_FILES" | grep '\.py$' | grep -v '^tests/' | grep -v '^docs/' || true)
 if [ -n "$PY_FILES_NO_TESTS" ]; then
-  if command -v mypy &>/dev/null; then
+  if [ -n "$MYPY" ]; then
     echo "[local] Running mypy type checking..."
-    echo "$PY_FILES_NO_TESTS" | xargs mypy --ignore-missing-imports --no-error-summary || true
+    echo "$PY_FILES_NO_TESTS" | xargs "$MYPY" --ignore-missing-imports --no-error-summary
+  else
+    echo "[local] mypy is not installed — skipping Python type checking" >&2
   fi
 fi
 

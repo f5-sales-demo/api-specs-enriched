@@ -440,7 +440,7 @@ class TestEdgeCases:
     def test_single_spec(self, temp_spec_dir, mock_enrich_func, mock_normalize_func):
         """Verify processing single spec."""
         processor = BatchSpecProcessor(batch_size=10)
-        spec_files = [sorted(temp_spec_dir.glob("*.json"))[0]]  # Just one spec
+        spec_files = [min(temp_spec_dir.glob("*.json"))]  # Just one spec
         config = {}
 
         cache_paths = processor.process_batch(
