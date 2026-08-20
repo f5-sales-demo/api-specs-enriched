@@ -21,7 +21,7 @@ def test_release_pr_create_is_non_interactive() -> None:
 
 
 def test_downstream_matrix_sets_up_python_before_installing_pyyaml() -> None:
-    """The minimal release runner must not rely on a system ``pip`` binary."""
+    """The downstream matrix uses the catalogued Python and PyYAML image tool."""
 
     workflow = WORKFLOW.read_text(encoding="utf-8")
     job = workflow.split("\n  build-downstream-matrix:\n", maxsplit=1)[1].split(
@@ -29,12 +29,13 @@ def test_downstream_matrix_sets_up_python_before_installing_pyyaml() -> None:
     )[0]
 
     setup_python = "uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97"
-    install = "run: python -m pip install pyyaml"
+    verify = 'run: python -c "import yaml; print(yaml.__version__)"'
 
     assert setup_python in job
     assert "python-version: ${{ env.PYTHON_VERSION }}" in job
-    assert install in job
-    assert job.index(setup_python) < job.index(install)
+    assert verify in job
+    assert "python -m pip install pyyaml" not in job
+    assert job.index(setup_python) < job.index(verify)
 
 
 def test_tag_commit_is_exposed_and_supplied_to_dispatch() -> None:
