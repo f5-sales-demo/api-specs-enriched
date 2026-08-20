@@ -1,0 +1,73 @@
+---
+name: Self-hosted Runner Tool-Cache Smoke
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: self-hosted-runner-tool-cache-smoke-${{ github.repository }}
+  cancel-in-progress: false
+
+jobs:
+  tool-cache-smoke:
+    name: Validate catalogued standard-runner tools
+    runs-on: [self-hosted, Linux, X64, api-specs-enriched, ubuntu-24.04]
+    timeout-minutes: 10
+    steps:
+      - name: Assert private cache and immutable image boundaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          : "${RUNNER_RUNTIME_DIR:?RUNNER_RUNTIME_DIR must be set}"
+          : "${RUNNER_TOOL_CACHE:?RUNNER_TOOL_CACHE must be set}"
+
+          runtime_dir="$(realpath -m -- "$RUNNER_RUNTIME_DIR")"
+          tool_cache="$(realpath -m -- "$RUNNER_TOOL_CACHE")"
+          test "$tool_cache" = "$runtime_dir/_tool"
+          test -f "$tool_cache/Python/3.13.7/x64.complete"
+          test -f "$tool_cache/node/22.23.2/x64.complete"
+          test -f /opt/hostedtoolcache/Python/3.13.7/x64.complete
+          test -f /opt/hostedtoolcache/node/22.23.2/x64.complete
+
+          if touch /.self-hosted-runner-tool-cache-smoke; then
+            rm -f /.self-hosted-runner-tool-cache-smoke
+            echo "the runner root filesystem must be read-only" >&2
+            exit 1
+          fi
+          if touch /opt/hostedtoolcache/.self-hosted-runner-tool-cache-smoke; then
+            rm -f /opt/hostedtoolcache/.self-hosted-runner-tool-cache-smoke
+            echo "the image tool cache must be read-only" >&2
+            exit 1
+          fi
+
+          printf 'runtime tool cache: %s\n' "$tool_cache"
+          stat -c '%A %U:%G %n' / /opt/hostedtoolcache "$tool_cache"
+
+      - name: Resolve catalogued Python from the private tool cache
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: 3.13.7
+          cache: false
+          check-latest: false
+
+      - name: Verify catalogued Python version
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(python --version)" = "Python 3.13.7"
+          test -f "$RUNNER_TOOL_CACHE/Python/3.13.7/x64.complete"
+
+      - name: Resolve catalogued Node from the private tool cache
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22.23.2
+          cache: false
+          check-latest: false
+
+      - name: Verify catalogued Node and resident command-line tools
+        shell: bash
+        run: |
+          set -euo pipefail
