@@ -33,14 +33,14 @@ resources:
       required: true
       default: HTTPS with Automatic Certificate
       options:
-      - HTTP
-      - HTTPS with Automatic Certificate
-      - HTTPS with Custom Certificate
+        - HTTP
+        - HTTPS with Automatic Certificate
+        - HTTPS with Custom Certificate
       form_section: domains-and-lb-type
       notes: Selects between spec.http, spec.https, and spec.https_auto_cert
       mutually_exclusive_with:
-      - spec.http
-      - spec.https
+        - spec.http
+        - spec.https
     spec.http:
       widget_type: listbox
       label: Load Balancer Type
@@ -48,8 +48,8 @@ resources:
       hidden: true
       notes: Active when LB Type is HTTP; mutually exclusive with https variants
       mutually_exclusive_with:
-      - spec.https_auto_cert
-      - spec.https
+        - spec.https_auto_cert
+        - spec.https
     spec.https:
       widget_type: listbox
       label: Load Balancer Type
@@ -57,8 +57,8 @@ resources:
       hidden: true
       notes: Active when LB Type is HTTPS with Custom Certificate
       mutually_exclusive_with:
-      - spec.https_auto_cert
-      - spec.http
+        - spec.https_auto_cert
+        - spec.http
     spec.default_route_pools:
       widget_type: nested-resource-list
       label: Origin Pools
@@ -100,8 +100,8 @@ resources:
       required: false
       default: Disable
       options:
-      - Disable
-      - Enable
+        - Disable
+        - Enable
       form_section: cdn
       notes: Empty object sentinel — presence means caching is disabled
     spec.app_firewall:
@@ -112,7 +112,7 @@ resources:
       form_section: waf
       notes: Enable WAF by selecting an App Firewall resource
       mutually_exclusive_with:
-      - spec.disable_waf
+        - spec.disable_waf
     spec.disable_waf:
       widget_type: listbox
       label: WAF
@@ -120,15 +120,15 @@ resources:
       form_section: waf
       notes: Empty object sentinel — presence means WAF is disabled
       mutually_exclusive_with:
-      - spec.app_firewall
+        - spec.app_firewall
     spec.waf_exclusion:
       widget_type: listbox
       label: WAF Exclusion
       required: false
       default: Inline Rules
       options:
-      - Inline Rules
-      - Custom Rules
+        - Inline Rules
+        - Custom Rules
       form_section: waf
       depends_on: spec.app_firewall
     spec.data_guard_rules:
@@ -165,11 +165,11 @@ resources:
       required: false
       default: Disable
       options:
-      - Disable
-      - Enable
+        - Disable
+        - Enable
       form_section: bot-protection
       mutually_exclusive_with:
-      - spec.disable_bot_defense
+        - spec.disable_bot_defense
     spec.bot_defense_advanced:
       widget_type: listbox
       label: Bot Defense Advanced
@@ -184,8 +184,8 @@ resources:
       form_section: bot-protection
       notes: Empty object sentinel — presence means bot defense is disabled
       mutually_exclusive_with:
-      - spec.bot_defense
-      - spec.bot_defense_advanced
+        - spec.bot_defense
+        - spec.bot_defense_advanced
     spec.api_specification:
       widget_type: listbox
       label: API Definition
@@ -193,7 +193,7 @@ resources:
       form_section: api-protection
       notes: Upload or reference an API spec for schema enforcement
       mutually_exclusive_with:
-      - spec.disable_api_definition
+        - spec.disable_api_definition
     spec.disable_api_definition:
       widget_type: listbox
       label: API Definition
@@ -201,7 +201,7 @@ resources:
       form_section: api-protection
       notes: Empty object sentinel — presence means API definition is disabled
       mutually_exclusive_with:
-      - spec.api_specification
+        - spec.api_specification
     spec.api_protection_rules:
       widget_type: configurable
       label: API Protection Rules
@@ -223,11 +223,11 @@ resources:
       required: false
       default: Disable
       options:
-      - Disable
-      - Enable
+        - Disable
+        - Enable
       form_section: api-protection
       mutually_exclusive_with:
-      - spec.disable_api_discovery
+        - spec.disable_api_discovery
     spec.disable_api_discovery:
       widget_type: listbox
       label: API Discovery
@@ -235,18 +235,18 @@ resources:
       form_section: api-protection
       notes: Empty object sentinel — presence means API discovery is disabled
       mutually_exclusive_with:
-      - spec.enable_api_discovery
+        - spec.enable_api_discovery
     spec.sensitive_data_policy:
       widget_type: listbox
       label: Sensitive Data Discovery
       required: false
       default: Default
       options:
-      - Default
-      - Custom
+        - Default
+        - Custom
       form_section: api-protection
       mutually_exclusive_with:
-      - spec.default_sensitive_data_policy
+        - spec.default_sensitive_data_policy
     spec.default_sensitive_data_policy:
       widget_type: listbox
       label: Sensitive Data Discovery
@@ -254,7 +254,7 @@ resources:
       form_section: api-protection
       notes: Empty object sentinel — uses default sensitive data policy
       mutually_exclusive_with:
-      - spec.sensitive_data_policy
+        - spec.sensitive_data_policy
     spec.api_rate_limit:
       widget_type: configurable
       label: API Rate Limit
@@ -268,11 +268,11 @@ resources:
       required: false
       default: Disable
       options:
-      - Disable
-      - Enable
+        - Disable
+        - Enable
       form_section: api-protection
       mutually_exclusive_with:
-      - spec.disable_api_testing
+        - spec.disable_api_testing
     spec.disable_api_testing:
       widget_type: listbox
       label: API Testing
@@ -280,7 +280,7 @@ resources:
       form_section: api-protection
       notes: Empty object sentinel — presence means API testing is disabled
       mutually_exclusive_with:
-      - spec.api_testing
+        - spec.api_testing
     spec.sensitive_data_disclosure_rules:
       widget_type: configurable
       label: Sensitive Data Exposure Rules
@@ -301,8 +301,8 @@ resources:
       form_section: dos-settings
       notes: Empty object sentinel — block mitigation action
       mutually_exclusive_with:
-      - spec.l7_ddos_action_default
-      - spec.l7_ddos_action_js_challenge
+        - spec.l7_ddos_action_default
+        - spec.l7_ddos_action_js_challenge
     spec.l7_ddos_action_default:
       widget_type: listbox
       label: Mitigation Action
@@ -310,16 +310,16 @@ resources:
       form_section: dos-settings
       notes: Empty object sentinel — no mitigation action
       mutually_exclusive_with:
-      - spec.l7_ddos_action_block
-      - spec.l7_ddos_action_js_challenge
+        - spec.l7_ddos_action_block
+        - spec.l7_ddos_action_js_challenge
     spec.l7_ddos_action_js_challenge:
       widget_type: listbox
       label: Mitigation Action
       default: JavaScript Challenge
       form_section: dos-settings
       mutually_exclusive_with:
-      - spec.l7_ddos_action_block
-      - spec.l7_ddos_action_default
+        - spec.l7_ddos_action_block
+        - spec.l7_ddos_action_default
     spec.ddos_mitigation_rules:
       widget_type: configurable
       label: DDoS Mitigation Rules
@@ -333,8 +333,8 @@ resources:
       required: false
       default: Default
       options:
-      - Default
-      - Custom
+        - Default
+        - Custom
       form_section: dos-settings
     spec.captcha_challenge:
       widget_type: listbox
@@ -342,18 +342,18 @@ resources:
       required: false
       form_section: dos-settings
       mutually_exclusive_with:
-      - spec.js_challenge
-      - spec.no_challenge
-      - spec.policy_based_challenge
+        - spec.js_challenge
+        - spec.no_challenge
+        - spec.policy_based_challenge
     spec.js_challenge:
       widget_type: listbox
       label: JavaScript Challenge
       required: false
       form_section: dos-settings
       mutually_exclusive_with:
-      - spec.captcha_challenge
-      - spec.no_challenge
-      - spec.policy_based_challenge
+        - spec.captcha_challenge
+        - spec.no_challenge
+        - spec.policy_based_challenge
     spec.no_challenge:
       widget_type: listbox
       label: Client-Side Challenge
@@ -361,18 +361,18 @@ resources:
       form_section: dos-settings
       notes: Empty object sentinel — no client-side challenge
       mutually_exclusive_with:
-      - spec.captcha_challenge
-      - spec.js_challenge
-      - spec.policy_based_challenge
+        - spec.captcha_challenge
+        - spec.js_challenge
+        - spec.policy_based_challenge
     spec.policy_based_challenge:
       widget_type: listbox
       label: Policy-Based Challenge
       required: false
       form_section: dos-settings
       mutually_exclusive_with:
-      - spec.captcha_challenge
-      - spec.js_challenge
-      - spec.no_challenge
+        - spec.captcha_challenge
+        - spec.js_challenge
+        - spec.no_challenge
     spec.enable_challenge:
       widget_type: listbox
       label: Challenge Settings
@@ -386,8 +386,8 @@ resources:
       form_section: common-security-controls
       notes: Empty object sentinel — applies namespace-level service policies
       mutually_exclusive_with:
-      - spec.active_service_policies
-      - spec.no_service_policies
+        - spec.active_service_policies
+        - spec.no_service_policies
     spec.active_service_policies:
       widget_type: listbox
       label: Service Policies
@@ -395,27 +395,27 @@ resources:
       form_section: common-security-controls
       notes: Apply specified service policies
       mutually_exclusive_with:
-      - spec.service_policies_from_namespace
-      - spec.no_service_policies
+        - spec.service_policies_from_namespace
+        - spec.no_service_policies
     spec.no_service_policies:
       widget_type: listbox
       label: Service Policies
       form_section: common-security-controls
       notes: Empty object sentinel — do not apply service policies
       mutually_exclusive_with:
-      - spec.service_policies_from_namespace
-      - spec.active_service_policies
+        - spec.service_policies_from_namespace
+        - spec.active_service_policies
     spec.enable_ip_reputation:
       widget_type: listbox
       label: IP Reputation
       required: false
       default: Disable
       options:
-      - Disable
-      - Enable
+        - Disable
+        - Enable
       form_section: common-security-controls
       mutually_exclusive_with:
-      - spec.disable_ip_reputation
+        - spec.disable_ip_reputation
     spec.disable_ip_reputation:
       widget_type: listbox
       label: IP Reputation
@@ -423,18 +423,18 @@ resources:
       form_section: common-security-controls
       notes: Empty object sentinel — IP reputation disabled
       mutually_exclusive_with:
-      - spec.enable_ip_reputation
+        - spec.enable_ip_reputation
     spec.enable_threat_mesh:
       widget_type: listbox
       label: Threat Mesh
       required: false
       default: Disable
       options:
-      - Disable
-      - Enable
+        - Disable
+        - Enable
       form_section: common-security-controls
       mutually_exclusive_with:
-      - spec.disable_threat_mesh
+        - spec.disable_threat_mesh
     spec.disable_threat_mesh:
       widget_type: listbox
       label: Threat Mesh
@@ -442,7 +442,7 @@ resources:
       form_section: common-security-controls
       notes: Empty object sentinel — threat mesh disabled
       mutually_exclusive_with:
-      - spec.enable_threat_mesh
+        - spec.enable_threat_mesh
     spec.user_id_client_ip:
       widget_type: listbox
       label: User Identifier
@@ -451,7 +451,7 @@ resources:
       form_section: common-security-controls
       notes: Empty object sentinel — use client IP as user identifier
       mutually_exclusive_with:
-      - spec.user_identification
+        - spec.user_identification
     spec.user_identification:
       widget_type: resource-selector
       label: User Identifier
@@ -459,7 +459,7 @@ resources:
       form_section: common-security-controls
       notes: Custom user identification policy (TLS fingerprint or custom)
       mutually_exclusive_with:
-      - spec.user_id_client_ip
+        - spec.user_id_client_ip
       resource_type: user_identification
     spec.enable_malicious_user_detection:
       widget_type: listbox
@@ -467,11 +467,11 @@ resources:
       required: false
       default: Disable
       options:
-      - Disable
-      - Enable
+        - Disable
+        - Enable
       form_section: common-security-controls
       mutually_exclusive_with:
-      - spec.disable_malicious_user_detection
+        - spec.disable_malicious_user_detection
     spec.disable_malicious_user_detection:
       widget_type: listbox
       label: Malicious User Detection
@@ -479,7 +479,7 @@ resources:
       form_section: common-security-controls
       notes: Empty object sentinel — malicious user detection disabled
       mutually_exclusive_with:
-      - spec.enable_malicious_user_detection
+        - spec.enable_malicious_user_detection
     spec.rate_limit:
       widget_type: configurable
       label: Rate Limiting
@@ -488,7 +488,7 @@ resources:
       form_section: common-security-controls
       notes: Enable and configure rate limiting rules
       mutually_exclusive_with:
-      - spec.disable_rate_limit
+        - spec.disable_rate_limit
     spec.disable_rate_limit:
       widget_type: listbox
       label: Rate Limiting
@@ -496,7 +496,7 @@ resources:
       form_section: common-security-controls
       notes: Empty object sentinel — rate limiting disabled
       mutually_exclusive_with:
-      - spec.rate_limit
+        - spec.rate_limit
     spec.trusted_clients:
       widget_type: configurable
       label: Trusted Client Rules
@@ -524,41 +524,41 @@ resources:
       required: false
       default: Internet
       options:
-      - Internet
-      - Internet with VIP on RE
-      - Custom
+        - Internet
+        - Internet with VIP on RE
+        - Custom
       form_section: other-settings
       mutually_exclusive_with:
-      - spec.advertise_on_public_default_vip
-      - spec.advertise_custom
-      - spec.do_not_advertise
+        - spec.advertise_on_public_default_vip
+        - spec.advertise_custom
+        - spec.do_not_advertise
     spec.advertise_on_public_default_vip:
       widget_type: listbox
       label: VIP Advertisement
       form_section: other-settings
       notes: Empty object sentinel — advertise on public with default VIP
       mutually_exclusive_with:
-      - spec.advertise_on_public
-      - spec.advertise_custom
-      - spec.do_not_advertise
+        - spec.advertise_on_public
+        - spec.advertise_custom
+        - spec.do_not_advertise
     spec.advertise_custom:
       widget_type: listbox
       label: VIP Advertisement
       form_section: other-settings
       notes: Custom advertisement configuration
       mutually_exclusive_with:
-      - spec.advertise_on_public
-      - spec.advertise_on_public_default_vip
-      - spec.do_not_advertise
+        - spec.advertise_on_public
+        - spec.advertise_on_public_default_vip
+        - spec.do_not_advertise
     spec.do_not_advertise:
       widget_type: listbox
       label: VIP Advertisement
       form_section: other-settings
       notes: Empty object sentinel — do not advertise
       mutually_exclusive_with:
-      - spec.advertise_on_public
-      - spec.advertise_on_public_default_vip
-      - spec.advertise_custom
+        - spec.advertise_on_public
+        - spec.advertise_on_public_default_vip
+        - spec.advertise_custom
     spec.round_robin:
       widget_type: listbox
       label: LB Algorithm
@@ -567,66 +567,66 @@ resources:
       form_section: other-settings
       notes: Empty object sentinel — round-robin load balancing
       mutually_exclusive_with:
-      - spec.least_active
-      - spec.random
-      - spec.ring_hash
-      - spec.source_ip_stickiness
-      - spec.cookie_stickiness
+        - spec.least_active
+        - spec.random
+        - spec.ring_hash
+        - spec.source_ip_stickiness
+        - spec.cookie_stickiness
     spec.least_active:
       widget_type: listbox
       label: LB Algorithm
       form_section: other-settings
       notes: Empty object sentinel — least active request
       mutually_exclusive_with:
-      - spec.round_robin
-      - spec.random
-      - spec.ring_hash
-      - spec.source_ip_stickiness
-      - spec.cookie_stickiness
+        - spec.round_robin
+        - spec.random
+        - spec.ring_hash
+        - spec.source_ip_stickiness
+        - spec.cookie_stickiness
     spec.random:
       widget_type: listbox
       label: LB Algorithm
       form_section: other-settings
       notes: Empty object sentinel — random selection
       mutually_exclusive_with:
-      - spec.round_robin
-      - spec.least_active
-      - spec.ring_hash
-      - spec.source_ip_stickiness
-      - spec.cookie_stickiness
+        - spec.round_robin
+        - spec.least_active
+        - spec.ring_hash
+        - spec.source_ip_stickiness
+        - spec.cookie_stickiness
     spec.ring_hash:
       widget_type: listbox
       label: LB Algorithm
       form_section: other-settings
       notes: Ring hash with configurable hash policy
       mutually_exclusive_with:
-      - spec.round_robin
-      - spec.least_active
-      - spec.random
-      - spec.source_ip_stickiness
-      - spec.cookie_stickiness
+        - spec.round_robin
+        - spec.least_active
+        - spec.random
+        - spec.source_ip_stickiness
+        - spec.cookie_stickiness
     spec.source_ip_stickiness:
       widget_type: listbox
       label: LB Algorithm
       form_section: other-settings
       notes: Empty object sentinel — source IP stickiness
       mutually_exclusive_with:
-      - spec.round_robin
-      - spec.least_active
-      - spec.random
-      - spec.ring_hash
-      - spec.cookie_stickiness
+        - spec.round_robin
+        - spec.least_active
+        - spec.random
+        - spec.ring_hash
+        - spec.cookie_stickiness
     spec.cookie_stickiness:
       widget_type: listbox
       label: LB Algorithm
       form_section: other-settings
       notes: Cookie-based stickiness with configurable cookie
       mutually_exclusive_with:
-      - spec.round_robin
-      - spec.least_active
-      - spec.random
-      - spec.ring_hash
-      - spec.source_ip_stickiness
+        - spec.round_robin
+        - spec.least_active
+        - spec.random
+        - spec.ring_hash
+        - spec.source_ip_stickiness
     spec.disable_trust_client_ip_headers:
       widget_type: listbox
       label: Trusted Client IP Headers
@@ -635,7 +635,7 @@ resources:
       form_section: other-settings
       notes: Empty object sentinel — trusted client IP headers disabled
       mutually_exclusive_with:
-      - spec.enable_trust_client_ip_headers
+        - spec.enable_trust_client_ip_headers
     spec.enable_trust_client_ip_headers:
       widget_type: listbox
       label: Trusted Client IP Headers
@@ -643,7 +643,7 @@ resources:
       form_section: other-settings
       notes: Configure which headers to trust for client IP
       mutually_exclusive_with:
-      - spec.disable_trust_client_ip_headers
+        - spec.disable_trust_client_ip_headers
     spec.add_location:
       widget_type: checkbox
       label: Add Location
@@ -662,14 +662,14 @@ resources:
       form_section: other-settings
       notes: Empty object sentinel — multi load balancer application mode
       mutually_exclusive_with:
-      - spec.single_lb_app
+        - spec.single_lb_app
     spec.single_lb_app:
       widget_type: listbox
       label: Single-LB Application
       form_section: other-settings
       notes: Single load balancer application settings
       mutually_exclusive_with:
-      - spec.multi_lb_app
+        - spec.multi_lb_app
     spec.system_default_timeouts:
       widget_type: listbox
       label: Timeouts
@@ -683,7 +683,7 @@ resources:
       disabled: true
       disabled_reason: Upgrade required
       mutually_exclusive_with:
-      - spec.disable_malware_protection
+        - spec.disable_malware_protection
     spec.disable_malware_protection:
       widget_type: listbox
       label: Malware Protection
@@ -691,7 +691,7 @@ resources:
       disabled: true
       disabled_reason: Upgrade required
       mutually_exclusive_with:
-      - spec.malware_protection_settings
+        - spec.malware_protection_settings
     spec.client_side_defense:
       widget_type: listbox
       label: Client-Side Defense
@@ -699,7 +699,7 @@ resources:
       disabled: true
       disabled_reason: Upgrade required
       mutually_exclusive_with:
-      - spec.disable_client_side_defense
+        - spec.disable_client_side_defense
     spec.disable_client_side_defense:
       widget_type: listbox
       label: Client-Side Defense
@@ -707,7 +707,7 @@ resources:
       disabled: true
       disabled_reason: Upgrade required
       mutually_exclusive_with:
-      - spec.client_side_defense
+        - spec.client_side_defense
   origin_pool:
     metadata.name:
       widget_type: textbox
@@ -740,63 +740,63 @@ resources:
         public_name:
           label: Public DNS Name
           fields:
-          - dns_name
-          - refresh_interval
+            - dns_name
+            - refresh_interval
         public_ip:
           label: Public IP
           fields:
-          - ip
+            - ip
         private_ip:
           label: Private IP
           fields:
-          - ip
-          - site_locator
-          - inside_network
-          - outside_network
-          - segment
-          - snat_pool
+            - ip
+            - site_locator
+            - inside_network
+            - outside_network
+            - segment
+            - snat_pool
         private_name:
           label: Private DNS Name
           fields:
-          - dns_name
-          - refresh_interval
-          - site_locator
-          - inside_network
-          - outside_network
-          - segment
-          - snat_pool
+            - dns_name
+            - refresh_interval
+            - site_locator
+            - inside_network
+            - outside_network
+            - segment
+            - snat_pool
         k8s_service:
           label: K8s Service
           fields:
-          - service_name
-          - site_locator
-          - inside_network
-          - outside_network
-          - protocol
-          - snat_pool
-          - vk8s_networks
+            - service_name
+            - site_locator
+            - inside_network
+            - outside_network
+            - protocol
+            - snat_pool
+            - vk8s_networks
         consul_service:
           label: Consul Service
           fields:
-          - service_name
-          - site_locator
-          - inside_network
-          - outside_network
-          - snat_pool
+            - service_name
+            - site_locator
+            - inside_network
+            - outside_network
+            - snat_pool
         custom_endpoint_object:
           label: Custom Endpoint
           fields:
-          - endpoint
+            - endpoint
         vn_private_ip:
           label: Virtual Network Private IP
           fields:
-          - ip
-          - virtual_network
+            - ip
+            - virtual_network
         vn_private_name:
           label: Virtual Network Private Name
           fields:
-          - dns_name
-          - private_network
+            - dns_name
+            - private_network
     spec.port:
       widget_type: spinbutton
       label: Port
@@ -847,8 +847,8 @@ resources:
       required: true
       default: Blocking
       options:
-      - Monitoring
-      - Blocking
+        - Monitoring
+        - Blocking
       form_section: enforcement-mode
     spec.detection_settings:
       widget_type: configurable
@@ -880,7 +880,7 @@ resources:
       label: No SNI
       form_section: basic-configuration
       mutually_exclusive_with:
-      - sni
+        - sni
     origin_pools_weights:
       widget_type: nested-resource-list
       label: Origin Pools
@@ -897,8 +897,8 @@ resources:
       default: TCP
       form_section: load-balancing-control
       mutually_exclusive_with:
-      - tcp_proxy
-      - sni_based
+        - tcp_proxy
+        - sni_based
     round_robin:
       widget_type: listbox
       label: Round Robin
@@ -914,8 +914,8 @@ resources:
       form_section: basic-configuration
       default: Listen Port
       options:
-      - Listen Port
-      - Custom Port
+        - Listen Port
+        - Custom Port
       description: vsui listbox choice (Listen Port | Custom Port). Verified from docs/form-discovery/tcp_loadbalancer.yaml.
       widget_type: listbox
   healthcheck:
@@ -924,7 +924,7 @@ resources:
       label: HTTP HealthCheck
       form_section: health-check-parameters
       mutually_exclusive_with:
-      - tcp_health_check
+        - tcp_health_check
     timeout:
       widget_type: spinbutton
       label: Timeout
@@ -971,18 +971,18 @@ resources:
       default: Any Server
       form_section: servers
       mutually_exclusive_with:
-      - spec.server_name
-      - spec.server_name_matcher
-      - spec.server_selector
+        - spec.server_name
+        - spec.server_name_matcher
+        - spec.server_selector
     spec.rule_list:
       widget_type: listbox
       label: Custom Rule List
       form_section: rules
       mutually_exclusive_with:
-      - spec.allow_all_requests
-      - spec.deny_all_requests
-      - spec.allow_list
-      - spec.deny_list
+        - spec.allow_all_requests
+        - spec.deny_all_requests
+        - spec.allow_list
+        - spec.deny_list
       notes: Opens nested rule editor with match conditions and actions
     spec.rule_choice:
       required: true
@@ -1580,8 +1580,8 @@ resources:
       required: true
       description: 'Required: Site Type (RE = Regional Edge, CE = Customer Edge). Select from the listbox.'
       options:
-      - RE
-      - CE
+        - RE
+        - CE
       default: RE
   alert_policy:
     metadata.name:
@@ -1906,8 +1906,7 @@ resources:
       required: true
       form_section: api-endpoints
       resource_type: http_loadbalancer
-      description: 'Server-required (feedback loop: "Field HTTP Load Balancer is required"). A direct listbox that selects an EXISTING http_loadbalancer — dependency, create an http-lb first. (Removed the
-        duplicate spec.http_load_balancer: the real API field is http_loadbalancer, and the console form shows a single listbox, not a resource-selector.)'
+      description: 'Server-required (feedback loop: "Field HTTP Load Balancer is required"). A direct listbox that selects an EXISTING http_loadbalancer — dependency, create an http-lb first. (Removed the duplicate spec.http_load_balancer: the real API field is http_loadbalancer, and the console form shows a single listbox, not a resource-selector.)'
   app_setting:
     metadata.name:
       widget_type: textbox
@@ -2122,7 +2121,7 @@ resources:
     spec.intermediate_certificate_chain:
       widget_type: listbox
       label: Intermediate Certificate Chain
-      default: ''
+      default: ""
       form_section: intermediate-certificate-chain
     spec.certificate_url:
       required: true
@@ -2613,7 +2612,7 @@ resources:
     spec.health_check_secondary_port:
       widget_type: listbox
       label: Health Check Secondary Port
-      default: '0'
+      default: "0"
       form_section: health-check-type
     spec.virtual_host:
       widget_type: listbox
@@ -3261,8 +3260,7 @@ resources:
       add_action: Add Item
       sub_select_label: Policer
       sub_resource_type: policer
-      description: 'At least one protocol policer entry required. The nested Add Item sub-form requires selecting an existing Policer (feedback loop: "Field Policer is required") — a policer object must
-        exist first.'
+      description: 'At least one protocol policer entry required. The nested Add Item sub-form requires selecting an existing Policer (feedback loop: "Field Policer is required") — a policer object must exist first.'
       resource_type: protocol_policer
   proxy:
     metadata.name:
@@ -3360,7 +3358,7 @@ resources:
     spec.user_identification_policy:
       widget_type: listbox
       label: User Identification Policy
-      default: ''
+      default: ""
       form_section: user-identification-policy
   role:
     metadata.name:
@@ -3426,12 +3424,12 @@ resources:
     spec.latitude:
       widget_type: textbox
       label: Latitude
-      default: '0'
+      default: "0"
       form_section: basic-configuration
     spec.longitude:
       widget_type: textbox
       label: Longitude
-      default: '0'
+      default: "0"
       form_section: basic-configuration
     spec.bond_configuration:
       widget_type: listbox
@@ -3945,17 +3943,17 @@ resources:
     spec.memory_mib:
       widget_type: textbox
       label: Memory (MiB)
-      default: '0'
+      default: "0"
       form_section: memory
     spec.vcpus:
       widget_type: textbox
       label: vCPUs
-      default: '0'
+      default: "0"
       form_section: vcpus
     spec.ephemeral_storage_mib:
       widget_type: textbox
       label: Ephemeral Storage (MiB)
-      default: '0'
+      default: "0"
       form_section: ephemeral-storage
   network_policy_rule:
     spec.protocol:
