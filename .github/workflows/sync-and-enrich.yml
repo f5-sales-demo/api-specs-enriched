@@ -50,13 +50,8 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  PYTHON_VERSION: '3.13'
-  # Biome is installed via biomejs/setup-biome@version:latest, mirroring
-  # docs-control's super-linter.yml (docs-control#385). The version
-  # resolved at install time is captured into steps.biome.outputs.version
-  # and used as a cache-key suffix so that a Biome upgrade busts the
-  # enriched-output cache and forces the generator to re-emit JSON
-  # formatted by the new Biome release.
+  # Exact version pre-populated in the immutable runner tool cache.
+  PYTHON_VERSION: '3.13.7'
 
 jobs:
   check-updates:
@@ -197,17 +192,13 @@ jobs:
           } | sha256sum | cut -d' ' -f1)
           echo "hash=$HASH" >> "$GITHUB_OUTPUT"
 
-      - name: Setup Biome
-        uses: biomejs/setup-biome@4c91541eaada48f67d7dbd7833600ce162b68f51 # v2.7.1
-        with:
-          version: latest
-
-      - name: Capture Biome version
+      - name: Verify image-resident Biome
         id: biome
         run: |
           version=$(biome --version | awk '{print $2}')
+          test "${version}" = "2.5.6"
           echo "version=${version}" >> "$GITHUB_OUTPUT"
-          echo "Biome ${version} installed (matches docs-control's setup-biome pin)"
+          echo "Biome ${version} supplied by the immutable runner image"
 
       - name: Restore enriched output cache
         if: github.event_name != 'workflow_dispatch'
@@ -217,17 +208,19 @@ jobs:
           path: docs/specifications/api
           key: enriched-${{ steps.specs-fingerprint.outputs.hash }}-${{ steps.pipeline-fingerprint.outputs.hash }}-biome-${{ steps.biome.outputs.version }}
 
-      - name: Install Java (for LanguageTool)
+      - name: Use image-resident Java 17 (for LanguageTool)
         if: steps.enriched-cache.outputs.cache-hit != 'true'
-        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
-        with:
-          distribution: temurin
-          java-version: '17'
+        run: |
+          set -euo pipefail
+          java_home=/usr/lib/jvm/java-17-openjdk-amd64
+          "${java_home}/bin/java" -version 2>&1 | grep -F '17.0.19'
+          echo "JAVA_HOME=${java_home}" >> "$GITHUB_ENV"
+          echo "${java_home}/bin" >> "$GITHUB_PATH"
 
       - name: Setup Node.js for Spectral
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: '22'
+          node-version: '22.23.2'
 
       - name: Install Spectral CLI
         run: |
@@ -850,8 +843,8 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: Install PyYAML
-        run: python -m pip install pyyaml
+      - name: Verify image-resident PyYAML
+        run: python -c "import yaml; print(yaml.__version__)"
 
       - name: Build matrix from config
         id: matrix
