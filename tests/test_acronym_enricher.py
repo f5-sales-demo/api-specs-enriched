@@ -1,4 +1,5 @@
 # Copyright (c) 2026 Robin Mordasiewicz. MIT License.
+# pylint: disable=use-implicit-booleaness-not-comparison  # Explicit empty results document the expected shape.
 
 """Unit tests for AcronymEnricher."""
 

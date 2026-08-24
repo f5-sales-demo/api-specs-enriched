@@ -1,4 +1,5 @@
 # Copyright (c) 2026 Robin Mordasiewicz. MIT License.
+# pylint: disable=broad-exception-raised,protected-access,use-implicit-booleaness-not-comparison  # Tests inject failures, inspect internals, and assert explicit shapes.
 
 """Unit tests for PercentileCollector."""
 

@@ -3,7 +3,7 @@
   "info": {
     "title": "Telemetry And Insights",
     "description": "APIs for configuring collection endpoints, metrics storage, and insight generation. Supports log aggregation, performance monitoring, and alerting integration across deployments.",
-    "version": "2026.08.20",
+    "version": "2.1.222",
     "contact": {
       "name": "F5 Distributed Cloud",
       "url": "https://docs.cloud.f5.com"
@@ -9562,7 +9562,7 @@
         "properties": {
           "port": {
             "type": "integer",
-            "description": "Port number on which the service is exposed\nRequired: YES.",
+            "description": "Port number on which the service is exposed.",
             "title": "Port",
             "format": "int64",
             "x-displayname": "Port Number.",
@@ -9579,7 +9579,7 @@
               "ves.io.schema.rules.uint32.gte": "1",
               "ves.io.schema.rules.uint32.lte": "65535"
             },
-            "x-f5xc-description-short": "Port number on which the service is exposed Required: YES.",
+            "x-f5xc-description-short": "Port number on which the service is exposed.",
             "minimum": 1,
             "maximum": 65535,
             "x-f5xc-constraints": {
@@ -9604,7 +9604,7 @@
           },
           "protocol": {
             "type": "string",
-            "description": "Protocol for the exposed service\nRequired: YES.",
+            "description": "Protocol for the exposed service.",
             "title": "Protocol",
             "x-displayname": "Protocol",
             "x-ves-example": "TCP",
@@ -9618,7 +9618,6 @@
               "ves.io.schema.rules.message.required": "true",
               "ves.io.schema.rules.string.in": "[\\\"TCP\\\",\\\"UDP\\\"]"
             },
-            "x-f5xc-description-short": "Protocol for the exposed service Required: YES.",
             "maxLength": 1024,
             "enum": [
               "TCP",
@@ -9704,7 +9703,7 @@
           },
           "endpoint_address": {
             "type": "string",
-            "description": "Endpoint address of discovered service, may be DNS name or IP address\nRequired: YES.",
+            "description": "Endpoint address of discovered service, may be DNS name or IP address.",
             "title": "Endpoint Address",
             "x-displayname": "Endpoint Address.",
             "x-ves-example": "example-service.example.amazonaws.com.",
@@ -9716,7 +9715,7 @@
             "x-validation-rules": {
               "ves.io.schema.rules.message.required": "true"
             },
-            "x-f5xc-description-short": "Endpoint address of discovered service, may be DNS name or IP address Required: YES.",
+            "x-f5xc-description-short": "Endpoint address of discovered service, may be DNS name or IP address.",
             "maxLength": 1024,
             "x-f5xc-constraints": {
               "constraintType": "string",
@@ -9737,7 +9736,7 @@
           },
           "name": {
             "type": "string",
-            "description": "Name of discovered service\nRequired: YES.",
+            "description": "Name of discovered service.",
             "title": "Service Name",
             "x-displayname": "Service",
             "x-ves-example": "Example-service.",
@@ -9749,7 +9748,6 @@
             "x-validation-rules": {
               "ves.io.schema.rules.message.required": "true"
             },
-            "x-f5xc-description-short": "Name of discovered service Required: YES.",
             "maxLength": 63,
             "x-f5xc-constraints": {
               "constraintType": "string",
@@ -9804,7 +9802,7 @@
           },
           "region": {
             "type": "string",
-            "description": "Region of discovered service\n\nRequired: YES.",
+            "description": "Region of discovered service.",
             "title": "Region",
             "x-displayname": "Region",
             "x-ves-required": "true",
@@ -9815,7 +9813,6 @@
               "ves.io.schema.rules.message.required": "true"
             },
             "x-f5xc-example": "us-west-2",
-            "x-f5xc-description-short": "Region of discovered service Required: YES.",
             "maxLength": 1024,
             "x-f5xc-constraints": {
               "constraintType": "string",
@@ -9875,7 +9872,7 @@
           },
           "vpc_id": {
             "type": "string",
-            "description": "ID of VPC to discover from\nRequired: YES.",
+            "description": "ID of VPC to discover from.",
             "title": "VPC ID",
             "maxLength": 64,
             "x-displayname": "VPC ID",
@@ -9892,7 +9889,6 @@
               "ves.io.schema.rules.string.max_len": "64",
               "ves.io.schema.rules.string.pattern": "^(vpc-)([a-z0-9]{8}|[a-z0-9]{17})$"
             },
-            "x-f5xc-description-short": "ID of VPC to discover from Required: YES.",
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "discovery",
@@ -10049,7 +10045,7 @@
           },
           "service_name": {
             "type": "string",
-            "description": "Name of the discovered service\nRequired: YES.",
+            "description": "Name of the discovered service.",
             "title": "Service Name",
             "x-displayname": "Service",
             "x-ves-example": "Example-service.",
@@ -10061,7 +10057,6 @@
             "x-validation-rules": {
               "ves.io.schema.rules.message.required": "true"
             },
-            "x-f5xc-description-short": "Name of the discovered service Required: YES.",
             "maxLength": 1024,
             "x-f5xc-constraints": {
               "constraintType": "string",
@@ -10230,7 +10225,7 @@
         "properties": {
           "name": {
             "type": "string",
-            "description": "Identifies the discovered service name\nRequired: YES.",
+            "description": "Identifies the discovered service name.",
             "title": "Service Name",
             "x-displayname": "Service Name.",
             "x-ves-example": "Vs1",
@@ -10242,7 +10237,6 @@
             "x-validation-rules": {
               "ves.io.schema.rules.message.required": "true"
             },
-            "x-f5xc-description-short": "Identifies the discovered service name Required: YES.",
             "maxLength": 63,
             "x-f5xc-constraints": {
               "constraintType": "string",
@@ -10282,7 +10276,7 @@
           },
           "namespace": {
             "type": "string",
-            "description": "Namespace of the discovered service for current request\nRequired: YES.",
+            "description": "Namespace of the discovered service for current request.",
             "title": "Namespace",
             "x-displayname": "Namespace",
             "x-ves-example": "Shared",
@@ -10294,7 +10288,7 @@
             "x-validation-rules": {
               "ves.io.schema.rules.message.required": "true"
             },
-            "x-f5xc-description-short": "Namespace of the discovered service for current request Required: YES.",
+            "x-f5xc-description-short": "Namespace of the discovered service for current request.",
             "maxLength": 63,
             "x-f5xc-constraints": {
               "constraintType": "string",
@@ -10445,7 +10439,7 @@
         "properties": {
           "name": {
             "type": "string",
-            "description": "Identifies the discovered service name\nRequired: YES.",
+            "description": "Identifies the discovered service name.",
             "title": "Service Name",
             "x-displayname": "Service Name.",
             "x-ves-example": "Vs1",
@@ -10457,7 +10451,6 @@
             "x-validation-rules": {
               "ves.io.schema.rules.message.required": "true"
             },
-            "x-f5xc-description-short": "Identifies the discovered service name Required: YES.",
             "maxLength": 63,
             "x-f5xc-constraints": {
               "constraintType": "string",
@@ -10497,7 +10490,7 @@
           },
           "namespace": {
             "type": "string",
-            "description": "Namespace of the discovered service for current request\nRequired: YES.",
+            "description": "Namespace of the discovered service for current request.",
             "title": "Namespace",
             "x-displayname": "Namespace",
             "x-ves-example": "Shared",
@@ -10509,7 +10502,7 @@
             "x-validation-rules": {
               "ves.io.schema.rules.message.required": "true"
             },
-            "x-f5xc-description-short": "Namespace of the discovered service for current request Required: YES.",
+            "x-f5xc-description-short": "Namespace of the discovered service for current request.",
             "maxLength": 63,
             "x-f5xc-constraints": {
               "constraintType": "string",
@@ -10692,7 +10685,7 @@
         "properties": {
           "name": {
             "type": "string",
-            "description": "Identifies the discovered service name\nRequired: YES.",
+            "description": "Identifies the discovered service name.",
             "title": "Service Name",
             "x-displayname": "Service Name.",
             "x-ves-example": "Vs1",
@@ -10704,7 +10697,6 @@
             "x-validation-rules": {
               "ves.io.schema.rules.message.required": "true"
             },
-            "x-f5xc-description-short": "Identifies the discovered service name Required: YES.",
             "maxLength": 63,
             "x-f5xc-constraints": {
               "constraintType": "string",
@@ -10744,7 +10736,7 @@
           },
           "namespace": {
             "type": "string",
-            "description": "Namespace of the discovered service for current request\nRequired: YES.",
+            "description": "Namespace of the discovered service for current request.",
             "title": "Namespace",
             "x-displayname": "Namespace",
             "x-ves-example": "Shared",
@@ -10756,7 +10748,7 @@
             "x-validation-rules": {
               "ves.io.schema.rules.message.required": "true"
             },
-            "x-f5xc-description-short": "Namespace of the discovered service for current request Required: YES.",
+            "x-f5xc-description-short": "Namespace of the discovered service for current request.",
             "maxLength": 63,
             "x-f5xc-constraints": {
               "constraintType": "string",
@@ -10970,7 +10962,7 @@
           "system_metadata": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType"
+                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType__ves_io_schema_api_sec_api_crawler"
               }
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
@@ -11063,7 +11055,7 @@
           },
           "domain": {
             "type": "string",
-            "description": "Required: YES.",
+            "description": "Domain name for routing and identification",
             "title": "Domain",
             "x-displayname": "Domain",
             "x-ves-example": "www.example.com.",
@@ -11077,6 +11069,7 @@
               "ves.io.schema.rules.message.required": "true",
               "ves.io.schema.rules.string.vh_domain": "true"
             },
+            "x-f5xc-description-short": "Domain name for routing and identification.",
             "maxLength": 1024,
             "x-f5xc-constraints": {
               "constraintType": "string",
@@ -11155,7 +11148,7 @@
           },
           "name": {
             "type": "string",
-            "description": "The configuration object will be created with name. It has to be unique within the namespace.\nThe value of name has to follow DNS-1035 format.\nRequired: YES.",
+            "description": "The configuration object will be created with name. It has to be unique within the namespace.\nThe value of name has to follow DNS-1035 format.",
             "title": "name",
             "x-displayname": "Name",
             "x-ves-example": "Example-corp-web.",
@@ -11168,7 +11161,7 @@
               "ves.io.schema.rules.message.required": "true"
             },
             "x-f5xc-description-short": "The configuration object will be created with name. It has to be unique within the namespace.",
-            "x-f5xc-description-medium": "The configuration object will be created with name. It has to be unique within the namespace. The value of name has to follow DNS-1035 format. Required: YES.",
+            "x-f5xc-description-medium": "The configuration object will be created with name. It has to be unique within the namespace. The value of name has to follow DNS-1035 format.",
             "maxLength": 63,
             "x-f5xc-constraints": {
               "constraintType": "string",
@@ -11386,7 +11379,7 @@
           },
           "service_name": {
             "type": "string",
-            "description": "Name of the discovered service\nRequired: YES.",
+            "description": "Name of the discovered service.",
             "title": "Service Name",
             "x-displayname": "Service",
             "x-ves-example": "Example-service.",
@@ -11398,7 +11391,6 @@
             "x-validation-rules": {
               "ves.io.schema.rules.message.required": "true"
             },
-            "x-f5xc-description-short": "Name of the discovered service Required: YES.",
             "maxLength": 1024,
             "x-f5xc-constraints": {
               "constraintType": "string",
@@ -11461,7 +11453,7 @@
             "description": "Errors(if any) while listing items from collection.",
             "title": "errors",
             "items": {
-              "$ref": "#/components/schemas/schemaErrorType"
+              "$ref": "#/components/schemas/schemaErrorType__ves_io_schema_ai_assistant"
             },
             "x-displayname": "Errors",
             "x-f5xc-description-short": "Errors(if any) while listing items from collection.",
@@ -11752,7 +11744,7 @@
           "system_metadata": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType"
+                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType__ves_io_schema_api_sec_api_crawler"
               }
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
@@ -11877,7 +11869,7 @@
             "description": "Errors(if any) while listing items from collection.",
             "title": "errors",
             "items": {
-              "$ref": "#/components/schemas/schemaErrorType"
+              "$ref": "#/components/schemas/schemaErrorType__ves_io_schema_ai_assistant"
             },
             "x-displayname": "Errors",
             "x-f5xc-description-short": "Errors(if any) while listing items from collection.",
@@ -12185,7 +12177,7 @@
           "system_metadata": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType"
+                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType__ves_io_schema_api_sec_api_crawler"
               }
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
@@ -12345,7 +12337,7 @@
           },
           "nginx_one_object_id": {
             "type": "string",
-            "description": "ID of the NGINX Instance or Config Sync Group\nRequired: YES.",
+            "description": "ID of the NGINX Instance or Config Sync Group.",
             "title": "NGINX Instance or Config Sync Group ID",
             "maxLength": 256,
             "x-displayname": "Instance or Config Sync Group Object ID.",
@@ -12362,7 +12354,7 @@
               "ves.io.schema.rules.string.max_bytes": "256",
               "ves.io.schema.rules.string.not_empty": "true"
             },
-            "x-f5xc-description-short": "ID of the NGINX Instance or Config Sync Group Required: YES.",
+            "x-f5xc-description-short": "ID of the NGINX Instance or Config Sync Group.",
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "discovery",
@@ -12435,7 +12427,7 @@
           },
           "port": {
             "type": "integer",
-            "description": "Port number on which the Server is exposed\nRequired: YES.",
+            "description": "Port number on which the Server is exposed.",
             "title": "Port",
             "format": "int64",
             "x-displayname": "Port",
@@ -12452,7 +12444,7 @@
               "ves.io.schema.rules.uint32.gte": "1",
               "ves.io.schema.rules.uint32.lte": "65535"
             },
-            "x-f5xc-description-short": "Port number on which the Server is exposed Required: YES.",
+            "x-f5xc-description-short": "Port number on which the Server is exposed.",
             "minimum": 1,
             "maximum": 65535,
             "x-f5xc-constraints": {
@@ -12477,7 +12469,7 @@
           },
           "server_block": {
             "type": "string",
-            "description": "Server Block Name\nRequired: YES.",
+            "description": "Server Block Name.",
             "title": "Server Block Name",
             "maxLength": 256,
             "x-displayname": "Server Block Name.",
@@ -12666,7 +12658,7 @@
           },
           "certificates": {
             "type": "array",
-            "description": "Select a certificate\n\nRequired: YES.",
+            "description": "Select a certificate.",
             "title": "TLS Certificate",
             "maxItems": 1,
             "items": {
@@ -13012,7 +13004,7 @@
           "advertise_custom": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/viewsAdvertiseCustom"
+                "$ref": "#/components/schemas/viewsAdvertiseCustom__ves_io_schema_discovered_service"
               }
             ],
             "x-f5xc-description-short": "Configuration parameter for advertise custom.",
@@ -13044,7 +13036,7 @@
           },
           "domain": {
             "type": "string",
-            "description": "Required: YES.",
+            "description": "Domain name for routing and identification",
             "title": "Domain",
             "x-displayname": "Domain",
             "x-ves-example": "www.example.com.",
@@ -13058,6 +13050,7 @@
               "ves.io.schema.rules.message.required": "true",
               "ves.io.schema.rules.string.vh_domain": "true"
             },
+            "x-f5xc-description-short": "Domain name for routing and identification.",
             "maxLength": 1024,
             "x-f5xc-constraints": {
               "constraintType": "string",
@@ -13120,7 +13113,7 @@
           },
           "name": {
             "type": "string",
-            "description": "The configuration object will be created with name. It has to be unique within the namespace.\nThe value of name has to follow DNS-1035 format.\nRequired: YES.",
+            "description": "The configuration object will be created with name. It has to be unique within the namespace.\nThe value of name has to follow DNS-1035 format.",
             "title": "name",
             "x-displayname": "Name",
             "x-ves-example": "Example-corp-web.",
@@ -13133,7 +13126,7 @@
               "ves.io.schema.rules.message.required": "true"
             },
             "x-f5xc-description-short": "The configuration object will be created with name. It has to be unique within the namespace.",
-            "x-f5xc-description-medium": "The configuration object will be created with name. It has to be unique within the namespace. The value of name has to follow DNS-1035 format. Required: YES.",
+            "x-f5xc-description-medium": "The configuration object will be created with name. It has to be unique within the namespace. The value of name has to follow DNS-1035 format.",
             "maxLength": 63,
             "x-f5xc-constraints": {
               "constraintType": "string",
@@ -13354,7 +13347,7 @@
         "properties": {
           "bigip_version": {
             "type": "string",
-            "description": "Version of the BIG-IP from where the service was discovered\n\nRequired: YES.",
+            "description": "Version of the BIG-IP from where the service was discovered.",
             "title": "BIG-IP version",
             "maxLength": 256,
             "x-displayname": "BIG-IP Version.",
@@ -13367,7 +13360,7 @@
               "ves.io.schema.rules.message.required": "true",
               "ves.io.schema.rules.string.max_len": "256"
             },
-            "x-f5xc-description-short": "Version of the BIG-IP from where the service was discovered Required: YES.",
+            "x-f5xc-description-short": "Version of the BIG-IP from where the service was discovered.",
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "discovery",
@@ -13388,7 +13381,7 @@
           },
           "cbip_cluster": {
             "type": "string",
-            "description": "Name of CBIP Cluster.\n\nRequired: YES.",
+            "description": "Name of CBIP Cluster.",
             "title": "CBIP Cluster Name",
             "maxLength": 256,
             "x-displayname": "CBIP Cluster Name.",
@@ -13459,7 +13452,7 @@
           },
           "ip_address": {
             "type": "string",
-            "description": "IP address of the BIG-IP Virtual Server\n\nRequired: YES.",
+            "description": "IP address of the BIG-IP Virtual Server.",
             "title": "Virtual Server IP Address",
             "x-displayname": "Virtual Server IP.",
             "x-ves-required": "true",
@@ -13472,7 +13465,7 @@
               "ves.io.schema.rules.string.ip": "true"
             },
             "x-f5xc-example": "192.0.2.1",
-            "x-f5xc-description-short": "IP address of the BIG-IP Virtual Server Required: YES.",
+            "x-f5xc-description-short": "IP address of the BIG-IP Virtual Server.",
             "maxLength": 1024,
             "x-f5xc-constraints": {
               "constraintType": "string",
@@ -13498,7 +13491,7 @@
           },
           "partition": {
             "type": "string",
-            "description": "Partition of virtual-server\n\nRequired: YES.",
+            "description": "Partition of virtual-server.",
             "title": "partition",
             "maxLength": 256,
             "x-displayname": "Partition",
@@ -13511,7 +13504,6 @@
               "ves.io.schema.rules.message.required": "true",
               "ves.io.schema.rules.string.max_len": "256"
             },
-            "x-f5xc-description-short": "Partition of virtual-server Required: YES.",
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "discovery",
@@ -14022,7 +14014,7 @@
         "properties": {
           "port": {
             "type": "integer",
-            "description": "Port number on which the service is exposed\nRequired: YES.",
+            "description": "Port number on which the service is exposed.",
             "title": "Port",
             "format": "int64",
             "x-displayname": "Port number.",
@@ -14039,7 +14031,7 @@
               "ves.io.schema.rules.uint32.gte": "1",
               "ves.io.schema.rules.uint32.lte": "65535"
             },
-            "x-f5xc-description-short": "Port number on which the service is exposed Required: YES.",
+            "x-f5xc-description-short": "Port number on which the service is exposed.",
             "minimum": 1,
             "maximum": 65535,
             "x-f5xc-constraints": {
@@ -14064,7 +14056,7 @@
           },
           "protocol": {
             "type": "string",
-            "description": "Protocol on which the service is exposed\nRequired: YES.",
+            "description": "Protocol on which the service is exposed.",
             "title": "Protocol",
             "x-displayname": "Protocol",
             "x-ves-example": "TCP",
@@ -14076,7 +14068,7 @@
             "x-validation-rules": {
               "ves.io.schema.rules.message.required": "true"
             },
-            "x-f5xc-description-short": "Protocol on which the service is exposed Required: YES.",
+            "x-f5xc-description-short": "Protocol on which the service is exposed.",
             "maxLength": 1024,
             "x-f5xc-constraints": {
               "constraintType": "string",
@@ -14097,7 +14089,7 @@
           },
           "target_port": {
             "type": "integer",
-            "description": "Port on which the pods targeted by the service can be reached.\nTargetPort of Kubernetes service when its type is ClusterIP.\nNodePort of Kubernetes service when its type is NodePort.\nRequired: YES.",
+            "description": "Port on which the pods targeted by the service can be reached.\nTargetPort of Kubernetes service when its type is ClusterIP.\nNodePort of Kubernetes service when its type is NodePort.",
             "title": "Target Port",
             "format": "int64",
             "x-displayname": "Target Port number.",
@@ -14828,7 +14820,7 @@
           }
         }
       },
-      "schemaErrorType": {
+      "schemaErrorType__ves_io_schema_ai_assistant": {
         "type": "object",
         "description": "Information about a error in API operation.",
         "title": "ErrorType",
@@ -14999,7 +14991,7 @@
           }
         }
       },
-      "schemaInitializersType": {
+      "schemaInitializersType__ves_io_schema_api_sec_api_crawler": {
         "type": "object",
         "description": "Initializers tracks the progress of initialization of a configuration object.",
         "title": "InitializersType",
@@ -15275,7 +15267,7 @@
           },
           "name": {
             "type": "string",
-            "description": "This is the name of configuration object. It has to be unique within the namespace.\nIt can only be specified during create API and cannot be changed during replace API.\nThe value of name has to follow DNS-1035 format.\nRequired: YES.",
+            "description": "This is the name of configuration object. It has to be unique within the namespace.\nIt can only be specified during create API and cannot be changed during replace API.\nThe value of name has to follow DNS-1035 format.",
             "title": "name",
             "x-displayname": "Name",
             "x-ves-example": "Example-corp-web.",
@@ -15797,7 +15789,7 @@
           }
         }
       },
-      "schemaSystemObjectGetMetaType": {
+      "schemaSystemObjectGetMetaType__ves_io_schema_api_sec_api_crawler": {
         "type": "object",
         "description": "SystemObjectGetMetaType is metadata generated or populated by the system for all persisted objects and\ncannot be updated directly by users.",
         "title": "SystemObjectGetMetaType",
@@ -15935,7 +15927,7 @@
           "initializers": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/schemaInitializersType"
+                "$ref": "#/components/schemas/schemaInitializersType__ves_io_schema_api_sec_api_crawler"
               }
             ],
             "x-f5xc-description-short": "Configuration parameter for initializers.",
@@ -16757,7 +16749,7 @@
         "properties": {
           "site": {
             "type": "array",
-            "description": "Reference to site object\n\nRequired: YES.",
+            "description": "Reference to site object.",
             "title": "Site",
             "maxItems": 1,
             "items": {
@@ -16830,7 +16822,7 @@
         "properties": {
           "virtual_site": {
             "type": "array",
-            "description": "Reference to virtual site object\n\nRequired: YES.",
+            "description": "Reference to virtual site object.",
             "title": "Virtual Site",
             "maxItems": 1,
             "items": {
@@ -16846,7 +16838,6 @@
               "ves.io.schema.rules.message.required": "true",
               "ves.io.schema.rules.repeated.max_items": "1"
             },
-            "x-f5xc-description-short": "Reference to virtual site object Required: YES.",
             "x-f5xc-constraints": {
               "constraintType": "array",
               "category": "discovery",
@@ -16904,7 +16895,7 @@
         "properties": {
           "name": {
             "type": "string",
-            "description": "When a configuration object(e.g. Virtual_host) refers to another(e.g route)\nthen name will hold the referred object's(e.g. Route's) name.\nRequired: YES.",
+            "description": "When a configuration object(e.g. Virtual_host) refers to another(e.g route)\nthen name will hold the referred object's(e.g. Route's) name.",
             "title": "name",
             "minLength": 1,
             "maxLength": 128,
@@ -16923,7 +16914,7 @@
               "ves.io.schema.rules.string.min_bytes": "1"
             },
             "x-f5xc-description-short": "When a configuration object(e.g. Virtual_host) refers to another(e.g route) then name will hold the referred object's(e.g.",
-            "x-f5xc-description-medium": "When a configuration object(e.g. Virtual_host) refers to another(e.g route) then name will hold the referred object's(e.g. Route's) name. Required: YES.",
+            "x-f5xc-description-medium": "When a configuration object(e.g. Virtual_host) refers to another(e.g route) then name will hold the referred object's(e.g. Route's) name.",
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "discovery",
@@ -17264,7 +17255,7 @@
           }
         }
       },
-      "viewsAdvertiseCustom": {
+      "viewsAdvertiseCustom__ves_io_schema_discovered_service": {
         "type": "object",
         "description": "This defines a way to advertise a VIP on specific sites.",
         "title": "AdvertiseWhere",
@@ -17273,12 +17264,12 @@
         "properties": {
           "advertise_where": {
             "type": "array",
-            "description": "Where should this load balancer be available\n\nRequired: YES.",
+            "description": "Where should this load balancer be available.",
             "title": "Advertise Where",
             "minItems": 1,
             "maxItems": 32,
             "items": {
-              "$ref": "#/components/schemas/viewsWhereType"
+              "$ref": "#/components/schemas/viewsWhereType__ves_io_schema_discovered_service"
             },
             "x-displayname": "List of Sites to Advertise.",
             "x-ves-required": "true",
@@ -17294,7 +17285,7 @@
               "ves.io.schema.rules.repeated.min_items": "1",
               "ves.io.schema.rules.repeated.unique": "true"
             },
-            "x-f5xc-description-short": "Where should this load balancer be available Required: YES.",
+            "x-f5xc-description-short": "Where should this load balancer be available.",
             "x-f5xc-constraints": {
               "constraintType": "array",
               "category": "discovery",
@@ -17488,7 +17479,7 @@
           }
         }
       },
-      "viewsWhereType": {
+      "viewsWhereType__ves_io_schema_discovered_service": {
         "type": "object",
         "description": "This defines various OPTIONS where a Loadbalancer could be advertised.",
         "title": "WhereType",
@@ -19159,7 +19150,7 @@
           },
           "field_selector": {
             "type": "array",
-            "description": "Select fields to be returned in the response.\n\nRequired: YES.",
+            "description": "Select fields to be returned in the response.",
             "title": "Field Selector",
             "minItems": 1,
             "maxItems": 8,
@@ -19180,7 +19171,7 @@
               "ves.io.schema.rules.repeated.min_items": "1",
               "ves.io.schema.rules.repeated.unique": "true"
             },
-            "x-f5xc-description-short": "Select fields to be returned in the response. Required: YES.",
+            "x-f5xc-description-short": "Select fields to be returned in the response.",
             "x-f5xc-constraints": {
               "constraintType": "array",
               "category": "discovery",
@@ -19484,7 +19475,7 @@
           },
           "field_selector": {
             "type": "array",
-            "description": "Select fields to be returned in the response.\n\nRequired: YES.",
+            "description": "Select fields to be returned in the response.",
             "title": "Field Selector",
             "minItems": 1,
             "maxItems": 8,
@@ -19505,7 +19496,7 @@
               "ves.io.schema.rules.repeated.min_items": "1",
               "ves.io.schema.rules.repeated.unique": "true"
             },
-            "x-f5xc-description-short": "Select fields to be returned in the response. Required: YES.",
+            "x-f5xc-description-short": "Select fields to be returned in the response.",
             "x-f5xc-constraints": {
               "constraintType": "array",
               "category": "discovery",
@@ -22348,7 +22339,7 @@
         "properties": {
           "app_type": {
             "type": "string",
-            "description": "Application type associated with the service instance\nRequired: YES.",
+            "description": "Application type associated with the service instance.",
             "title": "App Type",
             "x-displayname": "App Type",
             "x-ves-example": "Example-app.",
@@ -22360,7 +22351,7 @@
             "x-validation-rules": {
               "ves.io.schema.rules.message.required": "true"
             },
-            "x-f5xc-description-short": "Application type associated with the service instance Required: YES.",
+            "x-f5xc-description-short": "Application type associated with the service instance.",
             "maxLength": 1024,
             "x-f5xc-constraints": {
               "constraintType": "string",
@@ -22381,7 +22372,7 @@
           },
           "instance": {
             "type": "string",
-            "description": "Name of the service instance\nRequired: YES.",
+            "description": "Name of the service instance.",
             "title": "Instance",
             "x-displayname": "Instance",
             "x-ves-example": "Productpage-abc.",
@@ -22393,7 +22384,6 @@
             "x-validation-rules": {
               "ves.io.schema.rules.message.required": "true"
             },
-            "x-f5xc-description-short": "Name of the service instance Required: YES.",
             "maxLength": 1024,
             "x-f5xc-constraints": {
               "constraintType": "string",
@@ -22414,7 +22404,7 @@
           },
           "service": {
             "type": "string",
-            "description": "Network name or name of the virtual service\nRequired: YES.",
+            "description": "Network name or name of the virtual service.",
             "title": "Service",
             "x-displayname": "Service",
             "x-ves-example": "S:productpage.",
@@ -22426,7 +22416,7 @@
             "x-validation-rules": {
               "ves.io.schema.rules.message.required": "true"
             },
-            "x-f5xc-description-short": "Network name or name of the virtual service Required: YES.",
+            "x-f5xc-description-short": "Network name or name of the virtual service.",
             "maxLength": 1024,
             "x-f5xc-constraints": {
               "constraintType": "string",
@@ -22473,7 +22463,7 @@
           },
           "virtual_host": {
             "type": "string",
-            "description": "Virtual host associated with the service instance\nRequired: YES.",
+            "description": "Virtual host associated with the service instance.",
             "title": "Virtual Host",
             "x-displayname": "Virtual Host.",
             "x-ves-example": "Productpage.",
@@ -22485,7 +22475,7 @@
             "x-validation-rules": {
               "ves.io.schema.rules.message.required": "true"
             },
-            "x-f5xc-description-short": "Virtual host associated with the service instance Required: YES.",
+            "x-f5xc-description-short": "Virtual host associated with the service instance.",
             "maxLength": 1024,
             "x-f5xc-constraints": {
               "constraintType": "string",
@@ -25118,7 +25108,7 @@
           },
           "label_filter": {
             "type": "array",
-            "description": "List of label filter expressions of the form \"label key\" QueryOp \"value\".\nResponse will only contain data that matches all the conditions specified in the label_filter.\nFor cacheable content, user should specify LABEL_VHOST_CACHE & LABEL_VHOST in the label_filter\n\nRequired: YES.",
+            "description": "List of label filter expressions of the form \"label key\" QueryOp \"value\".\nResponse will only contain data that matches all the conditions specified in the label_filter.\nFor cacheable content, user should specify LABEL_VHOST_CACHE & LABEL_VHOST in the label_filter.",
             "title": "Label Filter",
             "minItems": 1,
             "maxItems": 16,
@@ -25140,7 +25130,7 @@
               "ves.io.schema.rules.repeated.unique": "true"
             },
             "x-f5xc-description-short": "List of label filter expressions of the form \"label key\" QueryOp \"value\".",
-            "x-f5xc-description-medium": "List of label filter expressions of the form \"label key\" QueryOp \"value\". Response will only contain data that matches all the conditions specified in the label_filter. For cacheable content, user should specify LABEL_VHOST_CACHE & LABEL_VHOST in the label_filter Required: YES.",
+            "x-f5xc-description-medium": "List of label filter expressions of the form \"label key\" QueryOp \"value\". Response will only contain data that matches all the conditions specified in the label_filter. For cacheable content, user should specify LABEL_VHOST_CACHE & LABEL_VHOST in the label_filter.",
             "x-f5xc-constraints": {
               "constraintType": "array",
               "category": "discovery",
@@ -26426,7 +26416,7 @@
           },
           "service": {
             "type": "string",
-            "description": "Network name or name of the virtual service\nRequired: YES.",
+            "description": "Network name or name of the virtual service.",
             "title": "Service",
             "x-displayname": "Service",
             "x-ves-example": "S:productpage.",
@@ -26438,7 +26428,7 @@
             "x-validation-rules": {
               "ves.io.schema.rules.message.required": "true"
             },
-            "x-f5xc-description-short": "Network name or name of the virtual service Required: YES.",
+            "x-f5xc-description-short": "Network name or name of the virtual service.",
             "maxLength": 1024,
             "x-f5xc-constraints": {
               "constraintType": "string",
@@ -26511,7 +26501,7 @@
           },
           "virtual_host": {
             "type": "string",
-            "description": "Virtual host associated with the service\nRequired: YES.",
+            "description": "Virtual host associated with the service.",
             "title": "Virtual Host",
             "x-displayname": "Virtual Host.",
             "x-ves-example": "Productpage.",
@@ -26523,7 +26513,7 @@
             "x-validation-rules": {
               "ves.io.schema.rules.message.required": "true"
             },
-            "x-f5xc-description-short": "Virtual host associated with the service Required: YES.",
+            "x-f5xc-description-short": "Virtual host associated with the service.",
             "maxLength": 1024,
             "x-f5xc-constraints": {
               "constraintType": "string",
@@ -26602,7 +26592,7 @@
           "error": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/schemaErrorType"
+                "$ref": "#/components/schemas/schemaErrorType__ves_io_schema_ai_assistant"
               }
             ],
             "x-f5xc-required-for": {

@@ -1,4 +1,5 @@
 """Regression coverage for reserved documentation example values."""
+# pylint: disable=use-implicit-booleaness-not-comparison  # Explicit empty results document the expected shape.
 
 from __future__ import annotations
 

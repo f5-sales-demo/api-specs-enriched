@@ -15,6 +15,7 @@ from scripts.utils.extension_constants import X_F5XC_CE_AUTOMATION_CONTRACT
 from scripts.utils.interface_contract_enricher import (
     InterfaceContractEnricher,
     InterfaceContractValidationError,
+    validate_aws_telemetry_intake,
 )
 
 
@@ -286,3 +287,40 @@ def test_rejects_unsanitized_aws_evidence(tmp_path: Path, contract_config: dict[
     _contract(invalid)["providers"]["aws"]["evidence"]["receipts"][0]["sanitized"] = False
     with pytest.raises(InterfaceContractValidationError, match="evidence receipt is invalid"):
         InterfaceContractEnricher(_write_config(tmp_path, invalid))
+
+
+def test_aws_telemetry_intake_accepts_complete_required_observations(
+    contract_config: dict[str, Any],
+) -> None:
+    intake = copy.deepcopy(_contract(contract_config)["providers"]["aws"]["telemetry_intake"])
+    intake["availability"] = "available"
+    intake["observed_facts"] = list(intake["required_facts"])
+    intake["unavailable_facts"] = []
+    intake["complete"] = True
+    assert validate_aws_telemetry_intake(intake) is True
+
+
+@pytest.mark.parametrize(
+    "mutation",
+    [
+        lambda intake: intake["required_facts"].remove("runtime"),
+        lambda intake: intake["observed_facts"].append("runtime"),
+        lambda intake: intake.update({"complete": True}),
+        lambda intake: intake.update({"schema_id": "unknown/v1"}),
+        lambda intake: intake.update(
+            {
+                "availability": "available",
+                "observed_facts": list(intake["required_facts"]),
+                "unavailable_facts": ["additional_demonstrated_fact"],
+                "complete": True,
+            }
+        ),
+    ],
+)
+def test_aws_telemetry_intake_fails_closed(
+    contract_config: dict[str, Any], mutation: Mutation
+) -> None:
+    intake = copy.deepcopy(_contract(contract_config)["providers"]["aws"]["telemetry_intake"])
+    mutation(intake)
+    with pytest.raises(InterfaceContractValidationError):
+        validate_aws_telemetry_intake(intake)

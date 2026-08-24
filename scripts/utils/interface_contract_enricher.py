@@ -31,10 +31,58 @@ STABLE_IDENTITY_FIELDS = frozenset(
         "control_plane_interface_reference",
     }
 )
+AWS_TELEMETRY_SCHEMA_ID = "f5xc-smsv2-aws-tgw-telemetry/v1"
+AWS_REQUIRED_TELEMETRY_FACTS = frozenset(
+    {"runtime", "gre", "bgp", "mtu", "route", "bgp_inside_cidr_block"}
+)
 
 
 class InterfaceContractValidationError(ValueError):
     """Raised when an interface contract would be unsafe to publish."""
+
+
+def validate_aws_telemetry_intake(intake: object) -> bool:
+    """Validate the fail-closed AWS TGW observation boundary.
+
+    Returns the validated completion state so configured contracts and immutable
+    release assets use exactly the same decision.
+    """
+    if not isinstance(intake, dict):
+        raise InterfaceContractValidationError("AWS telemetry intake must be an object")
+    if intake.get("schema_id") != AWS_TELEMETRY_SCHEMA_ID:
+        raise InterfaceContractValidationError("AWS telemetry intake schema identity is invalid")
+    availability = intake.get("availability")
+    complete = intake.get("complete")
+    if availability not in CAPABILITY_STATES or not isinstance(complete, bool):
+        raise InterfaceContractValidationError("AWS telemetry intake state is malformed")
+
+    def fact_set(field: str) -> set[str]:
+        value = intake.get(field)
+        if (
+            not isinstance(value, list)
+            or any(not isinstance(item, str) or not item for item in value)
+            or len(value) != len(set(value))
+        ):
+            raise InterfaceContractValidationError(
+                f"AWS telemetry intake {field} must be a unique string list"
+            )
+        return set(value)
+
+    required = fact_set("required_facts")
+    observed = fact_set("observed_facts")
+    unavailable = fact_set("unavailable_facts")
+    if not AWS_REQUIRED_TELEMETRY_FACTS.issubset(required):
+        raise InterfaceContractValidationError("AWS telemetry intake lacks required observations")
+    if observed & unavailable:
+        raise InterfaceContractValidationError(
+            "AWS telemetry observed and unavailable facts must be disjoint"
+        )
+    derived_complete = (
+        availability == "available" and required.issubset(observed) and not unavailable
+    )
+    if complete != derived_complete:
+        raise InterfaceContractValidationError("AWS telemetry intake completion is inconsistent")
+    return complete
 
 
 @dataclass
@@ -180,20 +228,36 @@ class InterfaceContractEnricher:
             )
         required_capabilities = {
             "aws_ce_create": "available" if availability == "evidence_backed" else "unavailable",
-            "runtime_status": "unavailable",
-            "tgw_connect": "unavailable",
         }
         if (
             any(capabilities.get(name) != state for name, state in required_capabilities.items())
+            or not {"runtime_status", "tgw_connect"}.issubset(capabilities)
             or not set(capabilities.values()) <= CAPABILITY_STATES
             or any(
                 state != "unavailable"
                 for name, state in capabilities.items()
-                if name not in required_capabilities
+                if name not in set(required_capabilities) | {"runtime_status", "tgw_connect"}
             )
         ):
             raise InterfaceContractValidationError(
                 f"{resource}: AWS capability model must fail closed"
+            )
+
+        telemetry_complete = validate_aws_telemetry_intake(profile.get("telemetry_intake"))
+        runtime_available = capabilities["runtime_status"] == "available"
+        tgw_available = capabilities["tgw_connect"] == "available"
+        if runtime_available and not telemetry_complete:
+            raise InterfaceContractValidationError(
+                f"{resource}: AWS runtime availability requires completed telemetry intake"
+            )
+        if tgw_available and not (runtime_available and telemetry_complete):
+            raise InterfaceContractValidationError(
+                f"{resource}: AWS capability model must fail closed; TGW availability "
+                "requires runtime and completed telemetry"
+            )
+        if profile.get("prohibited_legacy_apis") != ["aws_vpc_site", "aws_tgw_site"]:
+            raise InterfaceContractValidationError(
+                f"{resource}: legacy AWS site APIs must remain prohibited"
             )
 
         unsupported = profile.get("unavailable_capabilities")

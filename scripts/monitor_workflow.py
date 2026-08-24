@@ -306,10 +306,10 @@ def get_remediation_suggestion(failure: WorkflowFailure) -> str:
     """Generate remediation suggestion based on failure category."""
     suggestions = {
         "download": """
-- Check if F5 API endpoint is accessible
-- Verify ETag caching is working correctly
+- Check whether the pinned upstream GitHub release and asset are accessible
+- Verify the release asset digest matches the immutable receipt
 - Check network connectivity and rate limits
-- Try `make download-force` to bypass cache
+- Try `make download-force` to refresh the same release identity
 """,
         "enrichment": """
 - Check `config/enrichment.yaml` for syntax errors
@@ -327,7 +327,7 @@ def get_remediation_suggestion(failure: WorkflowFailure) -> str:
 - Check for merge conflicts
 - Verify branch protection rules
 - Ensure GITHUB_TOKEN has sufficient permissions
-- Check if `.version` or `.etag` have conflicts
+- Verify `.github_release` contains the immutable upstream release receipt
 """,
         "release": """
 - Verify version bumping logic

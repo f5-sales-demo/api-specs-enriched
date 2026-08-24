@@ -1,4 +1,5 @@
 """Tests for SchemaOverrideEnricher."""
+# pylint: disable=protected-access  # Tests intentionally verify deterministic internal helpers.
 
 from __future__ import annotations
 

@@ -25,6 +25,7 @@ import httpx
 from deepdiff import DeepDiff
 
 from scripts.utils.additive_allowlist import is_additive_change
+from scripts.utils.canonical_merge import canonical_merge_sources
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Sequence
@@ -257,37 +258,7 @@ def _merge_specs(
         A single dict with unioned top-level maps. Uses recursive
         union merge (superset of all sources) to match the pipeline.
     """
-
-    def _union(target: dict, source: dict) -> None:
-        for key, value in source.items():
-            if key not in target:
-                target[key] = value
-            elif isinstance(value, dict) and isinstance(target[key], dict):
-                if "$ref" not in target[key] and "$ref" not in value:
-                    _union(target[key], value)
-            elif isinstance(value, list) and isinstance(target[key], list) and key == "enum":
-                existing = {str(v) for v in target[key]}
-                for item in value:
-                    if str(item) not in existing:
-                        target[key].append(item)
-                        existing.add(str(item))
-
-    merged: dict[str, Any] = {}
-    merged_components: dict[str, Any] = {}
-    for _filename, spec in specs:
-        for key in _MERGE_KEYS:
-            if key in spec and isinstance(spec[key], dict):
-                target = merged.setdefault(key, {})
-                _union(target, spec[key])
-        components = spec.get("components") or {}
-        if isinstance(components, dict):
-            for bucket in _COMPONENT_MERGE_KEYS:
-                if bucket in components and isinstance(components[bucket], dict):
-                    target_bucket = merged_components.setdefault(bucket, {})
-                    _union(target_bucket, components[bucket])
-    if merged_components:
-        merged["components"] = merged_components
-    return merged
+    return canonical_merge_sources(specs).merged
 
 
 def _load_specs_from_dir(spec_dir: Path) -> list[tuple[str, dict]]:
@@ -329,9 +300,20 @@ def run_directory_diff(
     the two aggregates.
     """
     input_specs = _load_specs_from_dir(input_dir)
-    output_specs = _load_specs_from_dir(output_dir)
+    canonical_output = output_dir / "openapi.json"
+    if canonical_output.is_file():
+        output_specs = [(canonical_output.name, json.loads(canonical_output.read_text()))]
+    else:
+        output_specs = _load_specs_from_dir(output_dir)
     merged_input = _merge_specs(input_specs)
-    merged_output = _merge_specs(output_specs)
+    merged_output = (
+        {
+            "paths": output_specs[0][1].get("paths", {}),
+            "components": output_specs[0][1].get("components", {}),
+        }
+        if canonical_output.is_file()
+        else _merge_specs(output_specs)
+    )
     return run_contract_diff(merged_input, merged_output, known_drift=known_drift)
 
 

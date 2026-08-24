@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# pylint: disable=unsubscriptable-object,unsupported-membership-test  # Fixtures are runtime dictionaries that Pylint cannot infer.
 """
 Unit tests for ConstraintEnricher
 

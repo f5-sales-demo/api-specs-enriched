@@ -83,7 +83,9 @@ class NamespaceProfileEnricher:
     ) -> dict[str, Any]:
         """Get the full namespace profile for a resource type, merged with defaults."""
         default = self.config["default_profile"]
-        resources = self.config.get("resources", {})
+        # Verdict-only resources are authoritative too. Matching only the curated
+        # map made their schema profiles inherit a tenant domain default.
+        resources = {**self.config.get("resources", {}), **self.verdicts}
 
         lookup = resource_type
         if lookup.startswith("views_") and lookup not in resources:
@@ -125,7 +127,7 @@ class NamespaceProfileEnricher:
 
     def is_resource_explicit(self, resource_type: str) -> bool:
         """Check whether a resource has an explicit entry (curated override or verdict)."""
-        resources = self.config.get("resources", {})
+        resources = {**self.config.get("resources", {}), **self.verdicts}
         lookup = resource_type
         if lookup.startswith("views_") and lookup not in resources:
             lookup_without_views = lookup[len("views_") :]
@@ -135,7 +137,7 @@ class NamespaceProfileEnricher:
 
     def get_verification_status(self, resource_type: str) -> dict[str, Any]:
         """Get the verification metadata for a resource (verdict layered over override)."""
-        resources = self.config.get("resources", {})
+        resources = {**self.config.get("resources", {}), **self.verdicts}
         lookup = resource_type
         if lookup.startswith("views_") and lookup not in resources:
             lookup_without_views = lookup[len("views_") :]
@@ -185,7 +187,7 @@ class NamespaceProfileEnricher:
         own profile. Otherwise, inherit the domain-level default.
         """
         schemas = spec.get("components", {}).get("schemas", {})
-        resources = self.config.get("resources", {})
+        resources = {**self.config.get("resources", {}), **self.verdicts}
 
         for schema_name, schema_obj in schemas.items():
             if not isinstance(schema_obj, dict):

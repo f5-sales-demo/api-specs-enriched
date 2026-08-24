@@ -1,4 +1,5 @@
 # Copyright (c) 2026 Robin Mordasiewicz. MIT License.
+# pylint: disable=no-member,protected-access  # Runtime regex fixtures and internal helpers are intentional.
 
 """Unit tests for PropertyDescriptionShortEnricher.
 

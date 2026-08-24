@@ -48,6 +48,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import copy
 import json
 import logging
 import os
@@ -96,6 +97,7 @@ from scripts.utils import (
     OperationDescriptionEnricher,
     OperationMetadataEnricher,
     PropertyDescriptionShortEnricher,
+    ProseSpellingTransformer,
     ReadOnlyEnricher,
     ReferencesEnricher,
     ResourceExamplesEnricher,
@@ -109,6 +111,11 @@ from scripts.utils import (
 )
 from scripts.utils.batch_processor import BatchSpecProcessor
 from scripts.utils.build_stamp import artifact_timestamp
+from scripts.utils.canonical_merge import (
+    CanonicalMergeResult,
+    canonical_merge_sources,
+    rewrite_sources_with_schema_keys,
+)
 from scripts.utils.domain_metadata import (
     calculate_complexity,
     get_domain_icon,
@@ -319,6 +326,7 @@ def enrich_spec(spec: dict[str, Any], config: dict) -> tuple[dict[str, Any], dic
 
     # 1. Branding transformations first (most specific)
     spec = branding_transformer.transform_spec(spec, target_fields)
+    spec = ProseSpellingTransformer().transform_spec(spec)
 
     # 2. Description structure normalization (extract examples, validation rules)
     spec = description_structure_transformer.transform_spec(spec, target_fields)
@@ -1511,12 +1519,12 @@ def merge_specs_by_domain(
     return merged, stats
 
 
-def create_master_spec(domain_specs: dict[str, dict[str, Any]], version: str) -> dict[str, Any]:
-    """Create a master specification combining all domains.
-
-    Ensures operationId uniqueness across all domains by prefixing
-    cross-domain duplicates with the domain name.
-    """
+def create_master_spec(
+    domain_specs: dict[str, dict[str, Any]],
+    version: str,
+    canonical: CanonicalMergeResult | None = None,
+) -> dict[str, Any]:
+    """Create the master from a fail-closed canonical source graph."""
     # Load enriched description for root/master spec
     enricher = DescriptionEnricher()
     root_desc = enricher.get_description("root", tier="long")
@@ -1531,33 +1539,17 @@ def create_master_spec(domain_specs: dict[str, dict[str, Any]], version: str) ->
     master = enricher.enrich_spec(master, domain="root")
 
     all_tags = []
-    existing_operation_ids: set[str] = set()  # Track operationIds across all domains
-
-    for domain, spec in domain_specs.items():
-        # Process paths with operationId deduplication across domains
-        spec_paths = spec.get("paths", {})
-        deduplicated_paths, existing_operation_ids, _ = ensure_unique_operation_ids(
-            spec_paths,
-            existing_operation_ids,
-            domain,  # Use domain name as prefix for cross-domain deduplication
-        )
-
-        # Merge deduplicated paths
-        for path, path_item in deduplicated_paths.items():
-            if path not in master["paths"]:
-                master["paths"][path] = path_item
-
-        # Merge components (union merge for schema superset)
-        for comp_type in ["schemas", "responses", "parameters", "requestBodies"]:
-            source_comps = spec.get("components", {}).get(comp_type, {})
-            target_comps = master["components"].setdefault(comp_type, {})
-            for name, comp in source_comps.items():
-                if name not in target_comps:
-                    target_comps[name] = comp
-                elif isinstance(comp, dict) and isinstance(target_comps[name], dict):
-                    _merge_schema_union(target_comps[name], comp)
-
+    # The provider-facing master is the canonical source graph. Domain documents are
+    # documentation projections and receive domain-only enrichment, so rebuilding the
+    # master from them would make provider bytes depend on presentation categorization.
+    if canonical is None:
+        canonical = canonical_merge_sources(domain_specs)
+    source_specs = canonical.sources
+    for spec in source_specs.values():
         all_tags.extend(spec.get("tags", []))
+
+    master["paths"] = copy.deepcopy(canonical.merged["paths"])
+    master["components"] = copy.deepcopy(canonical.merged["components"])
 
     # Deduplicate tags
     seen: set[str] = set()
@@ -1686,6 +1678,42 @@ def get_version() -> str:
         # Fallback to date-based version if no tags exist
         return datetime.now(tz=timezone.utc).strftime("%Y.%m.%d")
     return version
+
+
+_NATIVE_CONTRACT_CONSTRAINTS = frozenset(
+    {"minLength", "maxLength", "minItems", "maxItems", "minimum", "maximum", "pattern"}
+)
+
+
+def restore_native_contract_constraints(
+    processed: Any, original: Any, *, mapping_container: bool = False
+) -> None:
+    """Restore upstream native bounds after documentation-only inference.
+
+    Validation enrichment may add JSON-Schema keywords for documentation. Those
+    keywords narrow generated provider validation, so canonical source graphs keep
+    exactly the upstream values while retaining prose and vendor extensions.
+    """
+    if isinstance(processed, dict) and isinstance(original, dict):
+        # A ``properties`` object may itself contain a field literally named
+        # ``pattern``/``minimum``/etc. It is a name-to-schema mapping, not a schema
+        # object, so replacing that entry would restore the complete upstream field
+        # and undo prose enrichment.
+        if not mapping_container:
+            for key in _NATIVE_CONTRACT_CONSTRAINTS:
+                if key in original:
+                    processed[key] = copy.deepcopy(original[key])
+                else:
+                    processed.pop(key, None)
+        for key in processed.keys() & original.keys():
+            restore_native_contract_constraints(
+                processed[key],
+                original[key],
+                mapping_container=key in {"properties", "schemas", "patternProperties"},
+            )
+    elif isinstance(processed, list) and isinstance(original, list):
+        for processed_item, original_item in zip(processed, original, strict=False):
+            restore_native_contract_constraints(processed_item, original_item)
 
 
 def run_pipeline(
@@ -1885,10 +1913,46 @@ def run_pipeline(
 
             profiler.checkpoint("specs_loaded_for_merge", force_gc=True)
 
+            # ValidationEnricher's native bounds are useful documentation but alter
+            # provider acceptance. Restore those keywords from the upstream graph for
+            # canonicalization, retaining the enriched graph for domain projections.
+            canonical_inputs = copy.deepcopy(processed_specs)
+            original_paths = {path.name: path for path in spec_files}
+            for filename, spec in canonical_inputs.items():
+                with original_paths[filename].open() as source_file:
+                    restore_native_contract_constraints(spec, json.load(source_file))
+
+            console.print("[blue]Canonicalizing source contracts...[/blue]")
+            canonical = canonical_merge_sources(canonical_inputs)
+            console.print(
+                "[green]Canonical accounting: "
+                f"{canonical.accounting.schema_occurrences} schema occurrences -> "
+                f"{canonical.accounting.canonical_schemas} keys; "
+                f"{canonical.accounting.operation_occurrences} operation identities -> "
+                f"{canonical.accounting.canonical_operations} operations + "
+                f"{canonical.accounting.operation_aliases} aliases[/green]"
+            )
+
+            # Native naming-constraint projection is documentation enrichment: adding
+            # or tightening JSON-Schema bounds changes generated provider validation.
+            # Apply it only to an isolated domain projection. The canonical master is
+            # emitted from ``canonical.merged`` below and therefore retains the exact
+            # processed source contract while the documentation views keep their
+            # richer validation guidance.
+            domain_sources = rewrite_sources_with_schema_keys(
+                processed_specs, canonical.schema_keys
+            )
+            schema_projector = SchemaConstraintProjector()
+            for spec in domain_sources.values():
+                schema_projector.enrich_spec(spec)
+            stats.naming_constraints_projected = schema_projector.get_stats()[
+                "properties_projected"
+            ]
+
             console.print("[blue]Merging specifications by domain...[/blue]")
             version = get_version()
 
-            domain_specs, merge_stats = merge_specs_by_domain(processed_specs, version)
+            domain_specs, merge_stats = merge_specs_by_domain(domain_sources, version)
             stats.domains_created = merge_stats["domains"]
             stats.paths_merged = merge_stats["paths"]
             stats.schemas_merged = merge_stats["schemas"]
@@ -1905,22 +1969,12 @@ def run_pipeline(
             batch_processor.cleanup_cache()
             console.print("[dim]Cache cleanup complete[/dim]")
 
-            # Project naming constraints onto standard JSON-Schema keywords as the
-            # final, authoritative step (after discovery + reconciliation), so
-            # downstream consumers can pull them without parsing x-f5xc-constraints.
-            schema_projector = SchemaConstraintProjector()
-            for spec in domain_specs.values():
-                schema_projector.enrich_spec(spec)
-            stats.naming_constraints_projected = schema_projector.get_stats()[
-                "properties_projected"
-            ]
-
             # Save domain specs
             for domain, spec in domain_specs.items():
                 save_spec(spec, output_dir / f"{domain}.json", indent=indent)
 
             # Create master spec
-            master = create_master_spec(domain_specs, version)
+            master = create_master_spec(domain_specs, version, canonical)
             save_spec(master, output_dir / "openapi.json", indent=indent)
 
             # Create index

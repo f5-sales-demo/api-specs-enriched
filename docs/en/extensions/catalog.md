@@ -563,6 +563,18 @@ stubby as long as the `### x-name` header exists and the
 
 ## Injected — operation-level
 
+### x-f5xc-operation-aliases
+
+- **Applied at:** operation
+- **Purpose:** Preserves equivalent upstream operation identities that share the canonical route and method.
+- **Consumers:** Terraform, CLI, MCP
+- **Value type:** array
+- **Value schema:** `{"type": "array", "items": {"type": "string"}}`
+- **Injected by:** scripts/utils/canonical_merge.py
+- **Driven by config:** explicit reviewed alias registry in the canonical merger
+- **Example:** `"x-f5xc-operation-aliases": ["ves.io.schema.discovered_service.CustomAPI.SuggestValues"]`
+- **Pass-through from upstream:** no
+
 ### x-f5xc-operation-role
 
 - **Applied at:** operation

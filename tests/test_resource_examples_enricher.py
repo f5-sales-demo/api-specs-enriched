@@ -1,4 +1,5 @@
 # Copyright (c) 2026 Robin Mordasiewicz. MIT License.
+# pylint: disable=protected-access,use-implicit-booleaness-not-comparison  # Tests inspect internals and explicit result shapes.
 
 """Unit tests for ResourceExamplesEnricher."""
 

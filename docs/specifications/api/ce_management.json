@@ -3,7 +3,7 @@
   "info": {
     "title": "Ce Management",
     "description": "Customer edge node lifecycle through secure enrollment tokens and downloadable deployment images. Network connectivity options span exclusive, common, and administrative pathways with DHCP address pools supporting both IPv4 and IPv6. Bulk grouping consolidates configuration across distributed locations. Compatibility verification runs before software updates, with rollout tracking for version progression across the infrastructure.",
-    "version": "2026.08.20",
+    "version": "2.1.222",
     "contact": {
       "name": "F5 Distributed Cloud",
       "url": "https://docs.cloud.f5.com"
@@ -7877,7 +7877,7 @@
           "system_metadata": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType"
+                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType__ves_io_schema_api_sec_api_crawler"
               }
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
@@ -8563,7 +8563,7 @@
           },
           "default_fs_type": {
             "type": "string",
-            "description": "Block volume default filesystem type. Not recommended to change!\nRequired: YES.",
+            "description": "Block volume default filesystem type. Not recommended to change!",
             "title": "Default Filesystem Type",
             "x-displayname": "Default Filesystem Type.",
             "x-ves-example": "Xfs",
@@ -8654,7 +8654,7 @@
           },
           "flash_arrays": {
             "type": "array",
-            "description": "For FlashArrays you must set the \"mgmt_endpoint\" and \"api_token\"\n\nRequired: YES.",
+            "description": "For FlashArrays you must set the \"mgmt_endpoint\" and \"api_token\"",
             "title": "Flash Arrays",
             "minItems": 1,
             "maxItems": 8,
@@ -8675,7 +8675,7 @@
               "ves.io.schema.rules.repeated.min_items": "1",
               "ves.io.schema.rules.repeated.unique": "true"
             },
-            "x-f5xc-description-short": "For FlashArrays you must set the \"mgmt_endpoint\" and \"api_token\" Required: YES.",
+            "x-f5xc-description-short": "For FlashArrays you must set the \"mgmt_endpoint\" and \"api_token\".",
             "x-f5xc-constraints": {
               "constraintType": "array",
               "category": "discovery",
@@ -8698,7 +8698,7 @@
           },
           "iscsi_login_timeout": {
             "type": "integer",
-            "description": "ISCSI login timeout in seconds. Not recommended to change!\nRequired: YES.",
+            "description": "ISCSI login timeout in seconds. Not recommended to change!",
             "title": "iSCSI Login Timeout",
             "format": "int32",
             "x-displayname": "ISCSI Login Timeout.",
@@ -8737,7 +8737,7 @@
           },
           "san_type": {
             "type": "string",
-            "description": "Block volume access protocol, either ISCSI or FC\nRequired: YES.",
+            "description": "Block volume access protocol, either ISCSI or FC.",
             "title": "SAN Type",
             "x-displayname": "SAN Type",
             "x-ves-example": "ISCSI",
@@ -8751,7 +8751,7 @@
               "ves.io.schema.rules.message.required": "true",
               "ves.io.schema.rules.string.in": "[\\\"ISCSI\\\",\\\"FC\\\"]"
             },
-            "x-f5xc-description-short": "Block volume access protocol, either ISCSI or FC Required: YES.",
+            "x-f5xc-description-short": "Block volume access protocol, either ISCSI or FC.",
             "maxLength": 1024,
             "enum": [
               "ISCSI",
@@ -9108,7 +9108,7 @@
           },
           "flash_blades": {
             "type": "array",
-            "description": "For FlashBlades you must set the \"mgmt_endpoint\", \"api_token\" and nfs_endpoint\n\nRequired: YES.",
+            "description": "For FlashBlades you must set the \"mgmt_endpoint\", \"api_token\" and nfs_endpoint.",
             "title": "Flash Blades",
             "minItems": 1,
             "maxItems": 8,
@@ -9129,7 +9129,7 @@
               "ves.io.schema.rules.repeated.min_items": "1",
               "ves.io.schema.rules.repeated.unique": "true"
             },
-            "x-f5xc-description-short": "For FlashBlades you must set the \"mgmt_endpoint\", \"api_token\" and nfs_endpoint Required: YES.",
+            "x-f5xc-description-short": "For FlashBlades you must set the \"mgmt_endpoint\", \"api_token\" and nfs_endpoint.",
             "x-f5xc-constraints": {
               "constraintType": "array",
               "category": "discovery",
@@ -9209,7 +9209,7 @@
           },
           "devices": {
             "type": "array",
-            "description": "Ethernet devices that will make up this bond\nRequired: YES.",
+            "description": "Ethernet devices that will make up this bond.",
             "title": "Member Ethernet Devices",
             "minItems": 1,
             "maxItems": 8,
@@ -9235,7 +9235,7 @@
               "ves.io.schema.rules.repeated.min_items": "1",
               "ves.io.schema.rules.repeated.unique": "true"
             },
-            "x-f5xc-description-short": "Ethernet devices that will make up this bond Required: YES.",
+            "x-f5xc-description-short": "Ethernet devices that will make up this bond.",
             "x-f5xc-constraints": {
               "constraintType": "array",
               "category": "discovery",
@@ -9274,7 +9274,7 @@
           },
           "link_polling_interval": {
             "type": "integer",
-            "description": "Link polling interval in milliseconds\nRequired: YES.",
+            "description": "Link polling interval in milliseconds.",
             "title": "Link Polling Interval",
             "format": "int64",
             "x-displayname": "Link Polling Interval.",
@@ -9291,7 +9291,6 @@
               "ves.io.schema.rules.uint32.gte": "500",
               "ves.io.schema.rules.uint32.lte": "5000"
             },
-            "x-f5xc-description-short": "Link polling interval in milliseconds Required: YES.",
             "x-f5xc-constraints": {
               "constraintType": "number",
               "category": "discovery",
@@ -9313,7 +9312,7 @@
           },
           "link_up_delay": {
             "type": "integer",
-            "description": "Milliseconds wait before link is declared up\nRequired: YES.",
+            "description": "Milliseconds wait before link is declared up.",
             "title": "Link Up Delay",
             "format": "int64",
             "x-displayname": "Link Up Delay.",
@@ -9330,7 +9329,7 @@
               "ves.io.schema.rules.uint32.gte": "0",
               "ves.io.schema.rules.uint32.lte": "1000"
             },
-            "x-f5xc-description-short": "Milliseconds wait before link is declared up Required: YES.",
+            "x-f5xc-description-short": "Milliseconds wait before link is declared up.",
             "x-f5xc-constraints": {
               "constraintType": "number",
               "category": "discovery",
@@ -9352,7 +9351,7 @@
           },
           "name": {
             "type": "string",
-            "description": "Name for the Bond. Ex 'bond0'\nRequired: YES.",
+            "description": "Name for the Bond. Ex 'bond0'",
             "title": "Bond Device",
             "maxLength": 64,
             "x-displayname": "Bond Device Name.",
@@ -9367,7 +9366,6 @@
               "ves.io.schema.rules.message.required": "true",
               "ves.io.schema.rules.string.max_len": "64"
             },
-            "x-f5xc-description-short": "Name for the Bond. Ex 'bond0' Required: YES.",
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "discovery",
@@ -9447,7 +9445,7 @@
         "properties": {
           "bond_devices": {
             "type": "array",
-            "description": "List of bond devices\n\nRequired: YES.",
+            "description": "List of bond devices.",
             "title": "Bond Devices List",
             "minItems": 1,
             "maxItems": 4,
@@ -9601,7 +9599,7 @@
         "properties": {
           "interfaces": {
             "type": "array",
-            "description": "Add all interfaces belonging to this fleet\n\nRequired: YES.",
+            "description": "Add all interfaces belonging to this fleet.",
             "title": "List of Interfaces",
             "minItems": 1,
             "maxItems": 256,
@@ -9622,7 +9620,7 @@
               "ves.io.schema.rules.repeated.min_items": "1",
               "ves.io.schema.rules.repeated.unique": "true"
             },
-            "x-f5xc-description-short": "Add all interfaces belonging to this fleet Required: YES.",
+            "x-f5xc-description-short": "Add all interfaces belonging to this fleet.",
             "x-f5xc-constraints": {
               "constraintType": "array",
               "category": "discovery",
@@ -10019,7 +10017,7 @@
           },
           "storage_class_name": {
             "type": "string",
-            "description": "Name of the storage class as it will appear in K8s.\nRequired: YES.",
+            "description": "Name of the storage class as it will appear in K8s.",
             "title": "Storage Class Name",
             "x-displayname": "Storage Class Name.",
             "x-ves-example": "Premium",
@@ -10033,7 +10031,7 @@
               "ves.io.schema.rules.message.required": "true",
               "ves.io.schema.rules.string.ves_object_name": "true"
             },
-            "x-f5xc-description-short": "Name of the storage class as it will appear in K8s. Required: YES.",
+            "x-f5xc-description-short": "Name of the storage class as it will appear in K8s.",
             "maxLength": 1024,
             "x-f5xc-constraints": {
               "constraintType": "string",
@@ -10058,7 +10056,7 @@
           },
           "storage_device": {
             "type": "string",
-            "description": "Storage device that this class will use. The Device name defined at previous step.\nRequired: YES.",
+            "description": "Storage device that this class will use. The Device name defined at previous step.",
             "title": "Storage Device",
             "minLength": 1,
             "maxLength": 64,
@@ -10326,7 +10324,7 @@
           },
           "storage_device": {
             "type": "string",
-            "description": "Storage device and device unit\nRequired: YES.",
+            "description": "Storage device and device unit.",
             "title": "Storage Device",
             "maxLength": 64,
             "x-displayname": "Storage Device.",
@@ -10341,7 +10339,6 @@
               "ves.io.schema.rules.message.required": "true",
               "ves.io.schema.rules.string.max_len": "64"
             },
-            "x-f5xc-description-short": "Storage device and device unit Required: YES.",
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "discovery",
@@ -10403,7 +10400,7 @@
         "properties": {
           "storage_routes": {
             "type": "array",
-            "description": "List of storage static routes\n\nRequired: YES.",
+            "description": "List of storage static routes.",
             "title": "List of Static Routes",
             "minItems": 1,
             "maxItems": 8,
@@ -10424,7 +10421,6 @@
               "ves.io.schema.rules.repeated.min_items": "1",
               "ves.io.schema.rules.repeated.unique": "true"
             },
-            "x-f5xc-description-short": "List of storage static routes Required: YES.",
             "x-f5xc-constraints": {
               "constraintType": "array",
               "category": "discovery",
@@ -10609,7 +10605,7 @@
           "system_metadata": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType"
+                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType__ves_io_schema_api_sec_api_crawler"
               }
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
@@ -10669,7 +10665,7 @@
             "description": "Errors(if any) while listing items from collection.",
             "title": "errors",
             "items": {
-              "$ref": "#/components/schemas/schemaErrorType"
+              "$ref": "#/components/schemas/schemaErrorType__ves_io_schema_ai_assistant"
             },
             "x-displayname": "Errors",
             "x-f5xc-description-short": "Errors(if any) while listing items from collection.",
@@ -10975,7 +10971,7 @@
           "system_metadata": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType"
+                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType__ves_io_schema_api_sec_api_crawler"
               }
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
@@ -11097,7 +11093,7 @@
         "properties": {
           "interface": {
             "type": "array",
-            "description": "Network Interface attributes for the device.\nUser network interface configuration for this network device.\nAttributes like labels, MTU from the 'interface' are applied to corresponding interface in VER node\nIf network interface refers to a virtual-network, the virtual-netowrk type must be consistent with use attribute given below\nIf use is NETWORK_INTERFACE_USE_REGULAR, the virtual-network must be of type VIRTUAL_NETWORK_SITE_LOCAL or VIRTUAL_NETWORK_SITE_LOCAL_INSIDE\nif use is NETWORK_INTERFACE_USE_OUTSIDE, the virtual-network must of type VIRTUAL_NETWORK_SITE_LOCAL\nif use is NETWORK_INTERFACE_USE_INSIDE, the virtual-network must of type VIRTUAL_NETWORK_SITE_LOCAL_INSIDE\n\nRequired: YES.",
+            "description": "Network Interface attributes for the device.\nUser network interface configuration for this network device.\nAttributes like labels, MTU from the 'interface' are applied to corresponding interface in VER node\nIf network interface refers to a virtual-network, the virtual-netowrk type must be consistent with use attribute given below\nIf use is NETWORK_INTERFACE_USE_REGULAR, the virtual-network must be of type VIRTUAL_NETWORK_SITE_LOCAL or VIRTUAL_NETWORK_SITE_LOCAL_INSIDE\nif use is NETWORK_INTERFACE_USE_OUTSIDE, the virtual-network must of type VIRTUAL_NETWORK_SITE_LOCAL\nif use is NETWORK_INTERFACE_USE_INSIDE, the virtual-network must of type VIRTUAL_NETWORK_SITE_LOCAL_INSIDE.",
             "title": "Network Interface",
             "maxItems": 1,
             "items": {
@@ -12037,7 +12033,7 @@
         "properties": {
           "interface_name": {
             "type": "string",
-            "description": "Name of SR-IOV physical interface\nRequired: YES.",
+            "description": "Name of SR-IOV physical interface.",
             "title": "interface_name",
             "x-displayname": "Name of physical interface.",
             "x-ves-example": "Eth0",
@@ -12049,7 +12045,6 @@
             "x-validation-rules": {
               "ves.io.schema.rules.message.required": "true"
             },
-            "x-f5xc-description-short": "Name of SR-IOV physical interface Required: YES.",
             "maxLength": 1024,
             "x-f5xc-constraints": {
               "constraintType": "string",
@@ -12086,7 +12081,7 @@
           },
           "number_of_vfs": {
             "type": "integer",
-            "description": "Total number of virtual functions\nRequired: YES.",
+            "description": "Total number of virtual functions.",
             "title": "number_of_vfs",
             "format": "int64",
             "x-displayname": "Total number of virtual functions.",
@@ -12099,7 +12094,6 @@
             "x-validation-rules": {
               "ves.io.schema.rules.message.required": "true"
             },
-            "x-f5xc-description-short": "Total number of virtual functions Required: YES.",
             "x-f5xc-required-for": {
               "minimum_config": true,
               "create": true,
@@ -13287,7 +13281,7 @@
           },
           "username": {
             "type": "string",
-            "description": "Username to connect to the HPE storage management IP\nRequired: YES.",
+            "description": "Username to connect to the HPE storage management IP.",
             "title": "Username",
             "minLength": 1,
             "maxLength": 256,
@@ -13305,7 +13299,7 @@
               "ves.io.schema.rules.string.max_len": "256",
               "ves.io.schema.rules.string.min_len": "1"
             },
-            "x-f5xc-description-short": "Username to connect to the HPE storage management IP Required: YES.",
+            "x-f5xc-description-short": "Username to connect to the HPE storage management IP.",
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "discovery",
@@ -13827,7 +13821,7 @@
           },
           "storage_driver_name": {
             "type": "string",
-            "description": "Configuration of Backend Name\nRequired: YES.",
+            "description": "Configuration of Backend Name.",
             "title": "Storage Backend Driver",
             "x-displayname": "Storage Backend Driver.",
             "x-ves-example": "Ontap-nas",
@@ -13841,7 +13835,6 @@
               "ves.io.schema.rules.message.required": "true",
               "ves.io.schema.rules.string.in": "[\\\"ontap-nas\\\",\\\"ontap-nas-economy\\\",\\\"ontap-nas-flexgroup\\\"]"
             },
-            "x-f5xc-description-short": "Configuration of Backend Name Required: YES.",
             "maxLength": 1024,
             "enum": [
               "ontap-nas",
@@ -13964,7 +13957,7 @@
           },
           "username": {
             "type": "string",
-            "description": "Username to connect to the cluster/SVM\nRequired: YES.",
+            "description": "Username to connect to the cluster/SVM.",
             "title": "Username",
             "minLength": 1,
             "maxLength": 256,
@@ -13982,7 +13975,6 @@
               "ves.io.schema.rules.string.max_len": "256",
               "ves.io.schema.rules.string.min_len": "1"
             },
-            "x-f5xc-description-short": "Username to connect to the cluster/SVM Required: YES.",
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "discovery",
@@ -14498,7 +14490,7 @@
           },
           "storage_driver_name": {
             "type": "string",
-            "description": "Configuration of Backend Name\nRequired: YES.",
+            "description": "Configuration of Backend Name.",
             "title": "Storage Backend Driver",
             "x-displayname": "Storage Backend Driver.",
             "x-ves-example": "Ontap-nas",
@@ -14512,7 +14504,6 @@
               "ves.io.schema.rules.message.required": "true",
               "ves.io.schema.rules.string.in": "[\\\"ontap-san\\\",\\\"ontap-san-economy\\\",\\\"ontap-nas-flexgroup\\\"]"
             },
-            "x-f5xc-description-short": "Configuration of Backend Name Required: YES.",
             "maxLength": 1024,
             "enum": [
               "ontap-san",
@@ -14662,7 +14653,7 @@
           },
           "username": {
             "type": "string",
-            "description": "Username to connect to the cluster/SVM\nRequired: YES.",
+            "description": "Username to connect to the cluster/SVM.",
             "title": "Username",
             "minLength": 1,
             "maxLength": 256,
@@ -14680,7 +14671,6 @@
               "ves.io.schema.rules.string.max_len": "256",
               "ves.io.schema.rules.string.min_len": "1"
             },
-            "x-f5xc-description-short": "Username to connect to the cluster/SVM Required: YES.",
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "discovery",
@@ -14864,7 +14854,7 @@
           },
           "cluster_id": {
             "type": "string",
-            "description": "ClusterID is added as a prefix for all volumes created by this PSO installation.\nClusterID is also used to identify the volumes used by the datastore, pso-db.\nClusterID MUST BE UNIQUE for multiple K8s clusters running on top of the same storage arrays.\nCharacters allowed: alphanumeric and underscores\nRequired: YES.",
+            "description": "ClusterID is added as a prefix for all volumes created by this PSO installation.\nClusterID is also used to identify the volumes used by the datastore, pso-db.\nClusterID MUST BE UNIQUE for multiple K8s clusters running on top of the same storage arrays.\nCharacters allowed: alphanumeric and underscores.",
             "title": "Cluster ID",
             "minLength": 1,
             "maxLength": 22,
@@ -15528,7 +15518,7 @@
           },
           "location": {
             "type": "string",
-            "description": "Location is the uri_ref. It could be in URL format for string:///\nOr it could be a path if the store provider is an HTTP/HTTPS location\nRequired: YES.",
+            "description": "Location is the uri_ref. It could be in URL format for string:///\nOr it could be a path if the store provider is an HTTP/HTTPS location.",
             "title": "Location",
             "x-displayname": "Location",
             "x-ves-example": "String:///U2VjcmV0SW5mb3JtYXRpb24=.",
@@ -15543,8 +15533,8 @@
               "ves.io.schema.rules.message.required": "true",
               "ves.io.schema.rules.string.uri_ref": "true"
             },
-            "x-f5xc-description-short": "Location is the uri_ref. It could be in URL format for string:/// Or it could be a path if the store provider is an HTTP/HTTPS location Required: YES.",
-            "x-f5xc-description-medium": "Location is the uri_ref. It could be in URL format for string:/// Or it could be a path if the store provider is an HTTP/HTTPS location Required: YES.",
+            "x-f5xc-description-short": "Location is the uri_ref. It could be in URL format for string:/// Or it could be a path if the store provider is an HTTP/HTTPS location.",
+            "x-f5xc-description-medium": "Location is the uri_ref. It could be in URL format for string:/// Or it could be a path if the store provider is an HTTP/HTTPS location.",
             "maxLength": 1024,
             "x-f5xc-constraints": {
               "constraintType": "string",
@@ -15670,7 +15660,7 @@
           },
           "url": {
             "type": "string",
-            "description": "URL of the secret. Currently supported URL schemes is string:///.\nFor string:/// scheme, Secret needs to be encoded Base64 format.\nWhen asked for this secret, caller will GET Secret bytes after Base64 decoding.\nRequired: YES.",
+            "description": "URL of the secret. Currently supported URL schemes is string:///.\nFor string:/// scheme, Secret needs to be encoded Base64 format.\nWhen asked for this secret, caller will GET Secret bytes after Base64 decoding.",
             "title": "URL",
             "maxLength": 131072,
             "x-displayname": "URL",
@@ -15689,7 +15679,7 @@
               "ves.io.schema.rules.string.uri_ref": "true"
             },
             "x-f5xc-description-short": "URL of the secret. Currently supported URL schemes is string:///.",
-            "x-f5xc-description-medium": "URL of the secret. Currently supported URL schemes is string:///. For string:/// scheme, Secret needs to be encoded Base64 format. When asked for this secret, caller will GET Secret bytes after Base64 decoding. Required: YES.",
+            "x-f5xc-description-medium": "URL of the secret. Currently supported URL schemes is string:///. For string:/// scheme, Secret needs to be encoded Base64 format. When asked for this secret, caller will GET Secret bytes after Base64 decoding.",
             "format": "uri",
             "x-f5xc-constraints": {
               "constraintType": "string",
@@ -16034,7 +16024,7 @@
           }
         }
       },
-      "schemaErrorType": {
+      "schemaErrorType__ves_io_schema_ai_assistant": {
         "type": "object",
         "description": "Information about a error in API operation.",
         "title": "ErrorType",
@@ -16205,7 +16195,7 @@
           }
         }
       },
-      "schemaInitializersType": {
+      "schemaInitializersType__ves_io_schema_api_sec_api_crawler": {
         "type": "object",
         "description": "Initializers tracks the progress of initialization of a configuration object.",
         "title": "InitializersType",
@@ -17024,7 +17014,7 @@
           },
           "name": {
             "type": "string",
-            "description": "This is the name of configuration object. It has to be unique within the namespace.\nIt can only be specified during create API and cannot be changed during replace API.\nThe value of name has to follow DNS-1035 format.\nRequired: YES.",
+            "description": "This is the name of configuration object. It has to be unique within the namespace.\nIt can only be specified during create API and cannot be changed during replace API.\nThe value of name has to follow DNS-1035 format.",
             "title": "name",
             "x-displayname": "Name",
             "x-ves-example": "Example-corp-web.",
@@ -17268,7 +17258,7 @@
           },
           "name": {
             "type": "string",
-            "description": "This is the name of configuration object. It has to be unique within the namespace.\nIt can only be specified during create API and cannot be changed during replace API.\nThe value of name has to follow DNS-1035 format.\nRequired: YES.",
+            "description": "This is the name of configuration object. It has to be unique within the namespace.\nIt can only be specified during create API and cannot be changed during replace API.\nThe value of name has to follow DNS-1035 format.",
             "title": "name",
             "x-displayname": "Name",
             "x-ves-example": "Example-corp-web.",
@@ -17511,7 +17501,7 @@
           },
           "name": {
             "type": "string",
-            "description": "This is the name of configuration object. It has to be unique within the namespace.\nIt can only be specified during create API and cannot be changed during replace API.\nThe value of name has to follow DNS-1035 format.\nRequired: YES.",
+            "description": "This is the name of configuration object. It has to be unique within the namespace.\nIt can only be specified during create API and cannot be changed during replace API.\nThe value of name has to follow DNS-1035 format.",
             "title": "name",
             "x-displayname": "Name",
             "x-ves-example": "Example-corp-web.",
@@ -17827,7 +17817,7 @@
           },
           "subnets": {
             "type": "array",
-            "description": "List of route prefixes\n\nRequired: YES.",
+            "description": "List of route prefixes.",
             "title": "Subnets",
             "maxItems": 256,
             "items": {
@@ -18284,7 +18274,7 @@
           }
         }
       },
-      "schemaSystemObjectGetMetaType": {
+      "schemaSystemObjectGetMetaType__ves_io_schema_api_sec_api_crawler": {
         "type": "object",
         "description": "SystemObjectGetMetaType is metadata generated or populated by the system for all persisted objects and\ncannot be updated directly by users.",
         "title": "SystemObjectGetMetaType",
@@ -18422,7 +18412,7 @@
           "initializers": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/schemaInitializersType"
+                "$ref": "#/components/schemas/schemaInitializersType__ves_io_schema_api_sec_api_crawler"
               }
             ],
             "x-f5xc-description-short": "Configuration parameter for initializers.",
@@ -19229,7 +19219,7 @@
           },
           "fleet_label": {
             "type": "string",
-            "description": "Fleet_label value is used to create known_label \"F5 XC/fleet=<fleet_label>\"\nThe known_label is created in the \"shared\" namespace for the tenant.\n\nA virtual_site object with name <fleet_label> is also created in \"shared\" namespace for tenant.\nThe virtual_site object will select all sites configured with the known_label above\nfleet_label with \"sfo\" will create a known_label \"F5 XC/fleet=sfo\" in tenant for the fleet\nRequired: YES.",
+            "description": "Fleet_label value is used to create known_label \"F5 XC/fleet=<fleet_label>\"\nThe known_label is created in the \"shared\" namespace for the tenant.\n\nA virtual_site object with name <fleet_label> is also created in \"shared\" namespace for tenant.\nThe virtual_site object will select all sites configured with the known_label above\nfleet_label with \"sfo\" will create a known_label \"F5 XC/fleet=sfo\" in tenant for the fleet.",
             "x-displayname": "Fleet Label Value.",
             "x-ves-example": "Sfo",
             "x-ves-required": "true",
@@ -20191,7 +20181,7 @@
           },
           "fleet_label": {
             "type": "string",
-            "description": "Fleet_label value is used to create known_label \"F5 XC/fleet=<fleet_label>\"\nThe known_label is created in the \"shared\" namespace for the tenant.\n\nA virtual_site object with name <fleet_label> is also created in \"shared\" namespace for tenant.\nThe virtual_site object will select all sites configured with the known_label above\nfleet_label with \"sfo\" will create a known_label \"F5 XC/fleet=sfo\" in tenant for the fleet\nRequired: YES.",
+            "description": "Fleet_label value is used to create known_label \"F5 XC/fleet=<fleet_label>\"\nThe known_label is created in the \"shared\" namespace for the tenant.\n\nA virtual_site object with name <fleet_label> is also created in \"shared\" namespace for tenant.\nThe virtual_site object will select all sites configured with the known_label above\nfleet_label with \"sfo\" will create a known_label \"F5 XC/fleet=sfo\" in tenant for the fleet.",
             "x-displayname": "Fleet Label Value.",
             "x-ves-example": "Sfo",
             "x-ves-required": "true",
@@ -21708,7 +21698,7 @@
         "properties": {
           "name": {
             "type": "string",
-            "description": "When a configuration object(e.g. Virtual_host) refers to another(e.g route)\nthen name will hold the referred object's(e.g. Route's) name.\nRequired: YES.",
+            "description": "When a configuration object(e.g. Virtual_host) refers to another(e.g route)\nthen name will hold the referred object's(e.g. Route's) name.",
             "title": "name",
             "minLength": 1,
             "maxLength": 128,
@@ -21727,7 +21717,7 @@
               "ves.io.schema.rules.string.min_bytes": "1"
             },
             "x-f5xc-description-short": "When a configuration object(e.g. Virtual_host) refers to another(e.g route) then name will hold the referred object's(e.g.",
-            "x-f5xc-description-medium": "When a configuration object(e.g. Virtual_host) refers to another(e.g route) then name will hold the referred object's(e.g. Route's) name. Required: YES.",
+            "x-f5xc-description-medium": "When a configuration object(e.g. Virtual_host) refers to another(e.g route) then name will hold the referred object's(e.g. Route's) name.",
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "discovery",
@@ -22018,7 +22008,7 @@
           },
           "drain_node_timeout": {
             "type": "integer",
-            "description": "Seconds to wait before initiating upgrade on the next set of nodes. Setting it to 0 will wait indefinitely for all services on nodes to be upgraded gracefully before proceeding to the next set of nodes.\n(Warning: It may block upgrade if services on a node cannot be gracefully upgraded. It is recommended to use the default value).\n\nRequired: YES.",
+            "description": "Seconds to wait before initiating upgrade on the next set of nodes. Setting it to 0 will wait indefinitely for all services on nodes to be upgraded gracefully before proceeding to the next set of nodes.\n(Warning: It may block upgrade if services on a node cannot be gracefully upgraded. It is recommended to use the default value).",
             "title": "Upgrade Wait Time",
             "format": "int64",
             "x-displayname": "Upgrade Wait Time.",
@@ -22595,7 +22585,7 @@
           "system_metadata": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType"
+                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType__ves_io_schema_api_sec_api_crawler"
               }
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
@@ -23064,7 +23054,7 @@
           },
           "dhcp_networks": {
             "type": "array",
-            "description": "List of networks from which DHCP server can allocate IP addresses\n\nRequired: YES.",
+            "description": "List of networks from which DHCP server can allocate IP addresses.",
             "title": "DHCP IPV6 Networks",
             "minItems": 1,
             "maxItems": 1,
@@ -23085,7 +23075,7 @@
               "ves.io.schema.rules.repeated.min_items": "1",
               "ves.io.schema.rules.repeated.unique": "true"
             },
-            "x-f5xc-description-short": "List of networks from which DHCP server can allocate IP addresses Required: YES.",
+            "x-f5xc-description-short": "List of networks from which DHCP server can allocate IP addresses.",
             "x-f5xc-constraints": {
               "constraintType": "array",
               "category": "discovery",
@@ -23759,7 +23749,7 @@
           },
           "dhcp_networks": {
             "type": "array",
-            "description": "List of networks from which DHCP Server can allocate IPv4 Addresses\n\nRequired: YES.",
+            "description": "List of networks from which DHCP Server can allocate IPv4 Addresses.",
             "title": "DHCP Networks",
             "minItems": 1,
             "maxItems": 1,
@@ -23780,7 +23770,7 @@
               "ves.io.schema.rules.repeated.min_items": "1",
               "ves.io.schema.rules.repeated.unique": "true"
             },
-            "x-f5xc-description-short": "List of networks from which DHCP Server can allocate IPv4 Addresses Required: YES.",
+            "x-f5xc-description-short": "List of networks from which DHCP Server can allocate IPv4 Addresses.",
             "x-f5xc-constraints": {
               "constraintType": "array",
               "category": "discovery",
@@ -23907,7 +23897,7 @@
           },
           "device": {
             "type": "string",
-            "description": "Name of the device for which interface is configured. Use wwan0 for 4G/LTE.\nRequired: YES.",
+            "description": "Name of the device for which interface is configured. Use wwan0 for 4G/LTE.",
             "title": "Device",
             "minLength": 1,
             "maxLength": 64,
@@ -24184,7 +24174,7 @@
           },
           "device": {
             "type": "string",
-            "description": "Name of the device for which interface is configured\nRequired: YES.",
+            "description": "Name of the device for which interface is configured.",
             "title": "Device",
             "minLength": 1,
             "maxLength": 64,
@@ -24202,7 +24192,7 @@
               "ves.io.schema.rules.string.max_len": "64",
               "ves.io.schema.rules.string.min_len": "1"
             },
-            "x-f5xc-description-short": "Name of the device for which interface is configured Required: YES.",
+            "x-f5xc-description-short": "Name of the device for which interface is configured.",
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "discovery",
@@ -24500,7 +24490,7 @@
           },
           "device": {
             "type": "string",
-            "description": "Interface configuration for the ethernet device\nRequired: YES.",
+            "description": "Interface configuration for the ethernet device.",
             "title": "Device",
             "minLength": 1,
             "maxLength": 64,
@@ -24518,7 +24508,7 @@
               "ves.io.schema.rules.string.max_len": "64",
               "ves.io.schema.rules.string.min_len": "1"
             },
-            "x-f5xc-description-short": "Interface configuration for the ethernet device Required: YES.",
+            "x-f5xc-description-short": "Interface configuration for the ethernet device.",
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "discovery",
@@ -25112,7 +25102,7 @@
           "system_metadata": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType"
+                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType__ves_io_schema_api_sec_api_crawler"
               }
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
@@ -25288,7 +25278,7 @@
           },
           "device_name": {
             "type": "string",
-            "description": "Name of the physical network interface device which this network interface represents.\nRequired: YES.",
+            "description": "Name of the physical network interface device which this network interface represents.",
             "x-displayname": "Device Name.",
             "x-ves-example": "Value",
             "x-ves-required": "true",
@@ -25300,7 +25290,6 @@
               "ves.io.schema.rules.message.required": "true"
             },
             "x-f5xc-description-short": "Name of the physical network interface device which this network interface represents.",
-            "x-f5xc-description-medium": "Name of the physical network interface device which this network interface represents. Required: YES.",
             "maxLength": 1024,
             "x-f5xc-constraints": {
               "constraintType": "string",
@@ -26007,7 +25996,7 @@
         "properties": {
           "dns_list": {
             "type": "array",
-            "description": "List of IPv6 Addresses acting as DNS servers\nRequired: YES.",
+            "description": "List of IPv6 Addresses acting as DNS servers.",
             "title": "Dns List",
             "minItems": 1,
             "maxItems": 4,
@@ -26032,7 +26021,7 @@
               "ves.io.schema.rules.repeated.unique": "true",
               "ves.io.schema.rules.string.ipv6": "true"
             },
-            "x-f5xc-description-short": "List of IPv6 Addresses acting as DNS servers Required: YES.",
+            "x-f5xc-description-short": "List of IPv6 Addresses acting as DNS servers.",
             "x-f5xc-constraints": {
               "constraintType": "array",
               "category": "discovery",
@@ -26295,7 +26284,7 @@
         "properties": {
           "vlan_id": {
             "type": "integer",
-            "description": "VLAN ID\nRequired: YES.",
+            "description": "VLAN ID",
             "title": "VLAN Id",
             "format": "int64",
             "x-displayname": "VLAN ID",
@@ -26375,7 +26364,7 @@
         "properties": {
           "device": {
             "type": "string",
-            "description": "Physical ethernet interface\nRequired: YES.",
+            "description": "Physical ethernet interface.",
             "title": "Device",
             "minLength": 1,
             "maxLength": 64,
@@ -26393,7 +26382,6 @@
               "ves.io.schema.rules.string.max_len": "64",
               "ves.io.schema.rules.string.min_len": "1"
             },
-            "x-f5xc-description-short": "Physical ethernet interface Required: YES.",
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "discovery",
@@ -26512,7 +26500,7 @@
         "properties": {
           "device": {
             "type": "string",
-            "description": "Physical ethernet interface\nRequired: YES.",
+            "description": "Physical ethernet interface.",
             "title": "Device",
             "minLength": 1,
             "maxLength": 64,
@@ -26530,7 +26518,6 @@
               "ves.io.schema.rules.string.max_len": "64",
               "ves.io.schema.rules.string.min_len": "1"
             },
-            "x-f5xc-description-short": "Physical ethernet interface Required: YES.",
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "discovery",
@@ -26552,7 +26539,7 @@
           },
           "vlan_id": {
             "type": "integer",
-            "description": "VLAN ID\nRequired: YES.",
+            "description": "VLAN ID",
             "title": "VLAN Id",
             "format": "int64",
             "x-displayname": "VLAN ID",
@@ -26708,7 +26695,7 @@
           },
           "device_name": {
             "type": "string",
-            "description": "Name of the physical network interface device which this network interface represents.\nRequired: YES.",
+            "description": "Name of the physical network interface device which this network interface represents.",
             "title": "Device Name",
             "x-displayname": "Device Name.",
             "x-ves-example": "Value",
@@ -26721,7 +26708,6 @@
               "ves.io.schema.rules.message.required": "true"
             },
             "x-f5xc-description-short": "Name of the physical network interface device which this network interface represents.",
-            "x-f5xc-description-medium": "Name of the physical network interface device which this network interface represents. Required: YES.",
             "maxLength": 1024,
             "x-f5xc-constraints": {
               "constraintType": "string",
@@ -27072,7 +27058,7 @@
             "description": "Errors(if any) while listing items from collection.",
             "title": "errors",
             "items": {
-              "$ref": "#/components/schemas/schemaErrorType"
+              "$ref": "#/components/schemas/schemaErrorType__ves_io_schema_ai_assistant"
             },
             "x-displayname": "Errors",
             "x-f5xc-description-short": "Errors(if any) while listing items from collection.",
@@ -27379,7 +27365,7 @@
           "system_metadata": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType"
+                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType__ves_io_schema_api_sec_api_crawler"
               }
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
@@ -28466,7 +28452,7 @@
           },
           "ip_address": {
             "type": "string",
-            "description": "IP address of the interface and prefix length\nRequired: YES.",
+            "description": "IP address of the interface and prefix length.",
             "title": "Default Gateway",
             "x-displayname": "IP address/Prefix Length.",
             "x-ves-example": "192.0.2.0/24.",
@@ -28480,7 +28466,7 @@
               "ves.io.schema.rules.message.required": "true",
               "ves.io.schema.rules.string.ip_prefix": "true"
             },
-            "x-f5xc-description-short": "IP address of the interface and prefix length Required: YES.",
+            "x-f5xc-description-short": "IP address of the interface and prefix length.",
             "maxLength": 1024,
             "x-f5xc-constraints": {
               "constraintType": "string",
@@ -29062,7 +29048,7 @@
           },
           "name": {
             "type": "string",
-            "description": "Registration name (= \"r-\" + uid) to approve. Registration name is taken from listing pending registrations.\nRequired: YES.",
+            "description": "Registration name (= \"r-\" + uid) to approve. Registration name is taken from listing pending registrations.",
             "title": "Name",
             "x-displayname": "Name",
             "x-ves-example": "R-00000000-0000-4000-8000-946fdf7ca6a3.",
@@ -29075,7 +29061,7 @@
               "ves.io.schema.rules.message.required": "true"
             },
             "x-f5xc-description-short": "Registration name (= \"r-\" + uid) to approve. Registration name is taken from listing pending registrations.",
-            "x-f5xc-description-medium": "Registration name (= \"r-\" + uid) to approve. Registration name is taken from listing pending registrations. Required: YES.",
+            "x-f5xc-description-medium": "Registration name (= \"r-\" + uid) to approve. Registration name is taken from listing pending registrations.",
             "maxLength": 63,
             "x-f5xc-constraints": {
               "constraintType": "string",
@@ -29215,7 +29201,7 @@
         "properties": {
           "interfaces": {
             "type": "array",
-            "description": "Required: YES.",
+            "description": "Configuration parameter for interfaces",
             "title": "Member Interfaces",
             "minItems": 1,
             "maxItems": 8,
@@ -29276,7 +29262,7 @@
           },
           "name": {
             "type": "string",
-            "description": "Required: YES.",
+            "description": "Human-readable name for the resource",
             "title": "Bond Name",
             "maxLength": 64,
             "x-displayname": "Bond Name",
@@ -29408,7 +29394,7 @@
         "properties": {
           "name": {
             "type": "string",
-            "description": "Registration name\nRequired: YES.",
+            "description": "Registration name.",
             "title": "Name",
             "x-displayname": "Name",
             "x-ves-example": "R-00000000-0000-4000-8000-946fdf7ca6a3.",
@@ -29459,7 +29445,7 @@
           },
           "namespace": {
             "type": "string",
-            "description": "Registration namespace\nRequired: YES.",
+            "description": "Registration namespace.",
             "title": "Namespace",
             "x-displayname": "Namespace",
             "x-ves-example": "System",
@@ -29510,7 +29496,7 @@
           },
           "token": {
             "type": "string",
-            "description": "Token - verify node identity\nRequired: YES.",
+            "description": "Token - verify node identity.",
             "title": "Token",
             "x-displayname": "Token",
             "x-ves-example": "00000000-0000-4000-8000-ce47f538482c.",
@@ -29522,7 +29508,6 @@
             "x-validation-rules": {
               "ves.io.schema.rules.message.required": "true"
             },
-            "x-f5xc-description-short": "Token - verify node identity Required: YES.",
             "maxLength": 1024,
             "x-f5xc-constraints": {
               "constraintType": "string",
@@ -29748,7 +29733,7 @@
           "system_metadata": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType"
+                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType__ves_io_schema_registration"
               }
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
@@ -29799,7 +29784,7 @@
         "properties": {
           "provider": {
             "type": "string",
-            "description": "Provider for that image\nRequired: YES.",
+            "description": "Provider for that image.",
             "title": "Provider",
             "x-displayname": "Provider",
             "x-ves-example": "Kvm",
@@ -29962,7 +29947,7 @@
         "properties": {
           "site_token": {
             "type": "string",
-            "description": "Site token to query on\nRequired: YES.",
+            "description": "Site token to query on.",
             "title": "Site token",
             "x-displayname": "Site Token.",
             "x-ves-example": "00000000-0000-4000-8000-f4a29bc68178.",
@@ -30202,7 +30187,7 @@
           "system_metadata": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType"
+                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType__ves_io_schema_registration"
               }
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
@@ -30356,7 +30341,7 @@
           },
           "hostname": {
             "type": "string",
-            "description": "Must be unique in entire cluster and same as OS settings.\n'.' (dots) are not allowed in hostname\nRequired: YES.",
+            "description": "Must be unique in entire cluster and same as OS settings.\n'.' (dots) are not allowed in hostname.",
             "title": "Instance hostname",
             "x-displayname": "Hostname",
             "x-ves-example": "Value",
@@ -30368,8 +30353,7 @@
             "x-validation-rules": {
               "ves.io.schema.rules.message.required": "true"
             },
-            "x-f5xc-description-short": "Must be unique in entire cluster and same as OS settings. '.' (dots) are not allowed in hostname Required: YES.",
-            "x-f5xc-description-medium": "Must be unique in entire cluster and same as OS settings. '.' (dots) are not allowed in hostname Required: YES.",
+            "x-f5xc-description-short": "Must be unique in entire cluster and same as OS settings. '.' (dots) are not allowed in hostname.",
             "maxLength": 1024,
             "x-f5xc-constraints": {
               "constraintType": "string",
@@ -30439,7 +30423,7 @@
           },
           "interfaces": {
             "type": "object",
-            "description": "Machine interfaces present during registration time\n\nRequired: YES.",
+            "description": "Machine interfaces present during registration time.",
             "title": "Interfaces",
             "x-displayname": "Interfaces.",
             "x-ves-required": "true",
@@ -30449,7 +30433,7 @@
             "x-validation-rules": {
               "ves.io.schema.rules.message.required": "true"
             },
-            "x-f5xc-description-short": "Machine interfaces present during registration time Required: YES.",
+            "x-f5xc-description-short": "Machine interfaces present during registration time.",
             "x-f5xc-required-for": {
               "minimum_config": true,
               "create": true,
@@ -30804,7 +30788,7 @@
             "description": "Errors(if any) while listing items from collection.",
             "title": "errors",
             "items": {
-              "$ref": "#/components/schemas/schemaErrorType"
+              "$ref": "#/components/schemas/schemaErrorType__ves_io_schema_ai_assistant"
             },
             "x-displayname": "Errors",
             "x-f5xc-description-short": "Errors(if any) while listing items from collection.",
@@ -31108,7 +31092,7 @@
           "system_metadata": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType"
+                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType__ves_io_schema_registration"
               }
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
@@ -31230,7 +31214,7 @@
         "properties": {
           "namespace": {
             "type": "string",
-            "description": "Registration namespace, only \"system\" namespaces is accepted\nRequired: YES.",
+            "description": "Registration namespace, only \"system\" namespaces is accepted.",
             "title": "Namespace",
             "x-displayname": "Namespace",
             "x-ves-example": "System",
@@ -31242,7 +31226,7 @@
             "x-validation-rules": {
               "ves.io.schema.rules.message.required": "true"
             },
-            "x-f5xc-description-short": "Registration namespace, only \"system\" namespaces is accepted Required: YES.",
+            "x-f5xc-description-short": "Registration namespace, only \"system\" namespaces is accepted.",
             "maxLength": 63,
             "x-f5xc-constraints": {
               "constraintType": "string",
@@ -31381,7 +31365,7 @@
           "system_metadata": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/schemaSystemObjectMetaType"
+                "$ref": "#/components/schemas/schemaSystemObjectMetaType__ves_io_schema_registration"
               }
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
@@ -31536,7 +31520,7 @@
         "properties": {
           "cluster_name": {
             "type": "string",
-            "description": "Required: YES.",
+            "description": "Human-readable name for the resource",
             "title": "cluster_name",
             "x-displayname": "Cluster Name.",
             "x-ves-example": "Example-ce01.",
@@ -31591,7 +31575,7 @@
           },
           "cluster_type": {
             "type": "string",
-            "description": "Required: YES.",
+            "description": "Cluster or grouping configuration",
             "title": "cluster_type",
             "x-displayname": "Cluster Type.",
             "x-ves-example": "CE",
@@ -31655,7 +31639,7 @@
           },
           "latitude": {
             "type": "number",
-            "description": "Geographic location of this site\nRequired: YES.",
+            "description": "Geographic location of this site.",
             "title": "Latitude",
             "format": "float",
             "x-displayname": "Latitude",
@@ -31672,7 +31656,6 @@
               "ves.io.schema.rules.float.lte": "90.0",
               "ves.io.schema.rules.message.required": "true"
             },
-            "x-f5xc-description-short": "Geographic location of this site Required: YES.",
             "x-f5xc-required-for": {
               "minimum_config": true,
               "create": true,
@@ -31682,7 +31665,7 @@
           },
           "longitude": {
             "type": "number",
-            "description": "Geographic location of this site\nRequired: YES.",
+            "description": "Geographic location of this site.",
             "title": "Longitude",
             "format": "float",
             "x-displayname": "Longitude",
@@ -31699,7 +31682,6 @@
               "ves.io.schema.rules.float.lte": "180.0",
               "ves.io.schema.rules.message.required": "true"
             },
-            "x-f5xc-description-short": "Geographic location of this site Required: YES.",
             "x-f5xc-required-for": {
               "minimum_config": true,
               "create": true,
@@ -32354,6 +32336,74 @@
           }
         }
       },
+      "schemaInitializersType__ves_io_schema_registration": {
+        "type": "object",
+        "description": "Initializers tracks the progress of initialization of a configuration object.",
+        "title": "InitializersType",
+        "x-displayname": "Initializers.",
+        "x-ves-proto-message": "ves.io.schema.InitializersType",
+        "properties": {
+          "pending": {
+            "type": "array",
+            "description": "Pending is a list of initializers that must execute in order before this object is initialized.\nWhen the last pending initializer is removed, and no failing result is set, the initializers\nstruct will be set to nil and the object is considered as initialized and visible to all\nclients.",
+            "title": "pending",
+            "items": {
+              "$ref": "#/components/schemas/schemaInitializerType"
+            },
+            "x-displayname": "Pending",
+            "x-f5xc-description-short": "Pending is a list of initializers that must execute in order before this object is initialized.",
+            "x-f5xc-description-medium": "Pending is a list of initializers that must execute in order before this object is initialized. When the last pending initializer is removed, and no failing result is set, the initializers struct will be set to nil and the object is considered as initialized and visible to all clients.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "result": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ioschemaStatusType"
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          }
+        },
+        "x-f5xc-description-short": "Initializers tracks the progress of initialization of a configuration object.",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for schemaInitializersType",
+          "required_fields": [
+            "pending",
+            "result"
+          ],
+          "mutually_exclusive_groups": [],
+          "example_yaml": "# Minimal example for schemaInitializersType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  pending: value\n  result: value",
+          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"pending\": \"value\",\n    \"result\": \"value\"\n  }\n}"
+        },
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "system"
+            ],
+            "enforced": false
+          },
+          "recommendation": {
+            "primary": "system",
+            "alternatives": [],
+            "rationale": "Fleet management is platform-level orchestration"
+          },
+          "classification": {
+            "category": "infrastructure",
+            "multi_tenant_pattern": "none"
+          }
+        }
+      },
       "schemaObjectMetaType": {
         "type": "object",
         "description": "ObjectMetaType is metadata(common attributes) of an object that all configuration objects will have.\nThe information in this type can be specified by user during create and replace APIs.",
@@ -32472,7 +32522,7 @@
           },
           "name": {
             "type": "string",
-            "description": "This is the name of configuration object. It has to be unique within the namespace.\nIt can only be specified during create API and cannot be changed during replace API.\nThe value of name has to follow DNS-1035 format.\nRequired: YES.",
+            "description": "This is the name of configuration object. It has to be unique within the namespace.\nIt can only be specified during create API and cannot be changed during replace API.\nThe value of name has to follow DNS-1035 format.",
             "title": "name",
             "x-displayname": "Name",
             "x-ves-example": "Example-corp-web.",
@@ -32679,7 +32729,345 @@
           }
         }
       },
-      "schemaSystemObjectMetaType": {
+      "schemaSystemObjectGetMetaType__ves_io_schema_registration": {
+        "type": "object",
+        "description": "SystemObjectGetMetaType is metadata generated or populated by the system for all persisted objects and\ncannot be updated directly by users.",
+        "title": "SystemObjectGetMetaType",
+        "x-displayname": "System Metadata.",
+        "x-ves-proto-message": "ves.io.schema.SystemObjectGetMetaType",
+        "properties": {
+          "creation_timestamp": {
+            "type": "string",
+            "description": "CreationTimestamp is a timestamp representing the server time when this object was\ncreated. It is not guaranteed to be set in happens-before order across separate operations.\nClients may not set this value. It is represented in RFC3339 form and is in UTC.",
+            "title": "creation_timestamp",
+            "format": "date-time",
+            "x-displayname": "Creation Timestamp.",
+            "x-f5xc-description-short": "CreationTimestamp is a timestamp representing the server time when this object was created.",
+            "x-f5xc-description-medium": "CreationTimestamp is a timestamp representing the server time when this object was created. It is not guaranteed to be set in happens-before order across separate operations. Clients may not set this value.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "format": "date-time",
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-08-20T09:12:47+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-field-mutability": "read-only"
+          },
+          "creator_class": {
+            "type": "string",
+            "description": "A value identifying the class of the user or service which created this configuration object.",
+            "title": "creator_class",
+            "x-displayname": "Creator Class.",
+            "x-ves-example": "Prism",
+            "x-f5xc-example": "value",
+            "x-f5xc-description-short": "Value identifying the class of the user or service which created this configuration object.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-08-20T09:12:47+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-field-mutability": "read-only"
+          },
+          "creator_id": {
+            "type": "string",
+            "description": "A value identifying the exact user or service that created this configuration object.",
+            "title": "creator_id",
+            "x-displayname": "Creator ID.",
+            "x-ves-example": "Admin@example.com.",
+            "x-f5xc-example": "value",
+            "x-f5xc-description-short": "Value identifying the exact user or service that created this configuration object.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-08-20T09:12:47+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-field-mutability": "read-only"
+          },
+          "deletion_timestamp": {
+            "type": "string",
+            "description": "DeletionTimestamp is RFC 3339 date and time at which this resource will be deleted. This\nfield is set by the server when a graceful deletion is requested by the user, and is not\ndirectly settable by a client. The resource is expected to be deleted (no longer visible\nfrom resource lists, and not reachable by name) after the time in this field, once the\nfinalizers list is empty. As long as the finalizers list contains items, deletion is blocked.\nOnce the deletionTimestamp is set, this value may not be unset or be set further into the\nfuture, although it may be shortened or the resource may be deleted prior to this time.\nFor example, a user may request that a pod is deleted in 30 seconds. The Kubelet will react\nby sending a graceful termination signal to the containers in the pod. After that 30 seconds,\nthe Kubelet will send a hard termination signal (SIGKILL) to the container and after cleanup,\nremove the pod from the API. In the presence of network partitions, this object may still\nexist after this timestamp, until an administrator or automated process can determine the\nresource is fully terminated.\nIf not set, graceful deletion of the object has not been requested.\n\nPopulated by the system when a graceful deletion is requested.\nRead-only.",
+            "title": "deletion_timestamp",
+            "format": "date-time",
+            "x-displayname": "Deletion Timestamp.",
+            "x-f5xc-description-short": "DeletionTimestamp is RFC 3339 date and time at which this resource will be deleted.",
+            "x-f5xc-description-medium": "DeletionTimestamp is RFC 3339 date and time at which this resource will be deleted. This field is set by the server when a graceful deletion is requested by the user, and is not directly settable by a client. The resource is expected to be deleted (no longer visible from resource lists, and not...",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "format": "date-time",
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-08-20T09:12:47+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "finalizers": {
+            "type": "array",
+            "description": "Must be empty before the object is deleted from the registry. Each entry\nis an identifier for the responsible component that will remove the entry\nfrom the list. If the deletionTimestamp of the object is non-nil, entries\nin this list can only be removed.",
+            "title": "finalizers",
+            "items": {
+              "type": "string"
+            },
+            "x-displayname": "Finalizers.",
+            "x-ves-example": "Value",
+            "x-f5xc-example": "value",
+            "x-f5xc-description-short": "Must be empty before the object is deleted from the registry.",
+            "x-f5xc-description-medium": "Must be empty before the object is deleted from the registry. Each entry is an identifier for the responsible component that will remove the entry from the list. If the deletionTimestamp of the object is non-nil, entries in this list can only be removed.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "initializers": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaInitializersType__ves_io_schema_registration"
+              }
+            ],
+            "x-f5xc-description-short": "Configuration parameter for initializers.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "labels": {
+            "type": "object",
+            "description": "Map of string keys and values that can be used to organize and categorize\n(scope and select) objects as chosen by the operator or software. Values here can be interpreted\nby software(backend or frontend) to enable certain behavior e.g. Things marked as soft-deleted(restorable).",
+            "title": "labels",
+            "x-displayname": "Labels",
+            "x-ves-example": "'VES.I/O/soft-deleted': 'true'",
+            "x-f5xc-example": "'F5 XC/soft-deleted''true'",
+            "x-f5xc-description-short": "Map of string keys and values that can be used to organize and categorize (scope and select) objects as chosen by the operator or software.",
+            "x-f5xc-description-medium": "Map of string keys and values that can be used to organize and categorize (scope and select) objects as chosen by the operator or software. Values here can be interpreted by software(backend or frontend) to enable certain behavior e.g. Things marked as soft-deleted(restorable).",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "modification_timestamp": {
+            "type": "string",
+            "description": "ModificationTimestamp is a timestamp representing the server time when this object was\nlast modified.",
+            "title": "modification_timestamp",
+            "format": "date-time",
+            "x-displayname": "Modification Timestamp.",
+            "x-f5xc-description-short": "ModificationTimestamp is a timestamp representing the server time when this object was last modified.",
+            "x-f5xc-description-medium": "ModificationTimestamp is a timestamp representing the server time when this object was last modified.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "format": "date-time",
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-08-20T09:12:47+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-field-mutability": "read-only"
+          },
+          "object_index": {
+            "type": "integer",
+            "description": "Unique index for the object. Some objects need a unique integer index to be allocated\nfor each object type. This field will be populated for all objects that need it and will\nbe zero otherwise.",
+            "title": "object_index",
+            "format": "int64",
+            "x-displayname": "Object Index.",
+            "x-ves-example": "0",
+            "x-f5xc-example": "0",
+            "x-f5xc-description-short": "Unique index for the object. Some objects need a unique integer index to be allocated for each object type.",
+            "x-f5xc-description-medium": "Unique index for the object. Some objects need a unique integer index to be allocated for each object type. This field will be populated for all objects that need it and will be zero otherwise.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-field-mutability": "read-only"
+          },
+          "owner_view": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaViewRefType"
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-references": [
+              {
+                "resource_kind": null,
+                "field_path": "owner_view",
+                "gated_by": null,
+                "required": false,
+                "cardinality": "single"
+              }
+            ]
+          },
+          "tenant": {
+            "type": "string",
+            "description": "Tenant to which this configuration object belongs to. The value for this is found from\npresented credentials.",
+            "title": "tenant",
+            "x-displayname": "Tenant",
+            "x-ves-example": "Example-corp.",
+            "x-f5xc-example": "example-corp",
+            "x-f5xc-description-short": "Tenant to which this configuration object belongs to. The value for this is found from presented credentials.",
+            "x-f5xc-description-medium": "Tenant to which this configuration object belongs to. The value for this is found from presented credentials.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-08-20T09:12:47+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-field-mutability": "read-only",
+            "minLength": 12,
+            "x-reconciled-from-discovery": true,
+            "x-reconciled-at": "2026-08-20T09:12:47+00:00"
+          },
+          "uid": {
+            "type": "string",
+            "description": "Uid is the unique in time and space value for this object. It is generated by\nthe server on successful creation of an object and is not allowed to change on Replace\nAPI. The value of is taken from uid field of ObjectMetaType, if provided.",
+            "title": "uid",
+            "x-displayname": "UID",
+            "x-ves-example": "00000000-0000-4000-8000-0df41b679859.",
+            "x-f5xc-example": "00000000-0000-4000-8000-0df41b679859",
+            "x-f5xc-description-short": "Uid is the unique in time and space value for this object.",
+            "x-f5xc-description-medium": "Uid is the unique in time and space value for this object. It is generated by the server on successful creation of an object and is not allowed to change on Replace API. The value of is taken from uid field of ObjectMetaType, if provided.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-08-20T09:12:47+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-field-mutability": "read-only",
+            "minLength": 36,
+            "format": "uuid",
+            "x-reconciled-from-discovery": true,
+            "x-reconciled-at": "2026-08-20T09:12:47+00:00"
+          }
+        },
+        "x-f5xc-description-short": "SystemObjectGetMetaType is metadata generated or populated by the system for all persisted objects and cannot be updated directly by users.",
+        "x-f5xc-description-medium": "SystemObjectGetMetaType is metadata generated or populated by the system for all persisted objects and cannot be updated directly by users.",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for schemaSystemObjectGetMetaType",
+          "required_fields": [
+            "creation_timestamp",
+            "creator_class",
+            "creator_id",
+            "deletion_timestamp",
+            "finalizers",
+            "initializers",
+            "labels",
+            "modification_timestamp",
+            "object_index",
+            "owner_view",
+            "tenant",
+            "uid"
+          ],
+          "mutually_exclusive_groups": [],
+          "example_yaml": "# Minimal example for schemaSystemObjectGetMetaType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  creation_timestamp: value\n  creator_class: value\n  creator_id: value\n  deletion_timestamp: value\n  finalizers: value",
+          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"creation_timestamp\": \"value\",\n    \"creator_class\": \"value\",\n    \"creator_id\": \"value\",\n    \"deletion_timestamp\": \"value\",\n    \"finalizers\": \"value\"\n  }\n}"
+        },
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "system"
+            ],
+            "enforced": false
+          },
+          "recommendation": {
+            "primary": "system",
+            "alternatives": [],
+            "rationale": "Fleet management is platform-level orchestration"
+          },
+          "classification": {
+            "category": "infrastructure",
+            "multi_tenant_pattern": "none"
+          }
+        }
+      },
+      "schemaSystemObjectMetaType__ves_io_schema_registration": {
         "type": "object",
         "description": "SystemObjectMetaType is metadata generated or populated by the system for all persisted objects and\ncannot be updated directly by users.",
         "title": "SystemObjectMetaType",
@@ -32873,7 +33261,7 @@
           "initializers": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/schemaInitializersType"
+                "$ref": "#/components/schemas/schemaInitializersType__ves_io_schema_registration"
               }
             ],
             "x-f5xc-description-short": "Configuration parameter for initializers.",
@@ -33271,7 +33659,7 @@
           },
           "token": {
             "type": "string",
-            "description": "Token is used for machine and tenant identification\nRequired: YES.",
+            "description": "Token is used for machine and tenant identification.",
             "x-displayname": "Token",
             "x-ves-example": "Value",
             "x-ves-required": "true",
@@ -33282,7 +33670,7 @@
             "x-validation-rules": {
               "ves.io.schema.rules.message.required": "true"
             },
-            "x-f5xc-description-short": "Token is used for machine and tenant identification Required: YES.",
+            "x-f5xc-description-short": "Token is used for machine and tenant identification.",
             "maxLength": 1024,
             "x-f5xc-constraints": {
               "constraintType": "string",
@@ -33376,7 +33764,7 @@
           },
           "token": {
             "type": "string",
-            "description": "Token is used for machine and tenant identification\nRequired: YES.",
+            "description": "Token is used for machine and tenant identification.",
             "x-displayname": "Token",
             "x-ves-example": "Value",
             "x-ves-required": "true",
@@ -33387,7 +33775,7 @@
             "x-validation-rules": {
               "ves.io.schema.rules.message.required": "true"
             },
-            "x-f5xc-description-short": "Token is used for machine and tenant identification Required: YES.",
+            "x-f5xc-description-short": "Token is used for machine and tenant identification.",
             "maxLength": 1024,
             "x-f5xc-constraints": {
               "constraintType": "string",
@@ -33525,7 +33913,7 @@
           },
           "token": {
             "type": "string",
-            "description": "Token is used for machine and tenant identification\nRequired: YES.",
+            "description": "Token is used for machine and tenant identification.",
             "title": "Token",
             "x-displayname": "Token",
             "x-ves-example": "Value",
@@ -33537,7 +33925,7 @@
             "x-validation-rules": {
               "ves.io.schema.rules.message.required": "true"
             },
-            "x-f5xc-description-short": "Token is used for machine and tenant identification Required: YES.",
+            "x-f5xc-description-short": "Token is used for machine and tenant identification.",
             "maxLength": 1024,
             "x-f5xc-constraints": {
               "constraintType": "string",
@@ -36789,13 +37177,13 @@
             "enforced": false
           },
           "recommendation": {
-            "primary": "system",
+            "primary": "custom",
             "alternatives": [],
-            "rationale": "Fleet management is platform-level orchestration"
+            "rationale": "Standard tenant resource"
           },
           "classification": {
-            "category": "infrastructure",
-            "multi_tenant_pattern": "none"
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
           }
         }
       },
@@ -36834,7 +37222,7 @@
           "system_metadata": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType"
+                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType__ves_io_schema_api_sec_api_crawler"
               }
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
@@ -36866,13 +37254,13 @@
             "enforced": false
           },
           "recommendation": {
-            "primary": "system",
+            "primary": "custom",
             "alternatives": [],
-            "rationale": "Fleet management is platform-level orchestration"
+            "rationale": "Standard tenant resource"
           },
           "classification": {
-            "category": "infrastructure",
-            "multi_tenant_pattern": "none"
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
           }
         }
       },
@@ -36885,7 +37273,7 @@
         "properties": {
           "allowed_devices": {
             "type": "array",
-            "description": "List of allowed USB devices\n\nRequired: YES.",
+            "description": "List of allowed USB devices.",
             "minItems": 1,
             "maxItems": 32,
             "items": {
@@ -36905,7 +37293,6 @@
               "ves.io.schema.rules.repeated.max_items": "32",
               "ves.io.schema.rules.repeated.min_items": "1"
             },
-            "x-f5xc-description-short": "List of allowed USB devices Required: YES.",
             "x-f5xc-constraints": {
               "constraintType": "array",
               "category": "discovery",
@@ -36947,13 +37334,13 @@
             "enforced": false
           },
           "recommendation": {
-            "primary": "system",
+            "primary": "custom",
             "alternatives": [],
-            "rationale": "Fleet management is platform-level orchestration"
+            "rationale": "Standard tenant resource"
           },
           "classification": {
-            "category": "infrastructure",
-            "multi_tenant_pattern": "none"
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
           }
         }
       },
@@ -37088,13 +37475,13 @@
             "enforced": false
           },
           "recommendation": {
-            "primary": "system",
+            "primary": "custom",
             "alternatives": [],
-            "rationale": "Fleet management is platform-level orchestration"
+            "rationale": "Standard tenant resource"
           },
           "classification": {
-            "category": "infrastructure",
-            "multi_tenant_pattern": "none"
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
           }
         }
       },
@@ -37233,7 +37620,7 @@
           "system_metadata": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType"
+                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType__ves_io_schema_api_sec_api_crawler"
               }
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
@@ -37271,13 +37658,13 @@
             "enforced": false
           },
           "recommendation": {
-            "primary": "system",
+            "primary": "custom",
             "alternatives": [],
-            "rationale": "Fleet management is platform-level orchestration"
+            "rationale": "Standard tenant resource"
           },
           "classification": {
-            "category": "infrastructure",
-            "multi_tenant_pattern": "none"
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
           }
         }
       },
@@ -37290,7 +37677,7 @@
         "properties": {
           "allowed_devices": {
             "type": "array",
-            "description": "List of allowed USB devices\n\nRequired: YES.",
+            "description": "List of allowed USB devices.",
             "minItems": 1,
             "maxItems": 32,
             "items": {
@@ -37310,7 +37697,6 @@
               "ves.io.schema.rules.repeated.max_items": "32",
               "ves.io.schema.rules.repeated.min_items": "1"
             },
-            "x-f5xc-description-short": "List of allowed USB devices Required: YES.",
             "x-f5xc-constraints": {
               "constraintType": "array",
               "category": "discovery",
@@ -37349,13 +37735,13 @@
             "enforced": false
           },
           "recommendation": {
-            "primary": "system",
+            "primary": "custom",
             "alternatives": [],
-            "rationale": "Fleet management is platform-level orchestration"
+            "rationale": "Standard tenant resource"
           },
           "classification": {
-            "category": "infrastructure",
-            "multi_tenant_pattern": "none"
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
           }
         }
       },
@@ -37371,7 +37757,7 @@
             "description": "Errors(if any) while listing items from collection.",
             "title": "errors",
             "items": {
-              "$ref": "#/components/schemas/schemaErrorType"
+              "$ref": "#/components/schemas/schemaErrorType__ves_io_schema_ai_assistant"
             },
             "x-displayname": "Errors",
             "x-f5xc-description-short": "Errors(if any) while listing items from collection.",
@@ -37431,13 +37817,13 @@
             "enforced": false
           },
           "recommendation": {
-            "primary": "system",
+            "primary": "custom",
             "alternatives": [],
-            "rationale": "Fleet management is platform-level orchestration"
+            "rationale": "Standard tenant resource"
           },
           "classification": {
-            "category": "infrastructure",
-            "multi_tenant_pattern": "none"
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
           }
         }
       },
@@ -37678,7 +38064,7 @@
           "system_metadata": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType"
+                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType__ves_io_schema_api_sec_api_crawler"
               }
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
@@ -37781,13 +38167,13 @@
             "enforced": false
           },
           "recommendation": {
-            "primary": "system",
+            "primary": "custom",
             "alternatives": [],
-            "rationale": "Fleet management is platform-level orchestration"
+            "rationale": "Standard tenant resource"
           },
           "classification": {
-            "category": "infrastructure",
-            "multi_tenant_pattern": "none"
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
           }
         }
       },
@@ -37846,13 +38232,13 @@
             "enforced": false
           },
           "recommendation": {
-            "primary": "system",
+            "primary": "custom",
             "alternatives": [],
-            "rationale": "Fleet management is platform-level orchestration"
+            "rationale": "Standard tenant resource"
           },
           "classification": {
-            "category": "infrastructure",
-            "multi_tenant_pattern": "none"
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
           }
         }
       },
@@ -37875,13 +38261,13 @@
             "enforced": false
           },
           "recommendation": {
-            "primary": "system",
+            "primary": "custom",
             "alternatives": [],
-            "rationale": "Fleet management is platform-level orchestration"
+            "rationale": "Standard tenant resource"
           },
           "classification": {
-            "category": "infrastructure",
-            "multi_tenant_pattern": "none"
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
           }
         }
       },
@@ -37894,7 +38280,7 @@
         "properties": {
           "allowed_devices": {
             "type": "array",
-            "description": "List of allowed USB devices\n\nRequired: YES.",
+            "description": "List of allowed USB devices.",
             "minItems": 1,
             "maxItems": 32,
             "items": {
@@ -37914,7 +38300,6 @@
               "ves.io.schema.rules.repeated.max_items": "32",
               "ves.io.schema.rules.repeated.min_items": "1"
             },
-            "x-f5xc-description-short": "List of allowed USB devices Required: YES.",
             "x-f5xc-constraints": {
               "constraintType": "array",
               "category": "discovery",
@@ -37954,13 +38339,13 @@
             "enforced": false
           },
           "recommendation": {
-            "primary": "system",
+            "primary": "custom",
             "alternatives": [],
-            "rationale": "Fleet management is platform-level orchestration"
+            "rationale": "Standard tenant resource"
           },
           "classification": {
-            "category": "infrastructure",
-            "multi_tenant_pattern": "none"
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
           }
         }
       },
@@ -38149,13 +38534,13 @@
             "enforced": false
           },
           "recommendation": {
-            "primary": "system",
+            "primary": "custom",
             "alternatives": [],
-            "rationale": "Fleet management is platform-level orchestration"
+            "rationale": "Standard tenant resource"
           },
           "classification": {
-            "category": "infrastructure",
-            "multi_tenant_pattern": "none"
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
           }
         }
       },
@@ -38232,13 +38617,13 @@
             "enforced": false
           },
           "recommendation": {
-            "primary": "system",
+            "primary": "custom",
             "alternatives": [],
-            "rationale": "Fleet management is platform-level orchestration"
+            "rationale": "Standard tenant resource"
           },
           "classification": {
-            "category": "infrastructure",
-            "multi_tenant_pattern": "none"
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
           }
         }
       },

@@ -12,6 +12,12 @@ from typing import Any
 
 import yaml
 
+from scripts.utils.interface_contract_enricher import (
+    InterfaceContractEnricher,
+    InterfaceContractValidationError,
+    validate_aws_telemetry_intake,
+)
+
 CONTRACT_FILE = "smsv2-contract.json"
 EVIDENCE_FILE = "smsv2-evidence-receipt.json"
 MANIFEST_FILE = "smsv2-contract-manifest.json"
@@ -49,6 +55,10 @@ def _parse_timestamp(value: object, field: str) -> datetime:
 
 
 def _load_contract(config_path: Path) -> dict[str, Any]:
+    try:
+        InterfaceContractEnricher(config_path)
+    except InterfaceContractValidationError as error:
+        raise Smsv2ReleaseValidationError(str(error)) from error
     config = yaml.safe_load(config_path.read_text())
     try:
         contract = config["contracts"]["securemesh_site_v2"]["contract"]
@@ -183,13 +193,18 @@ def validate_release_assets(
         "version"
     ) != manifest.get("contract_version"):
         raise Smsv2ReleaseValidationError("contract identity does not match manifest")
-    capabilities = contract.get("providers", {}).get("aws", {}).get("capabilities")
+    aws = contract.get("providers", {}).get("aws", {})
+    capabilities = aws.get("capabilities")
     if capabilities != {
         "aws_ce_create": "available",
         "runtime_status": "unavailable",
         "tgw_connect": "unavailable",
     }:
         raise Smsv2ReleaseValidationError("AWS SMSv2 capability model is unavailable or unproven")
+    try:
+        validate_aws_telemetry_intake(aws.get("telemetry_intake"))
+    except InterfaceContractValidationError as error:
+        raise Smsv2ReleaseValidationError(str(error)) from error
     return contract
 
 

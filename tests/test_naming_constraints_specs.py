@@ -27,6 +27,7 @@ pytestmark = pytest.mark.skipif(
 
 def _domain_specs() -> list[Path]:
     skip = {
+        "openapi.json",  # canonical provider graph excludes documentation-only projection
         "index.json",
         "validation.json",
         "minimal-export-defaults.json",

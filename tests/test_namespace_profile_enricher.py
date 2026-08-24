@@ -1,4 +1,5 @@
 """Tests for NamespaceProfileEnricher."""
+# pylint: disable=protected-access,use-implicit-booleaness-not-comparison  # Tests inspect internals and explicit result shapes.
 
 from __future__ import annotations
 
