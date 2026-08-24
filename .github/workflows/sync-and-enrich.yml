@@ -258,7 +258,12 @@ jobs:
         run: python -m scripts.analyze_constraints
 
       - name: Compile API catalog
-        run: python -m scripts.compile_catalog --input-dir docs/specifications/api --output release/api-catalog.json
+        run: python -m scripts.compile_catalog --input docs/specifications/api/openapi.json --output release/api-catalog.json
+
+      - name: Gate consecutive upstream contract removals
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python -m scripts.upstream_contract_removals
 
       - name: Save enriched output cache
         if: steps.enriched-cache.outputs.cache-hit != 'true'
@@ -758,6 +763,7 @@ jobs:
             docs/specifications/api/index.json
             docs/specifications/api/minimal-export-defaults.json
             release/api-catalog.json
+            release/upstream-contract-removals.json
             release-package/smsv2-contract.json
             release-package/smsv2-evidence-receipt.json
             release-package/smsv2-contract-manifest.json
@@ -775,10 +781,14 @@ jobs:
           fi
           NOTES_FILE=$(mktemp)
           trap 'rm -f "$NOTES_FILE"' EXIT
-          cat CHANGELOG.md > "$NOTES_FILE"
-          printf '\n' >> "$NOTES_FILE"
-          bash scripts/release/build-publication-receipt.sh \
-            "$VERSION" "$release_commit" "${ASSET_PATHS[@]}" >> "$NOTES_FILE"
+          {
+            cat CHANGELOG.md
+            printf '\n'
+            cat release/upstream-contract-removals.md
+            printf '\n'
+            bash scripts/release/build-publication-receipt.sh \
+              "$VERSION" "$release_commit" "${ASSET_PATHS[@]}"
+          } > "$NOTES_FILE"
 
           # Create release with ZIP package
           gh release create "v$VERSION" \

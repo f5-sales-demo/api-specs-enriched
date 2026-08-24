@@ -87,8 +87,7 @@ class GrammarImprover:
                 "DASH_RULE",  # Technical docs use various dash styles
             ]
             if self._tool is not None:
-                for rule in disabled_rules:
-                    self._tool.disable_rules(rule)
+                self._tool.disabled_rules = set(disabled_rules)
         except Exception:
             # Fall back to basic improvements if LanguageTool fails
             self._tool = None

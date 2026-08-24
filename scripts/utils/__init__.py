@@ -33,6 +33,7 @@ from .namespace_profile_enricher import NamespaceProfileEnricher
 from .operation_description_enricher import OperationDescriptionEnricher
 from .operation_metadata_enricher import OperationMetadataEnricher
 from .property_description_short_enricher import PropertyDescriptionShortEnricher
+from .prose_spelling import ProseSpellingTransformer
 from .readonly_enricher import ReadOnlyEnricher
 from .references_enricher import ReferencesEnricher
 from .resource_examples_enricher import ResourceExamplesEnricher
@@ -84,6 +85,7 @@ __all__ = [
     "OperationDescriptionEnricher",
     "OperationMetadataEnricher",
     "PropertyDescriptionShortEnricher",
+    "ProseSpellingTransformer",
     "ReadOnlyEnricher",
     "ReferencesEnricher",
     "ResourceExamplesEnricher",

@@ -91,7 +91,6 @@ def _is_terminal_additive(terminal: str, after: object) -> bool:
     return (
         terminal.startswith("x-")
         or terminal in _FREE_TEXT_KEYS
-        or _is_constraint_add(terminal, after)
         or _is_string_enum_add(terminal, after)
         or _is_schema_annotation_add(terminal, after)
         or _is_known_format_add(terminal, after)
@@ -111,18 +110,24 @@ def _is_dictionary_item_added_additive(
     return _is_additive_dict_add(pointer, after)
 
 
-_MERGE_ORDER_KEYS = frozenset(
-    {
-        "$ref",
-        "operationId",
-        "minLength",
-        "maxLength",
-        "minItems",
-        "maxItems",
-        "minimum",
-        "maximum",
-    }
-)
+_MINIMUM_KEYS = frozenset({"minLength", "minItems", "minimum"})
+_MAXIMUM_KEYS = frozenset({"maxLength", "maxItems", "maximum"})
+
+
+def _is_constraint_widening(terminal: str, before: object, after: object) -> bool:
+    """Accept only numeric bound changes that expand the accepted value space."""
+    if (
+        not isinstance(before, (int, float))
+        or isinstance(before, bool)
+        or not isinstance(after, (int, float))
+        or isinstance(after, bool)
+    ):
+        return False
+    if terminal in _MINIMUM_KEYS:
+        return after < before
+    if terminal in _MAXIMUM_KEYS:
+        return after > before
+    return False
 
 
 def _is_values_changed_additive(
@@ -134,8 +139,8 @@ def _is_values_changed_additive(
     """Dispatch table for ``values_changed`` changes."""
     if terminal in {"description", "summary", "title", "example"}:
         return True
-    if terminal in _MERGE_ORDER_KEYS:
-        return True
+    if terminal in _MINIMUM_KEYS | _MAXIMUM_KEYS:
+        return _is_constraint_widening(terminal, before, after)
     if _under_x_extension(pointer):
         return True
     parent = _parent_key(pointer)

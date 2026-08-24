@@ -21,6 +21,26 @@ env:
   PYTHON_VERSION: '3.13.7'
 
 jobs:
+  pylint:
+    name: Pylint
+    # Fork pull requests must never execute untrusted code on a self-hosted runner.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: [self-hosted, Linux, X64, api-specs-enriched, ubuntu-24.04]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Setup Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run Pylint
+        run: python -m pylint scripts tests
+
   pytest:
     name: Run pytest suite
     # Fork pull requests must never receive a repository self-hosted runner.
@@ -98,6 +118,11 @@ jobs:
         # --force: .etag tracks version but specs/original/ is gitignored
         # and absent in CI. Without --force, download skips with 'No updates'.
         run: python -m scripts.download --force
+
+      - name: Gate consecutive upstream contract removals
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python -m scripts.upstream_contract_removals
 
       - name: Run enrichment pipeline
         # Override Makefile's PYTHON=.venv/bin/python since CI installs

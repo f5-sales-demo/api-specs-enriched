@@ -5,12 +5,11 @@
 #   specs/original/          - READ-ONLY source from F5 (gitignored, downloaded on demand)
 #   docs/specifications/api/ - Merged domain specs (served directly by GitHub Pages)
 #
-# ETag-based caching: Downloads only when F5 source has changed, minimizing bandwidth.
-# The .etag file stores the last downloaded version for comparison.
+# Release-based caching uses the stable upstream identity and six-field receipt.
 #
 # Usage:
 #   make build          - Full pipeline (download → enrich → normalize → merge)
-#   make download       - Download specs (only if changed, uses ETag caching)
+#   make download       - Download the pinned stable upstream release
 #   make download-force - Force download even if unchanged
 #   make pipeline       - Run unified pipeline (enrich + normalize + merge)
 #   make serve          - Serve docs locally
@@ -42,7 +41,7 @@
 #       ├── openapi.json    (master combined spec)
 #       └── index.json      (spec metadata)
 
-.PHONY: all build clean install download download-force pipeline enrich normalize merge lint validate validate-domains serve help check-deps venv pre-commit-install pre-commit-run pre-commit-uninstall discover discover-namespace discover-dry-run discover-cli enrich-with-discovery constraint-report build-enriched pipeline-enriched push-discovery discover-and-push api-viewer catalog test
+.PHONY: all build clean install download download-force pipeline enrich normalize merge lint pylint validate validate-domains serve help check-deps venv pre-commit-install pre-commit-run pre-commit-uninstall discover discover-namespace discover-dry-run discover-cli enrich-with-discovery constraint-report build-enriched pipeline-enriched push-discovery discover-and-push api-viewer catalog test
 
 # Virtual environment
 VENV := .venv
@@ -77,11 +76,11 @@ install: venv
 	$(PIP) install -r requirements.txt
 	@echo "Dependencies installed successfully"
 
-# Download specifications from F5 (with ETag caching - only downloads if changed)
+# Download specifications from the latest stable upstream GitHub release
 download:
 	$(PYTHON) -m scripts.download
 
-# Force download even if ETag hasn't changed
+# Force download even if the recorded release identity is unchanged
 download-force:
 	$(PYTHON) -m scripts.download --force
 
@@ -105,14 +104,17 @@ api-viewer:
 	$(PYTHON) -m scripts.generate_api_viewer
 
 # Compile API catalog from enriched specs
-catalog: ## Compile API catalog from enriched specs
+catalog: ## Compile API catalog from the canonical OpenAPI master
 	@echo "Compiling API catalog..."
-	$(PYTHON) -m scripts.compile_catalog --input-dir docs/specifications/api --output release/api-catalog.json
+	$(PYTHON) -m scripts.compile_catalog --input docs/specifications/api/openapi.json --output release/api-catalog.json
 	@echo "Catalog compiled to release/api-catalog.json"
 
 # Run the pytest suite (honours pyproject.toml addopts, including coverage)
 test: check-deps
 	$(PYTHON) -m pytest
+
+pylint: check-deps
+	$(PYTHON) -m pylint scripts tests
 
 # Lint specifications with Spectral (requires: npm install -g @stoplight/spectral-cli)
 lint:
@@ -231,11 +233,10 @@ clean:
 	@echo "Cleaned generated files. Original specs preserved."
 
 # Deep clean - removes everything including downloaded specs
-# Note: Version is now derived from git tags, not .version file
+# The release workflow commits the explicit build version with generated artifacts.
 clean-all: clean
 	rm -rf specs/original
 	rm -rf specs/discovered
-	rm -f .etag
 	@echo "Deep clean complete. Run 'make download' to fetch specs."
 
 # Quick rebuild - skip download, run pipeline only
@@ -273,9 +274,9 @@ help:
 	@echo "  clean          Remove generated files (keeps original specs)"
 	@echo "  clean-all      Remove all generated files including downloads"
 	@echo ""
-	@echo "Download (with ETag caching to minimize bandwidth):"
-	@echo "  download       Download specs from F5 (only if changed, uses ETag)"
-	@echo "  download-force Force download even if ETag unchanged"
+	@echo "Download (stable release identity and verified digest):"
+	@echo "  download       Download specs when the upstream release changes"
+	@echo "  download-force Force download even if release identity is unchanged"
 	@echo ""
 	@echo "Pipeline:"
 	@echo "  pipeline       Run unified pipeline (enrich → normalize → merge)"

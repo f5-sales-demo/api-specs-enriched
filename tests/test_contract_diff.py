@@ -1,4 +1,5 @@
 # Copyright (c) 2026 Robin Mordasiewicz. MIT License.
+# pylint: disable=use-implicit-booleaness-not-comparison  # Explicit empty results document the expected shape.
 
 """Tests for the structural contract-diff driver."""
 
@@ -381,3 +382,16 @@ def test_multi_member_allof_is_not_flattened() -> None:
         },
     }
     assert run_contract_diff(input_spec, output_spec) != []
+
+
+@pytest.mark.parametrize("wrapped", [False, True])
+def test_retargeted_ref_is_a_shape_change(wrapped: bool) -> None:
+    def reference(name: str) -> dict:
+        direct = {"$ref": f"#/components/schemas/{name}"}
+        return {"allOf": [direct]} if wrapped else direct
+
+    before = {"components": {"schemas": {"Foo": {"properties": {"bar": reference("Bar")}}}}}
+    after = {"components": {"schemas": {"Foo": {"properties": {"bar": reference("Baz")}}}}}
+    violations = run_contract_diff(before, after)
+    assert violations
+    assert all(violation.rule_category == "shape-change" for violation in violations)

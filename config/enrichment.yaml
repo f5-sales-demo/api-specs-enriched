@@ -198,6 +198,28 @@ branding:
       replacement: "Wi-Fi"
       case_sensitive: true
 
+# Reviewed upstream typo corrections. This pass has its own fail-closed guard:
+# a search term that occurs inside any property name or enum member rejects the
+# source graph instead of risking a wire-contract rewrite.
+spelling_corrections:
+  fields:
+    - description
+    - summary
+    - title
+    - x-f5xc-description-short
+    - x-f5xc-description-medium
+  replacements:
+    - search: "\u0072\u0065\u0071\u0075\u0065\u0073\u0074\u006f\u0072"
+      replacement: requester
+    - search: "\u0074\u0068\u0061\u0074\u0073"
+      replacement: "that's"
+    - search: "\u0070\u0061\u0074\u0068\u0065\u0073"
+      replacement: paths
+    - search: "\u0069\u006d\u0070\u006c\u0065\u006d\u0065\u006e\u0074\u006f\u0072\u0073"
+      replacement: implementers
+    - search: "\u0065\u0076\u0065\u006e\u0074\u0068\u006f\u0075\u0067\u0068"
+      replacement: even though
+
 # Grammar improvements
 grammar:
   # Capitalize first letter of sentences

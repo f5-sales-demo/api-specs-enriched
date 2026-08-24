@@ -527,15 +527,8 @@ def test_catalog_sections_are_byte_identical_across_runs():
 # Path collisions
 # --------------------------------------------------------------------------- #
 #
-# Two source specifications can claim the same path and method with different
-# operationIds. Merging is last-writer-wins by filename sort order, so one identity
-# used to disappear from the catalog on alphabetical accident alone — measured:
-# ves.io.schema.discovery_cloud lost /api/discovery/namespaces/{namespace}/
-# suggest-values to ves.io.schema.discovered_service, leaving 282 of 283 identities.
-#
-# A silent loss is the one outcome this section exists to prevent, so the loser is
-# published as an exclusion instead: still absent from apiOperations, but now stated,
-# with the winner named.
+# Duplicate path/method contracts are either byte-identical, an explicitly registered
+# alias, or an error. No source may disappear through filename-order winner selection.
 
 
 def _spec_file(tmp_path, name, path, method, operation_id):
@@ -543,21 +536,15 @@ def _spec_file(tmp_path, name, path, method, operation_id):
     (tmp_path / name).write_text(json.dumps(spec))
 
 
-def test_merge_records_a_collision_when_operation_ids_differ(tmp_path):
+def test_merge_rejects_unclassified_operation_id_conflicts(tmp_path):
     from scripts.compile_catalog import merge_spec_files
+    from scripts.utils.canonical_merge import CanonicalMergeError
 
     _spec_file(tmp_path, "aaa.json", "/api/x/y", "post", "ves.io.schema.first.CustomAPI.Do")
     _spec_file(tmp_path, "zzz.json", "/api/x/y", "post", "ves.io.schema.second.CustomAPI.Do")
 
-    merged = merge_spec_files(tmp_path)
-    collisions = merged["x-f5xc-path-collisions"]
-    assert len(collisions) == 1
-    collision = collisions[0]
-    # Later filename wins the merge, so the earlier one is the loser.
-    assert collision["losingOperationId"] == "ves.io.schema.first.CustomAPI.Do"
-    assert collision["winningOperationId"] == "ves.io.schema.second.CustomAPI.Do"
-    assert collision["path"] == "/api/x/y"
-    assert collision["method"] == "POST"
+    with pytest.raises(CanonicalMergeError, match="unclassified duplicate operation"):
+        merge_spec_files(tmp_path)
 
 
 def test_merge_records_no_collision_for_an_identical_duplicate(tmp_path):
@@ -568,43 +555,3 @@ def test_merge_records_no_collision_for_an_identical_duplicate(tmp_path):
     _spec_file(tmp_path, "zzz.json", "/api/x/y", "post", "ves.io.schema.same.CustomAPI.Do")
 
     assert merge_spec_files(tmp_path).get("x-f5xc-path-collisions", []) == []
-
-
-def test_collision_loser_is_published_as_an_exclusion(tmp_path):
-    from scripts.compile_catalog import merge_spec_files
-
-    _spec_file(tmp_path, "aaa.json", "/api/x/y", "post", "ves.io.schema.first.CustomAPI.Do")
-    _spec_file(tmp_path, "zzz.json", "/api/x/y", "post", "ves.io.schema.second.CustomAPI.Do")
-
-    catalog = compile_catalog(merge_spec_files(tmp_path))
-    published = {e["apiIdentity"] for e in catalog["apiOperations"]}
-    excluded = {e["apiIdentity"] for e in catalog["apiExclusions"]}
-
-    assert published == {"ves.io.schema.second"}
-    assert excluded == {"ves.io.schema.first"}
-    assert not published & excluded
-
-    entry = catalog["apiExclusions"][0]
-    assert entry["classification"] == "path-collision"
-    # The reason has to name the winner, or the exclusion is unactionable.
-    assert "ves.io.schema.second" in entry["reason"]
-    assert "/api/x/y" in entry["reason"]
-
-
-def test_collision_loser_that_also_wins_elsewhere_stays_published(tmp_path):
-    """An identity losing one path but owning another is not excluded.
-
-    Excluding it would claim the whole API is unavailable when only one operation
-    was displaced.
-    """
-    from scripts.compile_catalog import merge_spec_files
-
-    _spec_file(tmp_path, "aaa.json", "/api/x/y", "post", "ves.io.schema.first.CustomAPI.Do")
-    _spec_file(tmp_path, "bbb.json", "/api/x/other", "get", "ves.io.schema.first.CustomAPI.List")
-    _spec_file(tmp_path, "zzz.json", "/api/x/y", "post", "ves.io.schema.second.CustomAPI.Do")
-
-    catalog = compile_catalog(merge_spec_files(tmp_path))
-    published = {e["apiIdentity"] for e in catalog["apiOperations"]}
-    excluded = {e["apiIdentity"] for e in catalog["apiExclusions"]}
-    assert published == {"ves.io.schema.first", "ves.io.schema.second"}
-    assert excluded == set()

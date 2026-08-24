@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# pylint: disable=protected-access  # Tests intentionally verify deterministic internal helpers.
 """
 Unit tests for UniquenessEnricher
 

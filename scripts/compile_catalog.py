@@ -17,6 +17,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from scripts.utils.canonical_merge import canonical_merge_sources
 from scripts.utils.pii_sanitizer import sanitize_emails
 from scripts.utils.version_calculator import get_version_from_tags
 
@@ -37,10 +38,17 @@ F5XC_DEFAULTS = {
 
 
 def merge_spec_files(dir_path: Path) -> dict[str, Any]:
-    """Read all OpenAPI JSON files in a directory and merge their paths and components."""
-    merged_paths: dict[str, Any] = {}
-    merged_schemas: dict[str, Any] = {}
-    collisions: list[dict[str, Any]] = []
+    """Load the canonical master, or fail-closed merge genuine source files.
+
+    Release catalog compilation must never reconstruct a contract from enriched domain
+    projections. The directory form remains useful for source fixtures and delegates to
+    the same canonical engine as the pipeline.
+    """
+    master = dir_path / "openapi.json"
+    if master.is_file():
+        with master.open(encoding="utf-8") as stream:
+            return json.load(stream)
+    specs: dict[str, dict[str, Any]] = {}
     versions: set[str] = set()
 
     for spec_file in sorted(dir_path.glob("*.json")):
@@ -64,57 +72,13 @@ def merge_spec_files(dir_path: Path) -> dict[str, Any]:
         if isinstance(version, str) and version:
             versions.add(version)
 
-        for path, path_item in paths.items():
-            if not isinstance(path_item, dict):
-                continue
-            if path not in merged_paths:
-                merged_paths[path] = {}
-            # Two specifications can claim the same path and method with different
-            # operationIds. update() is last-writer-wins, and files are read in
-            # filename order, so the loser used to vanish on alphabetical accident:
-            # ves.io.schema.discovery_cloud lost
-            # /api/discovery/namespaces/{namespace}/suggest-values to
-            # ves.io.schema.discovered_service, leaving 282 of 283 identities in the
-            # catalog with nothing recording the 283rd.
-            #
-            # The merge still resolves the same way — an OpenAPI document cannot hold
-            # two operations on one path and method — but the displacement is now
-            # recorded so it can be published rather than lost.
-            for method, incoming in path_item.items():
-                if method in _NON_OPERATION_KEYS or not isinstance(incoming, dict):
-                    continue
-                existing = merged_paths[path].get(method)
-                if not isinstance(existing, dict):
-                    continue
-                previous_id = existing.get("operationId") or ""
-                incoming_id = incoming.get("operationId") or ""
-                if previous_id and incoming_id and previous_id != incoming_id:
-                    collisions.append(
-                        {
-                            "path": path,
-                            "method": method.upper(),
-                            "winningOperationId": incoming_id,
-                            "losingOperationId": previous_id,
-                        },
-                    )
-            merged_paths[path].update(path_item)
-
-        # Merge components.schemas
-        schemas = spec.get("components", {}).get("schemas", {})
-        merged_schemas.update(schemas)
+        specs[spec_file.name] = spec
 
     if len(versions) > 1:
         raise ValueError(f"input specifications have inconsistent versions: {sorted(versions)}")
 
-    merged = {
-        "openapi": "3.0.3",
-        "paths": merged_paths,
-        "components": {"schemas": merged_schemas},
-        "x-f5xc-path-collisions": sorted(
-            collisions,
-            key=lambda c: (c["path"], c["method"], c["losingOperationId"]),
-        ),
-    }
+    result = canonical_merge_sources(specs)
+    merged = {"openapi": "3.0.3", **result.merged}
     if versions:
         merged["info"] = {"version": next(iter(versions))}
     return merged
@@ -313,19 +277,33 @@ def _resolve_body_schema(
     )
     if not body_schema:
         return None
-    if "$ref" in body_schema and components:
-        ref_key = body_schema["$ref"].split("/")[-1]
+    ref = _schema_ref(body_schema)
+    if ref and components:
+        ref_key = ref.split("/")[-1]
         resolved = components.get("schemas", {}).get(ref_key, {})
         if resolved:
             return resolved
     return body_schema
 
 
+def _schema_ref(schema: dict[str, Any]) -> str | None:
+    """Return a direct or single-member allOf-wrapped local reference."""
+    direct = schema.get("$ref")
+    if isinstance(direct, str):
+        return direct
+    all_of = schema.get("allOf")
+    if isinstance(all_of, list):
+        for member in all_of:
+            if isinstance(member, dict) and isinstance(member.get("$ref"), str):
+                return member["$ref"]
+    return None
+
+
 def _resolve_schema_ref(
     schema: dict[str, Any], components: dict[str, Any] | None
 ) -> dict[str, Any]:
     """Resolve a $ref to its target schema. Returns original if unresolvable."""
-    ref = schema.get("$ref")
+    ref = _schema_ref(schema)
     if not ref or not components:
         return schema
     ref_key = ref.split("/")[-1]
@@ -598,6 +576,9 @@ def _build_operation(
         "dangerLevel": assign_danger_level(method),
         "parameters": extract_parameters(path, operation),
     }
+    aliases = operation.get("x-f5xc-operation-aliases")
+    if aliases:
+        op["operationAliases"] = list(aliases)
     body_schema = _resolve_body_schema(operation, components)
     if body_schema:
         op["bodySchema"] = body_schema
@@ -746,7 +727,7 @@ def _request_schema_key(operation: dict[str, Any]) -> str | None:
         .get("application/json", {})
         .get("schema", {})
     )
-    ref = schema.get("$ref")
+    ref = _schema_ref(schema) if isinstance(schema, dict) else None
     if not isinstance(ref, str) or not ref:
         return None
     return ref.rsplit("/", 1)[-1]
@@ -759,7 +740,7 @@ def _response_schema_key(operation: dict[str, Any]) -> str | None:
         if not str(status).startswith("2") or not isinstance(response, dict):
             continue
         schema = (response.get("content") or {}).get("application/json", {}).get("schema", {})
-        ref = schema.get("$ref") if isinstance(schema, dict) else None
+        ref = _schema_ref(schema) if isinstance(schema, dict) else None
         if isinstance(ref, str) and ref:
             refs.add(ref.rsplit("/", 1)[-1])
     if len(refs) > 1:

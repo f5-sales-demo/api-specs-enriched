@@ -304,7 +304,14 @@ class DescriptionStructureTransformer:
         ]
 
         is_required = False
-        result = description
+        # Requiredness belongs in the machine-readable markers. Remove standalone
+        # upstream YES/NO assertions wherever they occur without deriving a second,
+        # potentially contradictory signal from prose.
+        result = re.sub(
+            r"(?im)^[ \t]*Required:\s*(?:YES|NO)\s*[.!]?[ \t]*(?:\n|$)",
+            "",
+            description,
+        )
 
         for pattern in patterns:
             if re.match(pattern, result, flags=re.IGNORECASE):

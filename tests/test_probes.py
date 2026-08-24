@@ -1,4 +1,5 @@
 """Unit tests for all probe strategies."""
+# pylint: disable=use-implicit-booleaness-not-comparison  # Explicit empty results document the expected shape.
 
 # pylint: disable=attribute-defined-outside-init
 

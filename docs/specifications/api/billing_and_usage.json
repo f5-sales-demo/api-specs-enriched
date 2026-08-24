@@ -3,7 +3,7 @@
   "info": {
     "title": "Billing And Usage",
     "description": "Subscription lifecycle with plan transitions and billing states. Payment method hierarchies supporting primary and secondary configurations. Invoice generation with PDF downloads and custom listing. Resource quotas per namespace with limit definitions and consumption metrics. Contact types for billing notifications and tenant deletion workflows.",
-    "version": "2026.08.20",
+    "version": "2.1.222",
     "contact": {
       "name": "F5 Distributed Cloud",
       "url": "https://docs.cloud.f5.com"
@@ -4265,7 +4265,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/subscriptionSubscribeResponse"
+                  "$ref": "#/components/schemas/subscriptionSubscribeResponse__ves_io_schema_subscription"
                 }
               }
             }
@@ -4363,7 +4363,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/subscriptionSubscribeRequest"
+                "$ref": "#/components/schemas/subscriptionSubscribeRequest__ves_io_schema_subscription"
               }
             }
           },
@@ -4471,7 +4471,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/subscriptionUnsubscribeResponse"
+                  "$ref": "#/components/schemas/subscriptionUnsubscribeResponse__ves_io_schema_subscription"
                 }
               }
             }
@@ -4569,7 +4569,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/subscriptionUnsubscribeRequest"
+                "$ref": "#/components/schemas/subscriptionUnsubscribeRequest__ves_io_schema_subscription"
               }
             }
           },
@@ -6056,7 +6056,7 @@
           },
           "filters": {
             "type": "array",
-            "description": "List of usage_type queries and the corresponding object/namespace filters\n\nRequired: YES.",
+            "description": "List of usage_type queries and the corresponding object/namespace filters.",
             "title": "Name",
             "items": {
               "$ref": "#/components/schemas/billingUsageDataFilter"
@@ -6069,7 +6069,7 @@
             "x-validation-rules": {
               "ves.io.schema.rules.message.required": "true"
             },
-            "x-f5xc-description-short": "List of usage_type queries and the corresponding object/namespace filters Required: YES.",
+            "x-f5xc-description-short": "List of usage_type queries and the corresponding object/namespace filters.",
             "x-f5xc-required-for": {
               "minimum_config": true,
               "create": true,
@@ -7888,13 +7888,13 @@
             "enforced": false
           },
           "recommendation": {
-            "primary": "system",
+            "primary": "custom",
             "alternatives": [],
-            "rationale": "Quotas are platform-level limits"
+            "rationale": "Standard tenant resource"
           },
           "classification": {
             "category": "application",
-            "multi_tenant_pattern": "none"
+            "multi_tenant_pattern": "per-tenant"
           }
         }
       },
@@ -8174,13 +8174,13 @@
             "enforced": false
           },
           "recommendation": {
-            "primary": "system",
+            "primary": "custom",
             "alternatives": [],
-            "rationale": "Quotas are platform-level limits"
+            "rationale": "Standard tenant resource"
           },
           "classification": {
             "category": "application",
-            "multi_tenant_pattern": "none"
+            "multi_tenant_pattern": "per-tenant"
           }
         }
       },
@@ -9727,13 +9727,13 @@
             "enforced": false
           },
           "recommendation": {
-            "primary": "system",
+            "primary": "custom",
             "alternatives": [],
-            "rationale": "Quotas are platform-level limits"
+            "rationale": "Standard tenant resource"
           },
           "classification": {
             "category": "application",
-            "multi_tenant_pattern": "none"
+            "multi_tenant_pattern": "per-tenant"
           }
         }
       },
@@ -9964,7 +9964,7 @@
           "system_metadata": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType"
+                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType__ves_io_schema_api_sec_api_crawler"
               }
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
@@ -10399,7 +10399,7 @@
           "system_metadata": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType"
+                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType__ves_io_schema_api_sec_api_crawler"
               }
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
@@ -10579,7 +10579,7 @@
             "description": "Errors(if any) while listing items from collection.",
             "title": "errors",
             "items": {
-              "$ref": "#/components/schemas/schemaErrorType"
+              "$ref": "#/components/schemas/schemaErrorType__ves_io_schema_ai_assistant"
             },
             "x-displayname": "Errors",
             "x-f5xc-description-short": "Errors(if any) while listing items from collection.",
@@ -10885,7 +10885,7 @@
           "system_metadata": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType"
+                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType__ves_io_schema_api_sec_api_crawler"
               }
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
@@ -11458,7 +11458,7 @@
           }
         }
       },
-      "schemaErrorType": {
+      "schemaErrorType__ves_io_schema_ai_assistant": {
         "type": "object",
         "description": "Information about a error in API operation.",
         "title": "ErrorType",
@@ -11629,7 +11629,7 @@
           }
         }
       },
-      "schemaInitializersType": {
+      "schemaInitializersType__ves_io_schema_api_sec_api_crawler": {
         "type": "object",
         "description": "Initializers tracks the progress of initialization of a configuration object.",
         "title": "InitializersType",
@@ -11806,7 +11806,7 @@
           },
           "name": {
             "type": "string",
-            "description": "This is the name of configuration object. It has to be unique within the namespace.\nIt can only be specified during create API and cannot be changed during replace API.\nThe value of name has to follow DNS-1035 format.\nRequired: YES.",
+            "description": "This is the name of configuration object. It has to be unique within the namespace.\nIt can only be specified during create API and cannot be changed during replace API.\nThe value of name has to follow DNS-1035 format.",
             "title": "name",
             "x-displayname": "Name",
             "x-ves-example": "Example-corp-web.",
@@ -12050,7 +12050,7 @@
           },
           "name": {
             "type": "string",
-            "description": "This is the name of configuration object. It has to be unique within the namespace.\nIt can only be specified during create API and cannot be changed during replace API.\nThe value of name has to follow DNS-1035 format.\nRequired: YES.",
+            "description": "This is the name of configuration object. It has to be unique within the namespace.\nIt can only be specified during create API and cannot be changed during replace API.\nThe value of name has to follow DNS-1035 format.",
             "title": "name",
             "x-displayname": "Name",
             "x-ves-example": "Example-corp-web.",
@@ -12507,7 +12507,7 @@
           },
           "name": {
             "type": "string",
-            "description": "This is the name of configuration object. It has to be unique within the namespace.\nIt can only be specified during create API and cannot be changed during replace API.\nThe value of name has to follow DNS-1035 format.\nRequired: YES.",
+            "description": "This is the name of configuration object. It has to be unique within the namespace.\nIt can only be specified during create API and cannot be changed during replace API.\nThe value of name has to follow DNS-1035 format.",
             "title": "name",
             "x-displayname": "Name",
             "x-ves-example": "Example-corp-web.",
@@ -13028,7 +13028,7 @@
           }
         }
       },
-      "schemaSystemObjectGetMetaType": {
+      "schemaSystemObjectGetMetaType__ves_io_schema_api_sec_api_crawler": {
         "type": "object",
         "description": "SystemObjectGetMetaType is metadata generated or populated by the system for all persisted objects and\ncannot be updated directly by users.",
         "title": "SystemObjectGetMetaType",
@@ -13166,7 +13166,7 @@
           "initializers": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/schemaInitializersType"
+                "$ref": "#/components/schemas/schemaInitializersType__ves_io_schema_api_sec_api_crawler"
               }
             ],
             "x-f5xc-description-short": "Configuration parameter for initializers.",
@@ -14510,7 +14510,7 @@
           }
         }
       },
-      "subscriptionSubscribeRequest": {
+      "subscriptionSubscribeRequest__ves_io_schema_subscription": {
         "type": "object",
         "description": "Request to subscribe to one of addon services.",
         "title": "SubscribeRequest",
@@ -14920,7 +14920,7 @@
           }
         }
       },
-      "subscriptionSubscribeResponse": {
+      "subscriptionSubscribeResponse__ves_io_schema_subscription": {
         "type": "object",
         "description": "Response for subscribe.",
         "title": "SubscribeResponse",
@@ -14952,7 +14952,7 @@
           }
         }
       },
-      "subscriptionUnsubscribeRequest": {
+      "subscriptionUnsubscribeRequest__ves_io_schema_subscription": {
         "type": "object",
         "description": "Request to unsubscribe to one of addon services.",
         "title": "UnsubscribeRequest",
@@ -15362,7 +15362,7 @@
           }
         }
       },
-      "subscriptionUnsubscribeResponse": {
+      "subscriptionUnsubscribeResponse__ves_io_schema_subscription": {
         "type": "object",
         "description": "Response for unsubscribe.",
         "title": "UnsubscribeResponse",

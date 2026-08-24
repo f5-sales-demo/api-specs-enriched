@@ -186,12 +186,12 @@ defaults.resources.origin_pool
 
 Origin servers can be specified using different type variants. The type determines what additional fields are required.
 
-### Implemented Types
+### Emitted Types
 
 | Type          | Description                          | Required Fields | Status      |
 | ------------- | ------------------------------------ | --------------- | ----------- |
-| `public_name` | Origin server with public DNS name   | `dns_name`      | ✅ Complete |
-| `public_ip`   | Origin server with public IP address | `ip` (IPv4)     | ✅ Complete |
+| `public_name` | Origin server with public DNS name   | `dns_name`      | Emitted     |
+| `public_ip`   | Origin server with public IP address | `ip` (IPv4)     | Emitted     |
 
 ### Example: public_name
 
@@ -221,30 +221,29 @@ Origin servers can be specified using different type variants. The type determin
 }
 ```
 
-## TODO: Site-Dependent Origin Server Types
+## Site-Dependent Origin Server Types
 
-The following origin server types require "site" resource logic development before implementation:
+The generated artifact currently emits these variants and their measured
+`site_locator` dependency metadata:
 
 | Type             | Description                                        | Required Fields                                           | Status                |
 | ---------------- | -------------------------------------------------- | --------------------------------------------------------- | --------------------- |
-| `private_ip`     | Origin server with private/public IP and site info | `ip`, `site_locator`, `network_choice`, `snat_pool`       | 🔲 Pending site logic |
-| `private_name`   | Origin server with DNS name and site info          | `dns_name`, `site_locator`, `network_choice`, `snat_pool` | 🔲 Pending site logic |
-| `k8s_service`    | Kubernetes service with site info                  | `service_name`, `site_locator`, `network_choice`          | 🔲 Pending site logic |
-| `consul_service` | HashiCorp Consul service with site info            | `service_name`, `site_locator`, `network_choice`          | 🔲 Pending site logic |
+| `private_ip`     | Origin server with private/public IP and site info | `ip`, `site_locator`, `network_choice`, `snat_pool`       | Emitted               |
+| `private_name`   | Origin server with DNS name and site info          | `dns_name`, `site_locator`, `network_choice`, `snat_pool` | Emitted               |
+| `k8s_service`    | Kubernetes service with site info                  | `service_name`, `site_locator`, `network_choice`          | Emitted               |
+| `consul_service` | HashiCorp Consul service with site info            | `service_name`, `site_locator`, `network_choice`          | Emitted               |
 
-### Implementation Requirements
+### Current Emitted Metadata
 
-Before these types can be fully documented:
+The emitted contract records:
 
-1. **Site Resource Discovery** - Document `site` resource schema and site_locator patterns
-2. **Network Choice Enum** - Document `network_choice` constrained values (site_local_inside, site_local_outside, etc.)
-3. **SNAT Pool Options** - Document SNAT pool configuration patterns
-4. **Cross-Resource References** - Define how origin_pool references site resources
+1. **Site locator requirements** for site-dependent variants
+2. **Network-choice constraints** where measured
+3. **SNAT-pool fields** supplied by the upstream schema
+4. **Cross-resource dependency metadata** for site and virtual-site references
 
-### Tracking
-
-- Configuration placeholder: `config/discovered_defaults.yaml` → `origin_pool.origin_server_types.enums`
-- Related sprint: Site resource schema enrichments
+The source is `config/minimum_configs.yaml` and the versioned OpenAPI artifact,
+not a future implementation recommendation.
 
 ## Related Documentation
 

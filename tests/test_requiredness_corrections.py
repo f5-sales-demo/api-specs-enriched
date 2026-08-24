@@ -16,6 +16,7 @@ terraform-provider-xcsh reads both, ORed together, so the stale one wins.
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 import pytest
@@ -155,3 +156,27 @@ class TestPassportIsRequired:
         for decorative in ("labels", "annotations"):
             assert "x-ves-required" not in props[decorative]
             assert not required_for_create(props[decorative])
+
+
+def test_no_property_description_reasserts_requiredness() -> None:
+    master_path = SPEC_DIR / "openapi.json"
+    if not master_path.exists():  # pragma: no cover - artifacts are committed
+        pytest.skip(f"{master_path} not built")
+    master = json.loads(master_path.read_text())
+    marker = re.compile(r"(?im)^\s*Required:\s*(?:YES|NO)\s*[.!]?\s*$")
+    offenders = []
+    for schema_name, schema in master.get("components", {}).get("schemas", {}).items():
+        for property_name, prop in schema.get("properties", {}).items():
+            if not isinstance(prop, dict):
+                continue
+            fields = (
+                "description",
+                "x-f5xc-description-short",
+                "x-f5xc-description-medium",
+            )
+            offenders.extend(
+                f"{schema_name}.{property_name}.{field}"
+                for field in fields
+                if marker.search(prop.get(field, ""))
+            )
+    assert not offenders, f"requiredness prose reappeared: {offenders[:10]}"

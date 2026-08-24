@@ -40,6 +40,7 @@ from scripts.utils import (
     GrammarImprover,
     MinimumConfigurationEnricher,
     NamespaceProfileEnricher,
+    ProseSpellingTransformer,
     SchemaFixer,
     UniquenessEnricher,
 )
@@ -311,6 +312,7 @@ def enrich_spec_file(
         # 1. Branding transformations first (most specific)
         # 1a. Legacy Volterra→F5 branding
         spec = branding_transformer.transform_spec(spec, target_fields)
+        spec = ProseSpellingTransformer().transform_spec(spec)
         # 1b. Industry-standard XKS/XCS terminology normalization
         spec = branding_normalizer.normalize_spec(spec, target_fields)
 

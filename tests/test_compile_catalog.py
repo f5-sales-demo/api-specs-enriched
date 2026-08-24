@@ -1,6 +1,8 @@
 """Tests for scripts.compile_catalog — catalog compiler unit and integration tests."""
+# pylint: disable=use-implicit-booleaness-not-comparison  # Explicit empty results document the expected shape.
 
 # pylint: disable=missing-function-docstring
+import copy
 import json
 import sys
 import tempfile
@@ -292,7 +294,9 @@ def test_merge_spec_files_preserves_the_release_version(tmp_path):
         "paths": {"/api/widgets": {"get": {"responses": {}}}},
     }
     (tmp_path / "widgets.json").write_text(json.dumps(spec), encoding="utf-8")
-    (tmp_path / "duplicate.json").write_text(json.dumps(spec), encoding="utf-8")
+    second = copy.deepcopy(spec)
+    second["paths"] = {"/api/other-widgets": {"get": {"responses": {}}}}
+    (tmp_path / "other.json").write_text(json.dumps(second), encoding="utf-8")
 
     assert merge_spec_files(tmp_path)["info"]["version"] == "2.1.220"
 
@@ -674,6 +678,19 @@ def test_resolve_schema_ref_returns_original_if_ref_not_found():
     schema = {"$ref": "#/components/schemas/Missing"}
     result = _resolve_schema_ref(schema, {"schemas": {}})
     assert result is schema
+
+
+def test_resolve_schema_ref_unwraps_scalar_allof_reference():
+    from scripts.compile_catalog import _resolve_schema_ref
+
+    components = {"schemas": {"Scalar": {"type": "string", "format": "hostname"}}}
+    wrapped = {
+        "allOf": [{"$ref": "#/components/schemas/Scalar"}],
+        "x-f5xc-wire-name": "scalar",
+    }
+    result = _resolve_schema_ref(wrapped, components)
+    assert result["type"] == "string"
+    assert result["format"] == "hostname"
 
 
 # ── Task 3: minimumPayload ───────────────────────────────────────────────────
@@ -1170,3 +1187,32 @@ def test_post_operation_still_gets_minimum_payload():
         components={},
     )
     assert "minimumPayload" in result
+
+
+def test_operation_aliases_are_published_on_catalog_operations():
+    canonical = "ves.io.schema.discovery_cloud.CustomAPI.SuggestValues"
+    alternate = "ves.io.schema.discovered_service.CustomAPI.SuggestValues"
+    spec = {
+        "info": {"version": "1.0.0"},
+        "paths": {
+            "/api/discovery/namespaces/{namespace}/suggest-values": {
+                "post": {
+                    "operationId": canonical,
+                    "x-f5xc-operation-aliases": [alternate],
+                    "responses": {},
+                }
+            }
+        },
+        "components": {"schemas": {}},
+    }
+    catalog = compile_catalog(spec)
+    category_operation = catalog["categories"][0]["operations"][0]
+    assert category_operation["operationAliases"] == [alternate]
+    identity = next(
+        entry
+        for entry in catalog["apiOperations"]
+        if entry["apiIdentity"] == "ves.io.schema.discovery_cloud"
+    )
+    # The narrowed apiOperations receipt remains backward-compatible with strict
+    # downstream parsers; the public alias belongs to the browsable operation.
+    assert "operationAliases" not in identity["operations"][0]

@@ -44,6 +44,7 @@ def _asset_names(version: str) -> list[str]:
         "smsv2-contract.json",
         "smsv2-evidence-receipt.json",
         "smsv2-contract-manifest.json",
+        "upstream-contract-removals.json",
     ]
 
 
@@ -148,7 +149,7 @@ def test_rejects_missing_asset(tmp_path: Path) -> None:
 
 
 def test_rejects_incomplete_asset_set(tmp_path: Path) -> None:
-    """A receipt covering four assets would attest to a release nobody can verify."""
+    """A partial receipt would attest to a release nobody can verify."""
     names = _asset_names(_VERSION)[:-1]
     paths = _write_assets(tmp_path, names)
     result = _run(paths)

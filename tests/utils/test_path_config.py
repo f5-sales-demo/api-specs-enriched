@@ -1,4 +1,5 @@
 # Copyright (c) 2026 Robin Mordasiewicz. MIT License.
+# pylint: disable=protected-access  # Tests intentionally verify deterministic internal helpers.
 
 """Tests for path configuration management."""
 

@@ -83,6 +83,29 @@
     "property_patterns": {
       "type": "object",
       "description": "Property patterns for enrichment"
+    },
+    "spelling_corrections": {
+      "type": "object",
+      "required": ["fields", "replacements"],
+      "properties": {
+        "fields": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "replacements": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["search", "replacement"],
+            "properties": {
+              "search": { "type": "string", "minLength": 1 },
+              "replacement": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      }
     }
   }
 }

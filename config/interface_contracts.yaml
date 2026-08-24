@@ -27,6 +27,26 @@ contracts:
             aws_ce_create: "available"
             runtime_status: "unavailable"
             tgw_connect: "unavailable"
+          telemetry_intake:
+            schema_id: "f5xc-smsv2-aws-tgw-telemetry/v1"
+            availability: "unavailable"
+            required_facts:
+              - "runtime"
+              - "gre"
+              - "bgp"
+              - "mtu"
+              - "route"
+              - "bgp_inside_cidr_block"
+            observed_facts: []
+            unavailable_facts:
+              - "runtime"
+              - "gre"
+              - "bgp"
+              - "mtu"
+              - "route"
+              - "bgp_inside_cidr_block"
+            complete: false
+          prohibited_legacy_apis: ["aws_vpc_site", "aws_tgw_site"]
           bootstrap:
             mode: "interactive_console_only"
             reference: "session_bound_opaque_one_use"

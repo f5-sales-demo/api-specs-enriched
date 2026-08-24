@@ -1,4 +1,5 @@
 """Tests for Phase 1 upstream validation assertions."""
+# pylint: disable=use-implicit-booleaness-not-comparison  # Explicit empty results document the expected shape.
 
 from __future__ import annotations
 

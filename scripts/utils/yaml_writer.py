@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 
-class _IndentDumper(yaml.Dumper):
+class _IndentDumper(yaml.Dumper):  # pylint: disable=too-many-ancestors
     """Dumper that indents block sequences under their parent key."""
 
     def increase_indent(self, flow: bool = False, indentless: bool = False) -> Any:  # noqa: ARG002

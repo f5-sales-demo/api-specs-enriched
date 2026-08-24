@@ -52,18 +52,18 @@ make serve
 │   (READ-ONLY)       │     │   (GENERATED)               │
 │   - Downloaded      │     │   - Domain specs            │
 │   - Gitignored      │     │   - Master spec             │
-│   - ETag cached     │     │   - GitHub Pages            │
+│   - Release pinned  │     │   - Release artifacts       │
 └─────────────────────┘     └─────────────────────────────┘
 ```
 
 ### Pipeline Flow
 
 ```text
-Download (ETag) → Enrich → Normalize → Merge → Lint → Serve
+Download (release) → Enrich → Normalize → Canonical merge → Lint → Serve
      │              │          │         │       │
      ▼              ▼          ▼         ▼       ▼
- 270 specs     Branding    Fix refs   23 domains  Spectral
-             + Grammar    + Types    + Master     rules
+ Source specs   Branding    Fix refs   Domain docs  Spectral
+               + Grammar    + Types    + Master     rules
 ```
 
 ### Directory Structure
@@ -72,7 +72,7 @@ Download (ETag) → Enrich → Normalize → Merge → Lint → Serve
 | -------------------------- | ----------------------- | ------------------------------------ |
 | `specs/original/`          | F5 source specs         | Gitignored                           |
 | `specs/discovered/`        | API discovery output    | Tracked (openapi.json, session.json) |
-| `docs/specifications/api/` | Generated domain specs  | Gitignored                           |
+| `docs/specifications/api/` | Generated domain specs  | Tracked release input                |
 | `scripts/`                 | Python pipeline scripts | Tracked                              |
 | `config/`                  | Pipeline configuration  | Tracked                              |
 | `reports/`                 | Generated reports       | Gitignored                           |
@@ -114,10 +114,10 @@ make push-discovery
 Releases are automated:
 
 1. Daily schedule (6 AM UTC) or push to main triggers workflow
-2. ETag check determines if F5 specs changed
+2. The latest stable upstream release is resolved and its asset digest verified
 3. Pipeline processes and enriches specs
-4. Version calculated from git tags: `git describe --tags --abbrev=0`
-5. Direct commit + tag created (no version bump PR)
+4. The committed build version is calculated before artifact generation
+5. A release commit and tag are created for that exact generated tree
 6. GitHub Release created with changelog
 7. Documentation deployed to GitHub Pages
 
@@ -133,8 +133,9 @@ Releases are automated:
 ### 3. Development Workflow
 
 ```bash
-# Create feature branch
-git checkout -b feature/my-change
+# Start from the fetched protected branch
+git fetch --prune
+git switch --no-track -c feature/123-my-change origin/main
 
 # Make changes to config or scripts
 
@@ -143,7 +144,8 @@ make pipeline
 make lint
 
 # Commit (pre-commit hooks run automatically)
-git add .
+git add config/example.yaml scripts/example.py tests/test_example.py
+git diff --cached --check
 git commit -m "feat: add new enrichment rule"
 
 # Push and create PR
@@ -428,8 +430,8 @@ For these resources, `x-f5xc-required-for.create` may be `false` even when `x-ve
 The pipeline runs on every commit to ensure consistency. For work-in-progress commits:
 
 ```bash
-git commit --no-verify -m "WIP: work in progress"
-# Run before final commit: make pre-commit-run
+make pre-commit-run
+git commit -m "fix: describe the reviewed change"
 ```
 
 ### Discovery Fails
@@ -438,12 +440,9 @@ git commit --no-verify -m "WIP: work in progress"
 # Check VPN
 ping your-tenant.console.ves.volterra.io
 
-# Check credentials
-echo $F5XC_API_TOKEN | head -c 10
-
-# Check API URL format
-echo $F5XC_API_URL
-# Format: https://tenant.console.ves.volterra.io/api
+# Check presence without printing either value
+test -n "${F5XC_API_TOKEN:-}" && echo "F5XC_API_TOKEN is set"
+test -n "${F5XC_API_URL:-}" && echo "F5XC_API_URL is set"
 ```
 
 ### Linting errors on generated specs
@@ -455,14 +454,17 @@ cat reports/lint-report.json | jq '.errors'
 
 Fix issues in enrichment/normalization config, not the output files.
 
-### Version System
+### Release and Build Identity
 
-Version is derived from git tags (e.g., `v2.0.38`), eliminating race conditions that caused merge conflicts on concurrent PRs.
+Downloads are pinned by the immutable six-field `.github_release` receipt:
+`version`, `tag_name`, `published_at`, `asset_name`, `asset_size`, and
+`asset_sha256`. The asset name and SHA-256 identify the downloaded upstream bytes;
+the committed release version identifies the generated build. Neither identity is
+derived from an ETag or from a mutable branch.
 
-```python
-# Version is calculated dynamically from git tags
-from scripts.utils.version_calculator import get_version_from_tags
-version = get_version_from_tags()  # Returns "2.0.38"
+```bash
+# The release workflow calculates VERSION, then stamps that exact identity.
+python -m scripts.stamp_release_version docs/specifications/api --version "$VERSION"
 ```
 
 ### Missing Specs After Clone
@@ -486,19 +488,19 @@ Add exclusion to `.pre-commit-config.yaml`:
 
 ### Make Targets
 
-| Target                | Description                      |
-| --------------------- | -------------------------------- |
-| `make build`          | Full build (download + pipeline) |
-| `make rebuild`        | Quick rebuild (skip download)    |
-| `make download`       | Download specs (ETag cached)     |
-| `make download-force` | Force download                   |
-| `make pipeline`       | Run enrichment pipeline          |
-| `make lint`           | Spectral linting                 |
-| `make serve`          | Local documentation server       |
-| `make discover`       | API discovery (VPN required)     |
-| `make push-discovery` | Commit discovery data            |
-| `make clean`          | Remove generated files           |
-| `make pre-commit-run` | Run all quality checks           |
+| Target                | Description                        |
+| --------------------- | ---------------------------------- |
+| `make build`          | Full build (download + pipeline)   |
+| `make rebuild`        | Quick rebuild (skip download)      |
+| `make download`       | Download the pinned stable release |
+| `make download-force` | Force download                     |
+| `make pipeline`       | Run enrichment pipeline            |
+| `make lint`           | Spectral linting                   |
+| `make serve`          | Local documentation server         |
+| `make discover`       | API discovery (VPN required)       |
+| `make push-discovery` | Commit discovery data              |
+| `make clean`          | Remove generated files             |
+| `make pre-commit-run` | Run all quality checks             |
 
 ### Environment Variables
 
@@ -509,14 +511,15 @@ Add exclusion to `.pre-commit-config.yaml`:
 
 ### Key Files
 
-| File                                  | Purpose                       |
-| ------------------------------------- | ----------------------------- |
-| `.etag`                               | Last downloaded ETag          |
-| `CHANGELOG.md`                        | Auto-generated changelog      |
-| `config/enrichment.yaml`              | Enrichment rules              |
-| `config/normalization.yaml`           | Normalization rules           |
-| `config/discovery.yaml`               | Discovery settings            |
-| `config/spectral.yaml`                | Linter rules                  |
-| `scripts/utils/version_calculator.py` | Tag-based version calculation |
+| File                                  | Purpose                                      |
+| ------------------------------------- | -------------------------------------------- |
+| `.github_release`                     | Immutable six-field upstream release receipt |
+| `CHANGELOG.md`                        | Auto-generated changelog                     |
+| `config/enrichment.yaml`              | Enrichment rules                             |
+| `config/normalization.yaml`           | Normalization rules                          |
+| `config/discovery.yaml`               | Discovery settings                           |
+| `config/spectral.yaml`                | Linter rules                                 |
+| `scripts/utils/version_calculator.py` | Tag-based version calculation                |
 
-**Note**: Version is derived from git tags (e.g., `v2.0.38`), not from a `.version` file.
+**Note**: Release generation supplies and commits the exact build version; the
+upstream receipt independently identifies the source archive.

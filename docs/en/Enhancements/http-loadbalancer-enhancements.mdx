@@ -206,46 +206,11 @@ Fields marked with `x-f5xc-conflicts-with` indicate OneOf patterns. Only one fie
 | `service_policies_source` | `service_policies_from_namespace`, `active_service_policies`        | Service policies from namespace or active list |
 | `sensitive_data_policy`   | `default_sensitive_data_policy`, `custom_sensitive_data_policy`     | Use default or custom sensitive data policy    |
 
-## OneOf Variant Recommendations (Future Extension)
+## OneOf Variant Recommendations
 
-**Status**: Not yet applied to http_loadbalancer schemas.
-
-Unlike healthcheck, which includes `x-f5xc-recommended-oneof-variant` to indicate the most common choice for OneOf groups, http_loadbalancer currently lacks this extension.
-
-### Comparison with Healthcheck
-
-**Healthcheck** (implemented):
-
-```yaml
-viewshealthcheckCreateSpecType:
-  x-f5xc-recommended-oneof-variant:
-    health_check: "http_health_check"
-```
-
-**HTTP LoadBalancer** (not yet implemented):
-
-```yaml
-viewshttp_loadbalancerCreateSpecType:
-  x-f5xc-recommended-oneof-variant: null # Would indicate recommended lb_type variant
-```
-
-### Future Implementation
-
-To add this extension for http_loadbalancer:
-
-1. Observe F5 XC console default selections (e.g., which lb_type is preselected in the UI)
-2. Add configuration to `config/discovered_defaults.yaml`
-3. Re-run enrichment pipeline to apply extension
-
-**Expected structure when added**:
-
-```yaml
-viewshttp_loadbalancerCreateSpecType:
-  x-f5xc-recommended-oneof-variant:
-    loadbalancer_type: "https_auto_cert" # Example - requires verification
-```
-
-This extension would enable downstream tools to preselect the most commonly used variant when presenting configuration options to users.
+HTTP load-balancer schemas do not currently emit a recommendation. Consumers must
+not infer one from this page; only an `x-f5xc-recommended-oneof-variant` present in
+the versioned OpenAPI artifact is authoritative.
 
 ## Constraint Metadata
 

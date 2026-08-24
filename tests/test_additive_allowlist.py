@@ -2,6 +2,8 @@
 
 """Unit tests for the additive allowlist classifier (spec §4.3)."""
 
+import pytest
+
 from scripts.utils.additive_allowlist import is_additive_change
 
 
@@ -113,27 +115,46 @@ def test_changed_type_is_not_additive():
     )
 
 
-def test_changed_min_length_is_additive():
-    """Constraint value changes are merge-order artifacts from duplicate upstream specs."""
-    assert is_additive_change(
-        "values_changed",
-        t("root['components']['schemas']['Foo']['properties']['bar']['minLength']"),
+@pytest.mark.parametrize(
+    ("constraint", "before", "after", "expected"),
+    [
+        ("minLength", 4, 3, True),
+        ("minLength", 4, 5, False),
+        ("minItems", 2, 1, True),
+        ("minItems", 2, 3, False),
+        ("minimum", 1, 0, True),
+        ("minimum", 1, 2, False),
+        ("maxLength", 4, 5, True),
+        ("maxLength", 4, 3, False),
+        ("maxItems", 2, 3, True),
+        ("maxItems", 2, 1, False),
+        ("maximum", 1, 2, True),
+        ("maximum", 1, 0, False),
+        ("maximum", 1, "2", False),
+        ("minimum", "1", 0, False),
+    ],
+)
+def test_only_numeric_constraint_widening_is_additive(
+    constraint: str, before: object, after: object, expected: bool
+) -> None:
+    assert (
+        is_additive_change(
+            "values_changed",
+            t(f"root['components']['schemas']['Foo']['properties']['bar']['{constraint}']"),
+            before,
+            after,
+        )
+        is expected
     )
 
 
-def test_changed_ref_is_additive():
-    """$ref target changes are merge-order artifacts from duplicate upstream specs."""
-    assert is_additive_change(
+@pytest.mark.parametrize("member", ["$ref", "operationId"])
+def test_merge_order_contract_changes_are_not_additive(member: str) -> None:
+    assert not is_additive_change(
         "values_changed",
-        t("root['components']['schemas']['Foo']['properties']['bar']['$ref']"),
-    )
-
-
-def test_renamed_operation_id_is_additive():
-    """operationId changes are merge-order artifacts from duplicate upstream specs."""
-    assert is_additive_change(
-        "values_changed",
-        t("root['paths']['/x']['get']['operationId']"),
+        t(f"root['components']['schemas']['Foo']['properties']['bar']['{member}']"),
+        "before",
+        "after",
     )
 
 
@@ -159,15 +180,15 @@ def test_error_response_type_add_on_2xx_is_not_additive():
 # Rule 2 — positive-int maxLength additions (family 6)
 
 
-def test_positive_int_max_length_add_is_additive():
+def test_positive_int_max_length_add_tightens_contract():
     pointer = "root['components']['schemas']['Foo']['properties']['bar']['maxLength']"
-    assert is_additive_change("dictionary_item_added", pointer, None, 128)
+    assert not is_additive_change("dictionary_item_added", pointer, None, 128)
 
 
-def test_zero_max_length_add_is_additive():
+def test_zero_max_length_add_tightens_contract():
     """maxLength: 0 is a valid server-discovered constraint (e.g. bot_defense continue fields)."""
     pointer = "root['components']['schemas']['Foo']['properties']['bar']['maxLength']"
-    assert is_additive_change("dictionary_item_added", pointer, None, 0)
+    assert not is_additive_change("dictionary_item_added", pointer, None, 0)
 
 
 def test_non_int_max_length_add_is_not_additive():
@@ -178,14 +199,14 @@ def test_non_int_max_length_add_is_not_additive():
 # Rule 7 — additive constraint additions
 
 
-def test_minlength_add_is_additive():
+def test_minlength_add_tightens_contract():
     pointer = "root['components']['schemas']['Foo']['properties']['bar']['minLength']"
-    assert is_additive_change("dictionary_item_added", pointer, None, 17)
+    assert not is_additive_change("dictionary_item_added", pointer, None, 17)
 
 
-def test_minlength_zero_add_is_additive():
+def test_minlength_zero_add_tightens_contract():
     pointer = "root['components']['schemas']['Foo']['properties']['bar']['minLength']"
-    assert is_additive_change("dictionary_item_added", pointer, None, 0)
+    assert not is_additive_change("dictionary_item_added", pointer, None, 0)
 
 
 # Rule 8 — server-discovered default values
