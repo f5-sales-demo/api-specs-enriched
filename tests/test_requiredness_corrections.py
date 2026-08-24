@@ -164,7 +164,7 @@ def test_no_property_description_reasserts_requiredness() -> None:
         pytest.skip(f"{master_path} not built")
     master = json.loads(master_path.read_text())
     marker = re.compile(r"(?im)^\s*Required:\s*(?:YES|NO)\s*[.!]?\s*$")
-    offenders = []
+    offenders: list[str] = []
     for schema_name, schema in master.get("components", {}).get("schemas", {}).items():
         for property_name, prop in schema.get("properties", {}).items():
             if not isinstance(prop, dict):

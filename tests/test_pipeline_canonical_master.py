@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import copy
+from typing import Any
 
 import pytest
 
@@ -11,7 +12,7 @@ from scripts.utils.canonical_merge import CanonicalMergeError, canonical_merge_s
 from scripts.utils.schema_constraint_projector import SchemaConstraintProjector
 
 
-def _source(operation_id: str, description: str = "source") -> dict:
+def _source(operation_id: str, description: str = "source") -> dict[str, Any]:
     return {
         "paths": {"/widgets": {"get": {"operationId": operation_id}}},
         "components": {"schemas": {"Widget": {"type": "object", "description": description}}},
@@ -52,7 +53,7 @@ def test_domain_constraint_projection_cannot_tighten_canonical_master() -> None:
 
 
 def test_canonical_constraints_are_restored_from_upstream() -> None:
-    original = {
+    original: dict[str, Any] = {
         "properties": {
             "name": {"type": "string", "maxLength": 128},
             "labels": {"type": "array"},
@@ -70,7 +71,7 @@ def test_canonical_constraints_are_restored_from_upstream() -> None:
 
 
 def test_constraint_keyword_property_name_keeps_enriched_property() -> None:
-    original = {
+    original: dict[str, Any] = {
         "properties": {
             "pattern": {"type": "string", "description": "Required: YES"},
         }

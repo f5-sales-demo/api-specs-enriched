@@ -177,22 +177,24 @@ def _schema_assignments(
     for _iteration in range(len(assignments) + 1):
         changed = False
         for name, items in occurrences.items():
-            groups: dict[bytes, list[str]] = defaultdict(list)
+            refined_groups: dict[bytes, list[str]] = defaultdict(list)
             for source, schema in items:
                 local_map = {
                     local: assigned
                     for (mapped_source, local), assigned in assignments.items()
                     if mapped_source == source
                 }
-                groups[canonical_bytes(_rewrite_local_schema_refs(schema, local_map))].append(
-                    source
-                )
-            if len(groups) == 1 and all(assignments[(source, name)] == name for source, _ in items):
+                refined_groups[
+                    canonical_bytes(_rewrite_local_schema_refs(schema, local_map))
+                ].append(source)
+            if len(refined_groups) == 1 and all(
+                assignments[(source, name)] == name for source, _ in items
+            ):
                 continue
-            if len(groups) == 1:
+            if len(refined_groups) == 1:
                 # Once a raw conflict forced qualification, never silently coalesce it.
                 continue
-            for group_sources in groups.values():
+            for group_sources in refined_groups.values():
                 qualified = f"{name}__{source_service_slug(min(group_sources))}"
                 if qualified in original_names:
                     raise CanonicalMergeError(
