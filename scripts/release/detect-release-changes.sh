@@ -146,6 +146,47 @@ if [ "$CURRENT_TAG" != "$COMMITTED_TAG" ]; then
   echo "Upstream release changed: '${COMMITTED_TAG:-none}' -> '${CURRENT_TAG:-none}'"
 fi
 
+# --- Does the latest publication satisfy today's asset contract? ----------
+# A code change can extend what a release publishes without changing any
+# generated OpenAPI bytes. Comparing only the working tree would then leave the
+# new asset stranded until an unrelated upstream release arrived. The latest
+# release is part of the output state too: if it lacks an asset required by the
+# current publisher, the ordinary push-triggered run must repair that gap.
+LATEST_RELEASE_JSON="${WORK_DIR}/latest-release.json"
+if ! "$GH_CMD" release view --json tagName,assets >"$LATEST_RELEASE_JSON"; then
+  echo "::error::Cannot inspect the latest release asset contract" >&2
+  exit 1
+fi
+if ! jq -e '
+  (.tagName | type == "string" and startswith("v")) and
+  (.assets | type == "array") and
+  all(.assets[]; .name | type == "string")
+' "$LATEST_RELEASE_JSON" >/dev/null; then
+  echo "::error::Latest release metadata has an invalid asset contract" >&2
+  exit 1
+fi
+
+LATEST_VERSION="$(jq -r '.tagName | ltrimstr("v")' "$LATEST_RELEASE_JSON")"
+REQUIRED_RELEASE_ASSETS=(
+  "api-catalog.json"
+  "f5xc-api-specs-v${LATEST_VERSION}.zip"
+  "index.json"
+  "minimal-export-defaults.json"
+  "openapi.json"
+  "smsv2-contract-manifest.json"
+  "smsv2-contract.json"
+  "smsv2-evidence-receipt.json"
+  "upstream-contract-removals.json"
+)
+RELEASE_CONTRACT_CHANGED=false
+for required_asset in "${REQUIRED_RELEASE_ASSETS[@]}"; do
+  if ! jq -e --arg name "$required_asset" \
+    'any(.assets[]; .name == $name)' "$LATEST_RELEASE_JSON" >/dev/null; then
+    echo "Latest release is missing required asset: ${required_asset}"
+    RELEASE_CONTRACT_CHANGED=true
+  fi
+done
+
 # --- Did the generated output move? ---------------------------------------
 OUTPUT_CHANGED=false
 while IFS= read -r file; do
@@ -164,7 +205,8 @@ while IFS= read -r file; do
   fi
 done < <(git diff --name-only HEAD -- "$OUTPUT_DIR")
 
-if [ "$SOURCE_CHANGED" = false ] && [ "$OUTPUT_CHANGED" = false ]; then
+if [ "$SOURCE_CHANGED" = false ] && [ "$OUTPUT_CHANGED" = false ] && \
+  [ "$RELEASE_CONTRACT_CHANGED" = false ]; then
   emit "has_changes=false"
   echo "No release: generated output matches HEAD and upstream release is unchanged"
   exit 0
@@ -175,7 +217,7 @@ if [ "$SOURCE_CHANGED" = true ]; then
   echo "Source spec changes detected"
 else
   CHANGE_TYPE="pipeline"
-  echo "Pipeline/config/workflow changes detected"
+  echo "Pipeline/config/workflow or publication-contract changes detected"
 fi
 
 emit "has_changes=true" "change_type=${CHANGE_TYPE}"
