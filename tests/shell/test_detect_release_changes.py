@@ -92,7 +92,26 @@ def _release_state(
     )
 
 
-def _write_fake_gh(tmp_path: Path, *, release_lines: int) -> Path:
+def _release_asset_names(version: str = "2.1.0") -> list[str]:
+    return [
+        "api-catalog.json",
+        f"f5xc-api-specs-v{version}.zip",
+        "index.json",
+        "minimal-export-defaults.json",
+        "openapi.json",
+        "smsv2-contract-manifest.json",
+        "smsv2-contract.json",
+        "smsv2-evidence-receipt.json",
+        "upstream-contract-removals.json",
+    ]
+
+
+def _write_fake_gh(
+    tmp_path: Path,
+    *,
+    release_lines: int,
+    asset_names: list[str] | None = None,
+) -> Path:
     """Fake `gh` implementing only `gh release list --limit 1`.
 
     `release_lines=0` reproduces a repository with no releases yet, which the
@@ -101,6 +120,18 @@ def _write_fake_gh(tmp_path: Path, *, release_lines: int) -> Path:
     payload = "".join(f"v1.0.{i}\tLatest\tv1.0.{i}\t2026-01-01\n" for i in range(release_lines))
     listing = tmp_path / "fake_gh_releases"
     listing.write_text(payload)
+    release = tmp_path / "fake_gh_release.json"
+    release.write_text(
+        json.dumps(
+            {
+                "tagName": "v2.1.0",
+                "assets": [
+                    {"name": name}
+                    for name in (asset_names if asset_names is not None else _release_asset_names())
+                ],
+            }
+        )
+    )
 
     fake_gh = tmp_path / "fake_gh.sh"
     fake_gh.write_text(
@@ -108,6 +139,10 @@ def _write_fake_gh(tmp_path: Path, *, release_lines: int) -> Path:
 set -e
 if [ "$1" = "release" ] && [ "$2" = "list" ]; then
   cat {listing.as_posix()!r}
+  exit 0
+fi
+if [ "$1" = "release" ] && [ "$2" = "view" ]; then
+  cat {release.as_posix()!r}
   exit 0
 fi
 echo "fake gh: unsupported invocation: $*" >&2
@@ -535,6 +570,27 @@ def test_force_release_is_inert_when_unset_or_false(tmp_path: Path) -> None:
         repo_two, _write_fake_gh(tmp_path, release_lines=1), {"FORCE_RELEASE": "false"}
     )
     assert explicit_false["has_changes"] == "false"
+
+
+def test_missing_required_release_asset_triggers_pipeline_release(tmp_path: Path) -> None:
+    repo = _setup_repo(tmp_path)
+    assets = [name for name in _release_asset_names() if name != "upstream-contract-removals.json"]
+    proc, outputs = _run(
+        repo,
+        _write_fake_gh(tmp_path, release_lines=1, asset_names=assets),
+    )
+
+    assert proc.returncode == 0, proc.stderr
+    assert outputs == {"has_changes": "true", "change_type": "pipeline"}
+    assert "missing required asset: upstream-contract-removals.json" in proc.stdout
+
+
+def test_complete_release_asset_contract_keeps_unchanged_tree_quiet(tmp_path: Path) -> None:
+    repo = _setup_repo(tmp_path)
+    proc, outputs = _run(repo, _write_fake_gh(tmp_path, release_lines=1))
+
+    assert proc.returncode == 0, proc.stderr
+    assert outputs == {"has_changes": "false"}
 
 
 def test_force_release_cannot_publish_without_generated_output(tmp_path: Path) -> None:
