@@ -852,8 +852,12 @@ jobs:
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
 
-      - name: Verify image-resident PyYAML
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Verify installed PyYAML
         run: python -c "import yaml; print(yaml.__version__)"
 
       - name: Build matrix from config
