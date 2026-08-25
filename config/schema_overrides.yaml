@@ -16,6 +16,48 @@ description: >
 # not to the general /healthchecks endpoint used by HTTP load balancers.
 # See issue #294 for context.
 overrides:
+  securemesh_site_v2_resource_version:
+    canonical: true
+    upstream_issue: "f5-sales-demo/api-specs-enriched#1159"
+    description: >-
+      Sanitized live evidence on 2026-08-25: GET returned resource_version as a
+      string; a replace echoing the current token succeeded (200); the same
+      token after that write was rejected (409); and readback showed the rejected
+      stale write did not change spec. The token is server-assigned and only
+      demonstrated on replace, never user configuration.
+    schemas:
+      - pattern: "^securemesh_site_v2GetResponse$"
+        inject_properties:
+          resource_version:
+            type: string
+            x-f5xc-concurrency-token:
+              server_assigned: true
+              echo_on_operations: [replace]
+      - pattern: "^securemesh_site_v2ReplaceRequest$"
+        inject_properties:
+          resource_version:
+            type: string
+            x-f5xc-concurrency-token:
+              server_assigned: true
+              echo_on_operations: [replace]
+
+  securemesh_site_v2_interface_read_fields:
+    canonical: true
+    upstream_issue: "f5-sales-demo/api-specs-enriched#1049"
+    description: >-
+      Secure Mesh v2 GET returned boolean interface fields is_management and
+      is_primary on 2026-08-25. Their write mutability was not probed, so both
+      are declared read-only rather than inferred as configuration inputs.
+    schemas:
+      - pattern: "^securemesh_site_v2Interface$"
+        inject_properties:
+          is_management:
+            type: boolean
+            readOnly: true
+          is_primary:
+            type: boolean
+            readOnly: true
+
   registration_image_download:
     upstream_issue: "f5-sales-demo/api-specs-enriched#1485"
     description: >-

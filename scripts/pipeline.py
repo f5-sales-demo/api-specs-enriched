@@ -1551,6 +1551,11 @@ def create_master_spec(
     master["paths"] = copy.deepcopy(canonical.merged["paths"])
     master["components"] = copy.deepcopy(canonical.merged["components"])
 
+    # Canonical-safe upstream-gap overrides are part of the provider contract,
+    # not merely the domain documentation projections. The explicit allowlist
+    # prevents unrelated presentation enrichments from changing canonical bytes.
+    master = SchemaOverrideEnricher().enrich_spec(master, canonical_only=True)
+
     # Deduplicate tags
     seen: set[str] = set()
     unique_tags = []

@@ -231,6 +231,21 @@ schema_level:
 # PROPERTY-LEVEL EXTENSIONS (schema properties)
 # =============================================================================
 property_level:
+  x-f5xc-concurrency-token:
+    type: object
+    purpose: >-
+      Declares a server-assigned optimistic-concurrency token that a client must
+      retain from a read and echo only on the listed write operations.
+    consumers: [terraform, cli, mcp, ide]
+    properties:
+      server_assigned: "Token is assigned by the API and is not user configuration"
+      echo_on_operations: "Write operations that accept the token"
+    example:
+      server_assigned: true
+      echo_on_operations: [replace]
+    added_in: "3.6.0"
+    issue: "#1159"
+
   x-f5xc-sensitive:
     type: boolean
     purpose: >-

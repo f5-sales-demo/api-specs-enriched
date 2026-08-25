@@ -147,6 +147,54 @@ class TestSchemaOverrideEnricher:
             is True
         )
 
+    def test_adds_observed_securemesh_interface_read_fields(self, enricher):
+        """Live GET evidence must not be lost when upstream swagger lags it."""
+        spec = {
+            "components": {
+                "schemas": {
+                    "securemesh_site_v2Interface": {"type": "object", "properties": {}},
+                },
+            },
+        }
+
+        properties = enricher.enrich_spec(spec)["components"]["schemas"][
+            "securemesh_site_v2Interface"
+        ]["properties"]
+        for field in ("is_management", "is_primary"):
+            assert properties[field] == {
+                "type": "boolean",
+                "readOnly": True,
+            }
+
+    def test_adds_securemesh_resource_version_only_to_read_and_replace(self, enricher):
+        """The observed token is state, never a create-time user input."""
+        spec = {
+            "components": {
+                "schemas": {
+                    "securemesh_site_v2CreateRequest": {"type": "object", "properties": {}},
+                    "securemesh_site_v2GetResponse": {"type": "object", "properties": {}},
+                    "securemesh_site_v2ReplaceRequest": {"type": "object", "properties": {}},
+                },
+            },
+        }
+
+        schemas = enricher.enrich_spec(spec)["components"]["schemas"]
+        assert "resource_version" not in schemas["securemesh_site_v2CreateRequest"]["properties"]
+        expected = {
+            "type": "string",
+            "x-f5xc-concurrency-token": {
+                "server_assigned": True,
+                "echo_on_operations": ["replace"],
+            },
+        }
+        assert (
+            schemas["securemesh_site_v2GetResponse"]["properties"]["resource_version"] == expected
+        )
+        assert (
+            schemas["securemesh_site_v2ReplaceRequest"]["properties"]["resource_version"]
+            == expected
+        )
+
     def test_updates_oneof_extension_array(self, synthetic_enricher, test_spec):
         result = synthetic_enricher.enrich_spec(test_spec)
         for schema_name in ["testResourceCreateSpecType", "testResourceGetSpecType"]:

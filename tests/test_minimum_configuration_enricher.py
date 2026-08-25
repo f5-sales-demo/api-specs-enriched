@@ -166,6 +166,42 @@ class TestRequiredFieldExtraction:
         assert required_fields is not None
         assert len(required_fields) > 0
 
+    def test_auto_required_fields_use_only_explicit_contract_markers(self):
+        """Optional properties must not become required merely by existing."""
+        enricher = MinimumConfigurationEnricher()
+        schema = {
+            "type": "object",
+            "required": ["openapi_required"],
+            "properties": {
+                "openapi_required": {"type": "string"},
+                "ves_required": {"type": "string", "x-ves-required": "true"},
+                "create_required": {
+                    "type": "string",
+                    "x-f5xc-required-for": {"create": True},
+                },
+                "optional": {"type": "string"},
+            },
+        }
+
+        assert enricher._extract_required_fields_from_schema(schema) == [
+            "openapi_required",
+            "ves_required",
+            "create_required",
+        ]
+
+    def test_auto_required_fields_are_empty_without_a_contract_marker(self):
+        """The historical all-properties fallback must never return."""
+        enricher = MinimumConfigurationEnricher()
+        schema = {
+            "type": "object",
+            "properties": {
+                "optional_one": {"type": "string"},
+                "optional_two": {"type": "boolean"},
+            },
+        }
+
+        assert enricher._extract_required_fields_from_schema(schema) == []
+
 
 class TestExampleGeneration:
     """Test example YAML and CLI command generation."""

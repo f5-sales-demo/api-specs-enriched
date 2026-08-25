@@ -52,6 +52,39 @@ def test_domain_constraint_projection_cannot_tighten_canonical_master() -> None:
     assert "maxLength" not in canonical_name
 
 
+def test_canonical_safe_securemesh_overrides_enter_master_contract() -> None:
+    source = {
+        "components": {
+            "schemas": {
+                "securemesh_site_v2CreateRequest": {"type": "object", "properties": {}},
+                "securemesh_site_v2GetResponse": {"type": "object", "properties": {}},
+                "securemesh_site_v2ReplaceRequest": {"type": "object", "properties": {}},
+                "securemesh_site_v2Interface": {"type": "object", "properties": {}},
+            }
+        }
+    }
+    canonical = canonical_merge_sources({"sites.json": source})
+
+    master = create_master_spec(canonical.sources, "1.0.0", canonical)
+    schemas = master["components"]["schemas"]
+
+    assert "resource_version" not in schemas["securemesh_site_v2CreateRequest"]["properties"]
+    token = {
+        "type": "string",
+        "x-f5xc-concurrency-token": {
+            "server_assigned": True,
+            "echo_on_operations": ["replace"],
+        },
+    }
+    assert schemas["securemesh_site_v2GetResponse"]["properties"]["resource_version"] == token
+    assert schemas["securemesh_site_v2ReplaceRequest"]["properties"]["resource_version"] == token
+    for field in ("is_management", "is_primary"):
+        assert schemas["securemesh_site_v2Interface"]["properties"][field] == {
+            "type": "boolean",
+            "readOnly": True,
+        }
+
+
 def test_canonical_constraints_are_restored_from_upstream() -> None:
     original: dict[str, Any] = {
         "properties": {
