@@ -14,6 +14,7 @@ from scripts.utils.extension_constants import (
     VALID_X_F5XC_EXTENSIONS,
     X_F5XC_CATEGORY,
     X_F5XC_CLI_DOMAIN,
+    X_F5XC_CONCURRENCY_TOKEN,
     X_F5XC_DANGER_LEVEL,
     X_F5XC_DESCRIPTION,
     X_F5XC_DESCRIPTION_MEDIUM,
@@ -60,6 +61,7 @@ class TestExtensionConstants:
         "constant",
         [
             X_F5XC_CLI_DOMAIN,
+            X_F5XC_CONCURRENCY_TOKEN,
             X_F5XC_MINIMUM_CONFIGURATION,
             X_F5XC_NAMESPACE_PROFILE,
             X_F5XC_DISPLAYORDER,
@@ -87,6 +89,7 @@ class TestExtensionConstants:
         "constant",
         [
             X_F5XC_CLI_DOMAIN,
+            X_F5XC_CONCURRENCY_TOKEN,
             X_F5XC_MINIMUM_CONFIGURATION,
             X_F5XC_NAMESPACE_PROFILE,
             X_F5XC_DISPLAYORDER,
@@ -108,6 +111,7 @@ class TestExtensionConstants:
         "constant",
         [
             X_F5XC_CLI_DOMAIN,
+            X_F5XC_CONCURRENCY_TOKEN,
             X_F5XC_MINIMUM_CONFIGURATION,
             X_F5XC_NAMESPACE_PROFILE,
             X_F5XC_DISPLAYORDER,

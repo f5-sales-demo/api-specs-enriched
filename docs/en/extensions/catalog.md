@@ -309,6 +309,18 @@ stubby as long as the `### x-name` header exists and the
 
 ## Injected — property-level
 
+### x-f5xc-concurrency-token
+
+- **Applied at:** schema property
+- **Purpose:** Marks server-assigned optimistic-concurrency state that clients retain from a read and echo only on declared write operations.
+- **Consumers:** Terraform, CLI, MCP, IDE
+- **Value type:** object
+- **Value schema:** `{"type":"object","required":["server_assigned","echo_on_operations"]}`
+- **Injected by:** scripts/utils/schema_override_enricher.py
+- **Driven by config:** config/schema_overrides.yaml
+- **Example:** `"x-f5xc-concurrency-token":{"server_assigned":true,"echo_on_operations":["replace"]}`
+- **Pass-through from upstream:** no
+
 ### x-f5xc-sensitive
 
 - **Applied at:** schema property

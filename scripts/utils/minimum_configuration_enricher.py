@@ -276,7 +276,7 @@ class MinimumConfigurationEnricher:
         }
 
     def _extract_required_fields_from_schema(self, schema: dict[str, Any]) -> list[str]:
-        """Extract required fields directly from schema.
+        """Extract required fields from explicit API-contract markers.
 
         Args:
             schema: OpenAPI schema
@@ -284,15 +284,23 @@ class MinimumConfigurationEnricher:
         Returns:
             List of required field names
         """
-        # Get required array from schema if present
-        required = schema.get("required", [])
-
-        # If no required fields, use all properties as fallback
-        if not required:
-            properties = schema.get("properties", {})
-            if properties:
-                required = list(properties.keys())
-
+        # A missing requiredness signal means optional. ``required_fields`` is
+        # MCP/IDE guidance, not a guess based on every property in a schema.
+        # The native marker may already have been corrected by
+        # schema_overrides.yaml; x-f5xc-required-for.create is its normalized
+        # equivalent when supplied by an earlier enrichment step.
+        required = list(schema.get("required", []) or [])
+        known_required = set(required)
+        for name, property_schema in (schema.get("properties", {}) or {}).items():
+            if not isinstance(property_schema, dict):
+                continue
+            required_for = property_schema.get(X_F5XC_REQUIRED_FOR, {})
+            if (
+                property_schema.get("x-ves-required") == "true"
+                or (isinstance(required_for, dict) and required_for.get("create") is True)
+            ) and name not in known_required:
+                required.append(name)
+                known_required.add(name)
         return required
 
     def _generate_example_yaml(self, schema_name: str, required_fields: list[str]) -> str:

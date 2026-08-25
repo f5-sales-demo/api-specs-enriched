@@ -85,6 +85,7 @@ X_F5XC_REFERENCES = "x-f5xc-references"
 X_F5XC_FIELD_EXAMPLES = "x-f5xc-field-examples"
 X_F5XC_UNIQUENESS = "x-f5xc-uniqueness"
 X_F5XC_SENSITIVE = "x-f5xc-sensitive"
+X_F5XC_CONCURRENCY_TOKEN = "x-f5xc-concurrency-token"  # noqa: S105 -- extension name, not a secret
 
 # Original (misspelled) upstream property key, preserved when the buffer zone
 # renames the presented property name (api-specs #686)
@@ -255,6 +256,7 @@ VALID_X_F5XC_EXTENSIONS = frozenset(
         X_F5XC_FIELD_EXAMPLES,
         X_F5XC_UNIQUENESS,
         X_F5XC_SENSITIVE,
+        X_F5XC_CONCURRENCY_TOKEN,
         X_F5XC_WIRE_NAME,
         # Operation-level
         X_F5XC_REQUIRED_FIELDS,

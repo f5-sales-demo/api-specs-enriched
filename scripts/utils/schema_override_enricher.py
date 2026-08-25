@@ -55,15 +55,17 @@ class SchemaOverrideEnricher:
         compiled: list[dict | None] = []
         for entry in self.overrides.values():
             compiled.extend(
-                self._compile_single(schema_entry) for schema_entry in entry.get("schemas", [])
+                self._compile_single(schema_entry, canonical=entry.get("canonical") is True)
+                for schema_entry in entry.get("schemas", [])
             )
         return [c for c in compiled if c is not None]
 
     @staticmethod
-    def _compile_single(schema_entry: dict) -> dict | None:
+    def _compile_single(schema_entry: dict, *, canonical: bool = False) -> dict | None:
         try:
             return {
                 "regex": re.compile(schema_entry["pattern"]),
+                "canonical": canonical,
                 "oneof_group": schema_entry.get("oneof_group"),
                 "complete_variants": schema_entry.get("complete_variants", []),
                 "inject_properties": schema_entry.get("inject_properties", {}),
@@ -94,7 +96,12 @@ class SchemaOverrideEnricher:
             "error_count": 0,
         }
 
-    def enrich_spec(self, spec: dict, corrections_only: bool = False) -> dict:
+    def enrich_spec(
+        self,
+        spec: dict,
+        corrections_only: bool = False,
+        canonical_only: bool = False,
+    ) -> dict:
         """Apply the overrides declared in schema_overrides.yaml.
 
         corrections_only restricts the pass to the property-key corrections
@@ -104,22 +111,37 @@ class SchemaOverrideEnricher:
         that early would then run it through the whole enrichment chain and change
         its shape — an injected bare $ref came back wrapped in allOf, which
         downstream codegen special-cases. So injection stays in the merge phase,
-        where it has always been.
+        where it has always been. canonical_only restricts the pass to overrides
+        explicitly reviewed as safe for the provider-facing canonical contract.
         """
+        if corrections_only and canonical_only:
+            raise ValueError("corrections_only and canonical_only are mutually exclusive")
+
         schemas = spec.get("components", {}).get("schemas")
         if not schemas:
             return spec
 
         for schema_name, schema in schemas.items():
             self._stats["schemas_processed"] += 1
-            self._apply_overrides(schema_name, schema, corrections_only=corrections_only)
+            self._apply_overrides(
+                schema_name,
+                schema,
+                corrections_only=corrections_only,
+                canonical_only=canonical_only,
+            )
 
         return spec
 
     def _apply_overrides(
-        self, schema_name: str, schema: dict, corrections_only: bool = False
+        self,
+        schema_name: str,
+        schema: dict,
+        corrections_only: bool = False,
+        canonical_only: bool = False,
     ) -> None:
         for override in self._compiled:
+            if canonical_only and not override["canonical"]:
+                continue
             if not override["regex"].search(schema_name):
                 continue
             self._stats["schemas_matched"] += 1
