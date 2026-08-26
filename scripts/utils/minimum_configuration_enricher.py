@@ -56,9 +56,10 @@ def _resolve_schema(node: dict[str, Any], schemas: dict[str, Any]) -> dict[str, 
             raise MinimumConfigurationContractError(f"unresolvable schema reference {reference}")
         seen.add(reference)
         name = reference[len(prefix) :]
-        current = schemas.get(name)
-        if not isinstance(current, dict):
+        resolved = schemas.get(name)
+        if not isinstance(resolved, dict):
             raise MinimumConfigurationContractError(f"schema reference {reference} is missing")
+        current = resolved
     raise MinimumConfigurationContractError("schema node is not an object")
 
 
