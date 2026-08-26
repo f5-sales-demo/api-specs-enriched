@@ -95,6 +95,7 @@ def _release_state(
 def _release_asset_names(version: str = "2.1.0") -> list[str]:
     return [
         "api-catalog.json",
+        "concurrency_contracts.json",
         f"f5xc-api-specs-v{version}.zip",
         "index.json",
         "minimal-export-defaults.json",
@@ -102,6 +103,7 @@ def _release_asset_names(version: str = "2.1.0") -> list[str]:
         "smsv2-contract-manifest.json",
         "smsv2-contract.json",
         "smsv2-evidence-receipt.json",
+        "smsv2_parity_manifest.json",
         "upstream-contract-removals.json",
     ]
 

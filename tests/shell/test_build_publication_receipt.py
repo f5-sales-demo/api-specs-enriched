@@ -37,6 +37,7 @@ def _asset_names(version: str) -> list[str]:
     """The release asset contract, exactly as consumers require it."""
     return [
         "api-catalog.json",
+        "concurrency_contracts.json",
         f"f5xc-api-specs-v{version}.zip",
         "index.json",
         "minimal-export-defaults.json",
@@ -44,6 +45,7 @@ def _asset_names(version: str) -> list[str]:
         "smsv2-contract.json",
         "smsv2-evidence-receipt.json",
         "smsv2-contract-manifest.json",
+        "smsv2_parity_manifest.json",
         "upstream-contract-removals.json",
     ]
 

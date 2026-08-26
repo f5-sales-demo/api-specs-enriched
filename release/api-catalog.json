@@ -1,7 +1,7 @@
 {
   "service": "f5xc",
   "displayName": "F5 Distributed Cloud",
-  "version": "2.1.223",
+  "version": "2.1.224",
   "specSource": "f5-sales-demo/api-specs-enriched",
   "auth": {
     "type": "api_token",
@@ -2289,6 +2289,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -2841,6 +2850,9 @@
               },
               "referring_objects": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -2883,6 +2895,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -4434,6 +4451,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -5086,6 +5112,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -5133,6 +5162,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -6872,6 +6906,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -7442,6 +7485,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -7489,6 +7535,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -7543,8 +7594,8 @@
                 ],
                 "x-f5xc-example": "{\"key\": \"value\"}",
                 "x-f5xc-required-for": {
-                  "minimum_config": true,
-                  "create": true,
+                  "minimum_config": false,
+                  "create": false,
                   "update": false,
                   "read": false
                 }
@@ -7554,11 +7605,11 @@
               "description": "Alert receiver for F5 XC alert notifications",
               "required_fields": [
                 "metadata.name",
-                "metadata.namespace",
-                "spec.receiver_choice"
+                "metadata.namespace"
               ],
               "mutually_exclusive_groups": [
                 {
+                  "name": "receiver",
                   "fields": [
                     "spec.email",
                     "spec.opsgenie",
@@ -7567,6 +7618,7 @@
                     "spec.sms",
                     "spec.webhook"
                   ],
+                  "required": true,
                   "reason": "Choose exactly one notification channel"
                 }
               ],
@@ -7593,8 +7645,7 @@
             },
             "requiredFields": [
               "metadata.name",
-              "metadata.namespace",
-              "spec.receiver_choice"
+              "metadata.namespace"
             ],
             "description": "Alert receiver for F5 XC alert notifications"
           },
@@ -7741,8 +7792,8 @@
               "type": "object",
               "description": "Creates a new Alert Receiver object.",
               "required_for": {
-                "minimum_config": true,
-                "create": true,
+                "minimum_config": false,
+                "create": false,
                 "update": false,
                 "read": false
               }
@@ -8086,10 +8137,19 @@
                 ],
                 "x-f5xc-example": "{\"key\": \"value\"}",
                 "x-f5xc-required-for": {
-                  "minimum_config": true,
-                  "create": true,
+                  "minimum_config": false,
+                  "create": false,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -8097,11 +8157,11 @@
               "description": "Alert receiver for F5 XC alert notifications",
               "required_fields": [
                 "metadata.name",
-                "metadata.namespace",
-                "spec.receiver_choice"
+                "metadata.namespace"
               ],
               "mutually_exclusive_groups": [
                 {
+                  "name": "receiver",
                   "fields": [
                     "spec.email",
                     "spec.opsgenie",
@@ -8110,6 +8170,7 @@
                     "spec.sms",
                     "spec.webhook"
                   ],
+                  "required": true,
                   "reason": "Choose exactly one notification channel"
                 }
               ],
@@ -8135,8 +8196,7 @@
             },
             "requiredFields": [
               "metadata.name",
-              "metadata.namespace",
-              "spec.receiver_choice"
+              "metadata.namespace"
             ],
             "description": "Alert receiver for F5 XC alert notifications"
           },
@@ -8283,8 +8343,8 @@
               "type": "object",
               "description": "Replaces the content of an Alert Receiver object.",
               "required_for": {
-                "minimum_config": true,
-                "create": true,
+                "minimum_config": false,
+                "create": false,
                 "update": false,
                 "read": false
               }
@@ -8795,6 +8855,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -8842,6 +8905,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -10986,6 +11054,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -11439,6 +11516,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -11486,6 +11566,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -11983,6 +12068,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -12415,6 +12509,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -12462,6 +12559,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -13197,6 +13299,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -13727,6 +13838,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -13774,6 +13888,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -14603,6 +14722,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -15106,6 +15234,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -15153,6 +15284,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -19775,6 +19911,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -20265,6 +20410,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -20312,6 +20460,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -20709,6 +20862,15 @@
                   "create": false,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -21210,6 +21372,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -21257,6 +21422,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -22631,6 +22801,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -23585,6 +23764,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -23632,6 +23814,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -25046,6 +25233,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -25478,6 +25674,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -25525,6 +25724,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -25899,6 +26103,15 @@
                   "create": false,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -26377,6 +26590,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -26424,6 +26640,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -28435,6 +28656,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -29379,6 +29609,9 @@
               },
               "referring_objects": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -29421,6 +29654,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -30494,6 +30732,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -31086,6 +31333,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -31133,6 +31383,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -31462,6 +31717,15 @@
                   "create": false,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -31895,6 +32159,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -31942,6 +32209,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -33528,6 +33800,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -35054,6 +35335,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -35101,6 +35385,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -37204,6 +37493,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -39120,6 +39418,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -39167,6 +39468,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -41701,6 +42007,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -43851,6 +44166,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -43898,6 +44216,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -44228,6 +44551,15 @@
                   "create": false,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -44662,6 +44994,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -44709,6 +45044,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -45244,6 +45584,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -45674,6 +46023,9 @@
               },
               "referring_objects": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -45716,6 +46068,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -46169,6 +46526,15 @@
                   "create": false,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -46726,6 +47092,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -46773,6 +47142,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -47437,6 +47811,15 @@
                   "create": false,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -48156,6 +48539,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -48203,6 +48589,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -48267,6 +48658,15 @@
                   "create": false,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -48754,6 +49154,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -48796,6 +49199,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -49170,6 +49578,15 @@
                   "create": false,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -49648,6 +50065,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -49695,6 +50115,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -51148,6 +51573,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -51759,6 +52193,9 @@
               },
               "referring_objects": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -51801,6 +52238,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -54019,6 +54461,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -54510,6 +54961,9 @@
               },
               "referring_objects": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -54552,6 +55006,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -57942,6 +58401,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -60726,6 +61194,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -60773,6 +61244,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -62301,6 +62777,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -62738,6 +63223,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -62785,6 +63273,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -63337,6 +63830,15 @@
                   "create": true,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -63993,6 +64495,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -64040,6 +64545,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -64617,6 +65127,15 @@
                   "create": false,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -65234,6 +65753,9 @@
               },
               "referring_objects": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -65276,6 +65798,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -66341,6 +66868,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -67074,6 +67610,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -67121,6 +67660,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -67815,6 +68359,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -68273,6 +68826,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -68320,6 +68876,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -69692,6 +70253,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -70511,6 +71081,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -70558,6 +71131,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -71438,6 +72016,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -71892,6 +72479,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -71939,6 +72529,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -72389,6 +72984,15 @@
                   "create": false,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -72943,6 +73547,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -72990,6 +73597,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -73184,6 +73796,15 @@
                   "create": false,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -73573,6 +74194,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -73615,6 +74239,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -74626,6 +75255,15 @@
                   "create": false,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -75741,6 +76379,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -75788,6 +76429,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -76247,6 +76893,15 @@
                   "create": false,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -76810,6 +77465,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -76857,6 +77515,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -77248,6 +77911,15 @@
                   "create": false,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -77743,6 +78415,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -77790,6 +78465,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -80173,6 +80853,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -80774,6 +81463,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -80821,6 +81513,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -81235,6 +81932,15 @@
                   "create": false,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -81753,6 +82459,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -81800,6 +82509,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -82981,6 +83695,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -83516,6 +84239,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -83563,6 +84289,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -91316,6 +92047,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -91790,6 +92530,9 @@
               },
               "referring_objects": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -91832,6 +92575,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -92846,6 +93594,15 @@
                   "create": false,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -93964,6 +94721,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -94011,6 +94771,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -95510,6 +96275,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -95985,6 +96759,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -96032,6 +96809,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -96375,6 +97157,15 @@
                   "create": false,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -96822,6 +97613,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -96869,6 +97663,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -99991,6 +100790,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -100598,6 +101406,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -100645,6 +101456,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -101521,6 +102337,15 @@
                   "create": false,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -102501,6 +103326,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -102548,6 +103376,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -102921,6 +103754,15 @@
                   "create": false,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -103398,6 +104240,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -103445,6 +104290,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -104150,8 +105000,7 @@
               "description": "DNS zone for domain management and record configuration",
               "required_fields": [
                 "metadata.name",
-                "metadata.namespace",
-                "spec.domain"
+                "metadata.namespace"
               ],
               "mutually_exclusive_groups": [
                 {
@@ -104163,8 +105012,8 @@
                   "reason": "Choose primary or secondary zone type (REQUIRED)"
                 }
               ],
-              "example_yaml": "metadata:\n  name: example.com\n  namespace: system\nspec:\n  domain: example.com\n  primary: {}\n",
-              "example_json": "{\n  \"metadata\": {\n    \"name\": \"example.com\",\n    \"namespace\": \"system\"\n  },\n  \"spec\": {\n    \"domain\": \"example.com\",\n    \"primary\": {}\n  }\n}\n"
+              "example_yaml": "metadata:\n  name: example.com\n  namespace: system\nspec:\n  primary: {}\n",
+              "example_json": "{\n  \"metadata\": {\n    \"name\": \"example.com\",\n    \"namespace\": \"system\"\n  },\n  \"spec\": {\n    \"primary\": {}\n  }\n}\n"
             },
             "x-f5xc-cli-domain": "dns"
           },
@@ -104189,14 +105038,12 @@
                 "namespace": "system"
               },
               "spec": {
-                "domain": "example.com",
                 "primary": {}
               }
             },
             "requiredFields": [
               "metadata.name",
-              "metadata.namespace",
-              "spec.domain"
+              "metadata.namespace"
             ],
             "description": "DNS zone for domain management and record configuration"
           },
@@ -104779,6 +105626,9 @@
                 "type": "string"
               },
               "type": {
+                "type": "string"
+              },
+              "resource_version": {
                 "type": "string"
               }
             }
@@ -106314,6 +107164,11 @@
               "field": "type",
               "type": "string",
               "description": "Type or category classification"
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
+              "description": ""
             }
           ]
         },
@@ -106366,6 +107221,9 @@
               },
               "type": {
                 "type": "string"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -106399,6 +107257,11 @@
               "field": "type",
               "type": "string",
               "description": "Type or category classification"
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
+              "description": ""
             }
           ]
         },
@@ -106451,6 +107314,9 @@
               },
               "type": {
                 "type": "string"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -106484,6 +107350,11 @@
               "field": "type",
               "type": "string",
               "description": "Type or category classification"
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
+              "description": ""
             }
           ]
         },
@@ -106693,6 +107564,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -106725,6 +107605,9 @@
                 "type": "string"
               },
               "type": {
+                "type": "string"
+              },
+              "resource_version": {
                 "type": "string"
               }
             }
@@ -108304,6 +109187,11 @@
               "field": "type",
               "type": "string",
               "description": "Type or category classification"
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
+              "description": ""
             }
           ]
         }
@@ -108636,6 +109524,15 @@
                   "create": false,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -109073,6 +109970,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -109120,6 +110020,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -109969,6 +110874,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -110714,6 +111628,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -110761,6 +111678,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -112540,6 +113462,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -113292,6 +114223,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -113339,6 +114273,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -113840,6 +114779,15 @@
                   "create": false,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -114445,6 +115393,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -114492,6 +115443,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -117013,6 +117969,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -117603,6 +118568,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -117650,6 +118618,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -118109,6 +119082,15 @@
                   "create": false,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -118672,6 +119654,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -118719,6 +119704,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -119303,6 +120293,15 @@
                   "create": false,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -119991,6 +120990,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -120038,6 +121040,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -120608,6 +121615,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -121060,6 +122076,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -121107,6 +122126,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -123374,6 +124398,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -124966,6 +125999,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -125013,6 +126049,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -127354,6 +128395,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -128222,6 +129272,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -128269,6 +129322,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -128793,6 +129851,15 @@
                   "create": false,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -129421,6 +130488,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -129468,6 +130538,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -131322,6 +132397,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -132993,6 +134077,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -133040,6 +134127,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -133955,8 +135047,8 @@
                 ],
                 "x-f5xc-example": "{\"key\": \"value\"}",
                 "x-f5xc-required-for": {
-                  "minimum_config": true,
-                  "create": true,
+                  "minimum_config": false,
+                  "create": false,
                   "update": false,
                   "read": false
                 }
@@ -133966,35 +135058,37 @@
               "description": "Global log receiver for F5 XC centralized logging",
               "required_fields": [
                 "metadata.name",
-                "metadata.namespace",
-                "spec.log_type",
-                "spec.receiver_choice"
+                "metadata.namespace"
               ],
               "mutually_exclusive_groups": [
                 {
+                  "name": "log_type",
                   "fields": [
-                    "spec.request_logs",
-                    "spec.dns_logs",
                     "spec.audit_logs",
+                    "spec.dns_logs",
+                    "spec.request_logs",
                     "spec.security_events"
                   ],
+                  "required": true,
                   "reason": "Choose exactly one log type"
                 },
                 {
+                  "name": "receiver",
                   "fields": [
-                    "spec.http_receiver",
-                    "spec.s3_receiver",
-                    "spec.kafka_receiver",
-                    "spec.splunk_receiver",
-                    "spec.datadog_receiver",
-                    "spec.new_relic_receiver",
-                    "spec.sumo_logic_receiver",
-                    "spec.qradar_receiver",
                     "spec.aws_cloud_watch_receiver",
                     "spec.azure_event_hubs_receiver",
                     "spec.azure_receiver",
-                    "spec.gcp_bucket_receiver"
+                    "spec.datadog_receiver",
+                    "spec.gcp_bucket_receiver",
+                    "spec.http_receiver",
+                    "spec.kafka_receiver",
+                    "spec.new_relic_receiver",
+                    "spec.qradar_receiver",
+                    "spec.s3_receiver",
+                    "spec.splunk_receiver",
+                    "spec.sumo_logic_receiver"
                   ],
+                  "required": true,
                   "reason": "Choose exactly one receiver type"
                 }
               ],
@@ -134022,9 +135116,7 @@
             },
             "requiredFields": [
               "metadata.name",
-              "metadata.namespace",
-              "spec.log_type",
-              "spec.receiver_choice"
+              "metadata.namespace"
             ],
             "description": "Global log receiver for F5 XC centralized logging"
           },
@@ -134171,8 +135263,8 @@
               "type": "object",
               "description": "Creates a new Global Log Receiver object.",
               "required_for": {
-                "minimum_config": true,
-                "create": true,
+                "minimum_config": false,
+                "create": false,
                 "update": false,
                 "read": false
               }
@@ -135634,10 +136726,19 @@
                 ],
                 "x-f5xc-example": "{\"key\": \"value\"}",
                 "x-f5xc-required-for": {
-                  "minimum_config": true,
-                  "create": true,
+                  "minimum_config": false,
+                  "create": false,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -135645,35 +136746,37 @@
               "description": "Global log receiver for F5 XC centralized logging",
               "required_fields": [
                 "metadata.name",
-                "metadata.namespace",
-                "spec.log_type",
-                "spec.receiver_choice"
+                "metadata.namespace"
               ],
               "mutually_exclusive_groups": [
                 {
+                  "name": "log_type",
                   "fields": [
-                    "spec.request_logs",
-                    "spec.dns_logs",
                     "spec.audit_logs",
+                    "spec.dns_logs",
+                    "spec.request_logs",
                     "spec.security_events"
                   ],
+                  "required": true,
                   "reason": "Choose exactly one log type"
                 },
                 {
+                  "name": "receiver",
                   "fields": [
-                    "spec.http_receiver",
-                    "spec.s3_receiver",
-                    "spec.kafka_receiver",
-                    "spec.splunk_receiver",
-                    "spec.datadog_receiver",
-                    "spec.new_relic_receiver",
-                    "spec.sumo_logic_receiver",
-                    "spec.qradar_receiver",
                     "spec.aws_cloud_watch_receiver",
                     "spec.azure_event_hubs_receiver",
                     "spec.azure_receiver",
-                    "spec.gcp_bucket_receiver"
+                    "spec.datadog_receiver",
+                    "spec.gcp_bucket_receiver",
+                    "spec.http_receiver",
+                    "spec.kafka_receiver",
+                    "spec.new_relic_receiver",
+                    "spec.qradar_receiver",
+                    "spec.s3_receiver",
+                    "spec.splunk_receiver",
+                    "spec.sumo_logic_receiver"
                   ],
+                  "required": true,
                   "reason": "Choose exactly one receiver type"
                 }
               ],
@@ -135700,9 +136803,7 @@
             },
             "requiredFields": [
               "metadata.name",
-              "metadata.namespace",
-              "spec.log_type",
-              "spec.receiver_choice"
+              "metadata.namespace"
             ],
             "description": "Global log receiver for F5 XC centralized logging"
           },
@@ -135849,8 +136950,8 @@
               "type": "object",
               "description": "Replaces the content of an Global Log Receiver object.",
               "required_for": {
-                "minimum_config": true,
-                "create": true,
+                "minimum_config": false,
+                "create": false,
                 "update": false,
                 "read": false
               }
@@ -137479,6 +138580,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -137526,6 +138630,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -138649,11 +139758,13 @@
               ],
               "mutually_exclusive_groups": [
                 {
+                  "name": "health_check",
                   "fields": [
                     "spec.http_health_check",
                     "spec.tcp_health_check",
                     "spec.udp_icmp_health_check"
                   ],
+                  "required": true,
                   "reason": "Choose exactly one health check type"
                 }
               ],
@@ -139270,6 +140381,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -139284,11 +140404,13 @@
               ],
               "mutually_exclusive_groups": [
                 {
+                  "name": "health_check",
                   "fields": [
                     "spec.http_health_check",
                     "spec.tcp_health_check",
                     "spec.udp_icmp_health_check"
                   ],
+                  "required": true,
                   "reason": "Choose exactly one health check type"
                 }
               ],
@@ -140066,6 +141188,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -140113,6 +141238,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -141422,24 +142552,26 @@
                 {
                   "name": "waf",
                   "fields": [
-                    "spec.disable_waf",
-                    "spec.enable_waf"
+                    "spec.app_firewall",
+                    "spec.disable_waf"
                   ],
                   "reason": "WAF enabled or disabled"
                 },
                 {
                   "name": "bot_defense",
                   "fields": [
-                    "spec.disable_bot_defense",
-                    "spec.enable_bot_defense"
+                    "spec.bot_defense",
+                    "spec.bot_defense_advanced",
+                    "spec.disable_bot_defense"
                   ],
                   "reason": "Bot defense enabled or disabled"
                 },
                 {
                   "name": "rate_limit",
                   "fields": [
+                    "spec.api_rate_limit",
                     "spec.disable_rate_limit",
-                    "spec.enable_rate_limit"
+                    "spec.rate_limit"
                   ],
                   "reason": "Rate limiting enabled or disabled"
                 },
@@ -141454,16 +142586,16 @@
                 {
                   "name": "api_testing",
                   "fields": [
-                    "spec.disable_api_testing",
-                    "spec.enable_api_testing"
+                    "spec.api_testing",
+                    "spec.disable_api_testing"
                   ],
                   "reason": "API testing enabled or disabled"
                 },
                 {
                   "name": "api_definition",
                   "fields": [
-                    "spec.disable_api_definition",
-                    "spec.enable_api_definition"
+                    "spec.api_specification",
+                    "spec.disable_api_definition"
                   ],
                   "reason": "API definition enabled or disabled"
                 },
@@ -141471,15 +142603,15 @@
                   "name": "malware_protection",
                   "fields": [
                     "spec.disable_malware_protection",
-                    "spec.enable_malware_protection"
+                    "spec.malware_protection_settings"
                   ],
                   "reason": "Malware protection enabled or disabled"
                 },
                 {
                   "name": "client_side_defense",
                   "fields": [
-                    "spec.disable_client_side_defense",
-                    "spec.enable_client_side_defense"
+                    "spec.client_side_defense",
+                    "spec.disable_client_side_defense"
                   ],
                   "reason": "Client-side defense enabled or disabled"
                 },
@@ -141528,9 +142660,10 @@
                 {
                   "name": "server_name_header",
                   "fields": [
+                    "spec.https_auto_cert.append_server_name",
                     "spec.https_auto_cert.default_header",
-                    "spec.https_auto_cert.append_server_name_header",
-                    "spec.https_auto_cert.pass_through_server_name_header"
+                    "spec.https_auto_cert.pass_through",
+                    "spec.https_auto_cert.server_name"
                   ],
                   "reason": "Choose exactly one server name header handling"
                 },
@@ -141551,15 +142684,6 @@
                   "reason": "Choose default or non-default load balancer"
                 },
                 {
-                  "name": "header_transformation",
-                  "fields": [
-                    "spec.https_auto_cert.header_transformation_type.legacy_header_transformation",
-                    "spec.https_auto_cert.header_transformation_type.proper_header_transformation",
-                    "spec.https_auto_cert.header_transformation_type.preserve_case_header_transformation"
-                  ],
-                  "reason": "Choose exactly one header transformation type"
-                },
-                {
                   "name": "http_protocol",
                   "fields": [
                     "spec.https_auto_cert.http_protocol_options.http_protocol_enable_v1_only",
@@ -141572,8 +142696,7 @@
                   "name": "coalescing",
                   "fields": [
                     "spec.https_auto_cert.coalescing_options.default_coalescing",
-                    "spec.https_auto_cert.coalescing_options.disable_coalescing",
-                    "spec.https_auto_cert.coalescing_options.enable_for_same_origin"
+                    "spec.https_auto_cert.coalescing_options.strict_coalescing"
                   ],
                   "reason": "Choose exactly one connection coalescing option"
                 },
@@ -141581,9 +142704,8 @@
                   "name": "ddos_mitigation",
                   "fields": [
                     "spec.l7_ddos_protection.mitigation_block",
-                    "spec.l7_ddos_protection.mitigation_js_challenge",
                     "spec.l7_ddos_protection.mitigation_captcha_challenge",
-                    "spec.l7_ddos_protection.mitigation_none"
+                    "spec.l7_ddos_protection.mitigation_js_challenge"
                   ],
                   "reason": "Choose exactly one DDoS mitigation action"
                 },
@@ -141591,24 +142713,24 @@
                   "name": "ddos_rps_threshold",
                   "fields": [
                     "spec.l7_ddos_protection.default_rps_threshold",
-                    "spec.l7_ddos_protection.custom_rps_threshold"
+                    "spec.l7_ddos_protection.rps_threshold"
                   ],
                   "reason": "Choose default or custom RPS threshold"
                 },
                 {
                   "name": "ddos_clientside_action",
                   "fields": [
-                    "spec.l7_ddos_protection.clientside_action_none",
-                    "spec.l7_ddos_protection.clientside_action_javascript",
-                    "spec.l7_ddos_protection.clientside_action_captcha"
+                    "spec.l7_ddos_protection.clientside_action_captcha_challenge",
+                    "spec.l7_ddos_protection.clientside_action_js_challenge",
+                    "spec.l7_ddos_protection.clientside_action_none"
                   ],
                   "reason": "Choose exactly one client-side DDoS action"
                 },
                 {
                   "name": "ddos_policy",
                   "fields": [
-                    "spec.l7_ddos_protection.ddos_policy_none",
-                    "spec.l7_ddos_protection.ddos_policy_ref"
+                    "spec.l7_ddos_protection.ddos_policy_custom",
+                    "spec.l7_ddos_protection.ddos_policy_none"
                   ],
                   "reason": "DDoS policy reference or none"
                 },
@@ -141640,14 +142762,6 @@
                   "reason": "Trust client IP headers or not"
                 },
                 {
-                  "name": "timeouts",
-                  "fields": [
-                    "spec.system_default_timeouts",
-                    "spec.custom_timeouts"
-                  ],
-                  "reason": "Use system default or custom timeouts"
-                },
-                {
                   "name": "service_policies_source",
                   "fields": [
                     "spec.service_policies_from_namespace",
@@ -141660,17 +142774,17 @@
                   "name": "sensitive_data_policy",
                   "fields": [
                     "spec.default_sensitive_data_policy",
-                    "spec.custom_sensitive_data_policy"
+                    "spec.sensitive_data_policy"
                   ],
                   "reason": "Use default or custom sensitive data policy"
                 },
                 {
                   "name": "load_balancing_algorithm",
                   "fields": [
-                    "spec.round_robin",
-                    "spec.least_request",
+                    "spec.least_active",
+                    "spec.random",
                     "spec.ring_hash",
-                    "spec.random"
+                    "spec.round_robin"
                   ],
                   "reason": "Choose exactly one load balancing algorithm"
                 }
@@ -146265,6 +147379,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -146297,24 +147420,26 @@
                 {
                   "name": "waf",
                   "fields": [
-                    "spec.disable_waf",
-                    "spec.enable_waf"
+                    "spec.app_firewall",
+                    "spec.disable_waf"
                   ],
                   "reason": "WAF enabled or disabled"
                 },
                 {
                   "name": "bot_defense",
                   "fields": [
-                    "spec.disable_bot_defense",
-                    "spec.enable_bot_defense"
+                    "spec.bot_defense",
+                    "spec.bot_defense_advanced",
+                    "spec.disable_bot_defense"
                   ],
                   "reason": "Bot defense enabled or disabled"
                 },
                 {
                   "name": "rate_limit",
                   "fields": [
+                    "spec.api_rate_limit",
                     "spec.disable_rate_limit",
-                    "spec.enable_rate_limit"
+                    "spec.rate_limit"
                   ],
                   "reason": "Rate limiting enabled or disabled"
                 },
@@ -146329,16 +147454,16 @@
                 {
                   "name": "api_testing",
                   "fields": [
-                    "spec.disable_api_testing",
-                    "spec.enable_api_testing"
+                    "spec.api_testing",
+                    "spec.disable_api_testing"
                   ],
                   "reason": "API testing enabled or disabled"
                 },
                 {
                   "name": "api_definition",
                   "fields": [
-                    "spec.disable_api_definition",
-                    "spec.enable_api_definition"
+                    "spec.api_specification",
+                    "spec.disable_api_definition"
                   ],
                   "reason": "API definition enabled or disabled"
                 },
@@ -146346,15 +147471,15 @@
                   "name": "malware_protection",
                   "fields": [
                     "spec.disable_malware_protection",
-                    "spec.enable_malware_protection"
+                    "spec.malware_protection_settings"
                   ],
                   "reason": "Malware protection enabled or disabled"
                 },
                 {
                   "name": "client_side_defense",
                   "fields": [
-                    "spec.disable_client_side_defense",
-                    "spec.enable_client_side_defense"
+                    "spec.client_side_defense",
+                    "spec.disable_client_side_defense"
                   ],
                   "reason": "Client-side defense enabled or disabled"
                 },
@@ -146403,9 +147528,10 @@
                 {
                   "name": "server_name_header",
                   "fields": [
+                    "spec.https_auto_cert.append_server_name",
                     "spec.https_auto_cert.default_header",
-                    "spec.https_auto_cert.append_server_name_header",
-                    "spec.https_auto_cert.pass_through_server_name_header"
+                    "spec.https_auto_cert.pass_through",
+                    "spec.https_auto_cert.server_name"
                   ],
                   "reason": "Choose exactly one server name header handling"
                 },
@@ -146426,15 +147552,6 @@
                   "reason": "Choose default or non-default load balancer"
                 },
                 {
-                  "name": "header_transformation",
-                  "fields": [
-                    "spec.https_auto_cert.header_transformation_type.legacy_header_transformation",
-                    "spec.https_auto_cert.header_transformation_type.proper_header_transformation",
-                    "spec.https_auto_cert.header_transformation_type.preserve_case_header_transformation"
-                  ],
-                  "reason": "Choose exactly one header transformation type"
-                },
-                {
                   "name": "http_protocol",
                   "fields": [
                     "spec.https_auto_cert.http_protocol_options.http_protocol_enable_v1_only",
@@ -146447,8 +147564,7 @@
                   "name": "coalescing",
                   "fields": [
                     "spec.https_auto_cert.coalescing_options.default_coalescing",
-                    "spec.https_auto_cert.coalescing_options.disable_coalescing",
-                    "spec.https_auto_cert.coalescing_options.enable_for_same_origin"
+                    "spec.https_auto_cert.coalescing_options.strict_coalescing"
                   ],
                   "reason": "Choose exactly one connection coalescing option"
                 },
@@ -146456,9 +147572,8 @@
                   "name": "ddos_mitigation",
                   "fields": [
                     "spec.l7_ddos_protection.mitigation_block",
-                    "spec.l7_ddos_protection.mitigation_js_challenge",
                     "spec.l7_ddos_protection.mitigation_captcha_challenge",
-                    "spec.l7_ddos_protection.mitigation_none"
+                    "spec.l7_ddos_protection.mitigation_js_challenge"
                   ],
                   "reason": "Choose exactly one DDoS mitigation action"
                 },
@@ -146466,24 +147581,24 @@
                   "name": "ddos_rps_threshold",
                   "fields": [
                     "spec.l7_ddos_protection.default_rps_threshold",
-                    "spec.l7_ddos_protection.custom_rps_threshold"
+                    "spec.l7_ddos_protection.rps_threshold"
                   ],
                   "reason": "Choose default or custom RPS threshold"
                 },
                 {
                   "name": "ddos_clientside_action",
                   "fields": [
-                    "spec.l7_ddos_protection.clientside_action_none",
-                    "spec.l7_ddos_protection.clientside_action_javascript",
-                    "spec.l7_ddos_protection.clientside_action_captcha"
+                    "spec.l7_ddos_protection.clientside_action_captcha_challenge",
+                    "spec.l7_ddos_protection.clientside_action_js_challenge",
+                    "spec.l7_ddos_protection.clientside_action_none"
                   ],
                   "reason": "Choose exactly one client-side DDoS action"
                 },
                 {
                   "name": "ddos_policy",
                   "fields": [
-                    "spec.l7_ddos_protection.ddos_policy_none",
-                    "spec.l7_ddos_protection.ddos_policy_ref"
+                    "spec.l7_ddos_protection.ddos_policy_custom",
+                    "spec.l7_ddos_protection.ddos_policy_none"
                   ],
                   "reason": "DDoS policy reference or none"
                 },
@@ -146515,14 +147630,6 @@
                   "reason": "Trust client IP headers or not"
                 },
                 {
-                  "name": "timeouts",
-                  "fields": [
-                    "spec.system_default_timeouts",
-                    "spec.custom_timeouts"
-                  ],
-                  "reason": "Use system default or custom timeouts"
-                },
-                {
                   "name": "service_policies_source",
                   "fields": [
                     "spec.service_policies_from_namespace",
@@ -146535,17 +147642,17 @@
                   "name": "sensitive_data_policy",
                   "fields": [
                     "spec.default_sensitive_data_policy",
-                    "spec.custom_sensitive_data_policy"
+                    "spec.sensitive_data_policy"
                   ],
                   "reason": "Use default or custom sensitive data policy"
                 },
                 {
                   "name": "load_balancing_algorithm",
                   "fields": [
-                    "spec.round_robin",
-                    "spec.least_request",
+                    "spec.least_active",
+                    "spec.random",
                     "spec.ring_hash",
-                    "spec.random"
+                    "spec.round_robin"
                   ],
                   "reason": "Choose exactly one load balancing algorithm"
                 }
@@ -151301,6 +152408,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -151348,6 +152458,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -151855,6 +152970,15 @@
                   "create": false,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -152466,6 +153590,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -152513,6 +153640,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -152955,6 +154087,15 @@
                   "create": false,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -153501,6 +154642,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -153548,6 +154692,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -154015,6 +155164,15 @@
                   "create": false,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -154586,6 +155744,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -154633,6 +155794,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -155055,6 +156221,15 @@
                   "create": false,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -155581,6 +156756,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -155628,6 +156806,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -157301,6 +158484,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -157711,6 +158903,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -157758,6 +158953,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -165379,6 +166579,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -165811,6 +167020,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -165858,6 +167070,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -166211,6 +167428,15 @@
                   "create": false,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -166665,6 +167891,9 @@
               },
               "referring_objects": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -166707,6 +167936,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -168104,6 +169338,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -168641,6 +169884,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -168688,6 +169934,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -169099,6 +170350,15 @@
                   "create": false,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -169614,6 +170874,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -169661,6 +170924,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -170478,6 +171746,15 @@
                   "create": false,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -171399,6 +172676,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -171446,6 +172726,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -172739,6 +174024,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -173172,6 +174466,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -173219,6 +174516,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -174007,6 +175309,15 @@
                   "create": false,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -174899,6 +176210,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -174946,6 +176260,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -177426,6 +178745,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -177937,6 +179265,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -177984,6 +179315,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -178468,6 +179804,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -178917,6 +180262,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -178964,6 +180312,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -180661,6 +182014,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -181093,6 +182455,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -181140,6 +182505,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -184573,6 +185943,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -185966,6 +187345,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -186185,6 +187573,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -186232,6 +187623,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -186587,6 +187983,15 @@
                   "create": false,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -187046,6 +188451,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -187093,6 +188501,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -187774,6 +189187,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -188412,6 +189834,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -188459,6 +189884,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -188945,6 +190375,15 @@
                   "create": false,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -189535,6 +190974,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -189582,6 +191024,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -190641,6 +192088,15 @@
                   "create": false,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -192051,6 +193507,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -192098,6 +193557,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -192171,11 +193635,12 @@
                   "name": "endpoint_choice",
                   "fields": [
                     "spec.endpoint.any",
-                    "spec.endpoint.prefix_list",
-                    "spec.endpoint.inside_outside_network",
-                    "spec.endpoint.interface",
-                    "spec.endpoint.label_selector"
+                    "spec.endpoint.inside_endpoints",
+                    "spec.endpoint.label_selector",
+                    "spec.endpoint.outside_endpoints",
+                    "spec.endpoint.prefix_list"
                   ],
+                  "required": true,
                   "reason": "Choose endpoint matching strategy (REQUIRED)"
                 }
               ],
@@ -192635,6 +194100,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -192649,11 +194123,12 @@
                   "name": "endpoint_choice",
                   "fields": [
                     "spec.endpoint.any",
-                    "spec.endpoint.prefix_list",
-                    "spec.endpoint.inside_outside_network",
-                    "spec.endpoint.interface",
-                    "spec.endpoint.label_selector"
+                    "spec.endpoint.inside_endpoints",
+                    "spec.endpoint.label_selector",
+                    "spec.endpoint.outside_endpoints",
+                    "spec.endpoint.prefix_list"
                   ],
+                  "required": true,
                   "reason": "Choose endpoint matching strategy (REQUIRED)"
                 }
               ],
@@ -193274,6 +194749,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -193321,6 +194799,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -193539,11 +195022,12 @@
                   "name": "endpoint_choice",
                   "fields": [
                     "spec.endpoint.any",
-                    "spec.endpoint.prefix_list",
-                    "spec.endpoint.inside_outside_network",
-                    "spec.endpoint.interface",
-                    "spec.endpoint.label_selector"
+                    "spec.endpoint.inside_endpoints",
+                    "spec.endpoint.label_selector",
+                    "spec.endpoint.outside_endpoints",
+                    "spec.endpoint.prefix_list"
                   ],
+                  "required": true,
                   "reason": "Choose endpoint matching strategy (REQUIRED)"
                 }
               ],
@@ -193909,6 +195393,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -193923,11 +195416,12 @@
                   "name": "endpoint_choice",
                   "fields": [
                     "spec.endpoint.any",
-                    "spec.endpoint.prefix_list",
-                    "spec.endpoint.inside_outside_network",
-                    "spec.endpoint.interface",
-                    "spec.endpoint.label_selector"
+                    "spec.endpoint.inside_endpoints",
+                    "spec.endpoint.label_selector",
+                    "spec.endpoint.outside_endpoints",
+                    "spec.endpoint.prefix_list"
                   ],
+                  "required": true,
                   "reason": "Choose endpoint matching strategy (REQUIRED)"
                 }
               ],
@@ -194454,6 +195948,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -194501,6 +195998,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -194574,11 +196076,12 @@
                   "name": "endpoint_choice",
                   "fields": [
                     "spec.endpoint.any",
-                    "spec.endpoint.prefix_list",
-                    "spec.endpoint.inside_outside_network",
-                    "spec.endpoint.interface",
-                    "spec.endpoint.label_selector"
+                    "spec.endpoint.inside_endpoints",
+                    "spec.endpoint.label_selector",
+                    "spec.endpoint.outside_endpoints",
+                    "spec.endpoint.prefix_list"
                   ],
+                  "required": true,
                   "reason": "Choose endpoint matching strategy (REQUIRED)"
                 }
               ],
@@ -194954,6 +196457,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -194968,11 +196480,12 @@
                   "name": "endpoint_choice",
                   "fields": [
                     "spec.endpoint.any",
-                    "spec.endpoint.prefix_list",
-                    "spec.endpoint.inside_outside_network",
-                    "spec.endpoint.interface",
-                    "spec.endpoint.label_selector"
+                    "spec.endpoint.inside_endpoints",
+                    "spec.endpoint.label_selector",
+                    "spec.endpoint.outside_endpoints",
+                    "spec.endpoint.prefix_list"
                   ],
+                  "required": true,
                   "reason": "Choose endpoint matching strategy (REQUIRED)"
                 }
               ],
@@ -195567,6 +197080,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -195614,6 +197130,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -196742,6 +198263,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -197493,6 +199023,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -197540,6 +199073,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -198779,6 +200317,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -199246,6 +200793,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -199293,6 +200843,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -204154,6 +205709,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -204925,6 +206489,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -204972,6 +206539,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -216242,6 +217814,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -217387,6 +218968,9 @@
               },
               "referring_objects": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -217429,6 +219013,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -222709,6 +224298,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -223197,6 +224795,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -223244,6 +224845,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -223676,6 +225282,15 @@
                   "create": false,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -224212,6 +225827,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -224259,6 +225877,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -224957,6 +226580,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -225465,6 +227097,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -225512,6 +227147,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -225854,6 +227494,15 @@
                   "create": true,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -226300,6 +227949,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -226347,6 +227999,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -227047,6 +228704,15 @@
                   "create": false,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -227851,6 +229517,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -227898,6 +229567,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -227962,6 +229636,15 @@
                   "create": false,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -228258,6 +229941,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -228300,6 +229986,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -229143,6 +230834,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -229583,6 +231283,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -229630,6 +231333,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -230007,8 +231715,8 @@
                 ],
                 "x-f5xc-example": "{\"key\": \"value\"}",
                 "x-f5xc-required-for": {
-                  "minimum_config": true,
-                  "create": true,
+                  "minimum_config": false,
+                  "create": false,
                   "update": false,
                   "read": false
                 }
@@ -230018,13 +231726,11 @@
               "description": "Rate limiter policy for controlling request rates to protected endpoints",
               "required_fields": [
                 "metadata.name",
-                "metadata.namespace",
-                "spec.burst_size",
-                "spec.committed_information_rate"
+                "metadata.namespace"
               ],
               "mutually_exclusive_groups": [],
-              "example_yaml": "apiVersion: v1\nkind: rate_limiter_policy\nmetadata:\n  name: example-rl\n  namespace: default\nspec:\n  burst_size: 1\n  committed_information_rate: 1\n",
-              "example_json": "{\n  \"metadata\": {\n    \"name\": \"example-rl\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"burst_size\": 1,\n    \"committed_information_rate\": 1\n  }\n}\n"
+              "example_yaml": "apiVersion: v1\nkind: rate_limiter_policy\nmetadata:\n  name: example-rl\n  namespace: default\nspec:\n  any_server: {}\n",
+              "example_json": "{\n  \"metadata\": {\n    \"name\": \"example-rl\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"any_server\": {}\n  }\n}\n"
             },
             "x-f5xc-cli-domain": "rate_limiting"
           },
@@ -230039,15 +231745,12 @@
                 "namespace": "default"
               },
               "spec": {
-                "burst_size": 1,
-                "committed_information_rate": 1
+                "any_server": {}
               }
             },
             "requiredFields": [
               "metadata.name",
-              "metadata.namespace",
-              "spec.burst_size",
-              "spec.committed_information_rate"
+              "metadata.namespace"
             ],
             "description": "Rate limiter policy for controlling request rates to protected endpoints"
           },
@@ -230194,8 +231897,8 @@
               "type": "object",
               "description": "Shape of the Rate Limiter Policy Create specification.",
               "required_for": {
-                "minimum_config": true,
-                "create": true,
+                "minimum_config": false,
+                "create": false,
                 "update": false,
                 "read": false
               }
@@ -230419,10 +232122,19 @@
                 ],
                 "x-f5xc-example": "{\"key\": \"value\"}",
                 "x-f5xc-required-for": {
-                  "minimum_config": true,
-                  "create": true,
+                  "minimum_config": false,
+                  "create": false,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -230430,13 +232142,11 @@
               "description": "Rate limiter policy for controlling request rates to protected endpoints",
               "required_fields": [
                 "metadata.name",
-                "metadata.namespace",
-                "spec.burst_size",
-                "spec.committed_information_rate"
+                "metadata.namespace"
               ],
               "mutually_exclusive_groups": [],
-              "example_yaml": "apiVersion: v1\nkind: rate_limiter_policy\nmetadata:\n  name: example-rl\n  namespace: default\nspec:\n  burst_size: 1\n  committed_information_rate: 1\n",
-              "example_json": "{\n  \"metadata\": {\n    \"name\": \"example-rl\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"burst_size\": 1,\n    \"committed_information_rate\": 1\n  }\n}\n"
+              "example_yaml": "apiVersion: v1\nkind: rate_limiter_policy\nmetadata:\n  name: example-rl\n  namespace: default\nspec:\n  any_server: {}\n",
+              "example_json": "{\n  \"metadata\": {\n    \"name\": \"example-rl\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"any_server\": {}\n  }\n}\n"
             },
             "x-f5xc-cli-domain": "rate_limiting"
           },
@@ -230450,15 +232160,12 @@
                 "namespace": "default"
               },
               "spec": {
-                "burst_size": 1,
-                "committed_information_rate": 1
+                "any_server": {}
               }
             },
             "requiredFields": [
               "metadata.name",
-              "metadata.namespace",
-              "spec.burst_size",
-              "spec.committed_information_rate"
+              "metadata.namespace"
             ],
             "description": "Rate limiter policy for controlling request rates to protected endpoints"
           },
@@ -230605,8 +232312,8 @@
               "type": "object",
               "description": "Shape of the Rate Limiter Policy Replace specification.",
               "required_for": {
-                "minimum_config": true,
-                "create": true,
+                "minimum_config": false,
+                "create": false,
                 "update": false,
                 "read": false
               }
@@ -230997,6 +232704,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -231044,6 +232754,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -231393,6 +233108,15 @@
                   "create": false,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -231846,6 +233570,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -231893,6 +233620,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -236556,6 +238288,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -237073,6 +238814,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -237120,6 +238864,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -239029,6 +240778,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -239439,6 +241197,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -239486,6 +241247,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -239814,6 +241580,15 @@
                   "create": false,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -240246,6 +242021,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -240293,6 +242071,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -246839,6 +248622,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -247376,6 +249168,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -247423,6 +249218,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -248272,6 +250072,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -248859,6 +250668,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -248906,6 +250718,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -251330,8 +253147,8 @@
                 ],
                 "x-f5xc-example": "{\"key\": \"value\"}",
                 "x-f5xc-required-for": {
-                  "minimum_config": true,
-                  "create": true,
+                  "minimum_config": false,
+                  "create": false,
                   "update": false,
                   "read": false
                 }
@@ -251341,24 +253158,25 @@
               "description": "Secure Mesh Site v2 for multi-cloud CE deployments (Azure, AWS, GCP, bare-metal, etc.)",
               "required_fields": [
                 "metadata.name",
-                "metadata.namespace",
-                "spec.provider_choice"
+                "metadata.namespace"
               ],
               "mutually_exclusive_groups": [
                 {
                   "name": "provider_choice",
                   "fields": [
-                    "spec.azure",
                     "spec.aws",
-                    "spec.gcp",
+                    "spec.azure",
                     "spec.baremetal",
                     "spec.equinix",
+                    "spec.gcp",
                     "spec.kvm",
                     "spec.nutanix",
                     "spec.oci",
+                    "spec.openshift_virtualization",
                     "spec.openstack",
                     "spec.vmware"
                   ],
+                  "required": true,
                   "reason": "Choose exactly one cloud provider"
                 },
                 {
@@ -251412,7 +253230,7 @@
                 {
                   "name": "logs_receiver_choice",
                   "fields": [
-                    "spec.log_receiver",
+                    "spec.log_receiver_with_net",
                     "spec.logs_streaming_disabled"
                   ],
                   "reason": "Log receiver or disabled"
@@ -251481,8 +253299,7 @@
             },
             "requiredFields": [
               "metadata.name",
-              "metadata.namespace",
-              "spec.provider_choice"
+              "metadata.namespace"
             ],
             "description": "Secure Mesh Site v2 for multi-cloud CE deployments (Azure, AWS, GCP, bare-metal, etc.)"
           },
@@ -251629,8 +253446,8 @@
               "type": "object",
               "description": "Shape of the Secure Mesh site specification.",
               "required_for": {
-                "minimum_config": true,
-                "create": true,
+                "minimum_config": false,
+                "create": false,
                 "update": false,
                 "read": false
               }
@@ -253173,8 +254990,8 @@
                 ],
                 "x-f5xc-example": "{\"key\": \"value\"}",
                 "x-f5xc-required-for": {
-                  "minimum_config": true,
-                  "create": true,
+                  "minimum_config": false,
+                  "create": false,
                   "update": false,
                   "read": false
                 }
@@ -253193,24 +255010,25 @@
               "description": "Secure Mesh Site v2 for multi-cloud CE deployments (Azure, AWS, GCP, bare-metal, etc.)",
               "required_fields": [
                 "metadata.name",
-                "metadata.namespace",
-                "spec.provider_choice"
+                "metadata.namespace"
               ],
               "mutually_exclusive_groups": [
                 {
                   "name": "provider_choice",
                   "fields": [
-                    "spec.azure",
                     "spec.aws",
-                    "spec.gcp",
+                    "spec.azure",
                     "spec.baremetal",
                     "spec.equinix",
+                    "spec.gcp",
                     "spec.kvm",
                     "spec.nutanix",
                     "spec.oci",
+                    "spec.openshift_virtualization",
                     "spec.openstack",
                     "spec.vmware"
                   ],
+                  "required": true,
                   "reason": "Choose exactly one cloud provider"
                 },
                 {
@@ -253264,7 +255082,7 @@
                 {
                   "name": "logs_receiver_choice",
                   "fields": [
-                    "spec.log_receiver",
+                    "spec.log_receiver_with_net",
                     "spec.logs_streaming_disabled"
                   ],
                   "reason": "Log receiver or disabled"
@@ -253332,8 +255150,7 @@
             },
             "requiredFields": [
               "metadata.name",
-              "metadata.namespace",
-              "spec.provider_choice"
+              "metadata.namespace"
             ],
             "description": "Secure Mesh Site v2 for multi-cloud CE deployments (Azure, AWS, GCP, bare-metal, etc.)"
           },
@@ -253480,8 +255297,8 @@
               "type": "object",
               "description": "Shape of the Secure Mesh site specification.",
               "required_for": {
-                "minimum_config": true,
-                "create": true,
+                "minimum_config": false,
+                "create": false,
                 "update": false,
                 "read": false
               }
@@ -256332,6 +258149,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -257544,6 +259370,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -257591,6 +259420,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -257655,6 +259489,15 @@
                   "create": false,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -257951,6 +259794,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -257993,6 +259839,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -258326,6 +260177,15 @@
                   "create": false,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -258763,6 +260623,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -258810,6 +260673,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -259236,6 +261104,15 @@
                   "create": false,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -259718,6 +261595,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -259765,6 +261645,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -265439,6 +267324,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -267564,6 +269458,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -267611,6 +269508,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -268629,6 +270531,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -269638,6 +271549,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -269685,6 +271599,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -272548,6 +274467,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -273052,6 +274980,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -273099,6 +275030,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -273627,6 +275563,15 @@
                   "create": false,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -274254,6 +276199,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -274296,6 +276244,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -384537,6 +386490,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -385201,6 +387163,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -385248,6 +387213,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -387694,6 +389664,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -388399,6 +390378,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -388441,6 +390423,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -389046,6 +391033,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -389509,6 +391505,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -389556,6 +391555,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -391876,6 +393880,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -392332,6 +394345,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -392379,6 +394395,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -394764,8 +396785,10 @@
                 {
                   "name": "hash_policy",
                   "fields": [
+                    "spec.hash_policy_choice_least_active",
+                    "spec.hash_policy_choice_random",
                     "spec.hash_policy_choice_round_robin",
-                    "spec.hash_policy_choice_source_ip"
+                    "spec.hash_policy_choice_source_ip_stickiness"
                   ],
                   "reason": "Choose load balancing hash policy"
                 },
@@ -394773,7 +396796,8 @@
                   "name": "protocol",
                   "fields": [
                     "spec.tcp",
-                    "spec.tls"
+                    "spec.tls_tcp",
+                    "spec.tls_tcp_auto_cert"
                   ],
                   "reason": "Choose TCP or TLS protocol"
                 },
@@ -395540,6 +397564,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -395572,8 +397605,10 @@
                 {
                   "name": "hash_policy",
                   "fields": [
+                    "spec.hash_policy_choice_least_active",
+                    "spec.hash_policy_choice_random",
                     "spec.hash_policy_choice_round_robin",
-                    "spec.hash_policy_choice_source_ip"
+                    "spec.hash_policy_choice_source_ip_stickiness"
                   ],
                   "reason": "Choose load balancing hash policy"
                 },
@@ -395581,7 +397616,8 @@
                   "name": "protocol",
                   "fields": [
                     "spec.tcp",
-                    "spec.tls"
+                    "spec.tls_tcp",
+                    "spec.tls_tcp_auto_cert"
                   ],
                   "reason": "Choose TCP or TLS protocol"
                 },
@@ -396509,6 +398545,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -396556,6 +398595,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -396957,6 +399001,15 @@
                   "create": false,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -397490,6 +399543,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -397537,6 +399593,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -399307,6 +401368,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -399996,6 +402066,9 @@
               },
               "referring_objects": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -400038,6 +402111,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -401878,6 +403956,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -402364,6 +404451,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -402406,6 +404496,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -402740,6 +404835,15 @@
                   "create": false,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -403175,6 +405279,9 @@
               },
               "referring_objects": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -403217,6 +405324,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -405348,6 +407460,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -405673,6 +407794,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -405720,6 +407844,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -407904,6 +410033,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -408335,6 +410473,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -408382,6 +410523,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -408801,6 +410947,15 @@
                   "create": false,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -409324,6 +411479,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -409371,6 +411529,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -409989,6 +412152,15 @@
                   "create": false,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -410711,6 +412883,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -410758,6 +412933,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -413511,6 +415691,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -413943,6 +416132,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -413990,6 +416182,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -414764,6 +416961,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -415211,6 +417417,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -415258,6 +417467,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -419181,6 +421395,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -421273,6 +423496,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -421320,6 +423546,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -421772,6 +424003,15 @@
                   "create": false,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -422328,6 +424568,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -422375,6 +424618,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -422753,6 +425001,15 @@
                   "create": false,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -423235,6 +425492,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -423282,6 +425542,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -423648,6 +425913,15 @@
                   "create": true,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -424076,6 +426350,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -424123,6 +426400,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -426988,6 +429270,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -428888,6 +431179,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -428935,6 +431229,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -429805,7 +432104,8 @@
                   "name": "domain_choice",
                   "fields": [
                     "spec.waf_exclusion_rules[].any_domain",
-                    "spec.waf_exclusion_rules[].exact_domain"
+                    "spec.waf_exclusion_rules[].exact_value",
+                    "spec.waf_exclusion_rules[].suffix_value"
                   ],
                   "reason": "Choose domain matching type per rule"
                 },
@@ -429813,7 +432113,6 @@
                   "name": "path_choice",
                   "fields": [
                     "spec.waf_exclusion_rules[].any_path",
-                    "spec.waf_exclusion_rules[].exact_path",
                     "spec.waf_exclusion_rules[].path_prefix",
                     "spec.waf_exclusion_rules[].path_regex"
                   ],
@@ -430096,6 +432395,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -430110,7 +432418,8 @@
                   "name": "domain_choice",
                   "fields": [
                     "spec.waf_exclusion_rules[].any_domain",
-                    "spec.waf_exclusion_rules[].exact_domain"
+                    "spec.waf_exclusion_rules[].exact_value",
+                    "spec.waf_exclusion_rules[].suffix_value"
                   ],
                   "reason": "Choose domain matching type per rule"
                 },
@@ -430118,7 +432427,6 @@
                   "name": "path_choice",
                   "fields": [
                     "spec.waf_exclusion_rules[].any_path",
-                    "spec.waf_exclusion_rules[].exact_path",
                     "spec.waf_exclusion_rules[].path_prefix",
                     "spec.waf_exclusion_rules[].path_regex"
                   ],
@@ -430562,6 +432870,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -430609,6 +432920,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -431995,6 +434311,15 @@
                   "update": false,
                   "read": false
                 }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
+                }
               }
             },
             "x-f5xc-minimum-configuration": {
@@ -432457,6 +434782,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -432504,6 +434832,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]
@@ -433298,6 +435631,15 @@
                   "create": false,
                   "update": false,
                   "read": false
+                }
+              },
+              "resource_version": {
+                "type": "string",
+                "x-f5xc-concurrency-token": {
+                  "server_assigned": true,
+                  "echo_on_operations": [
+                    "replace"
+                  ]
                 }
               }
             },
@@ -434196,6 +436538,9 @@
               },
               "status": {
                 "type": "array"
+              },
+              "resource_version": {
+                "type": "string"
               }
             }
           },
@@ -434243,6 +436588,11 @@
             {
               "field": "system_metadata",
               "type": "object",
+              "description": ""
+            },
+            {
+              "field": "resource_version",
+              "type": "string",
               "description": ""
             }
           ]

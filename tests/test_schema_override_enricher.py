@@ -166,6 +166,34 @@ class TestSchemaOverrideEnricher:
                 "readOnly": True,
             }
 
+    def test_adds_live_verified_segment_network_reference(self, enricher):
+        """The accepted named Segment reference is part of the canonical contract."""
+        spec = {
+            "components": {
+                "schemas": {
+                    "securemesh_site_v2SegmentVRFSettingType": {
+                        "type": "object",
+                        "properties": {},
+                    },
+                },
+            },
+        }
+
+        properties = enricher.enrich_spec(spec, canonical_only=True)["components"]["schemas"][
+            "securemesh_site_v2SegmentVRFSettingType"
+        ]["properties"]
+        segment_network = properties["segment_network"]
+        assert segment_network["allOf"] == [{"$ref": "#/components/schemas/ioschemaObjectRefType"}]
+        assert segment_network["x-f5xc-references"] == [
+            {
+                "resource_kind": "segment",
+                "field_path": "segment_network",
+                "gated_by": None,
+                "required": False,
+                "cardinality": "single",
+            }
+        ]
+
     def test_adds_securemesh_resource_version_only_to_read_and_replace(self, enricher):
         """The observed token is state, never a create-time user input."""
         spec = {

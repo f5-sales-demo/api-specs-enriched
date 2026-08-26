@@ -6,6 +6,7 @@ from .acronym_enricher import AcronymEnricher
 from .acronyms import AcronymNormalizer
 from .best_practices_enricher import BestPracticesEnricher
 from .branding import BrandingNormalizer, BrandingStats, BrandingTransformer, BrandingValidator
+from .concurrency_contract_enricher import ConcurrencyContractEnricher
 from .conflicts_with_enricher import ConflictsWithEnricher
 from .consistency_validator import ConsistencyValidator
 from .constrained_fields_enricher import ConstrainedFieldsEnricher
@@ -58,6 +59,7 @@ __all__ = [
     "BrandingStats",
     "BrandingTransformer",
     "BrandingValidator",
+    "ConcurrencyContractEnricher",
     "ConflictsWithEnricher",
     "ConsistencyValidator",
     "ConstrainedFieldsEnricher",

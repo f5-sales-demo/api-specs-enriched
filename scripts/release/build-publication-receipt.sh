@@ -75,7 +75,7 @@ for path in "$@"; do
 done
 
 expected=$(jq -cnS --arg bundle "f5xc-api-specs-v${version}.zip" \
-  '["api-catalog.json", $bundle, "index.json", "minimal-export-defaults.json", "openapi.json", "smsv2-contract.json", "smsv2-evidence-receipt.json", "smsv2-contract-manifest.json", "upstream-contract-removals.json"] | sort')
+  '["api-catalog.json", "concurrency_contracts.json", $bundle, "index.json", "minimal-export-defaults.json", "openapi.json", "smsv2-contract.json", "smsv2-evidence-receipt.json", "smsv2-contract-manifest.json", "smsv2_parity_manifest.json", "upstream-contract-removals.json"] | sort')
 actual=$(jq -cS 'keys | sort' <<<"$assets")
 if [ "$actual" != "$expected" ]; then
   fail "asset set does not match the release asset contract for v${version}"$'\n'"  expected: ${expected}"$'\n'"  actual:   ${actual}"

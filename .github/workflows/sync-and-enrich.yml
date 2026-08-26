@@ -400,6 +400,20 @@ jobs:
             echo "Catalog version aligned to $VERSION"
           fi
 
+      - name: Verify source version coherence
+        if: steps.detect.outputs.has_changes == 'true'
+        env:
+          VERSION: ${{ steps.version.outputs.new_version }}
+        run: |
+          python -m scripts.verify_release_version \
+            --version "$VERSION" \
+            --tag "v$VERSION" \
+            --document docs/specifications/api/openapi.json \
+            --document docs/specifications/api/index.json \
+            --document docs/specifications/api/concurrency_contracts.json \
+            --document docs/specifications/api/smsv2_parity_manifest.json \
+            --document release/api-catalog.json
+
       - name: Generate discovery summary
         id: discovery-summary
         if: steps.check-discovery.outputs.has_discovery == 'true'
@@ -627,7 +641,7 @@ jobs:
           else
             # Create a new release PR only when this version has no prior PR.
             git checkout -b "$BRANCH"
-            git add -f CHANGELOG.md .github_release docs/specifications/api/ docs/api-reference/
+            git add -f CHANGELOG.md .github_release release/api-catalog.json docs/specifications/api/ docs/api-reference/
             if git diff --staged --quiet; then
               echo "::error::Release detector requested v${VERSION}, but no generated output is staged"
               exit 1
@@ -742,6 +756,17 @@ jobs:
           echo "zip_name=${ZIP_NAME}" >> "$GITHUB_ENV"
           echo "::notice::Package created: ${ZIP_NAME}"
 
+          python -m scripts.verify_release_version \
+            --version "$VERSION" \
+            --tag "v$VERSION" \
+            --document docs/specifications/api/openapi.json \
+            --document docs/specifications/api/index.json \
+            --document docs/specifications/api/concurrency_contracts.json \
+            --document docs/specifications/api/smsv2_parity_manifest.json \
+            --document release/api-catalog.json \
+            --contract-manifest release-package/smsv2-contract-manifest.json \
+            --archive-name "$ZIP_NAME"
+
       - name: Create release
         if: steps.detect.outputs.has_changes == 'true'
         env:
@@ -762,6 +787,8 @@ jobs:
             docs/specifications/api/openapi.json
             docs/specifications/api/index.json
             docs/specifications/api/minimal-export-defaults.json
+            docs/specifications/api/concurrency_contracts.json
+            docs/specifications/api/smsv2_parity_manifest.json
             release/api-catalog.json
             release/upstream-contract-removals.json
             release-package/smsv2-contract.json
@@ -780,14 +807,26 @@ jobs:
             exit 1
           fi
           NOTES_FILE=$(mktemp)
-          trap 'rm -f "$NOTES_FILE"' EXIT
+          RECEIPT_LINE_FILE=$(mktemp)
+          RECEIPT_JSON_FILE=$(mktemp)
+          trap 'rm -f "$NOTES_FILE" "$RECEIPT_LINE_FILE" "$RECEIPT_JSON_FILE"' EXIT
+
+          bash scripts/release/build-publication-receipt.sh \
+            "$VERSION" "$release_commit" "${ASSET_PATHS[@]}" > "$RECEIPT_LINE_FILE"
+          sed -n 's/^<!-- publication-receipt:\(.*\) -->$/\1/p' \
+            "$RECEIPT_LINE_FILE" > "$RECEIPT_JSON_FILE"
+          jq -e . "$RECEIPT_JSON_FILE" >/dev/null
+          python -m scripts.verify_release_version \
+            --version "$VERSION" \
+            --tag "v$VERSION" \
+            --receipt "$RECEIPT_JSON_FILE"
+
           {
             cat CHANGELOG.md
             printf '\n'
             cat release/upstream-contract-removals.md
             printf '\n'
-            bash scripts/release/build-publication-receipt.sh \
-              "$VERSION" "$release_commit" "${ASSET_PATHS[@]}"
+            cat "$RECEIPT_LINE_FILE"
           } > "$NOTES_FILE"
 
           # Create release with ZIP package
