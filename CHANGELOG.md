@@ -12,6 +12,7 @@
 - **patch** release
 
 ### Changes
+- Published provider-wide concurrency and Secure Mesh Site v2 parity contracts (#1601)
 - Updated API specifications from F5 Distributed Cloud
 - Applied enrichment pipeline:
   - Acronym normalization (100+ terms)
@@ -50,4 +51,3 @@ docs/specifications/api/
 ### Source
 - Source: F5 Distributed Cloud OpenAPI specifications
 - Upstream: unknown (ETag: unknown)
-
