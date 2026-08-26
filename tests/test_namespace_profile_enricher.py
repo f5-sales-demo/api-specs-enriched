@@ -5,9 +5,13 @@ from __future__ import annotations
 
 import copy
 from dataclasses import asdict
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import pytest
+import yaml
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 from scripts.utils.namespace_profile_enricher import (
     NamespaceProfileEnricher,
@@ -181,6 +185,72 @@ class TestProfileValidation:
             profile = enricher.get_profile_for_resource(name)
             for ns_type in profile["constraint"]["allowed"]:
                 assert ns_type in valid, f"{name} has invalid namespace type: {ns_type}"
+
+    def test_all_enforced_profiles_recommend_an_allowed_namespace(
+        self, enricher: NamespaceProfileEnricher
+    ) -> None:
+        """The final profile, including verdict overlays, must be self-consistent."""
+        resources = set(enricher.config.get("resources", {})) | set(enricher.verdicts)
+        for name in sorted(resources):
+            profile = enricher.get_profile_for_resource(name)
+            if profile["constraint"]["enforced"]:
+                assert profile["recommendation"]["primary"] in profile["constraint"]["allowed"], (
+                    name,
+                    profile,
+                )
+
+    def test_enforced_single_namespace_profiles_are_reconciled(
+        self, enricher: NamespaceProfileEnricher
+    ) -> None:
+        """A verified singleton is both its recommendation and its only alternative set."""
+        resources = set(enricher.config.get("resources", {})) | set(enricher.verdicts)
+        for name in sorted(resources):
+            profile = enricher.get_profile_for_resource(name)
+            allowed = profile["constraint"]["allowed"]
+            if profile["constraint"]["enforced"] and len(allowed) == 1:
+                assert profile["recommendation"]["primary"] == allowed[0], (name, profile)
+                assert profile["recommendation"]["alternatives"] == [], (name, profile)
+
+    def test_verdict_overlay_is_validated_when_loaded(self, tmp_path: Path) -> None:
+        """An invalid machine-owned verdict must fail closed instead of bypassing validation."""
+        profile_path = tmp_path / "namespace_profile.yaml"
+        profile_path.write_text(
+            yaml.safe_dump(
+                {
+                    "default_profile": {
+                        "constraint": {"allowed": ["custom"], "enforced": False},
+                        "recommendation": {
+                            "primary": "custom",
+                            "alternatives": [],
+                            "rationale": "fixture",
+                        },
+                        "classification": {
+                            "category": "application",
+                            "multi_tenant_pattern": "per-tenant",
+                        },
+                    },
+                    "valid_namespace_types": ["system", "custom"],
+                    "valid_categories": ["application"],
+                    "valid_multi_tenant_patterns": ["none", "per-tenant"],
+                    "resources": {},
+                }
+            )
+        )
+        (tmp_path / "namespace_verdicts.yaml").write_text(
+            yaml.safe_dump(
+                {
+                    "verdicts": {
+                        "broken": {
+                            "constraint": {"allowed": ["not-a-namespace"]},
+                            "_verification": {"status": "verified", "method": "crud"},
+                        }
+                    }
+                }
+            )
+        )
+
+        with pytest.raises(ValueError, match=r"broken.*namespace"):
+            NamespaceProfileEnricher(profile_path)
 
 
 # -- Resource Type Extraction Tests --

@@ -39,15 +39,15 @@ resources:
         reason: "Choose exactly one advertising method"
 
       - name: "waf"
-        fields: ["spec.disable_waf", "spec.enable_waf"]
+        fields: ["spec.app_firewall", "spec.disable_waf"]
         reason: "WAF enabled or disabled"
 
       - name: "bot_defense"
-        fields: ["spec.disable_bot_defense", "spec.enable_bot_defense"]
+        fields: ["spec.bot_defense", "spec.bot_defense_advanced", "spec.disable_bot_defense"]
         reason: "Bot defense enabled or disabled"
 
       - name: "rate_limit"
-        fields: ["spec.disable_rate_limit", "spec.enable_rate_limit"]
+        fields: ["spec.api_rate_limit", "spec.disable_rate_limit", "spec.rate_limit"]
         reason: "Rate limiting enabled or disabled"
 
       - name: "api_discovery"
@@ -55,19 +55,19 @@ resources:
         reason: "API discovery enabled or disabled"
 
       - name: "api_testing"
-        fields: ["spec.disable_api_testing", "spec.enable_api_testing"]
+        fields: ["spec.api_testing", "spec.disable_api_testing"]
         reason: "API testing enabled or disabled"
 
       - name: "api_definition"
-        fields: ["spec.disable_api_definition", "spec.enable_api_definition"]
+        fields: ["spec.api_specification", "spec.disable_api_definition"]
         reason: "API definition enabled or disabled"
 
       - name: "malware_protection"
-        fields: ["spec.disable_malware_protection", "spec.enable_malware_protection"]
+        fields: ["spec.disable_malware_protection", "spec.malware_protection_settings"]
         reason: "Malware protection enabled or disabled"
 
       - name: "client_side_defense"
-        fields: ["spec.disable_client_side_defense", "spec.enable_client_side_defense"]
+        fields: ["spec.client_side_defense", "spec.disable_client_side_defense"]
         reason: "Client-side defense enabled or disabled"
 
       - name: "ip_reputation"
@@ -91,7 +91,7 @@ resources:
         reason: "Mutual TLS enabled or disabled"
 
       - name: "server_name_header"
-        fields: ["spec.https_auto_cert.default_header", "spec.https_auto_cert.append_server_name_header", "spec.https_auto_cert.pass_through_server_name_header"]
+        fields: ["spec.https_auto_cert.append_server_name", "spec.https_auto_cert.default_header", "spec.https_auto_cert.pass_through", "spec.https_auto_cert.server_name"]
         reason: "Choose exactly one server name header handling"
 
       - name: "path_normalize"
@@ -102,32 +102,28 @@ resources:
         fields: ["spec.https_auto_cert.non_default_loadbalancer", "spec.https_auto_cert.default_loadbalancer"]
         reason: "Choose default or non-default load balancer"
 
-      - name: "header_transformation"
-        fields: ["spec.https_auto_cert.header_transformation_type.legacy_header_transformation", "spec.https_auto_cert.header_transformation_type.proper_header_transformation", "spec.https_auto_cert.header_transformation_type.preserve_case_header_transformation"]
-        reason: "Choose exactly one header transformation type"
-
       - name: "http_protocol"
         fields: ["spec.https_auto_cert.http_protocol_options.http_protocol_enable_v1_only", "spec.https_auto_cert.http_protocol_options.http_protocol_enable_v1_v2", "spec.https_auto_cert.http_protocol_options.http_protocol_enable_v2_only"]
         reason: "Choose exactly one HTTP protocol version configuration"
 
       - name: "coalescing"
-        fields: ["spec.https_auto_cert.coalescing_options.default_coalescing", "spec.https_auto_cert.coalescing_options.disable_coalescing", "spec.https_auto_cert.coalescing_options.enable_for_same_origin"]
+        fields: ["spec.https_auto_cert.coalescing_options.default_coalescing", "spec.https_auto_cert.coalescing_options.strict_coalescing"]
         reason: "Choose exactly one connection coalescing option"
 
       - name: "ddos_mitigation"
-        fields: ["spec.l7_ddos_protection.mitigation_block", "spec.l7_ddos_protection.mitigation_js_challenge", "spec.l7_ddos_protection.mitigation_captcha_challenge", "spec.l7_ddos_protection.mitigation_none"]
+        fields: ["spec.l7_ddos_protection.mitigation_block", "spec.l7_ddos_protection.mitigation_captcha_challenge", "spec.l7_ddos_protection.mitigation_js_challenge"]
         reason: "Choose exactly one DDoS mitigation action"
 
       - name: "ddos_rps_threshold"
-        fields: ["spec.l7_ddos_protection.default_rps_threshold", "spec.l7_ddos_protection.custom_rps_threshold"]
+        fields: ["spec.l7_ddos_protection.default_rps_threshold", "spec.l7_ddos_protection.rps_threshold"]
         reason: "Choose default or custom RPS threshold"
 
       - name: "ddos_clientside_action"
-        fields: ["spec.l7_ddos_protection.clientside_action_none", "spec.l7_ddos_protection.clientside_action_javascript", "spec.l7_ddos_protection.clientside_action_captcha"]
+        fields: ["spec.l7_ddos_protection.clientside_action_captcha_challenge", "spec.l7_ddos_protection.clientside_action_js_challenge", "spec.l7_ddos_protection.clientside_action_none"]
         reason: "Choose exactly one client-side DDoS action"
 
       - name: "ddos_policy"
-        fields: ["spec.l7_ddos_protection.ddos_policy_none", "spec.l7_ddos_protection.ddos_policy_ref"]
+        fields: ["spec.l7_ddos_protection.ddos_policy_custom", "spec.l7_ddos_protection.ddos_policy_none"]
         reason: "DDoS policy reference or none"
 
       - name: "challenge"
@@ -142,20 +138,16 @@ resources:
         fields: ["spec.disable_trust_client_ip_headers", "spec.enable_trust_client_ip_headers"]
         reason: "Trust client IP headers or not"
 
-      - name: "timeouts"
-        fields: ["spec.system_default_timeouts", "spec.custom_timeouts"]
-        reason: "Use system default or custom timeouts"
-
       - name: "service_policies_source"
         fields: ["spec.service_policies_from_namespace", "spec.active_service_policies", "spec.no_service_policies"]
         reason: "Service policies from namespace, active list, or none"
 
       - name: "sensitive_data_policy"
-        fields: ["spec.default_sensitive_data_policy", "spec.custom_sensitive_data_policy"]
+        fields: ["spec.default_sensitive_data_policy", "spec.sensitive_data_policy"]
         reason: "Use default or custom sensitive data policy"
 
       - name: "load_balancing_algorithm"
-        fields: ["spec.round_robin", "spec.least_request", "spec.ring_hash", "spec.random"]
+        fields: ["spec.least_active", "spec.random", "spec.ring_hash", "spec.round_robin"]
         reason: "Choose exactly one load balancing algorithm"
 
     # Example minimal YAML configuration (absolute minimum)
@@ -840,10 +832,10 @@ resources:
         fields: ["spec.do_not_advertise", "spec.advertise_on_public_default_vip", "spec.advertise_on_public", "spec.advertise_custom"]
         reason: "Choose exactly one advertising method"
       - name: "hash_policy"
-        fields: ["spec.hash_policy_choice_round_robin", "spec.hash_policy_choice_source_ip"]
+        fields: ["spec.hash_policy_choice_least_active", "spec.hash_policy_choice_random", "spec.hash_policy_choice_round_robin", "spec.hash_policy_choice_source_ip_stickiness"]
         reason: "Choose load balancing hash policy"
       - name: "protocol"
-        fields: ["spec.tcp", "spec.tls"]
+        fields: ["spec.tcp", "spec.tls_tcp", "spec.tls_tcp_auto_cert"]
         reason: "Choose TCP or TLS protocol"
       - name: "sni"
         fields: ["spec.no_sni", "spec.sni"]
@@ -912,7 +904,9 @@ resources:
       # Plus one of the health check type variants
 
     mutually_exclusive_groups:
-      - fields: ["spec.http_health_check", "spec.tcp_health_check", "spec.udp_icmp_health_check"]
+      - name: "health_check"
+        fields: ["spec.http_health_check", "spec.tcp_health_check", "spec.udp_icmp_health_check"]
+        required: true
         reason: "Choose exactly one health check type"
 
     example_yaml: |
@@ -1306,12 +1300,9 @@ resources:
     domain: "rate_limiting"
     resource_type: "policy"
 
-    # API requires burst_size >= 1 and committed_information_rate >= 1
     required_fields:
       - "metadata.name"
       - "metadata.namespace"
-      - "spec.burst_size"
-      - "spec.committed_information_rate"
 
     example_yaml: |
       apiVersion: v1
@@ -1320,8 +1311,7 @@ resources:
         name: example-rl
         namespace: default
       spec:
-        burst_size: 1
-        committed_information_rate: 1
+        any_server: {}
 
     example_json: |
       {
@@ -1330,8 +1320,7 @@ resources:
           "namespace": "default"
         },
         "spec": {
-          "burst_size": 1,
-          "committed_information_rate": 1
+          "any_server": {}
         }
       }
 
@@ -1397,10 +1386,10 @@ resources:
 
     mutually_exclusive_groups:
       - name: "domain_choice"
-        fields: ["spec.waf_exclusion_rules[].any_domain", "spec.waf_exclusion_rules[].exact_domain"]
+        fields: ["spec.waf_exclusion_rules[].any_domain", "spec.waf_exclusion_rules[].exact_value", "spec.waf_exclusion_rules[].suffix_value"]
         reason: "Choose domain matching type per rule"
       - name: "path_choice"
-        fields: ["spec.waf_exclusion_rules[].any_path", "spec.waf_exclusion_rules[].exact_path", "spec.waf_exclusion_rules[].path_prefix", "spec.waf_exclusion_rules[].path_regex"]
+        fields: ["spec.waf_exclusion_rules[].any_path", "spec.waf_exclusion_rules[].path_prefix", "spec.waf_exclusion_rules[].path_regex"]
         reason: "Choose path matching type per rule"
 
     notes:
@@ -1606,7 +1595,8 @@ resources:
 
     mutually_exclusive_groups:
       - name: "endpoint_choice"
-        fields: ["spec.endpoint.any", "spec.endpoint.prefix_list", "spec.endpoint.inside_outside_network", "spec.endpoint.interface", "spec.endpoint.label_selector"]
+        fields: ["spec.endpoint.any", "spec.endpoint.inside_endpoints", "spec.endpoint.label_selector", "spec.endpoint.outside_endpoints", "spec.endpoint.prefix_list"]
+        required: true
         reason: "Choose endpoint matching strategy (REQUIRED)"
 
     example_yaml: |
@@ -1796,7 +1786,6 @@ resources:
     required_fields:
       - "metadata.name"  # MUST be a valid FQDN
       - "metadata.namespace"  # MUST be 'system'
-      - "spec.domain"
       # spec.dns_type REQUIRED oneOf
 
     mutually_exclusive_groups:
@@ -1810,7 +1799,6 @@ resources:
         name: example.com
         namespace: system
       spec:
-        domain: example.com
         primary: {}
 
     example_json: |
@@ -1820,7 +1808,6 @@ resources:
           "namespace": "system"
         },
         "spec": {
-          "domain": "example.com",
           "primary": {}
         }
       }
@@ -2020,17 +2007,17 @@ resources:
     domain: "cloud_infrastructure"
     resource_type: "site"
     # NOTE: requires system namespace (enforced by x-f5xc-namespace-profile)
-    # NOTE: provider_choice (azure/aws/gcp/etc.) is REQUIRED at runtime despite schema saying optional
+    # NOTE: the provider_choice oneOf group is REQUIRED guidance; it is not a schema property
     # NOTE: nodes self-register after site creation — no azure_cred prerequisite needed for API object
 
     required_fields:
       - "metadata.name"
       - "metadata.namespace"  # must be "system"
-      - "spec.provider_choice"  # one of: azure, aws, gcp, baremetal, equinix, kvm, nutanix, oci, openstack, vmware
 
     mutually_exclusive_groups:
       - name: "provider_choice"
-        fields: ["spec.azure", "spec.aws", "spec.gcp", "spec.baremetal", "spec.equinix", "spec.kvm", "spec.nutanix", "spec.oci", "spec.openstack", "spec.vmware"]
+        fields: ["spec.aws", "spec.azure", "spec.baremetal", "spec.equinix", "spec.gcp", "spec.kvm", "spec.nutanix", "spec.oci", "spec.openshift_virtualization", "spec.openstack", "spec.vmware"]
+        required: true
         reason: "Choose exactly one cloud provider"
       - name: "node_ha_choice"
         fields: ["spec.disable_ha", "spec.enable_ha"]
@@ -2051,7 +2038,7 @@ resources:
         fields: ["spec.custom_proxy_bypass", "spec.no_proxy_bypass"]
         reason: "Proxy bypass or none"
       - name: "logs_receiver_choice"
-        fields: ["spec.log_receiver", "spec.logs_streaming_disabled"]
+        fields: ["spec.log_receiver_with_net", "spec.logs_streaming_disabled"]
         reason: "Log receiver or disabled"
       - name: "s2s_connectivity_sli_choice"
         fields: ["spec.dc_cluster_group_sli", "spec.no_s2s_connectivity_sli"]
@@ -2325,13 +2312,15 @@ resources:
     required_fields:
       - "metadata.name"
       - "metadata.namespace"
-      - "spec.log_type"         # oneOf: request_logs, dns_logs, audit_logs, security_events
-      - "spec.receiver_choice"  # oneOf: http_receiver, s3_receiver, kafka_receiver, etc.
 
     mutually_exclusive_groups:
-      - fields: ["spec.request_logs", "spec.dns_logs", "spec.audit_logs", "spec.security_events"]
+      - name: "log_type"
+        fields: ["spec.audit_logs", "spec.dns_logs", "spec.request_logs", "spec.security_events"]
+        required: true
         reason: "Choose exactly one log type"
-      - fields: ["spec.http_receiver", "spec.s3_receiver", "spec.kafka_receiver", "spec.splunk_receiver", "spec.datadog_receiver", "spec.new_relic_receiver", "spec.sumo_logic_receiver", "spec.qradar_receiver", "spec.aws_cloud_watch_receiver", "spec.azure_event_hubs_receiver", "spec.azure_receiver", "spec.gcp_bucket_receiver"]
+      - name: "receiver"
+        fields: ["spec.aws_cloud_watch_receiver", "spec.azure_event_hubs_receiver", "spec.azure_receiver", "spec.datadog_receiver", "spec.gcp_bucket_receiver", "spec.http_receiver", "spec.kafka_receiver", "spec.new_relic_receiver", "spec.qradar_receiver", "spec.s3_receiver", "spec.splunk_receiver", "spec.sumo_logic_receiver"]
+        required: true
         reason: "Choose exactly one receiver type"
 
     example_yaml: |
@@ -2372,10 +2361,11 @@ resources:
     required_fields:
       - "metadata.name"
       - "metadata.namespace"
-      - "spec.receiver_choice"  # oneOf: email, opsgenie, pagerduty, slack, sms, webhook
 
     mutually_exclusive_groups:
-      - fields: ["spec.email", "spec.opsgenie", "spec.pagerduty", "spec.slack", "spec.sms", "spec.webhook"]
+      - name: "receiver"
+        fields: ["spec.email", "spec.opsgenie", "spec.pagerduty", "spec.slack", "spec.sms", "spec.webhook"]
+        required: true
         reason: "Choose exactly one notification channel"
 
     example_yaml: |

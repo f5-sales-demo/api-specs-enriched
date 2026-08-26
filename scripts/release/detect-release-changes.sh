@@ -169,6 +169,7 @@ fi
 LATEST_VERSION="$(jq -r '.tagName | ltrimstr("v")' "$LATEST_RELEASE_JSON")"
 REQUIRED_RELEASE_ASSETS=(
   "api-catalog.json"
+  "concurrency_contracts.json"
   "f5xc-api-specs-v${LATEST_VERSION}.zip"
   "index.json"
   "minimal-export-defaults.json"
@@ -176,6 +177,7 @@ REQUIRED_RELEASE_ASSETS=(
   "smsv2-contract-manifest.json"
   "smsv2-contract.json"
   "smsv2-evidence-receipt.json"
+  "smsv2_parity_manifest.json"
   "upstream-contract-removals.json"
 )
 RELEASE_CONTRACT_CHANGED=false

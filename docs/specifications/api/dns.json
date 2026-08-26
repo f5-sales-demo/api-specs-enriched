@@ -14381,6 +14381,15 @@
               "update": false,
               "read": false
             }
+          },
+          "resource_version": {
+            "type": "string",
+            "x-f5xc-concurrency-token": {
+              "server_assigned": true,
+              "echo_on_operations": [
+                "replace"
+              ]
+            }
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -15030,6 +15039,15 @@
               "create": false,
               "update": false,
               "read": false
+            }
+          },
+          "resource_version": {
+            "type": "string",
+            "x-f5xc-concurrency-token": {
+              "server_assigned": true,
+              "echo_on_operations": [
+                "replace"
+              ]
             }
           }
         },
@@ -18451,6 +18469,15 @@
               "update": false,
               "read": false
             }
+          },
+          "resource_version": {
+            "type": "string",
+            "x-f5xc-concurrency-token": {
+              "server_assigned": true,
+              "echo_on_operations": [
+                "replace"
+              ]
+            }
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -19512,6 +19539,15 @@
               "create": false,
               "update": false,
               "read": false
+            }
+          },
+          "resource_version": {
+            "type": "string",
+            "x-f5xc-concurrency-token": {
+              "server_assigned": true,
+              "echo_on_operations": [
+                "replace"
+              ]
             }
           }
         },
@@ -23585,6 +23621,15 @@
               "update": false,
               "read": false
             }
+          },
+          "resource_version": {
+            "type": "string",
+            "x-f5xc-concurrency-token": {
+              "server_assigned": true,
+              "echo_on_operations": [
+                "replace"
+              ]
+            }
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -24175,6 +24220,15 @@
               "create": false,
               "update": false,
               "read": false
+            }
+          },
+          "resource_version": {
+            "type": "string",
+            "x-f5xc-concurrency-token": {
+              "server_assigned": true,
+              "echo_on_operations": [
+                "replace"
+              ]
             }
           }
         },
@@ -26001,6 +26055,15 @@
               "update": false,
               "read": false
             }
+          },
+          "resource_version": {
+            "type": "string",
+            "x-f5xc-concurrency-token": {
+              "server_assigned": true,
+              "echo_on_operations": [
+                "replace"
+              ]
+            }
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -26895,6 +26958,15 @@
               "create": true,
               "update": false,
               "read": false
+            }
+          },
+          "resource_version": {
+            "type": "string",
+            "x-f5xc-concurrency-token": {
+              "server_assigned": true,
+              "echo_on_operations": [
+                "replace"
+              ]
             }
           }
         },
@@ -29582,6 +29654,15 @@
               "update": false,
               "read": false
             }
+          },
+          "resource_version": {
+            "type": "string",
+            "x-f5xc-concurrency-token": {
+              "server_assigned": true,
+              "echo_on_operations": [
+                "replace"
+              ]
+            }
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -30468,6 +30549,15 @@
               "create": false,
               "update": false,
               "read": false
+            }
+          },
+          "resource_version": {
+            "type": "string",
+            "x-f5xc-concurrency-token": {
+              "server_assigned": true,
+              "echo_on_operations": [
+                "replace"
+              ]
             }
           }
         },
@@ -32778,6 +32868,15 @@
               "update": false,
               "read": false
             }
+          },
+          "resource_version": {
+            "type": "string",
+            "x-f5xc-concurrency-token": {
+              "server_assigned": true,
+              "echo_on_operations": [
+                "replace"
+              ]
+            }
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -33829,6 +33928,15 @@
               "create": false,
               "update": false,
               "read": false
+            }
+          },
+          "resource_version": {
+            "type": "string",
+            "x-f5xc-concurrency-token": {
+              "server_assigned": true,
+              "echo_on_operations": [
+                "replace"
+              ]
             }
           }
         },
@@ -35385,8 +35493,8 @@
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
             "x-f5xc-required-for": {
-              "minimum_config": true,
-              "create": true,
+              "minimum_config": false,
+              "create": false,
               "update": false,
               "read": false
             }
@@ -35396,8 +35504,7 @@
           "description": "DNS zone for domain management and record configuration",
           "required_fields": [
             "metadata.name",
-            "metadata.namespace",
-            "spec.domain"
+            "metadata.namespace"
           ],
           "mutually_exclusive_groups": [
             {
@@ -35409,8 +35516,8 @@
               "reason": "Choose primary or secondary zone type (REQUIRED)"
             }
           ],
-          "example_yaml": "metadata:\n  name: example.com\n  namespace: system\nspec:\n  domain: example.com\n  primary: {}\n",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example.com\",\n    \"namespace\": \"system\"\n  },\n  \"spec\": {\n    \"domain\": \"example.com\",\n    \"primary\": {}\n  }\n}\n"
+          "example_yaml": "metadata:\n  name: example.com\n  namespace: system\nspec:\n  primary: {}\n",
+          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example.com\",\n    \"namespace\": \"system\"\n  },\n  \"spec\": {\n    \"primary\": {}\n  }\n}\n"
         },
         "x-f5xc-cli-domain": "dns",
         "x-f5xc-namespace-profile": {
@@ -35550,8 +35657,7 @@
           "description": "DNS zone for domain management and record configuration",
           "required_fields": [
             "metadata.name",
-            "metadata.namespace",
-            "spec.domain"
+            "metadata.namespace"
           ],
           "mutually_exclusive_groups": [
             {
@@ -35563,13 +35669,10 @@
               "reason": "Choose primary or secondary zone type (REQUIRED)"
             }
           ],
-          "example_yaml": "metadata:\n  name: example.com\n  namespace: system\nspec:\n  domain: example.com\n  primary: {}\n",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example.com\",\n    \"namespace\": \"system\"\n  },\n  \"spec\": {\n    \"domain\": \"example.com\",\n    \"primary\": {}\n  }\n}\n"
+          "example_yaml": "metadata:\n  name: example.com\n  namespace: system\nspec:\n  primary: {}\n",
+          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example.com\",\n    \"namespace\": \"system\"\n  },\n  \"spec\": {\n    \"primary\": {}\n  }\n}\n"
         },
         "x-f5xc-cli-domain": "dns",
-        "x-f5xc-field-examples": {
-          "spec.domain": "example.com"
-        },
         "x-f5xc-namespace-profile": {
           "constraint": {
             "allowed": [
@@ -40089,6 +40192,15 @@
               "update": false,
               "read": false
             }
+          },
+          "resource_version": {
+            "type": "string",
+            "x-f5xc-concurrency-token": {
+              "server_assigned": true,
+              "echo_on_operations": [
+                "replace"
+              ]
+            }
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -40202,8 +40314,7 @@
           "description": "DNS zone for domain management and record configuration",
           "required_fields": [
             "metadata.name",
-            "metadata.namespace",
-            "spec.domain"
+            "metadata.namespace"
           ],
           "mutually_exclusive_groups": [
             {
@@ -40215,8 +40326,8 @@
               "reason": "Choose primary or secondary zone type (REQUIRED)"
             }
           ],
-          "example_yaml": "metadata:\n  name: example.com\n  namespace: system\nspec:\n  domain: example.com\n  primary: {}\n",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example.com\",\n    \"namespace\": \"system\"\n  },\n  \"spec\": {\n    \"domain\": \"example.com\",\n    \"primary\": {}\n  }\n}\n"
+          "example_yaml": "metadata:\n  name: example.com\n  namespace: system\nspec:\n  primary: {}\n",
+          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example.com\",\n    \"namespace\": \"system\"\n  },\n  \"spec\": {\n    \"primary\": {}\n  }\n}\n"
         },
         "x-f5xc-cli-domain": "dns",
         "x-f5xc-namespace-profile": {
@@ -40504,8 +40615,7 @@
           "description": "DNS zone for domain management and record configuration",
           "required_fields": [
             "metadata.name",
-            "metadata.namespace",
-            "spec.domain"
+            "metadata.namespace"
           ],
           "mutually_exclusive_groups": [
             {
@@ -40517,8 +40627,8 @@
               "reason": "Choose primary or secondary zone type (REQUIRED)"
             }
           ],
-          "example_yaml": "metadata:\n  name: example.com\n  namespace: system\nspec:\n  domain: example.com\n  primary: {}\n",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example.com\",\n    \"namespace\": \"system\"\n  },\n  \"spec\": {\n    \"domain\": \"example.com\",\n    \"primary\": {}\n  }\n}\n"
+          "example_yaml": "metadata:\n  name: example.com\n  namespace: system\nspec:\n  primary: {}\n",
+          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example.com\",\n    \"namespace\": \"system\"\n  },\n  \"spec\": {\n    \"primary\": {}\n  }\n}\n"
         },
         "x-f5xc-cli-domain": "dns",
         "x-f5xc-namespace-profile": {
@@ -42481,8 +42591,7 @@
           "description": "DNS zone for domain management and record configuration",
           "required_fields": [
             "metadata.name",
-            "metadata.namespace",
-            "spec.domain"
+            "metadata.namespace"
           ],
           "mutually_exclusive_groups": [
             {
@@ -42494,13 +42603,10 @@
               "reason": "Choose primary or secondary zone type (REQUIRED)"
             }
           ],
-          "example_yaml": "metadata:\n  name: example.com\n  namespace: system\nspec:\n  domain: example.com\n  primary: {}\n",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example.com\",\n    \"namespace\": \"system\"\n  },\n  \"spec\": {\n    \"domain\": \"example.com\",\n    \"primary\": {}\n  }\n}\n"
+          "example_yaml": "metadata:\n  name: example.com\n  namespace: system\nspec:\n  primary: {}\n",
+          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example.com\",\n    \"namespace\": \"system\"\n  },\n  \"spec\": {\n    \"primary\": {}\n  }\n}\n"
         },
         "x-f5xc-cli-domain": "dns",
-        "x-f5xc-field-examples": {
-          "spec.domain": "example.com"
-        },
         "x-f5xc-namespace-profile": {
           "constraint": {
             "allowed": [
@@ -42693,8 +42799,7 @@
           "description": "DNS zone for domain management and record configuration",
           "required_fields": [
             "metadata.name",
-            "metadata.namespace",
-            "spec.domain"
+            "metadata.namespace"
           ],
           "mutually_exclusive_groups": [
             {
@@ -42706,8 +42811,8 @@
               "reason": "Choose primary or secondary zone type (REQUIRED)"
             }
           ],
-          "example_yaml": "metadata:\n  name: example.com\n  namespace: system\nspec:\n  domain: example.com\n  primary: {}\n",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example.com\",\n    \"namespace\": \"system\"\n  },\n  \"spec\": {\n    \"domain\": \"example.com\",\n    \"primary\": {}\n  }\n}\n"
+          "example_yaml": "metadata:\n  name: example.com\n  namespace: system\nspec:\n  primary: {}\n",
+          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example.com\",\n    \"namespace\": \"system\"\n  },\n  \"spec\": {\n    \"primary\": {}\n  }\n}\n"
         },
         "x-f5xc-cli-domain": "dns",
         "x-f5xc-namespace-profile": {
@@ -43683,10 +43788,19 @@
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
             "x-f5xc-required-for": {
-              "minimum_config": true,
-              "create": true,
+              "minimum_config": false,
+              "create": false,
               "update": false,
               "read": false
+            }
+          },
+          "resource_version": {
+            "type": "string",
+            "x-f5xc-concurrency-token": {
+              "server_assigned": true,
+              "echo_on_operations": [
+                "replace"
+              ]
             }
           }
         },
@@ -43694,8 +43808,7 @@
           "description": "DNS zone for domain management and record configuration",
           "required_fields": [
             "metadata.name",
-            "metadata.namespace",
-            "spec.domain"
+            "metadata.namespace"
           ],
           "mutually_exclusive_groups": [
             {
@@ -43707,8 +43820,8 @@
               "reason": "Choose primary or secondary zone type (REQUIRED)"
             }
           ],
-          "example_yaml": "metadata:\n  name: example.com\n  namespace: system\nspec:\n  domain: example.com\n  primary: {}\n",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example.com\",\n    \"namespace\": \"system\"\n  },\n  \"spec\": {\n    \"domain\": \"example.com\",\n    \"primary\": {}\n  }\n}\n"
+          "example_yaml": "metadata:\n  name: example.com\n  namespace: system\nspec:\n  primary: {}\n",
+          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example.com\",\n    \"namespace\": \"system\"\n  },\n  \"spec\": {\n    \"primary\": {}\n  }\n}\n"
         },
         "x-f5xc-cli-domain": "dns",
         "x-f5xc-namespace-profile": {
@@ -43803,8 +43916,7 @@
           "description": "DNS zone for domain management and record configuration",
           "required_fields": [
             "metadata.name",
-            "metadata.namespace",
-            "spec.domain"
+            "metadata.namespace"
           ],
           "mutually_exclusive_groups": [
             {
@@ -43816,8 +43928,8 @@
               "reason": "Choose primary or secondary zone type (REQUIRED)"
             }
           ],
-          "example_yaml": "metadata:\n  name: example.com\n  namespace: system\nspec:\n  domain: example.com\n  primary: {}\n",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example.com\",\n    \"namespace\": \"system\"\n  },\n  \"spec\": {\n    \"domain\": \"example.com\",\n    \"primary\": {}\n  }\n}\n"
+          "example_yaml": "metadata:\n  name: example.com\n  namespace: system\nspec:\n  primary: {}\n",
+          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example.com\",\n    \"namespace\": \"system\"\n  },\n  \"spec\": {\n    \"primary\": {}\n  }\n}\n"
         },
         "x-f5xc-cli-domain": "dns",
         "x-f5xc-namespace-profile": {
@@ -44995,8 +45107,7 @@
           "description": "DNS zone for domain management and record configuration",
           "required_fields": [
             "metadata.name",
-            "metadata.namespace",
-            "spec.domain"
+            "metadata.namespace"
           ],
           "mutually_exclusive_groups": [
             {
@@ -45008,13 +45119,10 @@
               "reason": "Choose primary or secondary zone type (REQUIRED)"
             }
           ],
-          "example_yaml": "metadata:\n  name: example.com\n  namespace: system\nspec:\n  domain: example.com\n  primary: {}\n",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example.com\",\n    \"namespace\": \"system\"\n  },\n  \"spec\": {\n    \"domain\": \"example.com\",\n    \"primary\": {}\n  }\n}\n"
+          "example_yaml": "metadata:\n  name: example.com\n  namespace: system\nspec:\n  primary: {}\n",
+          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example.com\",\n    \"namespace\": \"system\"\n  },\n  \"spec\": {\n    \"primary\": {}\n  }\n}\n"
         },
         "x-f5xc-cli-domain": "dns",
-        "x-f5xc-field-examples": {
-          "spec.domain": "example.com"
-        },
         "x-f5xc-namespace-profile": {
           "constraint": {
             "allowed": [
@@ -45172,8 +45280,7 @@
           "description": "DNS zone for domain management and record configuration",
           "required_fields": [
             "metadata.name",
-            "metadata.namespace",
-            "spec.domain"
+            "metadata.namespace"
           ],
           "mutually_exclusive_groups": [
             {
@@ -45185,8 +45292,8 @@
               "reason": "Choose primary or secondary zone type (REQUIRED)"
             }
           ],
-          "example_yaml": "metadata:\n  name: example.com\n  namespace: system\nspec:\n  domain: example.com\n  primary: {}\n",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example.com\",\n    \"namespace\": \"system\"\n  },\n  \"spec\": {\n    \"domain\": \"example.com\",\n    \"primary\": {}\n  }\n}\n"
+          "example_yaml": "metadata:\n  name: example.com\n  namespace: system\nspec:\n  primary: {}\n",
+          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example.com\",\n    \"namespace\": \"system\"\n  },\n  \"spec\": {\n    \"primary\": {}\n  }\n}\n"
         },
         "x-f5xc-cli-domain": "dns",
         "x-f5xc-namespace-profile": {
@@ -46723,6 +46830,15 @@
               "update": false,
               "read": false
             }
+          },
+          "resource_version": {
+            "type": "string",
+            "x-f5xc-concurrency-token": {
+              "server_assigned": true,
+              "echo_on_operations": [
+                "replace"
+              ]
+            }
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -46913,6 +47029,15 @@
               "create": false,
               "update": false,
               "read": false
+            }
+          },
+          "resource_version": {
+            "type": "string",
+            "x-f5xc-concurrency-token": {
+              "server_assigned": true,
+              "echo_on_operations": [
+                "replace"
+              ]
             }
           }
         },

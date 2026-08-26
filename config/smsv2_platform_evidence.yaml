@@ -1,0 +1,31 @@
+# Copyright (c) 2026 Robin Mordasiewicz. MIT License.
+
+version: "1.0.0"
+resource: securemesh_site_v2
+probe_date: "2026-08-26"
+scope: >-
+  Authorized non-operational F5 demo object. This record intentionally excludes
+  tenant identifiers, object names, request bodies, and resource versions.
+fields:
+  spec.segment_vrf[].segment_network:
+    classification: current_parity
+    replace_status: 200
+    returned_unchanged: true
+    restore_status: 200
+    restored_canonical_configuration: true
+    legacy_contract: named Segment reference
+    issue: "#1053"
+  spec.segment_vrf[].segment_config.nameserver_v6:
+    classification: current_platform_removal
+    replace_status: 200
+    returned_unchanged: false
+    server_behavior: silently_removed
+    restore_status: 200
+    restored_canonical_configuration: true
+  spec.segment_vrf[].segment_config.secondary_nameserver_v6:
+    classification: current_platform_removal
+    replace_status: 200
+    returned_unchanged: false
+    server_behavior: silently_removed
+    restore_status: 200
+    restored_canonical_configuration: true

@@ -69,6 +69,56 @@ class NamespaceProfileEnricher:
             with verdicts_path.open() as f:
                 data = yaml.safe_load(f) or {}
             self.verdicts = data.get("verdicts", {})
+        self._validate_loaded_profiles()
+
+    def _validate_loaded_profiles(self) -> None:
+        """Validate the final config plus machine-owned verdict overlay graph."""
+        valid_namespaces = set(self.config.get("valid_namespace_types", []))
+        valid_categories = set(self.config.get("valid_categories", []))
+        valid_patterns = set(self.config.get("valid_multi_tenant_patterns", []))
+        resources = set(self.config.get("resources", {})) | set(self.verdicts)
+        for name in sorted(resources):
+            override = self._resolved_override(name)
+            profile = _deep_merge(self.config["default_profile"], override)
+            status = (override.get("_verification") or {}).get("status")
+            profile.setdefault("constraint", {})["enforced"] = status == "verified"
+            allowed = profile.get("constraint", {}).get("allowed")
+            if not isinstance(allowed, list) or not allowed:
+                raise ValueError(f"{name} namespace constraint.allowed must be a non-empty list")
+            invalid = sorted(set(allowed) - valid_namespaces)
+            if invalid:
+                raise ValueError(f"{name} namespace constraint contains invalid values: {invalid}")
+            category = profile.get("classification", {}).get("category")
+            if category not in valid_categories:
+                raise ValueError(f"{name} namespace profile has invalid category {category!r}")
+            pattern = profile.get("classification", {}).get("multi_tenant_pattern")
+            if pattern not in valid_patterns:
+                raise ValueError(f"{name} namespace profile has invalid pattern {pattern!r}")
+            self._reconcile_and_validate(name, profile)
+
+    @staticmethod
+    def _reconcile_and_validate(name: str, profile: dict[str, Any]) -> None:
+        """Reconcile verified singleton recommendations and reject residual drift."""
+        constraint = profile["constraint"]
+        recommendation = profile.setdefault("recommendation", {})
+        allowed = constraint["allowed"]
+        if constraint.get("enforced") and len(allowed) == 1:
+            recommendation["primary"] = allowed[0]
+            recommendation["alternatives"] = []
+        else:
+            if constraint.get("enforced") and recommendation.get("primary") not in allowed:
+                recommendation["primary"] = allowed[0]
+            alternatives = recommendation.get("alternatives", [])
+            if isinstance(alternatives, list):
+                recommendation["alternatives"] = [
+                    value
+                    for value in alternatives
+                    if value in allowed and value != recommendation.get("primary")
+                ]
+        if constraint.get("enforced") and recommendation.get("primary") not in allowed:
+            raise ValueError(
+                f"{name} namespace recommendation.primary must be within constraint.allowed"
+            )
 
     def _resolved_override(self, lookup: str) -> dict[str, Any]:
         """Curated override for a resource, with any CRUD verdict layered on top."""
@@ -121,6 +171,8 @@ class NamespaceProfileEnricher:
         # over-restrict a namespace on a guess.
         status = (override.get("_verification") or {}).get("status")
         profile.setdefault("constraint", {})["enforced"] = status == "verified"
+
+        self._reconcile_and_validate(lookup, profile)
 
         profile.pop("_verification", None)
         return profile

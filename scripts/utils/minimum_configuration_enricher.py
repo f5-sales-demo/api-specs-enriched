@@ -36,6 +36,93 @@ _CAMELCASE_TO_SNAKE_PATTERN = re.compile(r"(?<!^)(?=[A-Z])")
 logger = logging.getLogger(__name__)
 
 
+class MinimumConfigurationContractError(ValueError):
+    """Raised when guidance refers to a field outside the current schema graph."""
+
+
+def _resolve_schema(node: dict[str, Any], schemas: dict[str, Any]) -> dict[str, Any]:
+    """Resolve a local schema reference or allOf wrapper."""
+    current = node
+    seen: set[str] = set()
+    while isinstance(current, dict):
+        reference = current.get("$ref")
+        if not reference and isinstance(current.get("allOf"), list) and current["allOf"]:
+            first = current["allOf"][0]
+            reference = first.get("$ref") if isinstance(first, dict) else None
+        if not isinstance(reference, str):
+            return current
+        prefix = "#/components/schemas/"
+        if not reference.startswith(prefix) or reference in seen:
+            raise MinimumConfigurationContractError(f"unresolvable schema reference {reference}")
+        seen.add(reference)
+        name = reference[len(prefix) :]
+        resolved = schemas.get(name)
+        if not isinstance(resolved, dict):
+            raise MinimumConfigurationContractError(f"schema reference {reference} is missing")
+        current = resolved
+    raise MinimumConfigurationContractError("schema node is not an object")
+
+
+def _resolve_field_path(root: dict[str, Any], field_path: str, schemas: dict[str, Any]) -> None:
+    node = root
+    for raw_part in field_path.split("."):
+        part = raw_part.removesuffix("[]")
+        node = _resolve_schema(node, schemas)
+        if node.get("type") == "array":
+            node = _resolve_schema(node.get("items", {}), schemas)
+        properties = node.get("properties", {})
+        if part not in properties:
+            raise MinimumConfigurationContractError(
+                f"minimum configuration path {field_path} is missing"
+            )
+        node = properties[part]
+
+
+def validate_minimum_configuration_paths(
+    spec: dict[str, Any], config: dict[str, Any], *, resource: str | None = None
+) -> None:
+    """Prove guidance fields and choice groups resolve through the live schema graph."""
+    schemas = spec.get("components", {}).get("schemas", {})
+    resources = config.get("resources", {})
+    names = [resource] if resource else sorted(resources)
+    for name in names:
+        resource_config = resources.get(name)
+        if not isinstance(resource_config, dict):
+            raise MinimumConfigurationContractError(f"minimum configuration {name} is missing")
+        candidates = [
+            f"{name}CreateRequest",
+            f"schema{name}CreateRequest",
+            f"views{name}CreateRequest",
+        ]
+        root_name = next((candidate for candidate in candidates if candidate in schemas), None)
+        if root_name is None:
+            raise MinimumConfigurationContractError(f"create schema for {name} is missing")
+        root = schemas[root_name]
+        for field_path in resource_config.get("required_fields", []):
+            _resolve_field_path(root, field_path, schemas)
+        for group in resource_config.get("mutually_exclusive_groups", []):
+            if not isinstance(group, dict) or not group.get("name"):
+                raise MinimumConfigurationContractError(f"{name} has a malformed choice group")
+            fields = group.get("fields")
+            if not isinstance(fields, list) or len(fields) < 2:
+                raise MinimumConfigurationContractError(
+                    f"{name}.{group.get('name')} must contain at least two fields"
+                )
+            for field_path in fields:
+                _resolve_field_path(root, field_path, schemas)
+
+        if name == "securemesh_site_v2":
+            create_spec = _resolve_schema(root["properties"]["spec"], schemas)
+            for group in resource_config.get("mutually_exclusive_groups", []):
+                encoded = create_spec.get(f"{X_VES_ONEOF_FIELD_PREFIX}{group['name']}")
+                declared = json.loads(encoded) if isinstance(encoded, str) else encoded
+                expected = [path.removeprefix("spec.") for path in group["fields"]]
+                if declared != expected:
+                    raise MinimumConfigurationContractError(
+                        f"securemesh_site_v2.{group['name']} does not match the schema choice group"
+                    )
+
+
 @dataclass
 class MinimumConfigurationStats:
     """Statistics for minimum configuration enrichment."""

@@ -69,11 +69,13 @@ from rich.table import Table
 
 # Import processing modules
 from scripts.merge_specs import load_critical_resources
+from scripts.smsv2_parity_manifest import build_parity_manifest
 from scripts.utils import (
     AcronymEnricher,
     AcronymNormalizer,
     BestPracticesEnricher,
     BrandingTransformer,
+    ConcurrencyContractEnricher,
     ConflictsWithEnricher,
     ConsistencyValidator,
     ConstrainedFieldsEnricher,
@@ -141,6 +143,7 @@ from scripts.utils.extension_constants import (
 from scripts.utils.json_writer import write_json_file
 from scripts.utils.memory_profiler import MemoryProfiler
 from scripts.utils.minimal_defaults_exporter import MinimalDefaultsExporter
+from scripts.utils.minimum_configuration_enricher import validate_minimum_configuration_paths
 from scripts.utils.namespace_profiles_exporter import NamespaceProfilesExporter
 from scripts.utils.pii_sanitizer import sanitize_emails
 from scripts.utils.resource_coverage_exporter import ResourceCoverageExporter
@@ -1976,11 +1979,31 @@ def run_pipeline(
 
             # Save domain specs
             for domain, spec in domain_specs.items():
+                # The provider release bundle consumes domains/*.json rather than
+                # the convenience master. Stamp the same validated token contract
+                # into each self-contained domain so generation cannot silently
+                # fall back to unconditional replaces.
+                ConcurrencyContractEnricher().enrich_spec(spec)
                 save_spec(spec, output_dir / f"{domain}.json", indent=indent)
 
             # Create master spec
             master = create_master_spec(domain_specs, version, canonical)
+            concurrency_inventory = ConcurrencyContractEnricher().enrich_spec(master)
+            validate_minimum_configuration_paths(
+                master,
+                yaml.safe_load(Path("config/minimum_configs.yaml").read_text()),
+            )
             save_spec(master, output_dir / "openapi.json", indent=indent)
+            save_spec(
+                concurrency_inventory,
+                output_dir / "concurrency_contracts.json",
+                indent=indent,
+            )
+            save_spec(
+                build_parity_manifest(master),
+                output_dir / "smsv2_parity_manifest.json",
+                indent=indent,
+            )
 
             # Create index
             index = create_spec_index(domain_specs, version)

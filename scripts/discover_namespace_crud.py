@@ -78,7 +78,10 @@ def build_create_path_index(specs_dir: Path) -> dict[str, dict[str, str]]:
         except (json.JSONDecodeError, OSError):
             continue
 
-        for path, methods in spec.get("paths", {}).items():
+        paths = spec.get("paths")
+        if not isinstance(paths, dict):
+            continue
+        for path, methods in paths.items():
             post = methods.get("post") if isinstance(methods, dict) else None
             if not isinstance(post, dict):
                 continue

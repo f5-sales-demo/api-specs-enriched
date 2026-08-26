@@ -108,3 +108,15 @@ def test_release_pr_wait_tolerates_shared_runner_queueing() -> None:
     assert (
         workflow.count("WAIT_FOR_MERGE_MAX_TOTAL=7200 bash scripts/release/wait-for-merge.sh") == 2
     )
+
+
+def test_release_pr_commits_catalog_and_verifies_version_coherence() -> None:
+    """The catalog uploaded as an asset must be the catalog committed at the tag."""
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    release_job = workflow.split("\n  sync-and-enrich:\n", maxsplit=1)[1].split(
+        "\n  deploy-docs:\n", maxsplit=1
+    )[0]
+
+    assert "git add -f CHANGELOG.md .github_release release/api-catalog.json" in release_job
+    assert release_job.count("python -m scripts.verify_release_version") >= 3
+    assert '--receipt "$RECEIPT_JSON_FILE"' in release_job

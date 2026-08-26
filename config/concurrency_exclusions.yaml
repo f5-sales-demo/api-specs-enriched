@@ -1,0 +1,17 @@
+version: "1.0.0"
+exclusions:
+  ves.io.schema.user_group.CustomAPI:
+    operation: Replace
+    reason: "custom user-group membership endpoint is not a provider config-object resource"
+    evidence: >-
+      The paired operations use /api/web/custom and CustomAPI request/response
+      envelopes for membership and RBAC association commands. They are outside the
+      generated configuration-object registry and do not expose the standard
+      metadata/spec replacement envelope consumed by provider resources.
+  ves.io.schema.registration.API:
+    operation: Replace
+    reason: "registration is an enrollment command without a standard Get operation"
+    evidence: >-
+      The canonical API graph exposes registration Replace under /api/register but no
+      matching API.Get response envelope. It is an enrollment workflow, not a
+      replaceable configuration object that can supply a refresh token.

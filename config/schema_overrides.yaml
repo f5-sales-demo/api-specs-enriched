@@ -16,6 +16,27 @@ description: >
 # not to the general /healthchecks endpoint used by HTTP load balancers.
 # See issue #294 for context.
 overrides:
+  securemesh_site_v2_segment_network:
+    canonical: true
+    upstream_issue: "f5-sales-demo/api-specs-enriched#1053"
+    description: >-
+      Sanitized live evidence on 2026-08-26: replacing a non-operational staged
+      Secure Mesh Site v2 with a named Segment reference returned 200 and GET
+      returned the same reference unchanged. Restoring the snapshot returned 200
+      and the canonical user configuration matched its pre-probe hash.
+    schemas:
+      - pattern: "^securemesh_site_v2SegmentVRFSettingType$"
+        inject_properties:
+          segment_network:
+            allOf:
+              - $ref: "#/components/schemas/ioschemaObjectRefType"
+            x-f5xc-references:
+              - resource_kind: segment
+                field_path: segment_network
+                gated_by: null
+                required: false
+                cardinality: single
+
   securemesh_site_v2_resource_version:
     canonical: true
     upstream_issue: "f5-sales-demo/api-specs-enriched#1159"
