@@ -204,6 +204,7 @@ class TestEndpointExtraction:
     def test_extract_endpoints_from_simple_spec(self):
         """Should extract basic endpoint information."""
         spec = {
+            "openapi": "3.0.3",
             "paths": {
                 "/users": {
                     "get": {
@@ -227,6 +228,7 @@ class TestEndpointExtraction:
     def test_extract_endpoints_handles_multiple_methods(self):
         """Should extract all HTTP methods from a path."""
         spec = {
+            "openapi": "3.0.3",
             "paths": {
                 "/resource": {
                     "get": {"operationId": "getResource", "responses": {}},
@@ -245,6 +247,7 @@ class TestEndpointExtraction:
     def test_extract_endpoints_handles_multiple_paths(self):
         """Should extract endpoints from multiple paths."""
         spec = {
+            "openapi": "3.0.3",
             "paths": {
                 "/users": {"get": {"responses": {}}},
                 "/posts": {"get": {"responses": {}}},
@@ -261,6 +264,7 @@ class TestEndpointExtraction:
     def test_extract_endpoints_includes_parameters(self):
         """Should include operation parameters."""
         spec = {
+            "openapi": "3.0.3",
             "paths": {
                 "/users/{id}": {
                     "get": {
@@ -283,7 +287,7 @@ class TestEndpointExtraction:
 
     def test_extract_endpoints_handles_empty_paths(self):
         """Should return empty list for spec with no paths."""
-        spec = {"paths": {}}
+        spec = {"openapi": "3.0.3", "paths": {}}
 
         endpoints = extract_endpoints(spec)
 
@@ -292,6 +296,7 @@ class TestEndpointExtraction:
     def test_extract_endpoints_skips_non_dict_path_items(self):
         """Should skip malformed path items."""
         spec = {
+            "openapi": "3.0.3",
             "paths": {
                 "/valid": {"get": {"responses": {}}},
                 "/invalid": "not a dict",
@@ -307,6 +312,7 @@ class TestEndpointExtraction:
     def test_extract_endpoints_handles_missing_operation_fields(self):
         """Should use empty defaults for missing fields."""
         spec = {
+            "openapi": "3.0.3",
             "paths": {
                 "/minimal": {
                     "get": {},  # No operationId, summary, parameters, responses
@@ -320,6 +326,19 @@ class TestEndpointExtraction:
         assert endpoints[0]["summary"] == ""
         assert endpoints[0]["parameters"] == []
         assert endpoints[0]["responses"] == {}
+
+    def test_extract_endpoints_ignores_non_openapi_release_companion(self):
+        """A companion's list-valued paths metadata is not an API path map."""
+        spec = {"version": 1, "paths": ["specifications/api/service_mesh.json"]}
+
+        assert extract_endpoints(spec) == []
+
+    def test_extract_endpoints_rejects_non_object_openapi_paths(self):
+        """A declared OpenAPI document must not bypass malformed paths."""
+        spec = {"openapi": "3.0.3", "paths": ["/not-a-path-map"]}
+
+        with pytest.raises(TypeError, match="OpenAPI document 'paths' must be an object"):
+            extract_endpoints(spec)
 
 
 class TestEndpointFiltering:
@@ -806,6 +825,7 @@ class TestSpecValidation:
         spec_file.write_text(
             json.dumps(
                 {
+                    "openapi": "3.0.3",
                     "paths": {
                         "/test1": {"get": {"operationId": "test1", "responses": {}}},
                         "/test2": {"get": {"operationId": "test2", "responses": {}}},
@@ -882,7 +902,7 @@ class TestSpecValidation:
             f"/test{i}": {"get": {"operationId": f"test{i}", "responses": {}}} for i in range(100)
         }
         spec_file = tmp_path / "large.json"
-        spec_file.write_text(json.dumps({"paths": paths}))
+        spec_file.write_text(json.dumps({"openapi": "3.0.3", "paths": paths}))
 
         mock_response = MagicMock()
         mock_response.status_code = 200

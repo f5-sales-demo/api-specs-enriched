@@ -169,9 +169,19 @@ def get_base_url(config: dict) -> str:
 
 def extract_endpoints(spec: dict[str, Any]) -> list[dict[str, Any]]:
     """Extract endpoint definitions from an OpenAPI specification."""
-    endpoints = []
+    endpoints: list[dict[str, Any]] = []
+
+    # The generated directory also contains release companions whose top-level
+    # shape is not OpenAPI.  In particular, the SMSv2 parity manifest has a
+    # list-valued ``paths`` field describing artifact paths.  Classify the
+    # document by its specification marker before interpreting that field.
+    if "openapi" not in spec and "swagger" not in spec:
+        return endpoints
 
     paths = spec.get("paths", {})
+    if not isinstance(paths, dict):
+        raise TypeError("OpenAPI document 'paths' must be an object")
+
     for path, path_item in paths.items():
         if not isinstance(path_item, dict):
             continue

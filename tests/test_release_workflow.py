@@ -5,6 +5,18 @@ from pathlib import Path
 WORKFLOW = Path(".github/workflows/sync-and-enrich.yml")
 
 
+def test_specification_validation_is_release_blocking() -> None:
+    """A crashed or failed validator must prevent release publication."""
+
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    validation_step = workflow.split("- name: Validate specifications", maxsplit=1)[1].split(
+        "- name: Detect release-worthy changes", maxsplit=1
+    )[0]
+
+    assert "continue-on-error" not in validation_step
+    assert "run: python -m scripts.validate --dry-run" in validation_step
+
+
 def test_release_pr_create_is_non_interactive() -> None:
     """The release workflow must supply every prompt-required PR field."""
 
