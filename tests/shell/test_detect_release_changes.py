@@ -32,6 +32,7 @@ from pathlib import Path
 _PROJECT_ROOT = Path(__file__).resolve().parents[2]
 _SCRIPT_RELATIVE = "scripts/release/detect-release-changes.sh"
 _SCRIPT = _PROJECT_ROOT / _SCRIPT_RELATIVE
+_VERSION_SCRIPT = _PROJECT_ROOT / "scripts/release/calculate-version.sh"
 _WORKFLOW = _PROJECT_ROOT / ".github/workflows/sync-and-enrich.yml"
 
 _OUTPUT_DIR = "docs/specifications/api"
@@ -549,7 +550,7 @@ def test_force_release_publishes_an_unchanged_tree(tmp_path: Path) -> None:
 
 
 def test_workflow_versions_forced_releases_without_an_unknown_type_warning() -> None:
-    body = _WORKFLOW.read_text()
+    body = _VERSION_SCRIPT.read_text()
     assert 'elif [ "$CHANGE_TYPE" = "pipeline" ] || [ "$CHANGE_TYPE" = "forced" ]; then' in body
 
 
