@@ -1,18 +1,17 @@
 # Changelog
 
-## Version 2.1.225 (2026-08-26)
+## Version 3.0.0 (2026-08-27)
 
 ### Version Information
-- **Full Version**: 2.1.225
+- **Full Version**: 3.0.0
 - **Upstream Timestamp**: unknown
 - **Upstream ETag**: unknown
-- **Enriched Version**: 2.1.225
+- **Enriched Version**: 3.0.0
 
 ### Release Type
-- **patch** release
+- **major** release
 
 ### Changes
-- Published provider-wide concurrency and Secure Mesh Site v2 parity contracts (#1601)
 - Updated API specifications from F5 Distributed Cloud
 - Applied enrichment pipeline:
   - Acronym normalization (100+ terms)
@@ -46,8 +45,9 @@ docs/specifications/api/
 \`\`\`
 
 ### Download
-- ZIP Package: F5xc-api-(unknown-2.1.225).zip
+- ZIP Package: F5xc-api-(unknown-3.0.0).zip
 
 ### Source
 - Source: F5 Distributed Cloud OpenAPI specifications
 - Upstream: unknown (ETag: unknown)
+
