@@ -301,62 +301,7 @@ jobs:
         if: steps.detect.outputs.has_changes == 'true'
         env:
           CHANGE_TYPE: ${{ steps.detect.outputs.change_type }}
-        run: |
-          # Get current version from git tags (eliminates race conditions from file-based versioning)
-          CURRENT_VERSION=$(git describe --tags --abbrev=0 2>/dev/null | sed 's/^v//' || echo "0.0.0")
-
-          # Validate version format
-          if ! [[ "$CURRENT_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "::warning::Invalid tag format, starting at 1.0.0"
-            CURRENT_VERSION="0.0.0"
-          fi
-
-          echo "✅ Current version from tags: $CURRENT_VERSION"
-          echo "current_version=$CURRENT_VERSION" >> "$GITHUB_OUTPUT"
-
-          # Parse version components
-          IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION"
-
-          # Check for major bump via commit message (highest priority)
-          # For merge commits, also check the commits that were merged (HEAD^2)
-          COMMIT_MSG=$(git log -1 --pretty=%B 2>/dev/null || echo "")
-          MERGED_MSG=$(git log -1 HEAD^2 --pretty=%B 2>/dev/null || echo "")
-          COMBINED_MSG="$COMMIT_MSG $MERGED_MSG"
-
-          if [[ "$COMBINED_MSG" == *"[major]"* ]] || \
-            [[ "$COMBINED_MSG" == *"BREAKING CHANGE"* ]]; then
-            NEW_VERSION="$((MAJOR + 1)).0.0"
-            BUMP_TYPE="major"
-          elif [ "$CHANGE_TYPE" = "source" ]; then
-            # Source spec changes → check for new domains (minor) or patch
-            PREV_COUNT=$(git show HEAD:docs/specifications/api/index.json 2>/dev/null | \
-              jq '.specifications | length' 2>/dev/null || echo "0")
-            CURR_COUNT=$(jq '.specifications | length' \
-              docs/specifications/api/index.json 2>/dev/null || echo "0")
-
-            if [ "$CURR_COUNT" -gt "$PREV_COUNT" ]; then
-              NEW_VERSION="${MAJOR}.$((MINOR + 1)).0"
-              BUMP_TYPE="minor"
-            else
-              NEW_VERSION="${MAJOR}.${MINOR}.$((PATCH + 1))"
-              BUMP_TYPE="patch"
-            fi
-          elif [ "$CHANGE_TYPE" = "pipeline" ] || [ "$CHANGE_TYPE" = "forced" ]; then
-            # Pipeline/config/dependency changes and explicit forced releases → patch bump
-            NEW_VERSION="${MAJOR}.${MINOR}.$((PATCH + 1))"
-            BUMP_TYPE="patch"
-            echo "::notice::${CHANGE_TYPE^} release detected - patch bump"
-          else
-            # Fallback for unknown change types
-            NEW_VERSION="${MAJOR}.${MINOR}.$((PATCH + 1))"
-            BUMP_TYPE="patch"
-            echo "::warning::Unknown change type - defaulting to patch bump"
-          fi
-
-          echo "new_version=$NEW_VERSION" >> "$GITHUB_OUTPUT"
-          echo "bump_type=$BUMP_TYPE" >> "$GITHUB_OUTPUT"
-
-          echo "::notice::Version: $CURRENT_VERSION -> $NEW_VERSION ($BUMP_TYPE)"
+        run: bash scripts/release/calculate-version.sh
 
       - name: Update version in specs
         if: steps.detect.outputs.has_changes == 'true'
