@@ -8015,6 +8015,7 @@
               "update": false,
               "read": false
             },
+            "description": "Inline rate-limiter settings for this domain, base-path, or endpoint rule. Select this field as the required rate_limiter_choice when no stored rate-limiter object is used.",
             "x-f5xc-conflicts-with": [
               "ref_rate_limiter"
             ]
@@ -8032,6 +8033,7 @@
               "update": false,
               "read": false
             },
+            "description": "Reference to a stored rate-limiter object for this scoped rule. Select exactly one of ref_rate_limiter and inline_rate_limiter.",
             "x-f5xc-conflicts-with": [
               "inline_rate_limiter"
             ],
@@ -8989,12 +8991,15 @@
                 "$ref": "#/components/schemas/common_wafOpenApiValidationModeActive__ves_io_schema_app_security"
               }
             ],
+            "x-f5xc-description-short": "Enable OpenAPI validation and explicitly select enforcement_report to allow and log invalid traffic, or enforcement_block to reject invalid...",
+            "x-f5xc-description-medium": "Enable OpenAPI validation and explicitly select enforcement_report to allow and log invalid traffic, or enforcement_block to reject invalid requests with HTTP 403.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Enable OpenAPI validation and explicitly select enforcement_report to allow and log invalid traffic, or enforcement_block to reject invalid requests with HTTP 403.",
             "x-f5xc-conflicts-with": [
               "skip_validation"
             ]
@@ -9046,12 +9051,15 @@
               }
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
+            "x-f5xc-description-short": "Blocking validation: reject traffic that violates the selected OpenAPI validation properties.",
+            "x-f5xc-description-medium": "Blocking validation: reject traffic that violates the selected OpenAPI validation properties. Invalid requests are returned as HTTP 403.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Blocking validation: reject traffic that violates the selected OpenAPI validation properties. Invalid requests are returned as HTTP 403.",
             "x-f5xc-conflicts-with": [
               "enforcement_report"
             ]
@@ -9062,12 +9070,15 @@
                 "$ref": "#/components/schemas/schemaEmpty"
               }
             ],
+            "x-f5xc-description-short": "Report-only validation: record OpenAPI violations while allowing the request or response to continue.",
+            "x-f5xc-description-medium": "Report-only validation: record OpenAPI violations while allowing the request or response to continue.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Report-only validation: record OpenAPI violations while allowing the request or response to continue.",
             "x-f5xc-conflicts-with": [
               "enforcement_block"
             ]
@@ -9163,12 +9174,15 @@
               }
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
+            "x-f5xc-description-short": "Blocking validation: reject traffic that violates the selected OpenAPI validation properties.",
+            "x-f5xc-description-medium": "Blocking validation: reject traffic that violates the selected OpenAPI validation properties. Invalid requests are returned as HTTP 403.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Blocking validation: reject traffic that violates the selected OpenAPI validation properties. Invalid requests are returned as HTTP 403.",
             "x-f5xc-conflicts-with": [
               "enforcement_report"
             ]
@@ -9179,12 +9193,15 @@
                 "$ref": "#/components/schemas/schemaEmpty"
               }
             ],
+            "x-f5xc-description-short": "Report-only validation: record OpenAPI violations while allowing the request or response to continue.",
+            "x-f5xc-description-medium": "Report-only validation: record OpenAPI violations while allowing the request or response to continue.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Report-only validation: record OpenAPI violations while allowing the request or response to continue.",
             "x-f5xc-conflicts-with": [
               "enforcement_block"
             ]
@@ -11099,16 +11116,18 @@
                 "$ref": "#/components/schemas/policyDetectionContext"
               }
             ],
+            "x-f5xc-description-medium": "Exclusion scope. Use CONTEXT_PARAMETER with context_name for one parameter, CONTEXT_COOKIE for one cookie, or CONTEXT_ANY only for an intentionally global scope.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
-            }
+            },
+            "description": "Exclusion scope. Use CONTEXT_PARAMETER with context_name for one parameter, CONTEXT_COOKIE for one cookie, or CONTEXT_ANY only for an intentionally global scope."
           },
           "context_name": {
             "type": "string",
-            "description": "Relevant only for contexts: Header, Cookie and Parameter.\nName of the Context that the WAF Exclusion Rules will check.\nWildcard matching can be used by prefixing or suffixing the context name\nwith an wildcard asterisk (*).",
+            "description": "Parameter, cookie, or header name selected by context. For a parameter-scoped WAF exception, set context to CONTEXT_PARAMETER and name only the intended parameter.",
             "title": "Context Name",
             "maxLength": 128,
             "x-displayname": "Context Name.",
@@ -11116,12 +11135,9 @@
             "x-ves-validation-rules": {
               "ves.io.schema.rules.string.max_len": "128"
             },
-            "x-f5xc-example": "exampleuser-agent for Header",
-            "x-validation-rules": {
-              "ves.io.schema.rules.string.max_len": "128"
-            },
-            "x-f5xc-description-short": "Relevant only for contexts: Header, Cookie and Parameter. Name of the Context that the WAF Exclusion Rules will check.",
-            "x-f5xc-description-medium": "Relevant only for contexts: Header, Cookie and Parameter. Name of the Context that the WAF Exclusion Rules will check. Wildcard matching can be used by prefixing or suffixing the context name with an wildcard asterisk (*).",
+            "x-f5xc-example": "example-resource",
+            "x-f5xc-description-short": "Parameter, cookie, or header name selected by context.",
+            "x-f5xc-description-medium": "Parameter, cookie, or header name selected by context. For a parameter-scoped WAF exception, set context to CONTEXT_PARAMETER and name only the intended parameter.",
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "discovery",
@@ -11146,12 +11162,15 @@
                 "$ref": "#/components/schemas/app_firewallAttackType"
               }
             ],
+            "x-f5xc-description-short": "Attack-type enum excluded in this context, for example ATTACK_TYPE_CROSS_SITE_SCRIPTING.",
+            "x-f5xc-description-medium": "Attack-type enum excluded in this context, for example ATTACK_TYPE_CROSS_SITE_SCRIPTING. Other attack types remain enforced.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
-            }
+            },
+            "description": "Attack-type enum excluded in this context, for example ATTACK_TYPE_CROSS_SITE_SCRIPTING. Other attack types remain enforced."
           }
         },
         "x-f5xc-description-short": "App Firewall Attack Type context changes to be applied for this request.",
@@ -11192,7 +11211,7 @@
         "properties": {
           "exclude_attack_type_contexts": {
             "type": "array",
-            "description": "Attack Types to be excluded for the defined match criteria.",
+            "description": "Exclude an entire attack type only in the named context. For migrated per-parameter exceptions, prefer this over signature-ID exclusions because one payload can trigger several signatures; unrelated parameters and attack types remain protected.",
             "title": "Exclude Attack Types Contexts",
             "maxItems": 64,
             "items": {
@@ -11203,11 +11222,8 @@
               "ves.io.schema.rules.repeated.max_items": "64",
               "ves.io.schema.rules.repeated.unique": "true"
             },
-            "x-validation-rules": {
-              "ves.io.schema.rules.repeated.max_items": "64",
-              "ves.io.schema.rules.repeated.unique": "true"
-            },
-            "x-f5xc-description-short": "Attack Types to be excluded for the defined match criteria.",
+            "x-f5xc-description-short": "Exclude an entire attack type only in the named context.",
+            "x-f5xc-description-medium": "Exclude an entire attack type only in the named context. For migrated per-parameter exceptions, prefer this over signature-ID exclusions because one payload can trigger several signatures; unrelated parameters and attack types remain protected.",
             "x-f5xc-constraints": {
               "constraintType": "array",
               "category": "discovery",

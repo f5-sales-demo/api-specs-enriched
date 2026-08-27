@@ -10,6 +10,7 @@ allowlist defined in spec §4.3.
 from __future__ import annotations
 
 import argparse
+import copy
 import gzip
 import hashlib
 import json
@@ -26,6 +27,11 @@ from deepdiff import DeepDiff
 
 from scripts.utils.additive_allowlist import is_additive_change
 from scripts.utils.canonical_merge import canonical_merge_sources
+from scripts.utils.schema_override_enricher import (
+    CONFIG_PATH as SCHEMA_OVERRIDES_PATH,
+    SchemaOverrideEnricher,
+    remove_schema_property,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Sequence
@@ -127,6 +133,99 @@ class Violation:
     rule_category: str
 
 
+@dataclass(frozen=True)
+class DeclaredPropertyRemoval:
+    """One canonical, issue-linked breaking property removal."""
+
+    schema_pattern: str
+    property_name: str
+    issue: str
+
+
+def load_declared_removals(
+    path: Path | str = SCHEMA_OVERRIDES_PATH,
+) -> list[DeclaredPropertyRemoval]:
+    """Load canonical property removals from ``schema_overrides.yaml``.
+
+    ``SchemaOverrideEnricher`` performs the fail-closed canonical and issue-link
+    validation. Reusing its compiled configuration prevents the pipeline and the
+    contract gate from interpreting two subtly different declaration formats.
+    """
+    enricher = SchemaOverrideEnricher(config_path=Path(path))
+    return [
+        DeclaredPropertyRemoval(**declaration)
+        for declaration in enricher.get_removal_declarations()
+    ]
+
+
+def _normalize_declared_removals(
+    input_spec: dict[str, Any],
+    output_spec: dict[str, Any],
+    declarations: Sequence[DeclaredPropertyRemoval],
+) -> tuple[dict[str, Any], list[Violation]]:
+    """Apply declared removals to input and flag incomplete output cleanup."""
+    normalized = copy.deepcopy(input_spec)
+    input_schemas = normalized.get("components", {}).get("schemas", {})
+    output_schemas = output_spec.get("components", {}).get("schemas", {})
+    violations: list[Violation] = []
+
+    for declaration in declarations:
+        pattern = re.compile(declaration.schema_pattern)
+        matching_names = sorted(name for name in input_schemas if pattern.search(name))
+        if not matching_names:
+            message = (
+                "declared removal pattern matched no canonical schema: "
+                f"{declaration.schema_pattern} ({declaration.issue})"
+            )
+            raise ValueError(message)
+
+        for schema_name in matching_names:
+            input_schema = input_schemas[schema_name]
+            if not isinstance(input_schema, dict):
+                continue
+            try:
+                remove_schema_property(input_schema, declaration.property_name)
+            except KeyError as error:
+                message = (
+                    "declared canonical removal target is absent: "
+                    f"{schema_name}.{declaration.property_name}"
+                )
+                raise ValueError(message) from error
+
+            output_schema = output_schemas.get(schema_name)
+            if not isinstance(output_schema, dict):
+                continue
+            output_probe = copy.deepcopy(output_schema)
+            residue = remove_schema_property(
+                output_probe,
+                declaration.property_name,
+                require_present=False,
+            )
+            if not (
+                residue.properties_removed
+                or residue.metadata_references_removed
+                or residue.oneof_groups_removed
+            ):
+                continue
+            pointer = f"root['components']['schemas']['{schema_name}']"
+            violations.append(
+                Violation(
+                    change_type="declared_removal_incomplete",
+                    pointer=pointer,
+                    before={
+                        "property": declaration.property_name,
+                        "issue": declaration.issue,
+                    },
+                    after={
+                        "property_present": bool(residue.properties_removed),
+                        "stale_metadata_references": residue.metadata_references_removed,
+                    },
+                    rule_category="declared-removal-incomplete",
+                ),
+            )
+    return normalized, violations
+
+
 def _categorize(change_type: str, pointer: str) -> str:
     """Classify a non-additive change into a rule category for reporting."""
     terminal = ""
@@ -179,6 +278,7 @@ def run_contract_diff(
     input_spec: dict,
     output_spec: dict,
     known_drift: set[str] | None = None,
+    declared_removals: Sequence[DeclaredPropertyRemoval] | None = None,
 ) -> list[Violation]:
     """Compare two spec dicts and return all non-additive changes as violations.
 
@@ -188,8 +288,14 @@ def run_contract_diff(
         known_drift: optional set of violation fingerprints to tolerate.
             Any violation whose ``_fingerprint_violation`` hash is in this
             set is suppressed (design spec 2026-04-22 §5).
+        declared_removals: canonical, issue-linked property removals to normalize.
     """
     known = known_drift or set()
+    input_spec, removal_violations = _normalize_declared_removals(
+        input_spec,
+        output_spec,
+        declared_removals or (),
+    )
     # Normalize both sides: an allOf-wrapped $ref is semantically identical to a
     # direct $ref, and either spec may use either form. Flattening only the
     # output turned upstream-wrapped properties into a phantom `allOf` removal
@@ -203,7 +309,7 @@ def run_contract_diff(
         view="tree",
         threshold_to_diff_deeper=0.0,
     )
-    violations: list[Violation] = []
+    violations: list[Violation] = list(removal_violations)
     for change_type, changes in diff.items():
         for change in changes:
             pointer = change.path()
@@ -290,6 +396,7 @@ def run_directory_diff(
     input_dir: Path,
     output_dir: Path,
     known_drift: set[str] | None = None,
+    declared_removals: Sequence[DeclaredPropertyRemoval] | None = None,
 ) -> list[Violation]:
     """Diff the merged contract between two directories of OpenAPI specs.
 
@@ -314,7 +421,12 @@ def run_directory_diff(
         if canonical_output.is_file()
         else _merge_specs(output_specs)
     )
-    return run_contract_diff(merged_input, merged_output, known_drift=known_drift)
+    return run_contract_diff(
+        merged_input,
+        merged_output,
+        known_drift=known_drift,
+        declared_removals=declared_removals,
+    )
 
 
 def render_markdown_report(violations: list[Violation]) -> str:
@@ -399,10 +511,22 @@ def main(argv: Sequence[str] | None = None) -> int:
         help="Path to known_drift JSON (fingerprints to tolerate). "
         "Missing file = empty set (no tolerance).",
     )
+    parser.add_argument(
+        "--declared-removals",
+        type=Path,
+        default=SCHEMA_OVERRIDES_PATH,
+        help="Canonical issue-linked remove_properties declarations.",
+    )
     args = parser.parse_args(argv)
 
     known_drift = load_known_drift(args.known_drift)
-    violations = run_directory_diff(args.input, args.output, known_drift=known_drift)
+    declared_removals = load_declared_removals(args.declared_removals)
+    violations = run_directory_diff(
+        args.input,
+        args.output,
+        known_drift=known_drift,
+        declared_removals=declared_removals,
+    )
     args.report.parent.mkdir(parents=True, exist_ok=True)
     args.report.write_text(
         json.dumps(

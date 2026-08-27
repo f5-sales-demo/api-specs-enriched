@@ -215,6 +215,8 @@ class PipelineStats:
     guided_workflows_added: int = 0
     error_resolutions_added: int = 0
     conflicts_with_added: int = 0
+    schema_properties_removed: int = 0
+    schema_property_removals_missed: int = 0
     errors: list[dict[str, Any]] = field(default_factory=list)
 
 
@@ -1258,6 +1260,8 @@ def merge_specs_by_domain(
         "server_defaults_added": 0,
         "conflicts_with_added": 0,
         "schema_overrides_applied": 0,
+        "schema_properties_removed": 0,
+        "schema_property_removals_missed": 0,
         "namespace_profiles_added": 0,
         "interface_contracts_applied": 0,
     }
@@ -1464,6 +1468,8 @@ def merge_specs_by_domain(
         merged_spec = schema_override_enricher.enrich_spec(merged_spec)
         so_stats = schema_override_enricher.get_stats()
         stats["schema_overrides_applied"] += so_stats.get("properties_injected", 0)
+        stats["schema_properties_removed"] += so_stats.get("properties_removed", 0)
+        stats["schema_property_removals_missed"] += so_stats.get("property_removals_missed", 0)
         schema_override_enricher.reset_stats()
 
         # Interface contracts run before downstream code-generation consumers inspect schemas.
@@ -1967,6 +1973,10 @@ def run_pipeline(
             stats.best_practices_enriched = merge_stats.get("best_practices_enriched", 0)
             stats.guided_workflows_added = merge_stats.get("guided_workflows_added", 0)
             stats.conflicts_with_added = merge_stats.get("conflicts_with_added", 0)
+            stats.schema_properties_removed = merge_stats.get("schema_properties_removed", 0)
+            stats.schema_property_removals_missed = merge_stats.get(
+                "schema_property_removals_missed", 0
+            )
 
             # Clear processed_specs to free memory before saving
             del processed_specs
@@ -2122,6 +2132,13 @@ def print_summary(stats: PipelineStats) -> None:
         table.add_row("Error Resolutions Added", str(stats.error_resolutions_added))
     if stats.conflicts_with_added > 0:
         table.add_row("Conflicts-With Added", str(stats.conflicts_with_added))
+    if stats.schema_properties_removed > 0:
+        table.add_row("Schema Properties Removed", str(stats.schema_properties_removed))
+    if stats.schema_property_removals_missed > 0:
+        table.add_row(
+            "Schema Property Removals Missed",
+            str(stats.schema_property_removals_missed),
+        )
 
     console.print(table)
 
@@ -2157,6 +2174,8 @@ def generate_report(stats: PipelineStats, output_path: Path) -> None:
             "guided_workflows_added": stats.guided_workflows_added,
             "error_resolutions_added": stats.error_resolutions_added,
             "conflicts_with_added": stats.conflicts_with_added,
+            "schema_properties_removed": stats.schema_properties_removed,
+            "schema_property_removals_missed": stats.schema_property_removals_missed,
         },
         "errors": stats.errors,
     }

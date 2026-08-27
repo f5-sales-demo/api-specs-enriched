@@ -17445,7 +17445,6 @@
         "description": "GET secret_policy reads a given object from storage backend for metadata.namespace.",
         "title": "Get Secret Policy",
         "x-displayname": "GET Secret Policy.",
-        "x-ves-oneof-field-rule_choice": "[\"legacy_rule_list\",\"rule_list\"]",
         "x-ves-proto-message": "ves.io.schema.secret_policy.GetSpecType",
         "properties": {
           "allow_f5xc": {
@@ -17517,23 +17516,6 @@
               "read": false
             }
           },
-          "legacy_rule_list": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/secret_policyLegacyRuleList"
-              }
-            ],
-            "x-f5xc-example": "{\"key\": \"value\"}",
-            "x-f5xc-required-for": {
-              "minimum_config": false,
-              "create": false,
-              "update": false,
-              "read": false
-            },
-            "x-f5xc-conflicts-with": [
-              "rule_list"
-            ]
-          },
           "marked_for_delete": {
             "type": "boolean",
             "description": "Marked_for_delete is set when the secret policy object is marked for DELETE, based on this value\nsecret policy marked for DELETE will be automatically deleted after deletion_time.",
@@ -17556,15 +17538,14 @@
               }
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
+            "x-f5xc-description-short": "Current secret-policy rule list. Use this field instead of the removed compatibility rule list.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "legacy_rule_list"
-            ]
+            "description": "Current secret-policy rule list. Use this field instead of the removed compatibility rule list."
           }
         },
         "x-f5xc-description-short": "GET secret_policy reads a given object from storage backend for metadata.namespace.",
@@ -17601,7 +17582,6 @@
         "description": "Replace secret_policy replaces an existing object in the storage backend for metadata.namespace.",
         "title": "Replace Secret Policy",
         "x-displayname": "Replace Secret Policy.",
-        "x-ves-oneof-field-rule_choice": "[\"legacy_rule_list\",\"rule_list\"]",
         "x-ves-proto-message": "ves.io.schema.secret_policy.ReplaceSpecType",
         "properties": {
           "allow_f5xc": {
@@ -17646,23 +17626,6 @@
               "read": false
             }
           },
-          "legacy_rule_list": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/secret_policyLegacyRuleList"
-              }
-            ],
-            "x-f5xc-example": "{\"key\": \"value\"}",
-            "x-f5xc-required-for": {
-              "minimum_config": false,
-              "create": false,
-              "update": false,
-              "read": false
-            },
-            "x-f5xc-conflicts-with": [
-              "rule_list"
-            ]
-          },
           "rule_list": {
             "allOf": [
               {
@@ -17670,15 +17633,14 @@
               }
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
+            "x-f5xc-description-short": "Current secret-policy rule list. Use this field instead of the removed compatibility rule list.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "legacy_rule_list"
-            ]
+            "description": "Current secret-policy rule list. Use this field instead of the removed compatibility rule list."
           }
         },
         "x-f5xc-description-short": "Replace secret_policy replaces an existing object in the storage backend for metadata.namespace.",

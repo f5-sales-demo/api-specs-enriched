@@ -342,6 +342,146 @@ class TestEdgeCases:
             )
 
 
+class TestPropertyRemoval:
+    """#1236: canonical removals clean every schema-local contract reference."""
+
+    @pytest.fixture
+    def removal_config(self, tmp_path):
+        config = {
+            "version": "1.0.0",
+            "overrides": {
+                "legacy_contract": {
+                    "canonical": True,
+                    "upstream_issue": "f5-sales-demo/api-specs-enriched#1236",
+                    "schemas": [
+                        {
+                            "pattern": "^WidgetSpec$",
+                            "remove_properties": ["legacy"],
+                        },
+                    ],
+                },
+            },
+        }
+        path = tmp_path / "schema_overrides.yaml"
+        path.write_text(yaml.safe_dump(config))
+        return path
+
+    @pytest.fixture
+    def removal_spec(self):
+        return {
+            "components": {
+                "schemas": {
+                    "WidgetSpec": {
+                        "type": "object",
+                        "required": ["name", "legacy"],
+                        "x-ves-oneof-field-survives": json.dumps(["legacy", "modern", "fallback"]),
+                        "x-ves-oneof-field-invalid": ["legacy", "modern"],
+                        "properties": {
+                            "name": {"type": "string"},
+                            "legacy": {"type": "string"},
+                            "modern": {
+                                "type": "string",
+                                "x-f5xc-conflicts-with": json.dumps(["legacy", "fallback"]),
+                            },
+                            "fallback": {
+                                "type": "string",
+                                "x-f5xc-conflicts-with": ["legacy", "modern"],
+                            },
+                        },
+                        "x-f5xc-minimum-configuration": {
+                            "required_fields": ["spec.legacy", "spec.name"],
+                            "mutually_exclusive_groups": [
+                                {
+                                    "name": "choice",
+                                    "fields": ["spec.legacy", "spec.modern"],
+                                },
+                            ],
+                            "field_defaults": {"spec.legacy": "old", "spec.modern": "new"},
+                            "example_yaml": "spec:\n  legacy: old\n  modern: new\n",
+                            "example_json": '{"spec":{"legacy":"old","modern":"new"}}',
+                        },
+                        "x-f5xc-field-examples": {
+                            "spec.legacy": "old",
+                            "spec.modern": "new",
+                        },
+                        "example": {"legacy": "old", "modern": "new"},
+                    },
+                },
+            },
+        }
+
+    def test_removes_property_and_all_schema_metadata(self, removal_config, removal_spec):
+        enricher = SchemaOverrideEnricher(config_path=removal_config)
+        schema = enricher.enrich_spec(removal_spec)["components"]["schemas"]["WidgetSpec"]
+
+        assert "legacy" not in schema["properties"]
+        assert schema["required"] == ["name"]
+        assert isinstance(schema["x-ves-oneof-field-survives"], str)
+        assert json.loads(schema["x-ves-oneof-field-survives"]) == ["modern", "fallback"]
+        assert "x-ves-oneof-field-invalid" not in schema
+        assert json.loads(schema["properties"]["modern"]["x-f5xc-conflicts-with"]) == ["fallback"]
+        assert schema["properties"]["fallback"]["x-f5xc-conflicts-with"] == ["modern"]
+
+        minimum = schema["x-f5xc-minimum-configuration"]
+        assert minimum["required_fields"] == ["spec.name"]
+        assert minimum["mutually_exclusive_groups"] == []
+        assert minimum["field_defaults"] == {"spec.modern": "new"}
+        assert "legacy" not in yaml.safe_load(minimum["example_yaml"])["spec"]
+        assert "legacy" not in json.loads(minimum["example_json"])["spec"]
+        assert schema["x-f5xc-field-examples"] == {"spec.modern": "new"}
+        assert schema["example"] == {"modern": "new"}
+
+    def test_records_removal_statistics(self, removal_config, removal_spec):
+        enricher = SchemaOverrideEnricher(config_path=removal_config)
+        enricher.enrich_spec(removal_spec)
+        stats = enricher.get_stats()
+        assert stats["properties_removed"] == 1
+        assert stats["property_removals_missed"] == 0
+        assert stats["property_metadata_references_removed"] >= 10
+
+    def test_shared_domain_projection_objects_are_isolated(self, removal_config, removal_spec):
+        shared_schema = removal_spec["components"]["schemas"]["WidgetSpec"]
+        first = {"components": {"schemas": {"WidgetSpec": shared_schema}}}
+        second = {"components": {"schemas": {"WidgetSpec": shared_schema}}}
+        enricher = SchemaOverrideEnricher(config_path=removal_config)
+
+        enricher.enrich_spec(first)
+        enricher.enrich_spec(second)
+
+        assert "legacy" in shared_schema["properties"]
+        assert "legacy" not in first["components"]["schemas"]["WidgetSpec"]["properties"]
+        assert "legacy" not in second["components"]["schemas"]["WidgetSpec"]["properties"]
+        assert enricher.get_stats()["properties_removed"] == 2
+
+    def test_declared_target_missing_fails_closed(self, removal_config, removal_spec):
+        del removal_spec["components"]["schemas"]["WidgetSpec"]["properties"]["legacy"]
+        enricher = SchemaOverrideEnricher(config_path=removal_config)
+
+        with pytest.raises(ValueError, match=r"WidgetSpec\.legacy"):
+            enricher.enrich_spec(removal_spec)
+
+        stats = enricher.get_stats()
+        assert stats["property_removals_missed"] == 1
+        assert stats["property_overrides_missed"] == 1
+
+    @pytest.mark.parametrize(
+        ("canonical", "issue"),
+        [(False, "f5-sales-demo/api-specs-enriched#1236"), (True, None)],
+    )
+    def test_removals_require_canonical_issue_link(self, tmp_path, canonical, issue):
+        entry = {
+            "canonical": canonical,
+            "schemas": [{"pattern": "^WidgetSpec$", "remove_properties": ["legacy"]}],
+        }
+        if issue is not None:
+            entry["upstream_issue"] = issue
+        path = tmp_path / "schema_overrides.yaml"
+        path.write_text(yaml.safe_dump({"version": "1.0.0", "overrides": {"invalid": entry}}))
+
+        with pytest.raises(ValueError, match=r"canonical.*issue-linked"):
+            SchemaOverrideEnricher(config_path=path)
+
+
 class TestConfigLoading:
     """Config file loading and validation."""
 
