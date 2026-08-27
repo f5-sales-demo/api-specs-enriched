@@ -33,6 +33,7 @@ import sys
 from pathlib import Path
 
 DEFAULT_GOVERNANCE_JSON = Path(".claude/governance.json")
+REPOSITORY_RE = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
 
 # Automation branches carry the governed files this check would otherwise
 # reject. Authorization requires an exact branch identity and same-repository
@@ -91,6 +92,25 @@ def _load_protected(governance_path: Path) -> set[str]:
     return {str(entry) for entry in protected}
 
 
+def _opted_out_paths(governance_path: Path) -> set[str]:
+    """Return exact local exceptions declared by the governance receipt."""
+    repository = os.environ.get("GITHUB_REPOSITORY", "")
+    if REPOSITORY_RE.fullmatch(repository) is None:
+        return set()
+    repository_name = repository.rsplit("/", 1)[1]
+    with governance_path.open(encoding="utf-8") as handle:
+        data = json.load(handle)
+    skip_files = data.get("skip_files", {})
+    if not isinstance(skip_files, dict):
+        raise GovernanceViolationError(f"{governance_path}: 'skip_files' must be an object")
+    paths = skip_files.get(repository_name, [])
+    if not isinstance(paths, list) or not all(isinstance(path, str) for path in paths):
+        raise GovernanceViolationError(
+            f"{governance_path}: skip_files[{repository_name!r}] must be a list of strings"
+        )
+    return set(paths)
+
+
 def _changed_paths(base: str, head: str) -> list[str]:
     result = subprocess.run(
         ["git", "diff", "--name-only", f"{base}..{head}"],
@@ -117,8 +137,9 @@ def verify(
         raise GovernanceViolationError(msg)
 
     protected = _load_protected(governance_path)
+    opted_out = _opted_out_paths(governance_path)
     changed = _changed_paths(base, head)
-    return sorted(path for path in changed if path in protected)
+    return sorted(path for path in changed if path in protected and path not in opted_out)
 
 
 def main(argv: list[str] | None = None) -> int:
