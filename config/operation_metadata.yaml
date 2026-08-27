@@ -53,6 +53,7 @@ query_operations:
   ves.io.schema.registration.CustomAPI.GetImageDownloadUrl:
     rationale: Returns signed Customer Edge image URLs without changing tenant state
     required_fields: [provider]
+    terraform_name: site_image
 
 # Operations that issue a new credential. These are not reads: consumers must
 # persist the first response and must not refresh the operation on every plan.
@@ -61,6 +62,38 @@ issuance_operations:
     rationale: Issues site-scoped Customer Edge cloud-init with a one-time node token
     required_fields: [provider, site_name]
     creates: [site_node_token]
+    terraform_name: site_cloud_init
+
+# Read-only operations whose response is a typed collection. These contracts
+# preserve each API's real path/query/body inputs; the role does not imply a
+# synthetic CRUD list route.
+collection_operations:
+  ves.io.schema.registration.CustomAPI.List:
+    rationale: Returns the tenant registration collection
+    required_fields: [namespace]
+    terraform_name: site_registrations
+  ves.io.schema.registration.CustomAPI.ListRegistrationsBySite:
+    rationale: Returns registrations selected by site name
+    required_fields: [namespace, site_name]
+    terraform_name: site_registrations_by_site
+  ves.io.schema.registration.CustomAPI.ListRegistrationsByState:
+    rationale: Returns registrations selected by lifecycle state
+    required_fields: [namespace, state]
+    terraform_name: site_registrations_by_state
+
+# One-shot mutations of an existing object. Acceptance means that the platform
+# accepted the request; it does not claim asynchronous convergence completed.
+action_operations:
+  ves.io.schema.site.UpgradeAPI.UpgradeSW:
+    rationale: Requests an in-place site software upgrade
+    required_fields: [namespace, name, version]
+    modifies: [site]
+    terraform_name: site_upgrade_sw
+  ves.io.schema.site.UpgradeAPI.UpgradeOS:
+    rationale: Requests an in-place site operating-system upgrade
+    required_fields: [namespace, name, version]
+    modifies: [site]
+    terraform_name: site_upgrade_os
 
 # Operation Metadata Extensions:
 # ===============================

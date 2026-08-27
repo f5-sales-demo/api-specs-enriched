@@ -497,10 +497,19 @@ operation_level:
     type: string
     purpose: >-
       Classifies an operation whose HTTP method does not communicate its API
-      semantics. Query operations retrieve data without changing tenant state.
+      semantics. Query and collection operations retrieve data without changing
+      tenant state, issuance returns a new credential, and action requests a
+      one-shot mutation of an existing object.
     consumers: [terraform, cli, mcp]
-    allowed_values: [query]
+    allowed_values: [query, issuance, collection, action]
     example: "query"
+
+  x-f5xc-terraform-name:
+    type: string
+    purpose: Stable source-owned Terraform name for a response operation, without the provider prefix
+    consumers: [terraform]
+    pattern: "^[a-z][a-z0-9_]*$"
+    example: "site_registrations_by_site"
 
   x-f5xc-required-fields:
     type: array

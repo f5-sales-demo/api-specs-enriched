@@ -68,6 +68,8 @@ class OperationMetadataEnricher:
         self.required_fields_config: dict[str, Any] = {}
         self.query_operations: dict[str, Any] = {}
         self.issuance_operations: dict[str, Any] = {}
+        self.collection_operations: dict[str, Any] = {}
+        self.action_operations: dict[str, Any] = {}
         self.extension_prefix = "x-f5xc"
         self.stats = OperationEnrichmentStats()
 
@@ -87,6 +89,8 @@ class OperationMetadataEnricher:
             self.required_fields_config = config.get("required_fields", {})
             self.query_operations = config.get("query_operations", {})
             self.issuance_operations = config.get("issuance_operations", {})
+            self.collection_operations = config.get("collection_operations", {})
+            self.action_operations = config.get("action_operations", {})
             self.extension_prefix = config.get("extension_prefix", "x-f5xc")
         except Exception:
             self._use_default_config()
@@ -127,6 +131,8 @@ class OperationMetadataEnricher:
         }
         self.query_operations = {}
         self.issuance_operations = {}
+        self.collection_operations = {}
+        self.action_operations = {}
 
         self.extension_prefix = "x-f5xc"
 
@@ -187,33 +193,41 @@ class OperationMetadataEnricher:
         """
         self.stats.operations_enriched += 1
         operation_id = operation.get("operationId", "")
-        is_query = operation_id in self.query_operations
-        is_issuance = operation_id in self.issuance_operations
-        if is_query and is_issuance:
-            raise ValueError(f"operation {operation_id} cannot be both query and issuance")
-        special_contract = self.query_operations.get(
-            operation_id, self.issuance_operations.get(operation_id, {})
-        )
-        if is_query or is_issuance:
-            if method not in {"GET", "POST"}:
+        operation_role, special_contract = self._response_operation_contract(operation_id)
+        if operation_role is not None:
+            allowed_methods = {"POST"} if operation_role == "action" else {"GET", "POST"}
+            if method not in allowed_methods:
                 raise ValueError(
-                    f"{('query' if is_query else 'issuance')} operation {operation_id} "
-                    f"must use GET or POST, got {method}"
+                    f"{operation_role} operation {operation_id} must use "
+                    f"{'POST' if operation_role == 'action' else 'GET or POST'}, got {method}"
                 )
             if method == "POST" and not self._request_schema_ref(operation):
                 raise ValueError(f"POST operation {operation_id} must have a request schema")
-            if method == "GET" and not self._query_parameters(operation):
+            if (
+                method == "GET"
+                and operation_role in {"query", "issuance"}
+                and not self._query_parameters(operation)
+            ):
                 raise ValueError(f"GET operation {operation_id} must have query parameters")
+            if (
+                method == "GET"
+                and operation_role == "collection"
+                and not self._input_parameters(operation)
+            ):
+                raise ValueError(
+                    f"GET collection operation {operation_id} must have path or query parameters"
+                )
             if not self._response_schema_refs(operation):
                 raise ValueError(f"operation {operation_id} must have a response schema")
-            operation[f"{self.extension_prefix}-operation-role"] = (
-                "query" if is_query else "issuance"
-            )
+            operation[f"{self.extension_prefix}-operation-role"] = operation_role
+            operation[f"{self.extension_prefix}-terraform-name"] = special_contract[
+                "terraform_name"
+            ]
 
         # Extract and add required fields
         required_fields = (
             list(special_contract.get("required_fields", []))
-            if is_query or is_issuance
+            if operation_role is not None
             else self._extract_required_fields(operation, method)
         )
         if required_fields:
@@ -223,9 +237,9 @@ class OperationMetadataEnricher:
         # Calculate and assign danger level
         danger_level = (
             "low"
-            if is_query
+            if operation_role in {"query", "collection"}
             else "medium"
-            if is_issuance
+            if operation_role in {"issuance", "action"}
             else self._calculate_danger_level(method, path, operation)
         )
         operation[f"{self.extension_prefix}-danger-level"] = danger_level
@@ -238,9 +252,11 @@ class OperationMetadataEnricher:
         # Determine and add side effects
         side_effects = (
             {}
-            if is_query
+            if operation_role in {"query", "collection"}
             else {"creates": list(special_contract.get("creates", []))}
-            if is_issuance
+            if operation_role == "issuance"
+            else {"modifies": list(special_contract.get("modifies", []))}
+            if operation_role == "action"
             else self._determine_side_effects(method, path, operation)
         )
         if side_effects:
@@ -256,15 +272,20 @@ class OperationMetadataEnricher:
             danger_level,
             side_effects,
         )
-        if is_query:
+        if operation_role in {"query", "collection"}:
             comprehensive_metadata["conditions"]["postconditions"] = [
                 "Requested data returned",
                 "Tenant state unchanged",
             ]
-        elif is_issuance:
+        elif operation_role == "issuance":
             comprehensive_metadata["conditions"]["postconditions"] = [
                 "One-time site node token issued",
                 "Credential returned only in the response",
+            ]
+        elif operation_role == "action":
+            comprehensive_metadata["conditions"]["postconditions"] = [
+                "Action request accepted by the API",
+                "Asynchronous convergence not implied",
             ]
         if comprehensive_metadata:
             operation[f"{self.extension_prefix}-operation-metadata"] = comprehensive_metadata
@@ -299,6 +320,44 @@ class OperationMetadataEnricher:
             for parameter in operation.get("parameters", [])
             if isinstance(parameter, dict) and parameter.get("in") == "query"
         ]
+
+    @staticmethod
+    def _input_parameters(operation: dict[str, Any]) -> list[dict[str, Any]]:
+        """Return explicit path and query inputs for a response operation."""
+        return [
+            parameter
+            for parameter in operation.get("parameters", [])
+            if isinstance(parameter, dict) and parameter.get("in") in {"path", "query"}
+        ]
+
+    def _response_operation_contract(self, operation_id: str) -> tuple[str | None, dict[str, Any]]:
+        """Resolve one source-owned response-operation role and validate its public name."""
+        role_maps = {
+            "query": self.query_operations,
+            "issuance": self.issuance_operations,
+            "collection": self.collection_operations,
+            "action": self.action_operations,
+        }
+        matches = [
+            (role, operations[operation_id])
+            for role, operations in role_maps.items()
+            if operation_id in operations
+        ]
+        if len(matches) > 1:
+            roles = ", ".join(role for role, _ in matches)
+            raise ValueError(f"operation {operation_id} has multiple response roles: {roles}")
+        if not matches:
+            return None, {}
+
+        role, contract = matches[0]
+        if not isinstance(contract, dict):
+            raise TypeError(f"{role} operation {operation_id} contract must be an object")
+        terraform_name = contract.get("terraform_name")
+        if not isinstance(terraform_name, str) or not re.fullmatch(
+            r"[a-z][a-z0-9_]*", terraform_name
+        ):
+            raise ValueError(f"{role} operation {operation_id} requires a valid terraform_name")
+        return role, contract
 
     def _build_comprehensive_metadata(
         self,

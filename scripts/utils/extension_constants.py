@@ -103,6 +103,7 @@ X_F5XC_DANGER_LEVEL = "x-f5xc-danger-level"
 X_F5XC_CONFIRMATION_REQUIRED = "x-f5xc-confirmation-required"
 X_F5XC_SIDE_EFFECTS = "x-f5xc-side-effects"
 X_F5XC_OPERATION_ROLE = "x-f5xc-operation-role"
+X_F5XC_TERRAFORM_NAME = "x-f5xc-terraform-name"
 X_F5XC_OPERATION_ALIASES = "x-f5xc-operation-aliases"
 
 # Discovery-derived extensions for live API behavior (Issue #314)
@@ -264,6 +265,7 @@ VALID_X_F5XC_EXTENSIONS = frozenset(
         X_F5XC_CONFIRMATION_REQUIRED,
         X_F5XC_SIDE_EFFECTS,
         X_F5XC_OPERATION_ROLE,
+        X_F5XC_TERRAFORM_NAME,
         X_F5XC_OPERATION_ALIASES,
         # Discovery-derived (Issue #314)
         X_F5XC_DISCOVERED_RESPONSE_TIME,

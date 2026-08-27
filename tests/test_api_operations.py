@@ -276,6 +276,7 @@ def test_query_role_requires_read_only_metadata_and_schema_pair():
     operation.update(
         {
             "x-f5xc-operation-role": "query",
+            "x-f5xc-terraform-name": "site_query",
             "x-f5xc-danger-level": "low",
         }
     )
@@ -283,6 +284,7 @@ def test_query_role_requires_read_only_metadata_and_schema_pair():
     assert query["role"] == "query"
     assert query["requestSchema"] == "QueryReq"
     assert query["responseSchema"] == "QueryResp"
+    assert query["terraformName"] == "site_query"
 
     operation["x-f5xc-side-effects"] = {"creates": ["query"]}
     with pytest.raises(ValueError, match="must not have side effects"):
@@ -301,6 +303,7 @@ def test_get_issuance_role_uses_parameters_without_inventing_a_request_schema():
     operation.update(
         {
             "x-f5xc-operation-role": "issuance",
+            "x-f5xc-terraform-name": "site_cloud_init",
             "x-f5xc-danger-level": "medium",
             "x-f5xc-side-effects": {"creates": ["site_node_token"]},
         }
@@ -316,6 +319,7 @@ def test_get_issuance_role_uses_parameters_without_inventing_a_request_schema():
         "surface": "register",
         "responseSchema": "CloudInitResp",
         "role": "issuance",
+        "terraformName": "site_cloud_init",
     }
 
 
@@ -327,12 +331,134 @@ def test_get_issuance_role_requires_query_parameters():
     operation.update(
         {
             "x-f5xc-operation-role": "issuance",
+            "x-f5xc-terraform-name": "site_cloud_init",
             "x-f5xc-danger-level": "medium",
             "x-f5xc-side-effects": {"creates": ["site_node_token"]},
         }
     )
     with pytest.raises(ValueError, match="requires query parameters"):
         build_api_operations({"/api/register/cloud-init": {"get": operation}})
+
+
+def test_collection_roles_preserve_get_and_post_input_shapes():
+    get_operation = _operation(
+        "ves.io.schema.registration.CustomAPI.ListRegistrationsBySite",
+        response_ref="#/components/schemas/RegistrationListResp",
+    )
+    get_operation["parameters"] = [
+        {"name": "namespace", "in": "path", "required": True},
+        {"name": "site_name", "in": "path", "required": True},
+        {"name": "report_fields", "in": "query"},
+    ]
+    get_operation.update(
+        {
+            "x-f5xc-operation-role": "collection",
+            "x-f5xc-terraform-name": "site_registrations_by_site",
+            "x-f5xc-danger-level": "low",
+        }
+    )
+    post_operation = _operation(
+        "ves.io.schema.registration.CustomAPI.ListRegistrationsByState",
+        "#/components/schemas/RegistrationStateReq",
+        "#/components/schemas/RegistrationListResp",
+    )
+    post_operation.update(
+        {
+            "x-f5xc-operation-role": "collection",
+            "x-f5xc-terraform-name": "site_registrations_by_state",
+            "x-f5xc-danger-level": "low",
+        }
+    )
+
+    operations = build_api_operations(
+        {
+            "/api/register/namespaces/{namespace}/registrations_by_site/{site_name}": {
+                "get": get_operation
+            },
+            "/api/register/namespaces/{namespace}/listregistrationsbystate": {
+                "post": post_operation
+            },
+        }
+    )[0]["operations"]
+    by_name = {operation["terraformName"]: operation for operation in operations}
+    assert "requestSchema" not in by_name["site_registrations_by_site"]
+    assert by_name["site_registrations_by_site"]["responseSchema"] == "RegistrationListResp"
+    assert by_name["site_registrations_by_state"]["requestSchema"] == "RegistrationStateReq"
+    assert by_name["site_registrations_by_state"]["responseSchema"] == "RegistrationListResp"
+
+
+def test_action_role_requires_post_and_modified_object_metadata():
+    operation = _operation(
+        "ves.io.schema.site.UpgradeAPI.UpgradeSW",
+        "#/components/schemas/UpgradeSWReq",
+        "#/components/schemas/UpgradeSWResp",
+    )
+    operation.update(
+        {
+            "x-f5xc-operation-role": "action",
+            "x-f5xc-terraform-name": "site_upgrade_sw",
+            "x-f5xc-danger-level": "medium",
+            "x-f5xc-side-effects": {"modifies": ["site"]},
+        }
+    )
+    action = build_api_operations({"/api/config/sites/upgrade_sw": {"post": operation}})[0][
+        "operations"
+    ][0]
+    assert action["role"] == "action"
+    assert action["terraformName"] == "site_upgrade_sw"
+
+    with pytest.raises(ValueError, match="must use POST"):
+        build_api_operations({"/api/config/sites/upgrade_sw": {"get": operation}})
+
+    operation["x-f5xc-side-effects"] = {}
+    with pytest.raises(ValueError, match="must declare a modified object"):
+        build_api_operations({"/api/config/sites/upgrade_sw": {"post": operation}})
+
+
+@pytest.mark.parametrize("terraform_name", [None, "", "xcsh-site", "SiteName"])
+def test_response_operation_requires_valid_terraform_name(terraform_name):
+    operation = _operation(
+        "ves.io.schema.registration.CustomAPI.Query",
+        "#/components/schemas/QueryReq",
+        "#/components/schemas/QueryResp",
+    )
+    operation.update(
+        {
+            "x-f5xc-operation-role": "query",
+            "x-f5xc-danger-level": "low",
+        }
+    )
+    if terraform_name is not None:
+        operation["x-f5xc-terraform-name"] = terraform_name
+    with pytest.raises(ValueError, match="requires a valid x-f5xc-terraform-name"):
+        build_api_operations({"/api/register/query": {"post": operation}})
+
+
+def test_response_operation_terraform_names_are_unique():
+    paths = {}
+    for suffix in ("First", "Second"):
+        operation = _operation(
+            f"ves.io.schema.registration.CustomAPI.{suffix}",
+            "#/components/schemas/QueryReq",
+            "#/components/schemas/QueryResp",
+        )
+        operation.update(
+            {
+                "x-f5xc-operation-role": "query",
+                "x-f5xc-terraform-name": "site_query",
+                "x-f5xc-danger-level": "low",
+            }
+        )
+        paths[f"/api/register/{suffix.lower()}"] = {"post": operation}
+    with pytest.raises(ValueError, match="duplicate x-f5xc-terraform-name"):
+        build_api_operations(paths)
+
+
+def test_terraform_name_without_response_role_is_rejected():
+    operation = _operation("ves.io.schema.registration.CustomAPI.Query")
+    operation["x-f5xc-terraform-name"] = "site_query"
+    with pytest.raises(ValueError, match="without an operation role"):
+        build_api_operations({"/api/register/query": {"get": operation}})
 
 
 @pytest.mark.parametrize(
@@ -349,6 +475,7 @@ def test_issuance_role_requires_mutating_metadata(danger, side_effects, message)
     )
     operation["parameters"] = [{"name": "site_name", "in": "query", "schema": {"type": "string"}}]
     operation["x-f5xc-operation-role"] = "issuance"
+    operation["x-f5xc-terraform-name"] = "site_cloud_init"
     operation["x-f5xc-danger-level"] = danger
     if side_effects is not None:
         operation["x-f5xc-side-effects"] = side_effects

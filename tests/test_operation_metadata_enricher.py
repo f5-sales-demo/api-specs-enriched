@@ -381,6 +381,7 @@ class TestSpecEnrichment:
             "/api/register/namespaces/system/get-image-download-url"
         ]["post"]
         assert operation["x-f5xc-operation-role"] == "query"
+        assert operation["x-f5xc-terraform-name"] == "site_image"
         assert operation["x-f5xc-danger-level"] == "low"
         assert operation["x-f5xc-required-fields"] == ["provider"]
         assert "x-f5xc-side-effects" not in operation
@@ -423,6 +424,7 @@ class TestSpecEnrichment:
             "/api/register/namespaces/system/get-cloud-init-config"
         ]["get"]
         assert operation["x-f5xc-operation-role"] == "issuance"
+        assert operation["x-f5xc-terraform-name"] == "site_cloud_init"
         assert operation["x-f5xc-danger-level"] == "medium"
         assert operation["x-f5xc-required-fields"] == ["provider", "site_name"]
         assert operation["x-f5xc-side-effects"] == {"creates": ["site_node_token"]}
@@ -465,6 +467,90 @@ class TestSpecEnrichment:
         }
         with pytest.raises(ValueError, match="must have query parameters"):
             enricher.enrich_spec({"paths": {"/api/register/query": {"get": operation}}})
+
+    def test_curated_collection_is_read_only_and_source_named(self, enricher):
+        operation_id = "ves.io.schema.registration.CustomAPI.ListRegistrationsBySite"
+        operation = {
+            "operationId": operation_id,
+            "parameters": [
+                {"name": "namespace", "in": "path", "required": True},
+                {"name": "site_name", "in": "path", "required": True},
+            ],
+            "responses": {
+                "200": {
+                    "content": {
+                        "application/json": {
+                            "schema": {"$ref": "#/components/schemas/RegistrationListResp"}
+                        }
+                    }
+                }
+            },
+        }
+        enriched = enricher.enrich_spec(
+            {"paths": {"/api/register/{namespace}/{site_name}": {"get": operation}}}
+        )["paths"]["/api/register/{namespace}/{site_name}"]["get"]
+        assert enriched["x-f5xc-operation-role"] == "collection"
+        assert enriched["x-f5xc-terraform-name"] == "site_registrations_by_site"
+        assert enriched["x-f5xc-danger-level"] == "low"
+        assert "x-f5xc-side-effects" not in enriched
+        assert enriched["x-f5xc-required-fields"] == ["namespace", "site_name"]
+
+    def test_curated_action_is_acceptance_only_and_force_remains_optional(self, enricher):
+        operation_id = "ves.io.schema.site.UpgradeAPI.UpgradeSW"
+        operation = {
+            "operationId": operation_id,
+            "requestBody": {
+                "content": {
+                    "application/json": {"schema": {"$ref": "#/components/schemas/UpgradeSWReq"}}
+                }
+            },
+            "responses": {
+                "200": {
+                    "content": {
+                        "application/json": {
+                            "schema": {"$ref": "#/components/schemas/UpgradeSWResp"}
+                        }
+                    }
+                }
+            },
+        }
+        enriched = enricher.enrich_spec(
+            {"paths": {"/api/config/sites/upgrade_sw": {"post": operation}}}
+        )["paths"]["/api/config/sites/upgrade_sw"]["post"]
+        assert enriched["x-f5xc-operation-role"] == "action"
+        assert enriched["x-f5xc-terraform-name"] == "site_upgrade_sw"
+        assert enriched["x-f5xc-required-fields"] == ["namespace", "name", "version"]
+        assert "force" not in enriched["x-f5xc-required-fields"]
+        assert enriched["x-f5xc-danger-level"] == "medium"
+        assert enriched["x-f5xc-side-effects"] == {"modifies": ["site"]}
+        assert enriched["x-f5xc-operation-metadata"]["conditions"]["postconditions"] == [
+            "Action request accepted by the API",
+            "Asynchronous convergence not implied",
+        ]
+
+    def test_response_operation_cannot_have_multiple_roles(self, enricher):
+        operation_id = "ves.io.schema.registration.CustomAPI.GetImageDownloadUrl"
+        enricher.collection_operations[operation_id] = {"terraform_name": "duplicate_image_query"}
+        with pytest.raises(ValueError, match="multiple response roles"):
+            enricher.enrich_spec(
+                {"paths": {"/api/register/query": {"post": {"operationId": operation_id}}}}
+            )
+
+    def test_response_operation_requires_valid_source_name(self, enricher):
+        operation_id = "ves.io.schema.registration.CustomAPI.GetImageDownloadUrl"
+        enricher.query_operations[operation_id]["terraform_name"] = "Invalid-Name"
+        with pytest.raises(ValueError, match="requires a valid terraform_name"):
+            enricher.enrich_spec(
+                {"paths": {"/api/register/query": {"post": {"operationId": operation_id}}}}
+            )
+
+    def test_response_operation_contract_must_be_an_object(self, enricher):
+        operation_id = "ves.io.schema.registration.CustomAPI.GetImageDownloadUrl"
+        enricher.query_operations[operation_id] = "site_image"
+        with pytest.raises(TypeError, match="contract must be an object"):
+            enricher.enrich_spec(
+                {"paths": {"/api/register/query": {"post": {"operationId": operation_id}}}}
+            )
 
 
 class TestEdgeCases:

@@ -590,13 +590,25 @@ stubby as long as the `### x-name` header exists and the
 ### x-f5xc-operation-role
 
 - **Applied at:** operation
-- **Purpose:** Identifies read-only queries whose HTTP method does not communicate their semantics.
+- **Purpose:** Classifies response operations whose HTTP method does not communicate their API semantics.
 - **Consumers:** Terraform, CLI, MCP
 - **Value type:** string
-- **Value schema:** `{"type": "string", "enum": ["query"]}`
+- **Value schema:** `{"type": "string", "enum": ["query", "issuance", "collection", "action"]}`
 - **Injected by:** scripts/utils/operation_metadata_enricher.py
 - **Driven by config:** config/operation_metadata.yaml
 - **Example:** `"x-f5xc-operation-role": "query"`
+- **Pass-through from upstream:** no
+
+### x-f5xc-terraform-name
+
+- **Applied at:** operation
+- **Purpose:** Provides the stable source-owned Terraform name for a response operation, without the provider prefix.
+- **Consumers:** Terraform
+- **Value type:** string
+- **Value schema:** `{"type": "string", "pattern": "^[a-z][a-z0-9_]*$"}`
+- **Injected by:** scripts/utils/operation_metadata_enricher.py
+- **Driven by config:** config/operation_metadata.yaml
+- **Example:** `"x-f5xc-terraform-name": "site_registrations_by_site"`
 - **Pass-through from upstream:** no
 
 ### x-f5xc-required-fields
