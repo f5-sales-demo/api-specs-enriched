@@ -25,7 +25,7 @@ jobs:
     name: Pylint
     # Fork pull requests must never execute untrusted code on a self-hosted runner.
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: [self-hosted, Linux, X64, api-specs-enriched, ubuntu-24.04]
+    runs-on: managed-socketless
     steps:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -45,7 +45,7 @@ jobs:
     name: Run pytest suite
     # Fork pull requests must never receive a repository self-hosted runner.
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: [self-hosted, Linux, X64, api-specs-enriched, ubuntu-24.04]
+    runs-on: managed-socketless
     steps:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -93,7 +93,7 @@ jobs:
     if: >-
       (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) &&
       !startsWith(github.head_ref, 'release/')
-    runs-on: [self-hosted, Linux, X64, api-specs-enriched, ubuntu-24.04]
+    runs-on: managed-socketless
     permissions:
       contents: read
       pull-requests: write # Comment when the contract-diff gate detects a change.

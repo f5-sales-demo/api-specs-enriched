@@ -56,7 +56,7 @@ env:
 jobs:
   check-updates:
     name: Check for Updates
-    runs-on: [self-hosted, Linux, X64, api-specs-enriched, ubuntu-24.04]
+    runs-on: managed-socketless
     outputs:
       has_updates: ${{ steps.check.outputs.updated }}
       etag: ${{ steps.check.outputs.etag }}
@@ -131,7 +131,7 @@ jobs:
     name: Sync and Enrich Specifications
     needs: check-updates
     if: needs.check-updates.outputs.has_updates == 'true'
-    runs-on: [self-hosted, Linux, X64, api-specs-enriched, ubuntu-24.04]
+    runs-on: managed-socketless
     environment: release
     # `gh release create` runs as GITHUB_TOKEN and needs contents: write. The
     # release-branch exemption below posts the existing required linked-issue
@@ -841,7 +841,7 @@ jobs:
     name: Deploy Documentation
     needs: sync-and-enrich
     if: needs.sync-and-enrich.outputs.has_changes == 'true'
-    runs-on: [self-hosted, Linux, X64, api-specs-enriched, ubuntu-24.04]
+    runs-on: managed-socketless
     # actions/deploy-pages needs both of these; id-token is for its OIDC exchange.
     permissions:
       contents: read
@@ -877,7 +877,7 @@ jobs:
     name: Build Downstream Matrix
     needs: [sync-and-enrich]
     if: needs.sync-and-enrich.outputs.has_changes == 'true'
-    runs-on: [self-hosted, Linux, X64, api-specs-enriched, ubuntu-24.04]
+    runs-on: managed-socketless
     outputs:
       matrix: ${{ steps.matrix.outputs.result }}
       has_targets: ${{ steps.matrix.outputs.has_targets }}
@@ -929,7 +929,7 @@ jobs:
     name: Notify Downstream Repositories
     needs: [sync-and-enrich, build-downstream-matrix]
     if: needs.build-downstream-matrix.outputs.has_targets == 'true'
-    runs-on: [self-hosted, Linux, X64, api-specs-enriched, ubuntu-24.04]
+    runs-on: managed-socketless
     environment: downstream-dispatch
     strategy:
       matrix: ${{ fromJSON(needs.build-downstream-matrix.outputs.matrix) }}
@@ -966,7 +966,7 @@ jobs:
   # ==========================================================================
   monitor-failures:
     name: Monitor Workflow Failures
-    runs-on: [self-hosted, Linux, X64, api-specs-enriched, ubuntu-24.04]
+    runs-on: managed-socketless
     needs: [check-updates, sync-and-enrich, deploy-docs, build-downstream-matrix, notify-downstream]
     if: always()
     # Ensures the monitoring labels exist and opens or updates the failure issue,
