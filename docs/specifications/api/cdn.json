@@ -15099,7 +15099,8 @@
                 "$ref": "#/components/schemas/common_wafInlineRateLimiter__ves_io_schema_app_security"
               }
             ],
-            "x-f5xc-description-short": "Configuration parameter for inline rate limiter.",
+            "x-f5xc-description-short": "Inline rate limiter selected by rate_limiter_choice.",
+            "x-f5xc-description-medium": "Inline rate limiter selected by rate_limiter_choice. Use it with a server_url_rule base_path such as /login or an api_endpoint_rule; set threshold, unit, and exactly one count-by choice (use_http_lb_user_id or ref_user_id).",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -16137,6 +16138,8 @@
               }
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
+            "x-f5xc-description-short": "Block requests or responses that violate the OpenAPI schema.",
+            "x-f5xc-description-medium": "Block requests or responses that violate the OpenAPI schema. For enforcing request validation, choose enforcement_block together with the required request_validation_properties.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -16153,6 +16156,8 @@
                 "$ref": "#/components/schemas/schemaEmpty"
               }
             ],
+            "x-f5xc-description-short": "Report OpenAPI validation violations without blocking the request. Use this mode only for observation or tuning.",
+            "x-f5xc-description-medium": "Report OpenAPI validation violations without blocking the request. Use this mode only for observation or tuning.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -16254,6 +16259,8 @@
               }
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
+            "x-f5xc-description-short": "Block requests or responses that violate the OpenAPI schema.",
+            "x-f5xc-description-medium": "Block requests or responses that violate the OpenAPI schema. For enforcing request validation, choose enforcement_block together with the required request_validation_properties.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -16270,6 +16277,8 @@
                 "$ref": "#/components/schemas/schemaEmpty"
               }
             ],
+            "x-f5xc-description-short": "Report OpenAPI validation violations without blocking the request. Use this mode only for observation or tuning.",
+            "x-f5xc-description-medium": "Report OpenAPI validation violations without blocking the request. Use this mode only for observation or tuning.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -18190,12 +18199,14 @@
                 "$ref": "#/components/schemas/policyDetectionContext"
               }
             ],
+            "x-f5xc-description-medium": "WAF exclusion detection context enum. For a parameter-scoped exception choose CONTEXT_PARAMETER and set context_name to the parameter name; CONTEXT_ANY applies the exclusion to every context.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
-            }
+            },
+            "description": "WAF exclusion detection context enum. For a parameter-scoped exception choose CONTEXT_PARAMETER and set context_name to the parameter name; CONTEXT_ANY applies the exclusion to every context."
           },
           "context_name": {
             "type": "string",
@@ -18237,12 +18248,15 @@
                 "$ref": "#/components/schemas/app_firewallAttackType"
               }
             ],
+            "x-f5xc-description-short": "Attack-type enum to exclude in this context, for example ATTACK_TYPE_SQL_INJECTION.",
+            "x-f5xc-description-medium": "Attack-type enum to exclude in this context, for example ATTACK_TYPE_SQL_INJECTION. For a parameter-scoped migration exception, prefer this attack-type exclusion over individual signature IDs because one payload can trigger multiple signatures.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
-            }
+            },
+            "description": "Attack-type enum to exclude in this context, for example ATTACK_TYPE_SQL_INJECTION. For a parameter-scoped migration exception, prefer this attack-type exclusion over individual signature IDs because one payload can trigger multiple signatures."
           }
         },
         "x-f5xc-description-short": "App Firewall Attack Type context changes to be applied for this request.",
@@ -30746,7 +30760,7 @@
         "properties": {
           "api_endpoint_rules": {
             "type": "array",
-            "description": "Sets of rules for a specific endpoints.\nOrder is matter as it uses first match policy.\nFor creating rule that contain a whole domain or group of endpoints, please use the server URL rules above.",
+            "description": "Ordered endpoint rules for path-scoped API rate limiting. Use this for a specific templated endpoint and choose inline_rate_limiter or ref_rate_limiter per rule.",
             "title": "api_endpoint_policy",
             "maxItems": 20,
             "items": {
@@ -30756,12 +30770,9 @@
             "x-ves-validation-rules": {
               "ves.io.schema.rules.repeated.max_items": "20"
             },
-            "x-validation-rules": {
-              "ves.io.schema.rules.repeated.max_items": "20"
-            },
             "x-f5xc-example": "{\"key\": \"value\"}",
-            "x-f5xc-description-short": "Sets of rules for a specific endpoints. Order is matter as it uses first match policy.",
-            "x-f5xc-description-medium": "Sets of rules for a specific endpoints. Order is matter as it uses first match policy. For creating rule that contain a whole domain or group of endpoints, please use the server URL rules above.",
+            "x-f5xc-description-short": "Ordered endpoint rules for path-scoped API rate limiting.",
+            "x-f5xc-description-medium": "Ordered endpoint rules for path-scoped API rate limiting. Use this for a specific templated endpoint and choose inline_rate_limiter or ref_rate_limiter per rule.",
             "x-f5xc-constraints": {
               "constraintType": "array",
               "category": "discovery",
@@ -30855,7 +30866,7 @@
           },
           "server_url_rules": {
             "type": "array",
-            "description": "Set of rules for entire domain or base path that contain multiple endpoints.\nOrder is matter as it uses first match policy.\nFor matching also specific endpoints you can use the API endpoint rules set below.",
+            "description": "Ordered base-path or domain rules for path-scoped API rate limiting; first match wins. Each rule must choose inline_rate_limiter or ref_rate_limiter. Example: base_path: /login with inline_rate_limiter limits only that path scope.",
             "title": "server_url_policy",
             "maxItems": 20,
             "items": {
@@ -30865,12 +30876,9 @@
             "x-ves-validation-rules": {
               "ves.io.schema.rules.repeated.max_items": "20"
             },
-            "x-validation-rules": {
-              "ves.io.schema.rules.repeated.max_items": "20"
-            },
             "x-f5xc-example": "{\"key\": \"value\"}",
-            "x-f5xc-description-short": "Set of rules for entire domain or base path that contain multiple endpoints. Order is matter as it uses first match policy.",
-            "x-f5xc-description-medium": "Set of rules for entire domain or base path that contain multiple endpoints. Order is matter as it uses first match policy. For matching also specific endpoints you can use the API endpoint rules set below.",
+            "x-f5xc-description-short": "Ordered base-path or domain rules for path-scoped API rate limiting; first match wins.",
+            "x-f5xc-description-medium": "Ordered base-path or domain rules for path-scoped API rate limiting; first match wins. Each rule must choose inline_rate_limiter or ref_rate_limiter.",
             "x-f5xc-constraints": {
               "constraintType": "array",
               "category": "discovery",
@@ -31618,7 +31626,8 @@
                 "$ref": "#/components/schemas/common_wafInlineRateLimiter__ves_io_schema_views_cdn_loadbalancer"
               }
             ],
-            "x-f5xc-description-short": "Configuration parameter for inline rate limiter.",
+            "x-f5xc-description-short": "Inline rate limiter selected by rate_limiter_choice.",
+            "x-f5xc-description-medium": "Inline rate limiter selected by rate_limiter_choice. Use it with a server_url_rule base_path such as /login or an api_endpoint_rule; set threshold, unit, and exactly one count-by choice (use_http_lb_user_id or ref_user_id).",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -33791,6 +33800,8 @@
               }
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
+            "x-f5xc-description-short": "Block requests or responses that violate the OpenAPI schema.",
+            "x-f5xc-description-medium": "Block requests or responses that violate the OpenAPI schema. For enforcing request validation, choose enforcement_block together with the required request_validation_properties.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -33807,6 +33818,8 @@
                 "$ref": "#/components/schemas/ioschemaEmpty"
               }
             ],
+            "x-f5xc-description-short": "Report OpenAPI validation violations without blocking the request. Use this mode only for observation or tuning.",
+            "x-f5xc-description-medium": "Report OpenAPI validation violations without blocking the request. Use this mode only for observation or tuning.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -33908,6 +33921,8 @@
               }
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
+            "x-f5xc-description-short": "Block requests or responses that violate the OpenAPI schema.",
+            "x-f5xc-description-medium": "Block requests or responses that violate the OpenAPI schema. For enforcing request validation, choose enforcement_block together with the required request_validation_properties.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -33924,6 +33939,8 @@
                 "$ref": "#/components/schemas/ioschemaEmpty"
               }
             ],
+            "x-f5xc-description-short": "Report OpenAPI validation violations without blocking the request. Use this mode only for observation or tuning.",
+            "x-f5xc-description-medium": "Report OpenAPI validation violations without blocking the request. Use this mode only for observation or tuning.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -34628,13 +34645,15 @@
                 "$ref": "#/components/schemas/common_wafInlineRateLimiter__ves_io_schema_views_cdn_loadbalancer"
               }
             ],
-            "x-f5xc-description-short": "Configuration parameter for inline rate limiter.",
+            "x-f5xc-description-short": "Inline rate limiter selected by rate_limiter_choice.",
+            "x-f5xc-description-medium": "Inline rate limiter selected by rate_limiter_choice. Use it with a server_url_rule base_path such as /login or an api_endpoint_rule; set threshold, unit, and exactly one count-by choice (use_http_lb_user_id or ref_user_id).",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Inline rate limiter selected by rate_limiter_choice. Use it with a server_url_rule base_path such as /login or an api_endpoint_rule; set threshold, unit, and exactly one count-by choice (use_http_lb_user_id or ref_user_id).",
             "x-f5xc-conflicts-with": [
               "ref_rate_limiter"
             ]
@@ -77980,12 +77999,14 @@
                 "$ref": "#/components/schemas/common_wafAPIRateLimit"
               }
             ],
+            "x-f5xc-description-medium": "Path-scoped API rate limiting. Configure server_url_rules for a base path or api_endpoint_rules for an endpoint, then choose inline_rate_limiter or ref_rate_limiter in each rule.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Path-scoped API rate limiting. Configure server_url_rules for a base path or api_endpoint_rules for an endpoint, then choose inline_rate_limiter or ref_rate_limiter in each rule.",
             "x-f5xc-conflicts-with": [
               "disable_rate_limit",
               "rate_limit"
@@ -79266,12 +79287,14 @@
               }
             ],
             "x-f5xc-example": "{\"requests_per_second\": 100}",
+            "x-f5xc-description-medium": "Load-balancer-wide rate limiting. Its rate_limiter applies across every path on the HTTP load balancer; do not use it to limit only /login or another route. Use api_rate_limit for path-scoped rules.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Load-balancer-wide rate limiting. Its rate_limiter applies across every path on the HTTP load balancer; do not use it to limit only /login or another route. Use api_rate_limit for path-scoped rules.",
             "x-f5xc-conflicts-with": [
               "api_rate_limit",
               "disable_rate_limit"
@@ -80212,12 +80235,14 @@
                 "$ref": "#/components/schemas/common_wafAPIRateLimit"
               }
             ],
+            "x-f5xc-description-medium": "Path-scoped API rate limiting. Configure server_url_rules for a base path or api_endpoint_rules for an endpoint, then choose inline_rate_limiter or ref_rate_limiter in each rule.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Path-scoped API rate limiting. Configure server_url_rules for a base path or api_endpoint_rules for an endpoint, then choose inline_rate_limiter or ref_rate_limiter in each rule.",
             "x-f5xc-conflicts-with": [
               "disable_rate_limit",
               "rate_limit"
@@ -81583,12 +81608,14 @@
               }
             ],
             "x-f5xc-example": "{\"requests_per_second\": 100}",
+            "x-f5xc-description-medium": "Load-balancer-wide rate limiting. Its rate_limiter applies across every path on the HTTP load balancer; do not use it to limit only /login or another route. Use api_rate_limit for path-scoped rules.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Load-balancer-wide rate limiting. Its rate_limiter applies across every path on the HTTP load balancer; do not use it to limit only /login or another route. Use api_rate_limit for path-scoped rules.",
             "x-f5xc-conflicts-with": [
               "api_rate_limit",
               "disable_rate_limit"
@@ -82495,12 +82522,14 @@
                 "$ref": "#/components/schemas/common_wafAPIRateLimit"
               }
             ],
+            "x-f5xc-description-medium": "Path-scoped API rate limiting. Configure server_url_rules for a base path or api_endpoint_rules for an endpoint, then choose inline_rate_limiter or ref_rate_limiter in each rule.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Path-scoped API rate limiting. Configure server_url_rules for a base path or api_endpoint_rules for an endpoint, then choose inline_rate_limiter or ref_rate_limiter in each rule.",
             "x-f5xc-conflicts-with": [
               "disable_rate_limit",
               "rate_limit"
@@ -83781,12 +83810,14 @@
               }
             ],
             "x-f5xc-example": "{\"requests_per_second\": 100}",
+            "x-f5xc-description-medium": "Load-balancer-wide rate limiting. Its rate_limiter applies across every path on the HTTP load balancer; do not use it to limit only /login or another route. Use api_rate_limit for path-scoped rules.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Load-balancer-wide rate limiting. Its rate_limiter applies across every path on the HTTP load balancer; do not use it to limit only /login or another route. Use api_rate_limit for path-scoped rules.",
             "x-f5xc-conflicts-with": [
               "api_rate_limit",
               "disable_rate_limit"

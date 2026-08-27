@@ -341,6 +341,66 @@ class TestEdgeCases:
                 == original["components"]["schemas"][schema_name]["properties"]
             )
 
+    def test_adds_canonical_migration_guidance_for_issue_1615(self, enricher):
+        """All seven downstream documentation gaps have deterministic overrides."""
+        spec = {
+            "components": {
+                "schemas": {
+                    "schemaservice_policyCreateSpecType": {
+                        "properties": {"rule_list": {}, "allow_list": {}, "deny_list": {}}
+                    },
+                    "schemaservice_policy_ruleGlobalSpecType": {"properties": {"any_ip": {}}},
+                    "service_policySourceList": {"properties": {"country_list": {}}},
+                    "viewshttp_loadbalancerCreateSpecType": {
+                        "properties": {"rate_limit": {}, "api_rate_limit": {}}
+                    },
+                    "common_wafAPIRateLimit": {
+                        "properties": {"server_url_rules": {}, "api_endpoint_rules": {}}
+                    },
+                    "common_wafServerUrlRule": {"properties": {"inline_rate_limiter": {}}},
+                    "common_wafApiEndpointRule": {"properties": {"inline_rate_limiter": {}}},
+                    "viewsapi_definitionCreateSpecType": {"properties": {"swagger_specs": {}}},
+                    "common_wafOpenApiValidationModeActive": {
+                        "properties": {"enforcement_report": {}, "enforcement_block": {}}
+                    },
+                    "policyAppFirewallAttackTypeContext": {
+                        "properties": {"context": {}, "exclude_attack_type": {}}
+                    },
+                }
+            }
+        }
+
+        schemas = enricher.enrich_spec(spec)["components"]["schemas"]
+        policy = schemas["schemaservice_policyCreateSpecType"]["properties"]
+        assert "country_list is not a rule-list matcher" in policy["rule_list"]["description"]
+        assert "deny_list" in policy["deny_list"]["description"]
+        assert "server defaults any_ip" in schemas[
+            "schemaservice_policy_ruleGlobalSpecType"
+        ]["properties"]["any_ip"]["description"]
+        assert "COUNTRY_KP" in schemas["service_policySourceList"]["properties"][
+            "country_list"
+        ]["description"]
+
+        load_balancer = schemas["viewshttp_loadbalancerCreateSpecType"]["properties"]
+        assert "every path" in load_balancer["rate_limit"]["description"]
+        assert "Path-scoped" in load_balancer["api_rate_limit"]["description"]
+        api_rate_limit = schemas["common_wafAPIRateLimit"]["properties"]
+        assert "first match wins" in api_rate_limit["server_url_rules"]["description"]
+        assert "endpoint" in api_rate_limit["api_endpoint_rules"]["description"]
+        assert "count-by choice" in schemas["common_wafServerUrlRule"]["properties"][
+            "inline_rate_limiter"
+        ]["description"]
+
+        assert "Inline string:/// content is unsupported" in schemas[
+            "viewsapi_definitionCreateSpecType"
+        ]["properties"]["swagger_specs"]["description"]
+        validation = schemas["common_wafOpenApiValidationModeActive"]["properties"]
+        assert "without blocking" in validation["enforcement_report"]["description"]
+        assert "Block requests" in validation["enforcement_block"]["description"]
+        exclusion = schemas["policyAppFirewallAttackTypeContext"]["properties"]
+        assert "CONTEXT_PARAMETER" in exclusion["context"]["description"]
+        assert "ATTACK_TYPE_SQL_INJECTION" in exclusion["exclude_attack_type"]["description"]
+
 
 class TestConfigLoading:
     """Config file loading and validation."""
