@@ -3035,6 +3035,7 @@
           }
         },
         "x-f5xc-operation-role": "query",
+        "x-f5xc-terraform-name": "site_image",
         "x-f5xc-required-fields": [
           "provider"
         ],
@@ -4050,11 +4051,10 @@
           "register"
         ],
         "x-f5xc-operation-metadata": {
-          "purpose": "Resource creation operation",
+          "purpose": "List Customer Edge registrations by state",
           "required_fields": [
-            "metadata.name",
-            "metadata.namespace",
-            "path.namespace"
+            "namespace",
+            "state"
           ],
           "optional_fields": [],
           "field_docs": {},
@@ -4063,16 +4063,12 @@
               "Active namespace"
             ],
             "postconditions": [
-              "Listregistrationsbystate resource created",
-              "Resource assigned unique identifier"
+              "Requested data returned",
+              "Tenant state unchanged"
             ]
           },
-          "side_effects": {
-            "creates": [
-              "listregistrationsbystate"
-            ]
-          },
-          "danger_level": "medium",
+          "side_effects": {},
+          "danger_level": "low",
           "confirmation_required": false,
           "common_errors": [
             {
@@ -4111,17 +4107,13 @@
             "resource_usage": "low"
           }
         },
+        "x-f5xc-operation-role": "collection",
+        "x-f5xc-terraform-name": "site_registrations_by_state",
         "x-f5xc-required-fields": [
-          "metadata.name",
-          "metadata.namespace",
-          "path.namespace"
+          "namespace",
+          "state"
         ],
-        "x-f5xc-danger-level": "medium",
-        "x-f5xc-side-effects": {
-          "creates": [
-            "listregistrationsbystate"
-          ]
-        },
+        "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
           "p95_ms": 3000,
@@ -4534,9 +4526,9 @@
           "register"
         ],
         "x-f5xc-operation-metadata": {
-          "purpose": "Resource retrieval operation",
+          "purpose": "List Customer Edge registrations",
           "required_fields": [
-            "path.namespace"
+            "namespace"
           ],
           "optional_fields": [],
           "field_docs": {},
@@ -4544,7 +4536,10 @@
             "prerequisites": [
               "Active namespace"
             ],
-            "postconditions": []
+            "postconditions": [
+              "Requested data returned",
+              "Tenant state unchanged"
+            ]
           },
           "side_effects": {},
           "danger_level": "low",
@@ -4586,8 +4581,10 @@
             "resource_usage": "moderate"
           }
         },
+        "x-f5xc-operation-role": "collection",
+        "x-f5xc-terraform-name": "site_registrations",
         "x-f5xc-required-fields": [
-          "path.namespace"
+          "namespace"
         ],
         "x-f5xc-danger-level": "low",
         "x-discovered-response-time-ms": 149.92,
@@ -5197,10 +5194,10 @@
           "register"
         ],
         "x-f5xc-operation-metadata": {
-          "purpose": "Edge site for distributed deployment",
+          "purpose": "List registrations for a Customer Edge site",
           "required_fields": [
-            "path.namespace",
-            "path.site_name"
+            "namespace",
+            "site_name"
           ],
           "optional_fields": [],
           "field_docs": {},
@@ -5208,7 +5205,10 @@
             "prerequisites": [
               "Active namespace"
             ],
-            "postconditions": []
+            "postconditions": [
+              "Requested data returned",
+              "Tenant state unchanged"
+            ]
           },
           "side_effects": {},
           "danger_level": "low",
@@ -5250,9 +5250,11 @@
             "resource_usage": "low"
           }
         },
+        "x-f5xc-operation-role": "collection",
+        "x-f5xc-terraform-name": "site_registrations_by_site",
         "x-f5xc-required-fields": [
-          "path.namespace",
-          "path.site_name"
+          "namespace",
+          "site_name"
         ],
         "x-f5xc-danger-level": "low",
         "x-discovered-response-time-ms": 159.02,

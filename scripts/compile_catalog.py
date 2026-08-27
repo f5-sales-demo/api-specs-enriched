@@ -761,6 +761,7 @@ def build_api_operations(paths: dict[str, Any]) -> list[dict[str, Any]]:
     """
     grouped: dict[str, list[dict[str, Any]]] = {}
     seen_operation_ids: dict[str, str] = {}
+    seen_terraform_names: dict[str, str] = {}
 
     for path, path_item in (paths or {}).items():
         if not isinstance(path_item, dict):
@@ -807,13 +808,31 @@ def build_api_operations(paths: dict[str, Any]) -> list[dict[str, Any]]:
                 entry["responseSchema"] = response_schema
             operation_role = operation.get("x-f5xc-operation-role")
             if operation_role is not None:
-                if operation_role not in {"query", "issuance"}:
+                if operation_role not in {"query", "issuance", "collection", "action"}:
                     raise ValueError(
                         f"{operation_id} has unsupported x-f5xc-operation-role {operation_role!r}"
                     )
+                terraform_name = operation.get("x-f5xc-terraform-name")
+                if not isinstance(terraform_name, str) or not re.fullmatch(
+                    r"[a-z][a-z0-9_]*", terraform_name
+                ):
+                    raise ValueError(
+                        f"{operation_role} operation {operation_id} requires a valid "
+                        "x-f5xc-terraform-name"
+                    )
+                if terraform_name in seen_terraform_names:
+                    raise ValueError(
+                        f"duplicate x-f5xc-terraform-name {terraform_name!r}: "
+                        f"{seen_terraform_names[terraform_name]} and {operation_id}"
+                    )
+                seen_terraform_names[terraform_name] = operation_id
                 method_upper = method.upper()
                 has_query_parameters = any(
                     isinstance(parameter, dict) and parameter.get("in") == "query"
+                    for parameter in operation.get("parameters", [])
+                )
+                has_input_parameters = any(
+                    isinstance(parameter, dict) and parameter.get("in") in {"path", "query"}
                     for parameter in operation.get("parameters", [])
                 )
                 if response_schema is None:
@@ -824,22 +843,39 @@ def build_api_operations(paths: dict[str, Any]) -> list[dict[str, Any]]:
                     raise ValueError(
                         f"POST {operation_role} operation {operation_id} requires a request schema"
                     )
-                if method_upper == "GET" and not has_query_parameters:
+                if (
+                    method_upper == "GET"
+                    and operation_role in {"query", "issuance"}
+                    and not has_query_parameters
+                ):
                     raise ValueError(
                         f"GET {operation_role} operation {operation_id} requires query parameters"
                     )
-                if method_upper not in {"GET", "POST"}:
+                if (
+                    method_upper == "GET"
+                    and operation_role == "collection"
+                    and not has_input_parameters
+                ):
                     raise ValueError(
-                        f"{operation_role} operation {operation_id} must use GET or POST, got {method_upper}"
+                        f"GET collection operation {operation_id} requires path or query parameters"
                     )
-                if operation_role == "query":
+                allowed_methods = {"POST"} if operation_role == "action" else {"GET", "POST"}
+                if method_upper not in allowed_methods:
+                    raise ValueError(
+                        f"{operation_role} operation {operation_id} must use "
+                        f"{'POST' if operation_role == 'action' else 'GET or POST'}, "
+                        f"got {method_upper}"
+                    )
+                if operation_role in {"query", "collection"}:
                     if operation.get("x-f5xc-danger-level") != "low":
-                        raise ValueError(f"query operation {operation_id} must have low danger")
+                        raise ValueError(
+                            f"{operation_role} operation {operation_id} must have low danger"
+                        )
                     if operation.get("x-f5xc-side-effects"):
                         raise ValueError(
-                            f"query operation {operation_id} must not have side effects"
+                            f"{operation_role} operation {operation_id} must not have side effects"
                         )
-                else:
+                elif operation_role == "issuance":
                     if operation.get("x-f5xc-danger-level") != "medium":
                         raise ValueError(
                             f"issuance operation {operation_id} must have medium danger"
@@ -849,7 +885,20 @@ def build_api_operations(paths: dict[str, Any]) -> list[dict[str, Any]]:
                         raise ValueError(
                             f"issuance operation {operation_id} must declare a created credential"
                         )
+                else:
+                    if operation.get("x-f5xc-danger-level") != "medium":
+                        raise ValueError(f"action operation {operation_id} must have medium danger")
+                    modifies = (operation.get("x-f5xc-side-effects") or {}).get("modifies", [])
+                    if not modifies:
+                        raise ValueError(
+                            f"action operation {operation_id} must declare a modified object"
+                        )
                 entry["role"] = operation_role
+                entry["terraformName"] = terraform_name
+            elif operation.get("x-f5xc-terraform-name") is not None:
+                raise ValueError(
+                    f"operation {operation_id} has x-f5xc-terraform-name without an operation role"
+                )
             grouped.setdefault(identity, []).append(entry)
 
     return [

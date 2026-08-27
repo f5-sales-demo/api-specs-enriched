@@ -19,6 +19,7 @@ def test_image_download_operation_is_a_read_only_query() -> None:
 
     assert operation["operationId"] == OPERATION_ID
     assert operation["x-f5xc-operation-role"] == "query"
+    assert operation["x-f5xc-terraform-name"] == "site_image"
     assert operation["x-f5xc-danger-level"] == "low"
     assert "x-f5xc-side-effects" not in operation
     assert operation["x-f5xc-required-fields"] == ["provider"]
@@ -65,6 +66,7 @@ def test_release_catalog_publishes_the_query_schema_pair() -> None:
         "requestSchema": "registrationGetImageDownloadUrlReq",
         "responseSchema": "registrationGetImageDownloadUrlResp",
         "role": "query",
+        "terraformName": "site_image",
     }
 
 
@@ -75,6 +77,7 @@ def test_cloud_init_operation_is_a_site_scoped_sensitive_issuance() -> None:
 
     assert operation["operationId"] == CLOUD_INIT_OPERATION_ID
     assert operation["x-f5xc-operation-role"] == "issuance"
+    assert operation["x-f5xc-terraform-name"] == "site_cloud_init"
     assert operation["x-f5xc-required-fields"] == ["provider", "site_name"]
     assert operation["x-f5xc-danger-level"] == "medium"
     assert operation["x-f5xc-side-effects"] == {"creates": ["site_node_token"]}
@@ -106,4 +109,5 @@ def test_release_catalog_publishes_the_cloud_init_issuance() -> None:
         "surface": "register",
         "responseSchema": "tokenGetCloudInitConfigResp",
         "role": "issuance",
+        "terraformName": "site_cloud_init",
     }
