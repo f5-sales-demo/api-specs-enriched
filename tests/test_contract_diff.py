@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pytest
 
-from scripts.contract_diff import Violation, run_contract_diff
+from scripts.contract_diff import Violation, load_declared_removals, run_contract_diff
 
 FIXTURES = Path(__file__).parent / "fixtures" / "contract_diff"
 
@@ -39,6 +39,100 @@ def test_fail_when_property_removed() -> None:
     i, o = _load("fail_remove")
     violations = run_contract_diff(i, o)
     assert any("parameters" in v.pointer for v in violations)
+
+
+def test_allows_only_exact_canonical_issue_linked_property_removals(tmp_path: Path) -> None:
+    config = tmp_path / "schema_overrides.yaml"
+    config.write_text(
+        """\
+version: "1.0.0"
+overrides:
+  remove_legacy:
+    canonical: true
+    upstream_issue: f5-sales-demo/api-specs-enriched#1236
+    schemas:
+      - pattern: ^Widget$
+        remove_properties: [legacy]
+"""
+    )
+    declared = load_declared_removals(config)
+    before = {
+        "components": {
+            "schemas": {
+                "Widget": {
+                    "properties": {
+                        "legacy": {"type": "string"},
+                        "modern": {"type": "string"},
+                        "unrelated": {"type": "string"},
+                    },
+                    "required": ["legacy", "modern"],
+                    "x-ves-oneof-field-choice": '["legacy","modern"]',
+                },
+            },
+        },
+    }
+    expected = {
+        "components": {
+            "schemas": {
+                "Widget": {
+                    "properties": {
+                        "modern": {"type": "string"},
+                        "unrelated": {"type": "string"},
+                    },
+                    "required": ["modern"],
+                },
+            },
+        },
+    }
+
+    assert run_contract_diff(before, expected, declared_removals=declared) == []
+
+    del expected["components"]["schemas"]["Widget"]["properties"]["unrelated"]
+    violations = run_contract_diff(before, expected, declared_removals=declared)
+    assert any("unrelated" in violation.pointer for violation in violations)
+
+
+def test_declared_removal_rejects_incomplete_metadata_cleanup(tmp_path: Path) -> None:
+    config = tmp_path / "schema_overrides.yaml"
+    config.write_text(
+        """\
+version: "1.0.0"
+overrides:
+  remove_legacy:
+    canonical: true
+    upstream_issue: f5-sales-demo/api-specs-enriched#1236
+    schemas:
+      - pattern: ^Widget$
+        remove_properties: [legacy]
+"""
+    )
+    declared = load_declared_removals(config)
+    before = {
+        "components": {
+            "schemas": {
+                "Widget": {
+                    "properties": {
+                        "legacy": {"type": "string"},
+                        "modern": {"type": "string"},
+                    },
+                    "x-ves-oneof-field-choice": ["legacy", "modern", "fallback"],
+                },
+            },
+        },
+    }
+    incomplete = {
+        "components": {
+            "schemas": {
+                "Widget": {
+                    "properties": {"modern": {"type": "string"}},
+                    "x-ves-oneof-field-choice": ["legacy", "modern", "fallback"],
+                },
+            },
+        },
+    }
+
+    violations = run_contract_diff(before, incomplete, declared_removals=declared)
+    assert any(violation.rule_category == "declared-removal-incomplete" for violation in violations)
 
 
 def test_violation_structure_has_rule_category() -> None:

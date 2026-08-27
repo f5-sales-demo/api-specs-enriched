@@ -34874,7 +34874,7 @@
         "description": "Create virtual network in given namespace.",
         "title": "Create virtual network",
         "x-displayname": "Create Virtual Network.",
-        "x-ves-oneof-field-network_choice": "[\"global_network\",\"legacy_type\",\"site_local_inside_network\",\"site_local_network\"]",
+        "x-ves-oneof-field-network_choice": "[\"global_network\",\"site_local_inside_network\",\"site_local_network\"]",
         "x-ves-proto-message": "ves.io.schema.virtual_network.CreateSpecType",
         "properties": {
           "global_network": {
@@ -34883,33 +34883,15 @@
                 "$ref": "#/components/schemas/ioschemaEmpty"
               }
             ],
-            "x-f5xc-description-short": "Configuration parameter for global network.",
+            "x-f5xc-description-short": "Select the global virtual-network scope for connectivity across participating sites.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Select the global virtual-network scope for connectivity across participating sites.",
             "x-f5xc-conflicts-with": [
-              "legacy_type",
-              "site_local_inside_network",
-              "site_local_network"
-            ]
-          },
-          "legacy_type": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/schemaVirtualNetworkType"
-              }
-            ],
-            "x-f5xc-required-for": {
-              "minimum_config": false,
-              "create": false,
-              "update": false,
-              "read": false
-            },
-            "x-f5xc-conflicts-with": [
-              "global_network",
               "site_local_inside_network",
               "site_local_network"
             ]
@@ -34920,15 +34902,16 @@
                 "$ref": "#/components/schemas/ioschemaEmpty"
               }
             ],
+            "x-f5xc-description-short": "Select the site-local inside network for site-internal connectivity.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Select the site-local inside network for site-internal connectivity.",
             "x-f5xc-conflicts-with": [
               "global_network",
-              "legacy_type",
               "site_local_network"
             ]
           },
@@ -34938,15 +34921,16 @@
                 "$ref": "#/components/schemas/ioschemaEmpty"
               }
             ],
+            "x-f5xc-description-short": "Select a site-local virtual network when connectivity must remain within one site.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Select a site-local virtual network when connectivity must remain within one site.",
             "x-f5xc-conflicts-with": [
               "global_network",
-              "legacy_type",
               "site_local_inside_network"
             ]
           },
@@ -35339,7 +35323,7 @@
         "description": "Gets virtual network in given namespace.",
         "title": "Get virtual network",
         "x-displayname": "GET Virtual Network.",
-        "x-ves-oneof-field-network_choice": "[\"global_network\",\"legacy_type\",\"site_local_inside_network\",\"site_local_network\"]",
+        "x-ves-oneof-field-network_choice": "[\"global_network\",\"site_local_inside_network\",\"site_local_network\"]",
         "x-ves-proto-message": "ves.io.schema.virtual_network.GetSpecType",
         "properties": {
           "global_network": {
@@ -35348,33 +35332,15 @@
                 "$ref": "#/components/schemas/ioschemaEmpty"
               }
             ],
-            "x-f5xc-description-short": "Configuration parameter for global network.",
+            "x-f5xc-description-short": "Select the global virtual-network scope for connectivity across participating sites.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Select the global virtual-network scope for connectivity across participating sites.",
             "x-f5xc-conflicts-with": [
-              "legacy_type",
-              "site_local_inside_network",
-              "site_local_network"
-            ]
-          },
-          "legacy_type": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/schemaVirtualNetworkType"
-              }
-            ],
-            "x-f5xc-required-for": {
-              "minimum_config": false,
-              "create": false,
-              "update": false,
-              "read": false
-            },
-            "x-f5xc-conflicts-with": [
-              "global_network",
               "site_local_inside_network",
               "site_local_network"
             ]
@@ -35385,15 +35351,16 @@
                 "$ref": "#/components/schemas/ioschemaEmpty"
               }
             ],
+            "x-f5xc-description-short": "Select the site-local inside network for site-internal connectivity.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Select the site-local inside network for site-internal connectivity.",
             "x-f5xc-conflicts-with": [
               "global_network",
-              "legacy_type",
               "site_local_network"
             ]
           },
@@ -35403,15 +35370,16 @@
                 "$ref": "#/components/schemas/ioschemaEmpty"
               }
             ],
+            "x-f5xc-description-short": "Select a site-local virtual network when connectivity must remain within one site.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Select a site-local virtual network when connectivity must remain within one site.",
             "x-f5xc-conflicts-with": [
               "global_network",
-              "legacy_type",
               "site_local_inside_network"
             ]
           },
@@ -36037,7 +36005,7 @@
         "description": "Replace given virtual network in given namespace.",
         "title": "Replace virtual network",
         "x-displayname": "Replace Virtual Network.",
-        "x-ves-oneof-field-network_choice": "[\"global_network\",\"legacy_type\",\"site_local_inside_network\",\"site_local_network\"]",
+        "x-ves-oneof-field-network_choice": "[\"global_network\",\"site_local_inside_network\",\"site_local_network\"]",
         "x-ves-proto-message": "ves.io.schema.virtual_network.ReplaceSpecType",
         "properties": {
           "global_network": {
@@ -36046,33 +36014,15 @@
                 "$ref": "#/components/schemas/ioschemaEmpty"
               }
             ],
-            "x-f5xc-description-short": "Configuration parameter for global network.",
+            "x-f5xc-description-short": "Select the global virtual-network scope for connectivity across participating sites.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Select the global virtual-network scope for connectivity across participating sites.",
             "x-f5xc-conflicts-with": [
-              "legacy_type",
-              "site_local_inside_network",
-              "site_local_network"
-            ]
-          },
-          "legacy_type": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/schemaVirtualNetworkType"
-              }
-            ],
-            "x-f5xc-required-for": {
-              "minimum_config": false,
-              "create": false,
-              "update": false,
-              "read": false
-            },
-            "x-f5xc-conflicts-with": [
-              "global_network",
               "site_local_inside_network",
               "site_local_network"
             ]
@@ -36083,15 +36033,16 @@
                 "$ref": "#/components/schemas/ioschemaEmpty"
               }
             ],
+            "x-f5xc-description-short": "Select the site-local inside network for site-internal connectivity.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Select the site-local inside network for site-internal connectivity.",
             "x-f5xc-conflicts-with": [
               "global_network",
-              "legacy_type",
               "site_local_network"
             ]
           },
@@ -36101,15 +36052,16 @@
                 "$ref": "#/components/schemas/ioschemaEmpty"
               }
             ],
+            "x-f5xc-description-short": "Select a site-local virtual network when connectivity must remain within one site.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Select a site-local virtual network when connectivity must remain within one site.",
             "x-f5xc-conflicts-with": [
               "global_network",
-              "legacy_type",
               "site_local_inside_network"
             ]
           },

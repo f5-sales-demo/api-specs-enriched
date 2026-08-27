@@ -279,3 +279,146 @@ overrides:
           labels:
             additionalProperties:
               type: "string"
+
+  legacy_contract_removal:
+    canonical: true
+    upstream_issue: "f5-sales-demo/api-specs-enriched#1236"
+    description: >-
+      Remove pre-production compatibility fields from the provider-facing contract.
+      Modern replacements are network policy rules, secret/service policy rule_list,
+      explicit header transformation choices, explicit network-interface choices, and
+      global_network or site-local virtual-network choices.
+    schemas:
+      - pattern: "^schemaHeaderTransformationType$"
+        remove_properties: [legacy_header_transformation]
+        set_property_extensions:
+          default_header_transformation:
+            description: >-
+              Use the platform's current default HTTP header transformation behavior.
+          proper_case_header_transformation:
+            description: >-
+              Transform HTTP header names to proper case when explicit transformation is required.
+          preserve_case_header_transformation:
+            description: >-
+              Preserve HTTP header-name case when upstream case must remain unchanged.
+      - pattern: "^network_interface(Get|Replace)SpecType$"
+        remove_properties: [legacy_interface]
+      - pattern: "^schemanetwork_policy(Get|Replace)SpecType$"
+        remove_properties: [legacy_rules]
+        set_property_extensions:
+          rules:
+            description: >-
+              Current network-policy ingress and egress rule configuration. Use this field instead
+              of the removed compatibility rule container.
+      - pattern: "^schemasecret_policy(Get|Replace)SpecType$"
+        remove_properties: [legacy_rule_list]
+        set_property_extensions:
+          rule_list:
+            description: >-
+              Current secret-policy rule list. Use this field instead of the removed compatibility
+              rule list.
+      - pattern: "^schemaservice_policy(Get|Replace)SpecType$"
+        remove_properties: [legacy_rule_list]
+      - pattern: "^virtual_network(Create|Get|Replace)SpecType$"
+        remove_properties: [legacy_type]
+        set_property_extensions:
+          global_network:
+            description: >-
+              Select the global virtual-network scope for connectivity across participating sites.
+          site_local_network:
+            description: >-
+              Select a site-local virtual network when connectivity must remain within one site.
+          site_local_inside_network:
+            description: >-
+              Select the site-local inside network for site-internal connectivity.
+
+  xcsh_migration_guidance:
+    canonical: true
+    upstream_issue: "f5-sales-demo/api-specs-enriched#1615"
+    description: >-
+      Actionable schema guidance for migration behaviors verified by the xcsh issue set
+      #3396-#3401 and #3404 without changing enums or wire shapes.
+    schemas:
+      - pattern: "^schemaservice_policy(Create|Get|Replace)SpecType$"
+        set_property_extensions:
+          rule_list:
+            description: >-
+              Ordered service-policy rules for non-geographic predicates and actions. Do not use
+              country_list for a geo-only rule here: the platform adds match-all any_ip and any_asn
+              selectors on readback, so the rule can match all traffic. Use deny_list or allow_list
+              with country_list for geographic source matching.
+      - pattern: "^viewshttp_loadbalancer(Create|Get|Replace)SpecType$"
+        set_property_extensions:
+          rate_limit:
+            description: >-
+              Load-balancer-wide per-client rate limiting. The counter applies across every path;
+              use api_rate_limit rules when only selected paths such as /login should be limited.
+          api_rate_limit:
+            description: >-
+              Path- or API-group-scoped rate limiting. Define server_url_rules or
+              api_endpoint_rules and choose inline_rate_limiter for an inline limit, or
+              ref_rate_limiter for a stored rate-limiter reference.
+      - pattern: "^common_wafAPIRateLimit$"
+        set_property_extensions:
+          server_url_rules:
+            description: >-
+              Ordered domain or base-path rules for path-scoped rate limiting. Each rule must choose
+              exactly one rate_limiter_choice: inline_rate_limiter or ref_rate_limiter.
+          api_endpoint_rules:
+            description: >-
+              Ordered endpoint-specific rate-limit rules. Each rule must choose exactly one
+              rate_limiter_choice: inline_rate_limiter or ref_rate_limiter.
+      - pattern: "^common_waf(ServerUrlRule|ApiEndpointRule__.*)$"
+        set_property_extensions:
+          inline_rate_limiter:
+            description: >-
+              Inline rate-limiter settings for this domain, base-path, or endpoint rule. Select this
+              field as the required rate_limiter_choice when no stored rate-limiter object is used.
+          ref_rate_limiter:
+            description: >-
+              Reference to a stored rate-limiter object for this scoped rule. Select exactly one of
+              ref_rate_limiter and inline_rate_limiter.
+      - pattern: "^viewsapi_definition(Create|Get|Replace)SpecType$"
+        set_property_extensions:
+          swagger_specs:
+            description: >-
+              URLs of versioned OpenAPI files uploaded through Web App & API Protection > Files >
+              Swagger Files. The 512-byte item limit is a URL-length limit; inline string:///
+              OpenAPI content is rejected and does not create an API-definition object.
+      - pattern: "^common_wafOpenApiValidationMode(?:__.*)?$"
+        set_property_extensions:
+          validation_mode_active:
+            description: >-
+              Enable OpenAPI validation and explicitly select enforcement_report to allow and log
+              invalid traffic, or enforcement_block to reject invalid requests with HTTP 403.
+      - pattern: "^common_wafOpenApiValidationModeActive(?:Response)?(?:__.*)?$"
+        set_property_extensions:
+          enforcement_report:
+            description: >-
+              Report-only validation: record OpenAPI violations while allowing the request or
+              response to continue.
+          enforcement_block:
+            description: >-
+              Blocking validation: reject traffic that violates the selected OpenAPI validation
+              properties. Invalid requests are returned as HTTP 403.
+      - pattern: "^policyAppFirewallDetectionControl$"
+        set_property_extensions:
+          exclude_attack_type_contexts:
+            description: >-
+              Exclude an entire attack type only in the named context. For migrated per-parameter
+              exceptions, prefer this over signature-ID exclusions because one payload can trigger
+              several signatures; unrelated parameters and attack types remain protected.
+      - pattern: "^policyAppFirewallAttackTypeContext$"
+        set_property_extensions:
+          context:
+            description: >-
+              Exclusion scope. Use CONTEXT_PARAMETER with context_name for one parameter,
+              CONTEXT_COOKIE for one cookie, or CONTEXT_ANY only for an intentionally global scope.
+          context_name:
+            description: >-
+              Parameter, cookie, or header name selected by context. For a parameter-scoped WAF
+              exception, set context to CONTEXT_PARAMETER and name only the intended parameter.
+          exclude_attack_type:
+            description: >-
+              Attack-type enum excluded in this context, for example
+              ATTACK_TYPE_CROSS_SITE_SCRIPTING. Other attack types remain enforced.

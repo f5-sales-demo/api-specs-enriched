@@ -13366,12 +13366,15 @@
                 "$ref": "#/components/schemas/common_wafOpenApiValidationModeActive__ves_io_schema_views_bigip_virtual_server"
               }
             ],
+            "x-f5xc-description-short": "Enable OpenAPI validation and explicitly select enforcement_report to allow and log invalid traffic, or enforcement_block to reject invalid...",
+            "x-f5xc-description-medium": "Enable OpenAPI validation and explicitly select enforcement_report to allow and log invalid traffic, or enforcement_block to reject invalid requests with HTTP 403.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Enable OpenAPI validation and explicitly select enforcement_report to allow and log invalid traffic, or enforcement_block to reject invalid requests with HTTP 403.",
             "x-f5xc-conflicts-with": [
               "skip_validation"
             ]
@@ -13421,12 +13424,15 @@
               }
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
+            "x-f5xc-description-short": "Blocking validation: reject traffic that violates the selected OpenAPI validation properties.",
+            "x-f5xc-description-medium": "Blocking validation: reject traffic that violates the selected OpenAPI validation properties. Invalid requests are returned as HTTP 403.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Blocking validation: reject traffic that violates the selected OpenAPI validation properties. Invalid requests are returned as HTTP 403.",
             "x-f5xc-conflicts-with": [
               "enforcement_report"
             ]
@@ -13437,12 +13443,15 @@
                 "$ref": "#/components/schemas/ioschemaEmpty"
               }
             ],
+            "x-f5xc-description-short": "Report-only validation: record OpenAPI violations while allowing the request or response to continue.",
+            "x-f5xc-description-medium": "Report-only validation: record OpenAPI violations while allowing the request or response to continue.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Report-only validation: record OpenAPI violations while allowing the request or response to continue.",
             "x-f5xc-conflicts-with": [
               "enforcement_block"
             ]
@@ -13536,12 +13545,15 @@
               }
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
+            "x-f5xc-description-short": "Blocking validation: reject traffic that violates the selected OpenAPI validation properties.",
+            "x-f5xc-description-medium": "Blocking validation: reject traffic that violates the selected OpenAPI validation properties. Invalid requests are returned as HTTP 403.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Blocking validation: reject traffic that violates the selected OpenAPI validation properties. Invalid requests are returned as HTTP 403.",
             "x-f5xc-conflicts-with": [
               "enforcement_report"
             ]
@@ -13552,12 +13564,15 @@
                 "$ref": "#/components/schemas/ioschemaEmpty"
               }
             ],
+            "x-f5xc-description-short": "Report-only validation: record OpenAPI violations while allowing the request or response to continue.",
+            "x-f5xc-description-medium": "Report-only validation: record OpenAPI violations while allowing the request or response to continue.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Report-only validation: record OpenAPI violations while allowing the request or response to continue.",
             "x-f5xc-conflicts-with": [
               "enforcement_block"
             ]
@@ -23760,7 +23775,7 @@
         "title": "HeaderTransformationType",
         "x-displayname": "Header Transformation.",
         "x-ves-displayorder": "1",
-        "x-ves-oneof-field-header_transformation_choice": "[\"default_header_transformation\",\"legacy_header_transformation\",\"preserve_case_header_transformation\",\"proper_case_header_transformation\"]",
+        "x-ves-oneof-field-header_transformation_choice": "[\"default_header_transformation\",\"preserve_case_header_transformation\",\"proper_case_header_transformation\"]",
         "x-ves-proto-message": "ves.io.schema.HeaderTransformationType",
         "properties": {
           "default_header_transformation": {
@@ -23769,32 +23784,15 @@
                 "$ref": "#/components/schemas/ioschemaEmpty"
               }
             ],
+            "x-f5xc-description-short": "Use the platform's current default HTTP header transformation behavior.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Use the platform's current default HTTP header transformation behavior.",
             "x-f5xc-conflicts-with": [
-              "legacy_header_transformation",
-              "preserve_case_header_transformation",
-              "proper_case_header_transformation"
-            ]
-          },
-          "legacy_header_transformation": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/ioschemaEmpty"
-              }
-            ],
-            "x-f5xc-required-for": {
-              "minimum_config": false,
-              "create": false,
-              "update": false,
-              "read": false
-            },
-            "x-f5xc-conflicts-with": [
-              "default_header_transformation",
               "preserve_case_header_transformation",
               "proper_case_header_transformation"
             ]
@@ -23805,15 +23803,16 @@
                 "$ref": "#/components/schemas/ioschemaEmpty"
               }
             ],
+            "x-f5xc-description-short": "Preserve HTTP header-name case when upstream case must remain unchanged.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Preserve HTTP header-name case when upstream case must remain unchanged.",
             "x-f5xc-conflicts-with": [
               "default_header_transformation",
-              "legacy_header_transformation",
               "proper_case_header_transformation"
             ]
           },
@@ -23823,15 +23822,16 @@
                 "$ref": "#/components/schemas/ioschemaEmpty"
               }
             ],
+            "x-f5xc-description-short": "Transform HTTP header names to proper case when explicit transformation is required.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Transform HTTP header names to proper case when explicit transformation is required.",
             "x-f5xc-conflicts-with": [
               "default_header_transformation",
-              "legacy_header_transformation",
               "preserve_case_header_transformation"
             ]
           }

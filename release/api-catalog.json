@@ -13199,7 +13199,7 @@
             },
             "spec.swagger_specs": {
               "type": "array",
-              "description": "Define your application API by single or multiple OpenAPI files.\n1. Upload your OpenAPI files via Web App & API Protection-> Files-> Swagger Files.\n2. Select from the list of uploaded files.\nNotice file versions. If OpenAPI file is updated, need to select a new version here to redefine the API.",
+              "description": "URLs of versioned OpenAPI files uploaded through Web App & API Protection > Files > Swagger Files. The 512-byte item limit is a URL-length limit; inline string:/// OpenAPI content is rejected and does not create an API-definition object.",
               "constraints": {
                 "constraintType": "array",
                 "category": "discovery",
@@ -13576,7 +13576,7 @@
             },
             "spec.swagger_specs": {
               "type": "array",
-              "description": "Define your application API by single or multiple OpenAPI files.\n1. Upload your OpenAPI files via Web App & API Protection-> Files-> Swagger Files.\n2. Select from the list of uploaded files.\nNotice file versions. If OpenAPI file is updated, need to select a new version here to redefine the API.",
+              "description": "URLs of versioned OpenAPI files uploaded through Web App & API Protection > Files > Swagger Files. The 512-byte item limit is a URL-length limit; inline string:/// OpenAPI content is rejected and does not create an API-definition object.",
               "constraints": {
                 "constraintType": "array",
                 "category": "discovery",
@@ -30497,7 +30497,7 @@
             },
             "spec.cookie_params.cookie_expiry": {
               "type": "integer",
-              "description": "Specifies in seconds max duration of the allocated cookie. This maps to “Max-Age” attribute in the session cookie.\nThis will act as an expiry duration on the client side after which client will not be setting the\ncookie as part of the request.\nDefault cookie expiry is 3600 seconds.",
+              "description": "Specifies in seconds max duration of the allocated cookie. This maps to \u201cMax-Age\u201d attribute in the session cookie.\nThis will act as an expiry duration on the client side after which client will not be setting the\ncookie as part of the request.\nDefault cookie expiry is 3600 seconds.",
               "constraints": {
                 "constraintType": "number",
                 "category": "discovery",
@@ -30936,7 +30936,7 @@
             },
             "spec.cookie_params.cookie_expiry": {
               "type": "integer",
-              "description": "Specifies in seconds max duration of the allocated cookie. This maps to “Max-Age” attribute in the session cookie.\nThis will act as an expiry duration on the client side after which client will not be setting the\ncookie as part of the request.\nDefault cookie expiry is 3600 seconds.",
+              "description": "Specifies in seconds max duration of the allocated cookie. This maps to \u201cMax-Age\u201d attribute in the session cookie.\nThis will act as an expiry duration on the client side after which client will not be setting the\ncookie as part of the request.\nDefault cookie expiry is 3600 seconds.",
               "constraints": {
                 "constraintType": "number",
                 "category": "discovery",
@@ -55997,7 +55997,7 @@
             },
             "spec.api_rate_limit.api_endpoint_rules": {
               "type": "array",
-              "description": "Sets of rules for a specific endpoints.\nOrder is matter as it uses first match policy.\nFor creating rule that contain a whole domain or group of endpoints, please use the server URL rules above.",
+              "description": "Ordered endpoint-specific rate-limit rules. Each rule must choose exactly one rate_limiter_choice: inline_rate_limiter or ref_rate_limiter.",
               "constraints": {
                 "constraintType": "array",
                 "category": "discovery",
@@ -56058,7 +56058,7 @@
             },
             "spec.api_rate_limit.server_url_rules": {
               "type": "array",
-              "description": "Set of rules for entire domain or base path that contain multiple endpoints.\nOrder is matter as it uses first match policy.\nFor matching also specific endpoints you can use the API endpoint rules set below.",
+              "description": "Ordered domain or base-path rules for path-scoped rate limiting. Each rule must choose exactly one rate_limiter_choice: inline_rate_limiter or ref_rate_limiter.",
               "constraints": {
                 "constraintType": "array",
                 "category": "discovery",
@@ -58628,7 +58628,7 @@
             },
             "spec.api_rate_limit.api_endpoint_rules": {
               "type": "array",
-              "description": "Sets of rules for a specific endpoints.\nOrder is matter as it uses first match policy.\nFor creating rule that contain a whole domain or group of endpoints, please use the server URL rules above.",
+              "description": "Ordered endpoint-specific rate-limit rules. Each rule must choose exactly one rate_limiter_choice: inline_rate_limiter or ref_rate_limiter.",
               "constraints": {
                 "constraintType": "array",
                 "category": "discovery",
@@ -58689,7 +58689,7 @@
             },
             "spec.api_rate_limit.server_url_rules": {
               "type": "array",
-              "description": "Set of rules for entire domain or base path that contain multiple endpoints.\nOrder is matter as it uses first match policy.\nFor matching also specific endpoints you can use the API endpoint rules set below.",
+              "description": "Ordered domain or base-path rules for path-scoped rate limiting. Each rule must choose exactly one rate_limiter_choice: inline_rate_limiter or ref_rate_limiter.",
               "constraints": {
                 "constraintType": "array",
                 "category": "discovery",
@@ -74542,7 +74542,7 @@
             },
             "spec.circuit_breaker.pending_requests": {
               "type": "integer",
-              "description": "The maximum number of requests that will be queued while waiting for a ready connection pool connection.\nSince HTTP/2 requests are sent over a single connection, this circuit breaker only comes into play as the\ninitial connection is created, as requests will be multiplexed immediately afterwards. For HTTP/1.1, requests\nare added to the list of pending requests whenever there aren’t enough upstream connections available to\nimmediately dispatch the request, so this circuit breaker will remain in play for the lifetime of the process.\nRemove endpoint out of load balancing decision, if pending request reach pending_request.",
+              "description": "The maximum number of requests that will be queued while waiting for a ready connection pool connection.\nSince HTTP/2 requests are sent over a single connection, this circuit breaker only comes into play as the\ninitial connection is created, as requests will be multiplexed immediately afterwards. For HTTP/1.1, requests\nare added to the list of pending requests whenever there aren\u2019t enough upstream connections available to\nimmediately dispatch the request, so this circuit breaker will remain in play for the lifetime of the process.\nRemove endpoint out of load balancing decision, if pending request reach pending_request.",
               "constraints": {
                 "constraintType": "number",
                 "category": "discovery",
@@ -74649,7 +74649,7 @@
             },
             "spec.endpoint_subsets": {
               "type": "array",
-              "description": "Cluster may be configured to divide its endpoints into subsets based on metadata\nattached to the endpoints. Routes may then specify the metadata that a endpoint must match in\norder to be selected by the load balancer.\n\nEndpoint_subsets is list of subsets for this cluster. Each entry in this list has definition for a subset\n(which is collection of keys)\n\nDuring routing, the route’s metadata match configuration is used to find a specific subset.\nIf there is a subset with the exact keys and values specified by the route, the subset is used\nfor load balancing. Otherwise, the fallback policy is used. The cluster’s subset configuration must,\ntherefore, contain a definition that has the same keys as a given route in order for subset load\nbalancing to occur.\n\nExample:\n\nRouteConfig\n\nroutes:\n- match:\n - headers: []\npath:\npath: /1.log\nquery_params: []\nrouteDestination:\ndestinations:\n - cluster:\n - kind: cluster.object\nuid: 00000000-0000-4000-8000-0b50b89d07a2\nendpointSubsets:\nsite: india\n\nEndpointConfig\n\nmetadata:\nlabels:\ndeployment: debug\nsite: india\nname: end-1\nuid: end-1\n\nClusterConfig\n\ngcSpec:\ndefaultSubset:\nstage: production\nfallbackPolicy: DEFAULT_SUBSET\nendpointSubsets:\n - keys:\n - site\n - keys:\n - stage\n - app\n\nAssume the below endpoints are defined and associated with the cluster.\n\nEndpoint Labels\n-------- ------\n\nep1 stage: production, site: india\nep2 stage: deployment, site: us\nep3 stage: production, app: hr\nep4 site: india\n\nThe following table describes some routes and the result of their application\nto the cluster. The subset definition for cluster is assumed to be same as given\nabove in the ClusterConfig section\n\nRouteMatch Criteria Subset Reason\n------------------- ------ ------\n\nsite: india ep1, ep4 Subset of endpoints selected\nsite: us ep2 Subset of endpoints selected\napp: hr ep1, ep3 Fallback: No subset selector for \"app\" alone\nstage: production, app: hr ep3 Subset of endpoints selected\nother: x ep1, ep3 Fallback: No subset selector for “other”\n(none) ep1, ep3 Fallback: No subset requested.",
+              "description": "Cluster may be configured to divide its endpoints into subsets based on metadata\nattached to the endpoints. Routes may then specify the metadata that a endpoint must match in\norder to be selected by the load balancer.\n\nEndpoint_subsets is list of subsets for this cluster. Each entry in this list has definition for a subset\n(which is collection of keys)\n\nDuring routing, the route\u2019s metadata match configuration is used to find a specific subset.\nIf there is a subset with the exact keys and values specified by the route, the subset is used\nfor load balancing. Otherwise, the fallback policy is used. The cluster\u2019s subset configuration must,\ntherefore, contain a definition that has the same keys as a given route in order for subset load\nbalancing to occur.\n\nExample:\n\nRouteConfig\n\nroutes:\n- match:\n - headers: []\npath:\npath: /1.log\nquery_params: []\nrouteDestination:\ndestinations:\n - cluster:\n - kind: cluster.object\nuid: 00000000-0000-4000-8000-0b50b89d07a2\nendpointSubsets:\nsite: india\n\nEndpointConfig\n\nmetadata:\nlabels:\ndeployment: debug\nsite: india\nname: end-1\nuid: end-1\n\nClusterConfig\n\ngcSpec:\ndefaultSubset:\nstage: production\nfallbackPolicy: DEFAULT_SUBSET\nendpointSubsets:\n - keys:\n - site\n - keys:\n - stage\n - app\n\nAssume the below endpoints are defined and associated with the cluster.\n\nEndpoint Labels\n-------- ------\n\nep1 stage: production, site: india\nep2 stage: deployment, site: us\nep3 stage: production, app: hr\nep4 site: india\n\nThe following table describes some routes and the result of their application\nto the cluster. The subset definition for cluster is assumed to be same as given\nabove in the ClusterConfig section\n\nRouteMatch Criteria Subset Reason\n------------------- ------ ------\n\nsite: india ep1, ep4 Subset of endpoints selected\nsite: us ep2 Subset of endpoints selected\napp: hr ep1, ep3 Fallback: No subset selector for \"app\" alone\nstage: production, app: hr ep3 Subset of endpoints selected\nother: x ep1, ep3 Fallback: No subset selector for \u201cother\u201d\n(none) ep1, ep3 Fallback: No subset requested.",
               "constraints": {
                 "constraintType": "array",
                 "category": "discovery",
@@ -74786,7 +74786,7 @@
             },
             "spec.loadbalancer_algorithm": {
               "type": "string",
-              "description": "Different load balancing algorithms supported\nWhen a connection to a endpoint in an upstream cluster is required, the load balancer uses loadbalancer_algorithm\nto determine which host is selected.\n\n- ROUND_ROBIN: ROUND_ROBIN\n\nPolicy in which each healthy/available upstream endpoint is selected in round robin order.\n- LEAST_REQUEST: LEAST_REQUEST\n\nPolicy in which loadbalancer picks the upstream endpoint which has the fewest active requests\n- RING_HASH: RING_HASH\n\nPolicy implements consistent hashing to upstream endpoints using ring hash of endpoint names\nHash of the incoming request is calculated using request hash policy.\nThe ring/modulo hash load balancer implements consistent hashing to upstream hosts.\nThe algorithm is based on mapping all hosts onto a circle such that the addition or\nremoval of a host from the host set changes only affect 1/N requests. This technique\nis also commonly known as “ketama” hashing. A consistent hashing load balancer is only\neffective when protocol routing is used that specifies a value to hash on. The minimum\nring size governs the replication factor for each host in the ring. For example, if the\nminimum ring size is 1024 and there are 16 hosts, each host will be replicated 64 times.\n- RANDOM: RANDOM\n\nPolicy in which each available upstream endpoint is selected in random order.\nThe random load balancer selects a random healthy host. The random load balancer generally\nperforms better than round robin if no health checking policy is configured. Random selection\navoids bias towards the host in the set that comes after a failed host.\n- LB_OVERRIDE: Load Balancer Override\n\nHash policy is taken from from the load balancer which is using this origin pool.",
+              "description": "Different load balancing algorithms supported\nWhen a connection to a endpoint in an upstream cluster is required, the load balancer uses loadbalancer_algorithm\nto determine which host is selected.\n\n- ROUND_ROBIN: ROUND_ROBIN\n\nPolicy in which each healthy/available upstream endpoint is selected in round robin order.\n- LEAST_REQUEST: LEAST_REQUEST\n\nPolicy in which loadbalancer picks the upstream endpoint which has the fewest active requests\n- RING_HASH: RING_HASH\n\nPolicy implements consistent hashing to upstream endpoints using ring hash of endpoint names\nHash of the incoming request is calculated using request hash policy.\nThe ring/modulo hash load balancer implements consistent hashing to upstream hosts.\nThe algorithm is based on mapping all hosts onto a circle such that the addition or\nremoval of a host from the host set changes only affect 1/N requests. This technique\nis also commonly known as \u201cketama\u201d hashing. A consistent hashing load balancer is only\neffective when protocol routing is used that specifies a value to hash on. The minimum\nring size governs the replication factor for each host in the ring. For example, if the\nminimum ring size is 1024 and there are 16 hosts, each host will be replicated 64 times.\n- RANDOM: RANDOM\n\nPolicy in which each available upstream endpoint is selected in random order.\nThe random load balancer selects a random healthy host. The random load balancer generally\nperforms better than round robin if no health checking policy is configured. Random selection\navoids bias towards the host in the set that comes after a failed host.\n- LB_OVERRIDE: Load Balancer Override\n\nHash policy is taken from from the load balancer which is using this origin pool.",
               "required_for": {
                 "minimum_config": false,
                 "create": false,
@@ -74869,7 +74869,7 @@
             },
             "spec.outlier_detection.consecutive_5xx": {
               "type": "integer",
-              "description": "If an upstream endpoint returns some number of consecutive 5xx, it will be ejected.\nNote that in this case a 5xx means an actual 5xx respond code, or an event that would\ncause the HTTP router to return one on the upstream’s behalf(reset, connection failure, etc.)\nconsecutive_5xx indicates the number of consecutive 5xx responses required before\na consecutive 5xx ejection occurs. Defaults to 5.",
+              "description": "If an upstream endpoint returns some number of consecutive 5xx, it will be ejected.\nNote that in this case a 5xx means an actual 5xx respond code, or an event that would\ncause the HTTP router to return one on the upstream\u2019s behalf(reset, connection failure, etc.)\nconsecutive_5xx indicates the number of consecutive 5xx responses required before\na consecutive 5xx ejection occurs. Defaults to 5.",
               "constraints": {
                 "constraintType": "number",
                 "category": "discovery",
@@ -74890,7 +74890,7 @@
             },
             "spec.outlier_detection.consecutive_gateway_failure": {
               "type": "integer",
-              "description": "If an upstream endpoint returns some number of consecutive “gateway errors”\n(502, 503 or 504 status code), it will be ejected. Note that this includes events\nthat would cause the HTTP router to return one of these status codes on the\nupstream’s behalf (reset, connection failure, etc.).\nConsecutive_gateway_failure indicates the number of consecutive gateway failures\nbefore a consecutive gateway failure ejection occurs. Defaults to 5.",
+              "description": "If an upstream endpoint returns some number of consecutive \u201cgateway errors\u201d\n(502, 503 or 504 status code), it will be ejected. Note that this includes events\nthat would cause the HTTP router to return one of these status codes on the\nupstream\u2019s behalf (reset, connection failure, etc.).\nConsecutive_gateway_failure indicates the number of consecutive gateway failures\nbefore a consecutive gateway failure ejection occurs. Defaults to 5.",
               "constraints": {
                 "constraintType": "number",
                 "category": "discovery",
@@ -75160,7 +75160,6 @@
             ],
             "spec.http1_config.header_transformation.header_transformation_choice": [
               "default_header_transformation",
-              "legacy_header_transformation",
               "preserve_case_header_transformation",
               "proper_case_header_transformation"
             ],
@@ -75503,7 +75502,7 @@
             },
             "spec.circuit_breaker.pending_requests": {
               "type": "integer",
-              "description": "The maximum number of requests that will be queued while waiting for a ready connection pool connection.\nSince HTTP/2 requests are sent over a single connection, this circuit breaker only comes into play as the\ninitial connection is created, as requests will be multiplexed immediately afterwards. For HTTP/1.1, requests\nare added to the list of pending requests whenever there aren’t enough upstream connections available to\nimmediately dispatch the request, so this circuit breaker will remain in play for the lifetime of the process.\nRemove endpoint out of load balancing decision, if pending request reach pending_request.",
+              "description": "The maximum number of requests that will be queued while waiting for a ready connection pool connection.\nSince HTTP/2 requests are sent over a single connection, this circuit breaker only comes into play as the\ninitial connection is created, as requests will be multiplexed immediately afterwards. For HTTP/1.1, requests\nare added to the list of pending requests whenever there aren\u2019t enough upstream connections available to\nimmediately dispatch the request, so this circuit breaker will remain in play for the lifetime of the process.\nRemove endpoint out of load balancing decision, if pending request reach pending_request.",
               "constraints": {
                 "constraintType": "number",
                 "category": "discovery",
@@ -75610,7 +75609,7 @@
             },
             "spec.endpoint_subsets": {
               "type": "array",
-              "description": "Cluster may be configured to divide its endpoints into subsets based on metadata\nattached to the endpoints. Routes may then specify the metadata that a endpoint must match in\norder to be selected by the load balancer.\n\nEndpoint_subsets is list of subsets for this cluster. Each entry in this list has definition for a subset\n(which is collection of keys)\n\nDuring routing, the route’s metadata match configuration is used to find a specific subset.\nIf there is a subset with the exact keys and values specified by the route, the subset is used\nfor load balancing. Otherwise, the fallback policy is used. The cluster’s subset configuration must,\ntherefore, contain a definition that has the same keys as a given route in order for subset load\nbalancing to occur.\n\nExample:\n\nRouteConfig\n\nroutes:\n- match:\n - headers: []\npath:\npath: /1.log\nquery_params: []\nrouteDestination:\ndestinations:\n - cluster:\n - kind: cluster.object\nuid: 00000000-0000-4000-8000-0b50b89d07a2\nendpointSubsets:\nsite: india\n\nEndpointConfig\n\nmetadata:\nlabels:\ndeployment: debug\nsite: india\nname: end-1\nuid: end-1\n\nClusterConfig\n\ngcSpec:\ndefaultSubset:\nstage: production\nfallbackPolicy: DEFAULT_SUBSET\nendpointSubsets:\n - keys:\n - site\n - keys:\n - stage\n - app\n\nAssume the below endpoints are defined and associated with the cluster.\n\nEndpoint Labels\n-------- ------\n\nep1 stage: production, site: india\nep2 stage: deployment, site: us\nep3 stage: production, app: hr\nep4 site: india\n\nThe following table describes some routes and the result of their application\nto the cluster. The subset definition for cluster is assumed to be same as given\nabove in the ClusterConfig section\n\nRouteMatch Criteria Subset Reason\n------------------- ------ ------\n\nsite: india ep1, ep4 Subset of endpoints selected\nsite: us ep2 Subset of endpoints selected\napp: hr ep1, ep3 Fallback: No subset selector for \"app\" alone\nstage: production, app: hr ep3 Subset of endpoints selected\nother: x ep1, ep3 Fallback: No subset selector for “other”\n(none) ep1, ep3 Fallback: No subset requested.",
+              "description": "Cluster may be configured to divide its endpoints into subsets based on metadata\nattached to the endpoints. Routes may then specify the metadata that a endpoint must match in\norder to be selected by the load balancer.\n\nEndpoint_subsets is list of subsets for this cluster. Each entry in this list has definition for a subset\n(which is collection of keys)\n\nDuring routing, the route\u2019s metadata match configuration is used to find a specific subset.\nIf there is a subset with the exact keys and values specified by the route, the subset is used\nfor load balancing. Otherwise, the fallback policy is used. The cluster\u2019s subset configuration must,\ntherefore, contain a definition that has the same keys as a given route in order for subset load\nbalancing to occur.\n\nExample:\n\nRouteConfig\n\nroutes:\n- match:\n - headers: []\npath:\npath: /1.log\nquery_params: []\nrouteDestination:\ndestinations:\n - cluster:\n - kind: cluster.object\nuid: 00000000-0000-4000-8000-0b50b89d07a2\nendpointSubsets:\nsite: india\n\nEndpointConfig\n\nmetadata:\nlabels:\ndeployment: debug\nsite: india\nname: end-1\nuid: end-1\n\nClusterConfig\n\ngcSpec:\ndefaultSubset:\nstage: production\nfallbackPolicy: DEFAULT_SUBSET\nendpointSubsets:\n - keys:\n - site\n - keys:\n - stage\n - app\n\nAssume the below endpoints are defined and associated with the cluster.\n\nEndpoint Labels\n-------- ------\n\nep1 stage: production, site: india\nep2 stage: deployment, site: us\nep3 stage: production, app: hr\nep4 site: india\n\nThe following table describes some routes and the result of their application\nto the cluster. The subset definition for cluster is assumed to be same as given\nabove in the ClusterConfig section\n\nRouteMatch Criteria Subset Reason\n------------------- ------ ------\n\nsite: india ep1, ep4 Subset of endpoints selected\nsite: us ep2 Subset of endpoints selected\napp: hr ep1, ep3 Fallback: No subset selector for \"app\" alone\nstage: production, app: hr ep3 Subset of endpoints selected\nother: x ep1, ep3 Fallback: No subset selector for \u201cother\u201d\n(none) ep1, ep3 Fallback: No subset requested.",
               "constraints": {
                 "constraintType": "array",
                 "category": "discovery",
@@ -75747,7 +75746,7 @@
             },
             "spec.loadbalancer_algorithm": {
               "type": "string",
-              "description": "Different load balancing algorithms supported\nWhen a connection to a endpoint in an upstream cluster is required, the load balancer uses loadbalancer_algorithm\nto determine which host is selected.\n\n- ROUND_ROBIN: ROUND_ROBIN\n\nPolicy in which each healthy/available upstream endpoint is selected in round robin order.\n- LEAST_REQUEST: LEAST_REQUEST\n\nPolicy in which loadbalancer picks the upstream endpoint which has the fewest active requests\n- RING_HASH: RING_HASH\n\nPolicy implements consistent hashing to upstream endpoints using ring hash of endpoint names\nHash of the incoming request is calculated using request hash policy.\nThe ring/modulo hash load balancer implements consistent hashing to upstream hosts.\nThe algorithm is based on mapping all hosts onto a circle such that the addition or\nremoval of a host from the host set changes only affect 1/N requests. This technique\nis also commonly known as “ketama” hashing. A consistent hashing load balancer is only\neffective when protocol routing is used that specifies a value to hash on. The minimum\nring size governs the replication factor for each host in the ring. For example, if the\nminimum ring size is 1024 and there are 16 hosts, each host will be replicated 64 times.\n- RANDOM: RANDOM\n\nPolicy in which each available upstream endpoint is selected in random order.\nThe random load balancer selects a random healthy host. The random load balancer generally\nperforms better than round robin if no health checking policy is configured. Random selection\navoids bias towards the host in the set that comes after a failed host.\n- LB_OVERRIDE: Load Balancer Override\n\nHash policy is taken from from the load balancer which is using this origin pool.",
+              "description": "Different load balancing algorithms supported\nWhen a connection to a endpoint in an upstream cluster is required, the load balancer uses loadbalancer_algorithm\nto determine which host is selected.\n\n- ROUND_ROBIN: ROUND_ROBIN\n\nPolicy in which each healthy/available upstream endpoint is selected in round robin order.\n- LEAST_REQUEST: LEAST_REQUEST\n\nPolicy in which loadbalancer picks the upstream endpoint which has the fewest active requests\n- RING_HASH: RING_HASH\n\nPolicy implements consistent hashing to upstream endpoints using ring hash of endpoint names\nHash of the incoming request is calculated using request hash policy.\nThe ring/modulo hash load balancer implements consistent hashing to upstream hosts.\nThe algorithm is based on mapping all hosts onto a circle such that the addition or\nremoval of a host from the host set changes only affect 1/N requests. This technique\nis also commonly known as \u201cketama\u201d hashing. A consistent hashing load balancer is only\neffective when protocol routing is used that specifies a value to hash on. The minimum\nring size governs the replication factor for each host in the ring. For example, if the\nminimum ring size is 1024 and there are 16 hosts, each host will be replicated 64 times.\n- RANDOM: RANDOM\n\nPolicy in which each available upstream endpoint is selected in random order.\nThe random load balancer selects a random healthy host. The random load balancer generally\nperforms better than round robin if no health checking policy is configured. Random selection\navoids bias towards the host in the set that comes after a failed host.\n- LB_OVERRIDE: Load Balancer Override\n\nHash policy is taken from from the load balancer which is using this origin pool.",
               "required_for": {
                 "minimum_config": false,
                 "create": false,
@@ -75830,7 +75829,7 @@
             },
             "spec.outlier_detection.consecutive_5xx": {
               "type": "integer",
-              "description": "If an upstream endpoint returns some number of consecutive 5xx, it will be ejected.\nNote that in this case a 5xx means an actual 5xx respond code, or an event that would\ncause the HTTP router to return one on the upstream’s behalf(reset, connection failure, etc.)\nconsecutive_5xx indicates the number of consecutive 5xx responses required before\na consecutive 5xx ejection occurs. Defaults to 5.",
+              "description": "If an upstream endpoint returns some number of consecutive 5xx, it will be ejected.\nNote that in this case a 5xx means an actual 5xx respond code, or an event that would\ncause the HTTP router to return one on the upstream\u2019s behalf(reset, connection failure, etc.)\nconsecutive_5xx indicates the number of consecutive 5xx responses required before\na consecutive 5xx ejection occurs. Defaults to 5.",
               "constraints": {
                 "constraintType": "number",
                 "category": "discovery",
@@ -75851,7 +75850,7 @@
             },
             "spec.outlier_detection.consecutive_gateway_failure": {
               "type": "integer",
-              "description": "If an upstream endpoint returns some number of consecutive “gateway errors”\n(502, 503 or 504 status code), it will be ejected. Note that this includes events\nthat would cause the HTTP router to return one of these status codes on the\nupstream’s behalf (reset, connection failure, etc.).\nConsecutive_gateway_failure indicates the number of consecutive gateway failures\nbefore a consecutive gateway failure ejection occurs. Defaults to 5.",
+              "description": "If an upstream endpoint returns some number of consecutive \u201cgateway errors\u201d\n(502, 503 or 504 status code), it will be ejected. Note that this includes events\nthat would cause the HTTP router to return one of these status codes on the\nupstream\u2019s behalf (reset, connection failure, etc.).\nConsecutive_gateway_failure indicates the number of consecutive gateway failures\nbefore a consecutive gateway failure ejection occurs. Defaults to 5.",
               "constraints": {
                 "constraintType": "number",
                 "category": "discovery",
@@ -76121,7 +76120,6 @@
             ],
             "spec.http1_config.header_transformation.header_transformation_choice": [
               "default_header_transformation",
-              "legacy_header_transformation",
               "preserve_case_header_transformation",
               "proper_case_header_transformation"
             ],
@@ -113147,7 +113145,7 @@
             },
             "spec.health_check_port": {
               "type": "integer",
-              "description": "By default the health check port of an endpoint is the same as the endpoint’s port. This option provides an alternative health check port.\nSetting this with a non-zero value allows an endpoint to have different health check port.",
+              "description": "By default the health check port of an endpoint is the same as the endpoint\u2019s port. This option provides an alternative health check port.\nSetting this with a non-zero value allows an endpoint to have different health check port.",
               "constraints": {
                 "constraintType": "number",
                 "category": "discovery",
@@ -113746,7 +113744,7 @@
             },
             "spec.health_check_port": {
               "type": "integer",
-              "description": "By default the health check port of an endpoint is the same as the endpoint’s port. This option provides an alternative health check port.\nSetting this with a non-zero value allows an endpoint to have different health check port.",
+              "description": "By default the health check port of an endpoint is the same as the endpoint\u2019s port. This option provides an alternative health check port.\nSetting this with a non-zero value allows an endpoint to have different health check port.",
               "constraints": {
                 "constraintType": "number",
                 "category": "discovery",
@@ -140172,7 +140170,7 @@
                   "source": "api-probed",
                   "confidence": 0.99,
                   "category": "timing",
-                  "note": "Non-contiguous: {0} union [10, 50] — values 1-9 rejected by API",
+                  "note": "Non-contiguous: {0} union [10, 50] \u2014 values 1-9 rejected by API",
                   "validatedAt": "2026-08-20T09:12:47+00:00"
                 }
               },
@@ -140817,7 +140815,7 @@
                   "source": "api-probed",
                   "confidence": 0.99,
                   "category": "timing",
-                  "note": "Non-contiguous: {0} union [10, 50] — values 1-9 rejected by API",
+                  "note": "Non-contiguous: {0} union [10, 50] \u2014 values 1-9 rejected by API",
                   "validatedAt": "2026-08-20T09:12:47+00:00"
                 }
               },
@@ -143139,7 +143137,7 @@
             },
             "spec.api_rate_limit.api_endpoint_rules": {
               "type": "array",
-              "description": "Sets of rules for a specific endpoints.\nOrder is matter as it uses first match policy.\nFor creating rule that contain a whole domain or group of endpoints, please use the server URL rules above.",
+              "description": "Ordered endpoint-specific rate-limit rules. Each rule must choose exactly one rate_limiter_choice: inline_rate_limiter or ref_rate_limiter.",
               "constraints": {
                 "constraintType": "array",
                 "category": "discovery",
@@ -143200,7 +143198,7 @@
             },
             "spec.api_rate_limit.server_url_rules": {
               "type": "array",
-              "description": "Set of rules for entire domain or base path that contain multiple endpoints.\nOrder is matter as it uses first match policy.\nFor matching also specific endpoints you can use the API endpoint rules set below.",
+              "description": "Ordered domain or base-path rules for path-scoped rate limiting. Each rule must choose exactly one rate_limiter_choice: inline_rate_limiter or ref_rate_limiter.",
               "constraints": {
                 "constraintType": "array",
                 "category": "discovery",
@@ -144232,7 +144230,7 @@
             },
             "spec.default_pool.loadbalancer_algorithm": {
               "type": "string",
-              "description": "Different load balancing algorithms supported\nWhen a connection to a endpoint in an upstream cluster is required, the load balancer uses loadbalancer_algorithm\nto determine which host is selected.\n\n- ROUND_ROBIN: ROUND_ROBIN\n\nPolicy in which each healthy/available upstream endpoint is selected in round robin order.\n- LEAST_REQUEST: LEAST_REQUEST\n\nPolicy in which loadbalancer picks the upstream endpoint which has the fewest active requests\n- RING_HASH: RING_HASH\n\nPolicy implements consistent hashing to upstream endpoints using ring hash of endpoint names\nHash of the incoming request is calculated using request hash policy.\nThe ring/modulo hash load balancer implements consistent hashing to upstream hosts.\nThe algorithm is based on mapping all hosts onto a circle such that the addition or\nremoval of a host from the host set changes only affect 1/N requests. This technique\nis also commonly known as “ketama” hashing. A consistent hashing load balancer is only\neffective when protocol routing is used that specifies a value to hash on. The minimum\nring size governs the replication factor for each host in the ring. For example, if the\nminimum ring size is 1024 and there are 16 hosts, each host will be replicated 64 times.\n- RANDOM: RANDOM\n\nPolicy in which each available upstream endpoint is selected in random order.\nThe random load balancer selects a random healthy host. The random load balancer generally\nperforms better than round robin if no health checking policy is configured. Random selection\navoids bias towards the host in the set that comes after a failed host.\n- LB_OVERRIDE: Load Balancer Override\n\nHash policy is taken from from the load balancer which is using this origin pool.",
+              "description": "Different load balancing algorithms supported\nWhen a connection to a endpoint in an upstream cluster is required, the load balancer uses loadbalancer_algorithm\nto determine which host is selected.\n\n- ROUND_ROBIN: ROUND_ROBIN\n\nPolicy in which each healthy/available upstream endpoint is selected in round robin order.\n- LEAST_REQUEST: LEAST_REQUEST\n\nPolicy in which loadbalancer picks the upstream endpoint which has the fewest active requests\n- RING_HASH: RING_HASH\n\nPolicy implements consistent hashing to upstream endpoints using ring hash of endpoint names\nHash of the incoming request is calculated using request hash policy.\nThe ring/modulo hash load balancer implements consistent hashing to upstream hosts.\nThe algorithm is based on mapping all hosts onto a circle such that the addition or\nremoval of a host from the host set changes only affect 1/N requests. This technique\nis also commonly known as \u201cketama\u201d hashing. A consistent hashing load balancer is only\neffective when protocol routing is used that specifies a value to hash on. The minimum\nring size governs the replication factor for each host in the ring. For example, if the\nminimum ring size is 1024 and there are 16 hosts, each host will be replicated 64 times.\n- RANDOM: RANDOM\n\nPolicy in which each available upstream endpoint is selected in random order.\nThe random load balancer selects a random healthy host. The random load balancer generally\nperforms better than round robin if no health checking policy is configured. Random selection\navoids bias towards the host in the set that comes after a failed host.\n- LB_OVERRIDE: Load Balancer Override\n\nHash policy is taken from from the load balancer which is using this origin pool.",
               "required_for": {
                 "minimum_config": false,
                 "create": false,
@@ -144907,7 +144905,7 @@
             },
             "spec.https.append_server_name": {
               "type": "string",
-              "description": "Exclusive with [default_header pass_through server_name]\nDefine the header value for the header name “server”.\nIf header value is already present, it is not overwritten and passed as-is.",
+              "description": "Exclusive with [default_header pass_through server_name]\nDefine the header value for the header name \u201cserver\u201d.\nIf header value is already present, it is not overwritten and passed as-is.",
               "constraints": {
                 "constraintType": "string",
                 "category": "discovery",
@@ -145084,7 +145082,7 @@
             },
             "spec.https.server_name": {
               "type": "string",
-              "description": "Exclusive with [append_server_name default_header pass_through]\nDefine the header value for the header name “server”.\nThis will overwrite existing values, if any, for the server header.",
+              "description": "Exclusive with [append_server_name default_header pass_through]\nDefine the header value for the header name \u201cserver\u201d.\nThis will overwrite existing values, if any, for the server header.",
               "constraints": {
                 "constraintType": "string",
                 "category": "discovery",
@@ -145145,7 +145143,7 @@
             },
             "spec.https_auto_cert.append_server_name": {
               "type": "string",
-              "description": "Exclusive with [default_header pass_through server_name]\nDefine the header value for the header name “server”.\nIf header value is already present, it is not overwritten and passed as-is.",
+              "description": "Exclusive with [default_header pass_through server_name]\nDefine the header value for the header name \u201cserver\u201d.\nIf header value is already present, it is not overwritten and passed as-is.",
               "constraints": {
                 "constraintType": "string",
                 "category": "discovery",
@@ -145332,7 +145330,7 @@
             },
             "spec.https_auto_cert.server_name": {
               "type": "string",
-              "description": "Exclusive with [append_server_name default_header pass_through]\nDefine the header value for the header name “server”.\nThis will overwrite existing values, if any, for the server header.",
+              "description": "Exclusive with [append_server_name default_header pass_through]\nDefine the header value for the header name \u201cserver\u201d.\nThis will overwrite existing values, if any, for the server header.",
               "constraints": {
                 "constraintType": "string",
                 "category": "discovery",
@@ -145809,7 +145807,7 @@
             },
             "spec.more_option.compression_params": {
               "type": "object",
-              "description": "Enables loadbalancer to compress dispatched data from an upstream service upon client request.\nThe content is compressed and then sent to the client with the appropriate headers if either response and request allow.\nOnly GZIP compression is supported.\n\nBy default compression will be skipped when:\n\nA request does NOT contain accept-encoding header.\nA request includes accept-encoding header, but it does not contain “gzip” or “*”.\nA request includes accept-encoding with “gzip” or “*” with the weight “q=0”. Note that the “gzip” will have a higher weight then “*”. For example, if accept-encoding is “gzip;q=0,*;q=1”, the filter will not compress. But if the header is set to “*;q=0,gzip;q=1”, the filter will compress.\nA request whose accept-encoding header includes “identity”.\nA response contains a content-encoding header.\nA response contains a cache-control header whose value includes “no-transform”.\nA response contains a transfer-encoding header whose value includes “gzip”.\nA response does not contain a content-type value that matches one of the selected mime-types, which default to application/javascript, application/JSON, application/xhtml+XML, image/svg+XML, text/CSS, text/HTML, text/plain, text/XML.\nNeither content-length nor transfer-encoding headers are present in the response.\nResponse size is smaller than 30 bytes (only applicable when transfer-encoding is not chunked).\n\nWhen compression is applied:\n\nThe content-length is removed from response headers.\nResponse headers contain “transfer-encoding: chunked” and do not contain “content-encoding” header.\nThe “vary: accept-encoding” header is inserted on every response.\n\nGZIP Compression Level:\n\nA value which is optimal balance between speed of compression and amount of compression is chosen.",
+              "description": "Enables loadbalancer to compress dispatched data from an upstream service upon client request.\nThe content is compressed and then sent to the client with the appropriate headers if either response and request allow.\nOnly GZIP compression is supported.\n\nBy default compression will be skipped when:\n\nA request does NOT contain accept-encoding header.\nA request includes accept-encoding header, but it does not contain \u201cgzip\u201d or \u201c*\u201d.\nA request includes accept-encoding with \u201cgzip\u201d or \u201c*\u201d with the weight \u201cq=0\u201d. Note that the \u201cgzip\u201d will have a higher weight then \u201c*\u201d. For example, if accept-encoding is \u201cgzip;q=0,*;q=1\u201d, the filter will not compress. But if the header is set to \u201c*;q=0,gzip;q=1\u201d, the filter will compress.\nA request whose accept-encoding header includes \u201cidentity\u201d.\nA response contains a content-encoding header.\nA response contains a cache-control header whose value includes \u201cno-transform\u201d.\nA response contains a transfer-encoding header whose value includes \u201cgzip\u201d.\nA response does not contain a content-type value that matches one of the selected mime-types, which default to application/javascript, application/JSON, application/xhtml+XML, image/svg+XML, text/CSS, text/HTML, text/plain, text/XML.\nNeither content-length nor transfer-encoding headers are present in the response.\nResponse size is smaller than 30 bytes (only applicable when transfer-encoding is not chunked).\n\nWhen compression is applied:\n\nThe content-length is removed from response headers.\nResponse headers contain \u201ctransfer-encoding: chunked\u201d and do not contain \u201ccontent-encoding\u201d header.\nThe \u201cvary: accept-encoding\u201d header is inserted on every response.\n\nGZIP Compression Level:\n\nA value which is optimal balance between speed of compression and amount of compression is chosen.",
               "required_for": {
                 "minimum_config": false,
                 "create": false,
@@ -148006,7 +148004,7 @@
             },
             "spec.api_rate_limit.api_endpoint_rules": {
               "type": "array",
-              "description": "Sets of rules for a specific endpoints.\nOrder is matter as it uses first match policy.\nFor creating rule that contain a whole domain or group of endpoints, please use the server URL rules above.",
+              "description": "Ordered endpoint-specific rate-limit rules. Each rule must choose exactly one rate_limiter_choice: inline_rate_limiter or ref_rate_limiter.",
               "constraints": {
                 "constraintType": "array",
                 "category": "discovery",
@@ -148067,7 +148065,7 @@
             },
             "spec.api_rate_limit.server_url_rules": {
               "type": "array",
-              "description": "Set of rules for entire domain or base path that contain multiple endpoints.\nOrder is matter as it uses first match policy.\nFor matching also specific endpoints you can use the API endpoint rules set below.",
+              "description": "Ordered domain or base-path rules for path-scoped rate limiting. Each rule must choose exactly one rate_limiter_choice: inline_rate_limiter or ref_rate_limiter.",
               "constraints": {
                 "constraintType": "array",
                 "category": "discovery",
@@ -149099,7 +149097,7 @@
             },
             "spec.default_pool.loadbalancer_algorithm": {
               "type": "string",
-              "description": "Different load balancing algorithms supported\nWhen a connection to a endpoint in an upstream cluster is required, the load balancer uses loadbalancer_algorithm\nto determine which host is selected.\n\n- ROUND_ROBIN: ROUND_ROBIN\n\nPolicy in which each healthy/available upstream endpoint is selected in round robin order.\n- LEAST_REQUEST: LEAST_REQUEST\n\nPolicy in which loadbalancer picks the upstream endpoint which has the fewest active requests\n- RING_HASH: RING_HASH\n\nPolicy implements consistent hashing to upstream endpoints using ring hash of endpoint names\nHash of the incoming request is calculated using request hash policy.\nThe ring/modulo hash load balancer implements consistent hashing to upstream hosts.\nThe algorithm is based on mapping all hosts onto a circle such that the addition or\nremoval of a host from the host set changes only affect 1/N requests. This technique\nis also commonly known as “ketama” hashing. A consistent hashing load balancer is only\neffective when protocol routing is used that specifies a value to hash on. The minimum\nring size governs the replication factor for each host in the ring. For example, if the\nminimum ring size is 1024 and there are 16 hosts, each host will be replicated 64 times.\n- RANDOM: RANDOM\n\nPolicy in which each available upstream endpoint is selected in random order.\nThe random load balancer selects a random healthy host. The random load balancer generally\nperforms better than round robin if no health checking policy is configured. Random selection\navoids bias towards the host in the set that comes after a failed host.\n- LB_OVERRIDE: Load Balancer Override\n\nHash policy is taken from from the load balancer which is using this origin pool.",
+              "description": "Different load balancing algorithms supported\nWhen a connection to a endpoint in an upstream cluster is required, the load balancer uses loadbalancer_algorithm\nto determine which host is selected.\n\n- ROUND_ROBIN: ROUND_ROBIN\n\nPolicy in which each healthy/available upstream endpoint is selected in round robin order.\n- LEAST_REQUEST: LEAST_REQUEST\n\nPolicy in which loadbalancer picks the upstream endpoint which has the fewest active requests\n- RING_HASH: RING_HASH\n\nPolicy implements consistent hashing to upstream endpoints using ring hash of endpoint names\nHash of the incoming request is calculated using request hash policy.\nThe ring/modulo hash load balancer implements consistent hashing to upstream hosts.\nThe algorithm is based on mapping all hosts onto a circle such that the addition or\nremoval of a host from the host set changes only affect 1/N requests. This technique\nis also commonly known as \u201cketama\u201d hashing. A consistent hashing load balancer is only\neffective when protocol routing is used that specifies a value to hash on. The minimum\nring size governs the replication factor for each host in the ring. For example, if the\nminimum ring size is 1024 and there are 16 hosts, each host will be replicated 64 times.\n- RANDOM: RANDOM\n\nPolicy in which each available upstream endpoint is selected in random order.\nThe random load balancer selects a random healthy host. The random load balancer generally\nperforms better than round robin if no health checking policy is configured. Random selection\navoids bias towards the host in the set that comes after a failed host.\n- LB_OVERRIDE: Load Balancer Override\n\nHash policy is taken from from the load balancer which is using this origin pool.",
               "required_for": {
                 "minimum_config": false,
                 "create": false,
@@ -149774,7 +149772,7 @@
             },
             "spec.https.append_server_name": {
               "type": "string",
-              "description": "Exclusive with [default_header pass_through server_name]\nDefine the header value for the header name “server”.\nIf header value is already present, it is not overwritten and passed as-is.",
+              "description": "Exclusive with [default_header pass_through server_name]\nDefine the header value for the header name \u201cserver\u201d.\nIf header value is already present, it is not overwritten and passed as-is.",
               "constraints": {
                 "constraintType": "string",
                 "category": "discovery",
@@ -149951,7 +149949,7 @@
             },
             "spec.https.server_name": {
               "type": "string",
-              "description": "Exclusive with [append_server_name default_header pass_through]\nDefine the header value for the header name “server”.\nThis will overwrite existing values, if any, for the server header.",
+              "description": "Exclusive with [append_server_name default_header pass_through]\nDefine the header value for the header name \u201cserver\u201d.\nThis will overwrite existing values, if any, for the server header.",
               "constraints": {
                 "constraintType": "string",
                 "category": "discovery",
@@ -150012,7 +150010,7 @@
             },
             "spec.https_auto_cert.append_server_name": {
               "type": "string",
-              "description": "Exclusive with [default_header pass_through server_name]\nDefine the header value for the header name “server”.\nIf header value is already present, it is not overwritten and passed as-is.",
+              "description": "Exclusive with [default_header pass_through server_name]\nDefine the header value for the header name \u201cserver\u201d.\nIf header value is already present, it is not overwritten and passed as-is.",
               "constraints": {
                 "constraintType": "string",
                 "category": "discovery",
@@ -150199,7 +150197,7 @@
             },
             "spec.https_auto_cert.server_name": {
               "type": "string",
-              "description": "Exclusive with [append_server_name default_header pass_through]\nDefine the header value for the header name “server”.\nThis will overwrite existing values, if any, for the server header.",
+              "description": "Exclusive with [append_server_name default_header pass_through]\nDefine the header value for the header name \u201cserver\u201d.\nThis will overwrite existing values, if any, for the server header.",
               "constraints": {
                 "constraintType": "string",
                 "category": "discovery",
@@ -150676,7 +150674,7 @@
             },
             "spec.more_option.compression_params": {
               "type": "object",
-              "description": "Enables loadbalancer to compress dispatched data from an upstream service upon client request.\nThe content is compressed and then sent to the client with the appropriate headers if either response and request allow.\nOnly GZIP compression is supported.\n\nBy default compression will be skipped when:\n\nA request does NOT contain accept-encoding header.\nA request includes accept-encoding header, but it does not contain “gzip” or “*”.\nA request includes accept-encoding with “gzip” or “*” with the weight “q=0”. Note that the “gzip” will have a higher weight then “*”. For example, if accept-encoding is “gzip;q=0,*;q=1”, the filter will not compress. But if the header is set to “*;q=0,gzip;q=1”, the filter will compress.\nA request whose accept-encoding header includes “identity”.\nA response contains a content-encoding header.\nA response contains a cache-control header whose value includes “no-transform”.\nA response contains a transfer-encoding header whose value includes “gzip”.\nA response does not contain a content-type value that matches one of the selected mime-types, which default to application/javascript, application/JSON, application/xhtml+XML, image/svg+XML, text/CSS, text/HTML, text/plain, text/XML.\nNeither content-length nor transfer-encoding headers are present in the response.\nResponse size is smaller than 30 bytes (only applicable when transfer-encoding is not chunked).\n\nWhen compression is applied:\n\nThe content-length is removed from response headers.\nResponse headers contain “transfer-encoding: chunked” and do not contain “content-encoding” header.\nThe “vary: accept-encoding” header is inserted on every response.\n\nGZIP Compression Level:\n\nA value which is optimal balance between speed of compression and amount of compression is chosen.",
+              "description": "Enables loadbalancer to compress dispatched data from an upstream service upon client request.\nThe content is compressed and then sent to the client with the appropriate headers if either response and request allow.\nOnly GZIP compression is supported.\n\nBy default compression will be skipped when:\n\nA request does NOT contain accept-encoding header.\nA request includes accept-encoding header, but it does not contain \u201cgzip\u201d or \u201c*\u201d.\nA request includes accept-encoding with \u201cgzip\u201d or \u201c*\u201d with the weight \u201cq=0\u201d. Note that the \u201cgzip\u201d will have a higher weight then \u201c*\u201d. For example, if accept-encoding is \u201cgzip;q=0,*;q=1\u201d, the filter will not compress. But if the header is set to \u201c*;q=0,gzip;q=1\u201d, the filter will compress.\nA request whose accept-encoding header includes \u201cidentity\u201d.\nA response contains a content-encoding header.\nA response contains a cache-control header whose value includes \u201cno-transform\u201d.\nA response contains a transfer-encoding header whose value includes \u201cgzip\u201d.\nA response does not contain a content-type value that matches one of the selected mime-types, which default to application/javascript, application/JSON, application/xhtml+XML, image/svg+XML, text/CSS, text/HTML, text/plain, text/XML.\nNeither content-length nor transfer-encoding headers are present in the response.\nResponse size is smaller than 30 bytes (only applicable when transfer-encoding is not chunked).\n\nWhen compression is applied:\n\nThe content-length is removed from response headers.\nResponse headers contain \u201ctransfer-encoding: chunked\u201d and do not contain \u201ccontent-encoding\u201d header.\nThe \u201cvary: accept-encoding\u201d header is inserted on every response.\n\nGZIP Compression Level:\n\nA value which is optimal balance between speed of compression and amount of compression is chosen.",
               "required_for": {
                 "minimum_config": false,
                 "create": false,
@@ -192814,248 +192812,6 @@
                 "read": false
               }
             },
-            "spec.legacy_interface": {
-              "type": "object",
-              "description": "Legacy Interface Configuration.",
-              "required_for": {
-                "minimum_config": false,
-                "create": false,
-                "update": false,
-                "read": false
-              }
-            },
-            "spec.legacy_interface.DHCP_server": {
-              "type": "string",
-              "description": "Controls whether or not DHCP server runs on the interface\n\nDHCP server is disabled\nDHCP server is enabled\nEnhanced DHCP server is enabled.",
-              "required_for": {
-                "minimum_config": false,
-                "create": false,
-                "update": false,
-                "read": false
-              },
-              "default": "NETWORK_INTERFACE_DHCP_SERVER_DISABLE"
-            },
-            "spec.legacy_interface.DNS_server": {
-              "type": "object",
-              "description": "Controls how the DNS Server of the Network interface is derived.",
-              "required_for": {
-                "minimum_config": false,
-                "create": false,
-                "update": false,
-                "read": false
-              }
-            },
-            "spec.legacy_interface.address_allocator": {
-              "type": "array",
-              "description": "Reference to an address allocator for the network interface. When set, the allocator is used to\nallocate a subnet for the interface and an address from the subnet is set on the interface.",
-              "constraints": {
-                "constraintType": "array",
-                "category": "discovery",
-                "maxItems": 1,
-                "deterministic": true,
-                "metadata": {
-                  "source": "discovery",
-                  "confidence": 0.99,
-                  "validatedAt": "2026-08-20T09:12:47+00:00"
-                }
-              },
-              "required_for": {
-                "minimum_config": false,
-                "create": false,
-                "update": false,
-                "read": false
-              }
-            },
-            "spec.legacy_interface.default_gateway": {
-              "type": "object",
-              "description": "Controls how the Default Gateway of the Network interface is derived.",
-              "required_for": {
-                "minimum_config": false,
-                "create": false,
-                "update": false,
-                "read": false
-              }
-            },
-            "spec.legacy_interface.device_name": {
-              "type": "string",
-              "description": "Name of the physical network interface device which this network interface represents.",
-              "constraints": {
-                "constraintType": "string",
-                "category": "general",
-                "maxLength": 1024,
-                "metadata": {
-                  "source": "inferred",
-                  "confidence": 0.85,
-                  "validatedAt": "2026-08-20T09:12:47+00:00"
-                }
-              },
-              "required_for": {
-                "minimum_config": true,
-                "create": true,
-                "update": false,
-                "read": false
-              }
-            },
-            "spec.legacy_interface.dhcp_address": {
-              "type": "string",
-              "description": "Controls whether or not DHCP client is enabled on the interface\n\nDHCP client is disabled\nDHCP client is enabled.",
-              "required_for": {
-                "minimum_config": false,
-                "create": false,
-                "update": false,
-                "read": false
-              },
-              "default": "NETWORK_INTERFACE_DHCP_DISABLE"
-            },
-            "spec.legacy_interface.monitor": {
-              "type": "object",
-              "description": "Link Quality Monitoring configuration for a network interface.",
-              "required_for": {
-                "minimum_config": false,
-                "create": false,
-                "update": false,
-                "read": false
-              }
-            },
-            "spec.legacy_interface.monitor_disabled": {
-              "type": "object",
-              "description": "This can be used for messages where no values are needed.",
-              "required_for": {
-                "minimum_config": false,
-                "create": false,
-                "update": false,
-                "read": false
-              }
-            },
-            "spec.legacy_interface.mtu": {
-              "type": "integer",
-              "description": "Maximum Transfer Unit (Max packet length) of the interface\nWhen configured, MTU must be between 512 and 16384.",
-              "constraints": {
-                "constraintType": "number",
-                "category": "discovery",
-                "maximum": 16384,
-                "deterministic": true,
-                "metadata": {
-                  "source": "api-probed",
-                  "confidence": 0.99,
-                  "validatedAt": "2026-08-20T09:12:47+00:00"
-                }
-              },
-              "required_for": {
-                "minimum_config": false,
-                "create": false,
-                "update": false,
-                "read": false
-              }
-            },
-            "spec.legacy_interface.priority": {
-              "type": "integer",
-              "description": "Priority of the network interface when multiple network interfaces are present in the fleet object\nGreater the value, higher the priority.",
-              "constraints": {
-                "constraintType": "number",
-                "category": "discovery",
-                "minimum": 0,
-                "maximum": 255,
-                "multipleOf": 1,
-                "metadata": {
-                  "source": "api-probed",
-                  "confidence": 0.99,
-                  "validatedAt": "2026-08-20T09:12:47+00:00"
-                },
-                "deterministic": true
-              },
-              "required_for": {
-                "minimum_config": false,
-                "create": false,
-                "update": false,
-                "read": false
-              }
-            },
-            "spec.legacy_interface.static_addresses": {
-              "type": "array",
-              "description": "If DHCP server is enabled, configures the subnet to be used for IP allocation.",
-              "required_for": {
-                "minimum_config": false,
-                "create": false,
-                "update": false,
-                "read": false
-              }
-            },
-            "spec.legacy_interface.tunnel": {
-              "type": "object",
-              "description": "Tunnel attached to this interface, enables encapsulation on interface.",
-              "required_for": {
-                "minimum_config": false,
-                "create": false,
-                "update": false,
-                "read": false
-              }
-            },
-            "spec.legacy_interface.type": {
-              "type": "string",
-              "description": "Identifies the type of the interface.\n\nNetwork interface is an Ethernet interface\nNetwork interface is a VLAN interface\nNetwork interface is a bond interface running LACP\nNetwork interface is a tunnel interface\nNetwork interface is a loopback device\nNetwork interface is a layer2 interface.",
-              "required_for": {
-                "minimum_config": false,
-                "create": false,
-                "update": false,
-                "read": false
-              },
-              "default": "NETWORK_INTERFACE_ETHERNET"
-            },
-            "spec.legacy_interface.virtual_network": {
-              "type": "array",
-              "description": "Virtual-network for the interface\nThis is optional and can contain at most one entry.",
-              "constraints": {
-                "constraintType": "array",
-                "category": "discovery",
-                "maxItems": 1,
-                "deterministic": true,
-                "metadata": {
-                  "source": "discovery",
-                  "confidence": 0.99,
-                  "validatedAt": "2026-08-20T09:12:47+00:00"
-                }
-              },
-              "required_for": {
-                "minimum_config": false,
-                "create": false,
-                "update": false,
-                "read": false
-              }
-            },
-            "spec.legacy_interface.vlan_tag": {
-              "type": "integer",
-              "description": "VLAN tag of the interface, valid only if VLAN tagging is enabled\nwhen vlan_tagging is enabled, value must be between 1 - 4094.",
-              "constraints": {
-                "constraintType": "number",
-                "category": "discovery",
-                "minimum": 0,
-                "maximum": 4094,
-                "deterministic": true,
-                "metadata": {
-                  "source": "api-probed",
-                  "confidence": 0.99,
-                  "validatedAt": "2026-08-20T09:12:47+00:00"
-                }
-              },
-              "required_for": {
-                "minimum_config": false,
-                "create": false,
-                "update": false,
-                "read": false
-              }
-            },
-            "spec.legacy_interface.vlan_tagging": {
-              "type": "string",
-              "description": "Controls whether or not VLAN tagging is enabled on the interface\n\nVLAN tagging is disabled\nVLAN tagging is enabled.",
-              "required_for": {
-                "minimum_config": false,
-                "create": false,
-                "update": false,
-                "read": false
-              },
-              "default": "NETWORK_INTERFACE_VLAN_TAGGING_DISABLE"
-            },
             "spec.tunnel_interface": {
               "type": "object",
               "description": "Tunnel Interface Configuration.",
@@ -193179,7 +192935,6 @@
               "dedicated_management_interface",
               "ethernet_interface",
               "layer2_interface",
-              "legacy_interface",
               "tunnel_interface"
             ],
             "spec.dedicated_interface.monitoring_choice": [
@@ -193255,10 +193010,6 @@
             "spec.layer2_interface.l2sriov_interface.vlan_choice": [
               "untagged",
               "vlan_id"
-            ],
-            "spec.legacy_interface.monitoring_choice": [
-              "monitor",
-              "monitor_disabled"
             ],
             "spec.tunnel_interface.network_choice": [
               "site_local_inside_network",
@@ -196725,60 +196476,6 @@
                 "read": false
               }
             },
-            "spec.legacy_rules": {
-              "type": "object",
-              "description": "Shape of Legacy Rule Choice.",
-              "required_for": {
-                "minimum_config": false,
-                "create": false,
-                "update": false,
-                "read": false
-              }
-            },
-            "spec.legacy_rules.egress_rules": {
-              "type": "array",
-              "description": "List of rules that apply to outgoing session from local endpoint\nSequence in which rule is configured (in repeated egress rules) is the sequence in which egress rules are applied\nIf egress rules are not specified or is empty list, then policy will assume default deny and to ANY destination from local endpoint.",
-              "constraints": {
-                "constraintType": "array",
-                "category": "discovery",
-                "maxItems": 128,
-                "uniqueItems": true,
-                "deterministic": true,
-                "metadata": {
-                  "source": "discovery",
-                  "confidence": 0.99,
-                  "validatedAt": "2026-08-20T09:12:47+00:00"
-                }
-              },
-              "required_for": {
-                "minimum_config": false,
-                "create": false,
-                "update": false,
-                "read": false
-              }
-            },
-            "spec.legacy_rules.ingress_rules": {
-              "type": "array",
-              "description": "List of rules that apply to incoming session for local endpoint\nSequence in which rule is configured (in repeated ingress rules) is the sequence in which ingress rules are applied\nIf ingress rules are not specified or is empty list, then policy will assume default deny and from ANY destination to local endpoint.",
-              "constraints": {
-                "constraintType": "array",
-                "category": "discovery",
-                "maxItems": 128,
-                "uniqueItems": true,
-                "deterministic": true,
-                "metadata": {
-                  "source": "discovery",
-                  "confidence": 0.99,
-                  "validatedAt": "2026-08-20T09:12:47+00:00"
-                }
-              },
-              "required_for": {
-                "minimum_config": false,
-                "create": false,
-                "update": false,
-                "read": false
-              }
-            },
             "spec.rules": {
               "type": "object",
               "description": "Shape of Rule Choice.",
@@ -196833,10 +196530,6 @@
             }
           },
           "oneOfVariants": {
-            "spec.rule_choice": [
-              "legacy_rules",
-              "rules"
-            ],
             "spec.endpoint.endpoint_choice": [
               "any",
               "inside_endpoints",
@@ -200874,7 +200567,7 @@
             "properties": {
               "x_amzn_marketplace_token": {
                 "type": "string",
-                "description": "AWS customer’s registration token.",
+                "description": "AWS customer\u2019s registration token.",
                 "title": "x-amzn-marketplace-token",
                 "x-displayname": "X-amzn-marketplace-token.",
                 "x-ves-example": "X-amzn-marketplace-token=<token val>",
@@ -200929,7 +200622,7 @@
           "fieldMetadata": {
             "x_amzn_marketplace_token": {
               "type": "string",
-              "description": "AWS customer’s registration token.",
+              "description": "AWS customer\u2019s registration token.",
               "constraints": {
                 "constraintType": "string",
                 "category": "general",
@@ -217370,7 +217063,7 @@
             },
             "spec.loadbalancer_algorithm": {
               "type": "string",
-              "description": "Different load balancing algorithms supported\nWhen a connection to a endpoint in an upstream cluster is required, the load balancer uses loadbalancer_algorithm\nto determine which host is selected.\n\n- ROUND_ROBIN: ROUND_ROBIN\n\nPolicy in which each healthy/available upstream endpoint is selected in round robin order.\n- LEAST_REQUEST: LEAST_REQUEST\n\nPolicy in which loadbalancer picks the upstream endpoint which has the fewest active requests\n- RING_HASH: RING_HASH\n\nPolicy implements consistent hashing to upstream endpoints using ring hash of endpoint names\nHash of the incoming request is calculated using request hash policy.\nThe ring/modulo hash load balancer implements consistent hashing to upstream hosts.\nThe algorithm is based on mapping all hosts onto a circle such that the addition or\nremoval of a host from the host set changes only affect 1/N requests. This technique\nis also commonly known as “ketama” hashing. A consistent hashing load balancer is only\neffective when protocol routing is used that specifies a value to hash on. The minimum\nring size governs the replication factor for each host in the ring. For example, if the\nminimum ring size is 1024 and there are 16 hosts, each host will be replicated 64 times.\n- RANDOM: RANDOM\n\nPolicy in which each available upstream endpoint is selected in random order.\nThe random load balancer selects a random healthy host. The random load balancer generally\nperforms better than round robin if no health checking policy is configured. Random selection\navoids bias towards the host in the set that comes after a failed host.\n- LB_OVERRIDE: Load Balancer Override\n\nHash policy is taken from from the load balancer which is using this origin pool.",
+              "description": "Different load balancing algorithms supported\nWhen a connection to a endpoint in an upstream cluster is required, the load balancer uses loadbalancer_algorithm\nto determine which host is selected.\n\n- ROUND_ROBIN: ROUND_ROBIN\n\nPolicy in which each healthy/available upstream endpoint is selected in round robin order.\n- LEAST_REQUEST: LEAST_REQUEST\n\nPolicy in which loadbalancer picks the upstream endpoint which has the fewest active requests\n- RING_HASH: RING_HASH\n\nPolicy implements consistent hashing to upstream endpoints using ring hash of endpoint names\nHash of the incoming request is calculated using request hash policy.\nThe ring/modulo hash load balancer implements consistent hashing to upstream hosts.\nThe algorithm is based on mapping all hosts onto a circle such that the addition or\nremoval of a host from the host set changes only affect 1/N requests. This technique\nis also commonly known as \u201cketama\u201d hashing. A consistent hashing load balancer is only\neffective when protocol routing is used that specifies a value to hash on. The minimum\nring size governs the replication factor for each host in the ring. For example, if the\nminimum ring size is 1024 and there are 16 hosts, each host will be replicated 64 times.\n- RANDOM: RANDOM\n\nPolicy in which each available upstream endpoint is selected in random order.\nThe random load balancer selects a random healthy host. The random load balancer generally\nperforms better than round robin if no health checking policy is configured. Random selection\navoids bias towards the host in the set that comes after a failed host.\n- LB_OVERRIDE: Load Balancer Override\n\nHash policy is taken from from the load balancer which is using this origin pool.",
               "required_for": {
                 "minimum_config": false,
                 "create": false,
@@ -217590,7 +217283,7 @@
                   "source": "api-probed",
                   "confidence": 0.99,
                   "category": "tls",
-                  "note": "Required when use_tls is selected — API returns 400 if nil",
+                  "note": "Required when use_tls is selected \u2014 API returns 400 if nil",
                   "validatedAt": "2026-08-20T09:12:47+00:00"
                 }
               },
@@ -218365,7 +218058,7 @@
             },
             "spec.loadbalancer_algorithm": {
               "type": "string",
-              "description": "Different load balancing algorithms supported\nWhen a connection to a endpoint in an upstream cluster is required, the load balancer uses loadbalancer_algorithm\nto determine which host is selected.\n\n- ROUND_ROBIN: ROUND_ROBIN\n\nPolicy in which each healthy/available upstream endpoint is selected in round robin order.\n- LEAST_REQUEST: LEAST_REQUEST\n\nPolicy in which loadbalancer picks the upstream endpoint which has the fewest active requests\n- RING_HASH: RING_HASH\n\nPolicy implements consistent hashing to upstream endpoints using ring hash of endpoint names\nHash of the incoming request is calculated using request hash policy.\nThe ring/modulo hash load balancer implements consistent hashing to upstream hosts.\nThe algorithm is based on mapping all hosts onto a circle such that the addition or\nremoval of a host from the host set changes only affect 1/N requests. This technique\nis also commonly known as “ketama” hashing. A consistent hashing load balancer is only\neffective when protocol routing is used that specifies a value to hash on. The minimum\nring size governs the replication factor for each host in the ring. For example, if the\nminimum ring size is 1024 and there are 16 hosts, each host will be replicated 64 times.\n- RANDOM: RANDOM\n\nPolicy in which each available upstream endpoint is selected in random order.\nThe random load balancer selects a random healthy host. The random load balancer generally\nperforms better than round robin if no health checking policy is configured. Random selection\navoids bias towards the host in the set that comes after a failed host.\n- LB_OVERRIDE: Load Balancer Override\n\nHash policy is taken from from the load balancer which is using this origin pool.",
+              "description": "Different load balancing algorithms supported\nWhen a connection to a endpoint in an upstream cluster is required, the load balancer uses loadbalancer_algorithm\nto determine which host is selected.\n\n- ROUND_ROBIN: ROUND_ROBIN\n\nPolicy in which each healthy/available upstream endpoint is selected in round robin order.\n- LEAST_REQUEST: LEAST_REQUEST\n\nPolicy in which loadbalancer picks the upstream endpoint which has the fewest active requests\n- RING_HASH: RING_HASH\n\nPolicy implements consistent hashing to upstream endpoints using ring hash of endpoint names\nHash of the incoming request is calculated using request hash policy.\nThe ring/modulo hash load balancer implements consistent hashing to upstream hosts.\nThe algorithm is based on mapping all hosts onto a circle such that the addition or\nremoval of a host from the host set changes only affect 1/N requests. This technique\nis also commonly known as \u201cketama\u201d hashing. A consistent hashing load balancer is only\neffective when protocol routing is used that specifies a value to hash on. The minimum\nring size governs the replication factor for each host in the ring. For example, if the\nminimum ring size is 1024 and there are 16 hosts, each host will be replicated 64 times.\n- RANDOM: RANDOM\n\nPolicy in which each available upstream endpoint is selected in random order.\nThe random load balancer selects a random healthy host. The random load balancer generally\nperforms better than round robin if no health checking policy is configured. Random selection\navoids bias towards the host in the set that comes after a failed host.\n- LB_OVERRIDE: Load Balancer Override\n\nHash policy is taken from from the load balancer which is using this origin pool.",
               "required_for": {
                 "minimum_config": false,
                 "create": false,
@@ -218585,7 +218278,7 @@
                   "source": "api-probed",
                   "confidence": 0.99,
                   "category": "tls",
-                  "note": "Required when use_tls is selected — API returns 400 if nil",
+                  "note": "Required when use_tls is selected \u2014 API returns 400 if nil",
                   "validatedAt": "2026-08-20T09:12:47+00:00"
                 }
               },
@@ -271112,39 +270805,6 @@
                 "read": false
               }
             },
-            "spec.legacy_rule_list": {
-              "type": "object",
-              "description": "A list of references to service_policy_rule objects.\nThe order of evaluation of the rules depends on the rule combining algorithm.",
-              "required_for": {
-                "minimum_config": false,
-                "create": false,
-                "update": false,
-                "read": false
-              }
-            },
-            "spec.legacy_rule_list.rules": {
-              "type": "array",
-              "description": "A list of references to service_policy_rule objects.\nThe order of evaluation of the rules depends on the rule combining algorithm.",
-              "constraints": {
-                "constraintType": "array",
-                "category": "discovery",
-                "maxItems": 256,
-                "minItems": 0,
-                "uniqueItems": false,
-                "metadata": {
-                  "source": "discovery",
-                  "confidence": 0.99,
-                  "validatedAt": "2026-08-20T09:12:47+00:00"
-                },
-                "deterministic": true
-              },
-              "required_for": {
-                "minimum_config": false,
-                "create": false,
-                "update": false,
-                "read": false
-              }
-            },
             "spec.rule_list": {
               "type": "object",
               "description": "A list of rules.\nThe order of evaluation of the rules depends on the rule combining algorithm.",
@@ -271294,7 +270954,6 @@
               "allow_list",
               "deny_all_requests",
               "deny_list",
-              "legacy_rule_list",
               "rule_list"
             ],
             "spec.server_choice": [
@@ -398878,7 +398537,7 @@
             },
             "spec.tenant_details.display_name": {
               "type": "string",
-              "description": "Changes the tenant name displayed during login without affecting your company’s domain name.",
+              "description": "Changes the tenant name displayed during login without affecting your company\u2019s domain name.",
               "constraints": {
                 "constraintType": "string",
                 "category": "discovery",
@@ -399243,7 +398902,7 @@
             },
             "spec.tenant_details.display_name": {
               "type": "string",
-              "description": "Changes the tenant name displayed during login without affecting your company’s domain name.",
+              "description": "Changes the tenant name displayed during login without affecting your company\u2019s domain name.",
               "constraints": {
                 "constraintType": "string",
                 "category": "discovery",
@@ -400279,7 +399938,7 @@
             },
             "basic_configuration.display_name": {
               "type": "string",
-              "description": "Changes the tenant name displayed during login without affecting your company’s domain name.",
+              "description": "Changes the tenant name displayed during login without affecting your company\u2019s domain name.",
               "constraints": {
                 "constraintType": "string",
                 "category": "discovery",
@@ -400529,7 +400188,7 @@
             },
             "tenant_details.display_name": {
               "type": "string",
-              "description": "Changes the tenant name displayed during login without affecting your company’s domain name.",
+              "description": "Changes the tenant name displayed during login without affecting your company\u2019s domain name.",
               "constraints": {
                 "constraintType": "string",
                 "category": "discovery",
@@ -419891,7 +419550,7 @@
             },
             "spec.compression_params": {
               "type": "object",
-              "description": "Enables loadbalancer to compress dispatched data from an upstream service upon client request.\nThe content is compressed and then sent to the client with the appropriate headers if either response and request allow.\nOnly GZIP compression is supported.\n\nBy default compression will be skipped when:\n\nA request does NOT contain accept-encoding header.\nA request includes accept-encoding header, but it does not contain “gzip” or “*”.\nA request includes accept-encoding with “gzip” or “*” with the weight “q=0”. Note that the “gzip” will have a higher weight then “*”. For example, if accept-encoding is “gzip;q=0,*;q=1”, the filter will not compress. But if the header is set to “*;q=0,gzip;q=1”, the filter will compress.\nA request whose accept-encoding header includes “identity”.\nA response contains a content-encoding header.\nA response contains a cache-control header whose value includes “no-transform”.\nA response contains a transfer-encoding header whose value includes “gzip”.\nA response does not contain a content-type value that matches one of the selected mime-types, which default to application/javascript, application/JSON, application/xhtml+XML, image/svg+XML, text/CSS, text/HTML, text/plain, text/XML.\nNeither content-length nor transfer-encoding headers are present in the response.\nResponse size is smaller than 30 bytes (only applicable when transfer-encoding is not chunked).\n\nWhen compression is applied:\n\nThe content-length is removed from response headers.\nResponse headers contain “transfer-encoding: chunked” and do not contain “content-encoding” header.\nThe “vary: accept-encoding” header is inserted on every response.\n\nGZIP Compression Level:\n\nA value which is optimal balance between speed of compression and amount of compression is chosen.",
+              "description": "Enables loadbalancer to compress dispatched data from an upstream service upon client request.\nThe content is compressed and then sent to the client with the appropriate headers if either response and request allow.\nOnly GZIP compression is supported.\n\nBy default compression will be skipped when:\n\nA request does NOT contain accept-encoding header.\nA request includes accept-encoding header, but it does not contain \u201cgzip\u201d or \u201c*\u201d.\nA request includes accept-encoding with \u201cgzip\u201d or \u201c*\u201d with the weight \u201cq=0\u201d. Note that the \u201cgzip\u201d will have a higher weight then \u201c*\u201d. For example, if accept-encoding is \u201cgzip;q=0,*;q=1\u201d, the filter will not compress. But if the header is set to \u201c*;q=0,gzip;q=1\u201d, the filter will compress.\nA request whose accept-encoding header includes \u201cidentity\u201d.\nA response contains a content-encoding header.\nA response contains a cache-control header whose value includes \u201cno-transform\u201d.\nA response contains a transfer-encoding header whose value includes \u201cgzip\u201d.\nA response does not contain a content-type value that matches one of the selected mime-types, which default to application/javascript, application/JSON, application/xhtml+XML, image/svg+XML, text/CSS, text/HTML, text/plain, text/XML.\nNeither content-length nor transfer-encoding headers are present in the response.\nResponse size is smaller than 30 bytes (only applicable when transfer-encoding is not chunked).\n\nWhen compression is applied:\n\nThe content-length is removed from response headers.\nResponse headers contain \u201ctransfer-encoding: chunked\u201d and do not contain \u201ccontent-encoding\u201d header.\nThe \u201cvary: accept-encoding\u201d header is inserted on every response.\n\nGZIP Compression Level:\n\nA value which is optimal balance between speed of compression and amount of compression is chosen.",
               "required_for": {
                 "minimum_config": false,
                 "create": false,
@@ -421830,7 +421489,7 @@
             },
             "spec.compression_params": {
               "type": "object",
-              "description": "Enables loadbalancer to compress dispatched data from an upstream service upon client request.\nThe content is compressed and then sent to the client with the appropriate headers if either response and request allow.\nOnly GZIP compression is supported.\n\nBy default compression will be skipped when:\n\nA request does NOT contain accept-encoding header.\nA request includes accept-encoding header, but it does not contain “gzip” or “*”.\nA request includes accept-encoding with “gzip” or “*” with the weight “q=0”. Note that the “gzip” will have a higher weight then “*”. For example, if accept-encoding is “gzip;q=0,*;q=1”, the filter will not compress. But if the header is set to “*;q=0,gzip;q=1”, the filter will compress.\nA request whose accept-encoding header includes “identity”.\nA response contains a content-encoding header.\nA response contains a cache-control header whose value includes “no-transform”.\nA response contains a transfer-encoding header whose value includes “gzip”.\nA response does not contain a content-type value that matches one of the selected mime-types, which default to application/javascript, application/JSON, application/xhtml+XML, image/svg+XML, text/CSS, text/HTML, text/plain, text/XML.\nNeither content-length nor transfer-encoding headers are present in the response.\nResponse size is smaller than 30 bytes (only applicable when transfer-encoding is not chunked).\n\nWhen compression is applied:\n\nThe content-length is removed from response headers.\nResponse headers contain “transfer-encoding: chunked” and do not contain “content-encoding” header.\nThe “vary: accept-encoding” header is inserted on every response.\n\nGZIP Compression Level:\n\nA value which is optimal balance between speed of compression and amount of compression is chosen.",
+              "description": "Enables loadbalancer to compress dispatched data from an upstream service upon client request.\nThe content is compressed and then sent to the client with the appropriate headers if either response and request allow.\nOnly GZIP compression is supported.\n\nBy default compression will be skipped when:\n\nA request does NOT contain accept-encoding header.\nA request includes accept-encoding header, but it does not contain \u201cgzip\u201d or \u201c*\u201d.\nA request includes accept-encoding with \u201cgzip\u201d or \u201c*\u201d with the weight \u201cq=0\u201d. Note that the \u201cgzip\u201d will have a higher weight then \u201c*\u201d. For example, if accept-encoding is \u201cgzip;q=0,*;q=1\u201d, the filter will not compress. But if the header is set to \u201c*;q=0,gzip;q=1\u201d, the filter will compress.\nA request whose accept-encoding header includes \u201cidentity\u201d.\nA response contains a content-encoding header.\nA response contains a cache-control header whose value includes \u201cno-transform\u201d.\nA response contains a transfer-encoding header whose value includes \u201cgzip\u201d.\nA response does not contain a content-type value that matches one of the selected mime-types, which default to application/javascript, application/JSON, application/xhtml+XML, image/svg+XML, text/CSS, text/HTML, text/plain, text/XML.\nNeither content-length nor transfer-encoding headers are present in the response.\nResponse size is smaller than 30 bytes (only applicable when transfer-encoding is not chunked).\n\nWhen compression is applied:\n\nThe content-length is removed from response headers.\nResponse headers contain \u201ctransfer-encoding: chunked\u201d and do not contain \u201ccontent-encoding\u201d header.\nThe \u201cvary: accept-encoding\u201d header is inserted on every response.\n\nGZIP Compression Level:\n\nA value which is optimal balance between speed of compression and amount of compression is chosen.",
               "required_for": {
                 "minimum_config": false,
                 "create": false,
@@ -424867,17 +424526,6 @@
                 "read": false
               }
             },
-            "spec.legacy_type": {
-              "type": "string",
-              "description": "Different types of virtual networks understood by the system\n\nVirtual-network of type VIRTUAL_NETWORK_SITE_LOCAL provides connectivity to public (outside) network.\nThis is an insecure network and is connected to public internet via NAT Gateways/firwalls\nVirtual-network of this type is local to every site. Two virtual networks of this type on different\nsites are neither related nor connected.\n\nConstraints:\nThere can be atmost one virtual network of this type in a given site.\nThis network type is supported on CE sites. This network is created automatically and present on all sites\nVirtual-network of type VIRTUAL_NETWORK_SITE_LOCAL_INSIDE is a private network inside site.\nIt is a secure network and is not connected to public network.\nVirtual-network of this type is local to every site. Two virtual networks of this type on different\nsites are neither related nor connected.\n\nConstraints:\nThere can be atmost one virtual network of this type in a given site.\nThis network type is supported on CE sites. This network is created during provisioning of site\nUser defined per-site virtual network. Scope of this virtual network is limited to the site.\nThis is not yet supported\nVirtual-network of type VIRTUAL_NETWORK_PUBLIC directly connects to the public internet.\nVirtual-network of this type is local to every site. Two virtual networks of this type on different sites are neither related nor connected.\n\nConstraints:\nThere can be atmost one virtual network of this type in a given site.\nThis network type is supported on RE sites only\nIt is an internally created by the system. They must not be created by user\nVirtual Networks with global scope across different sites in F5XC domain.\nAn example global virtual-network called \"AIN Network\" is created for every tenant.\nFor F5 Distributed Cloud fabric\n\nConstraints:\nIt is currently only supported as internally created by the system.\nVK8s service network for a given tenant. Used to advertise a virtual host only to vk8s pods for that tenant\nConstraints:\nIt is an internally created by the system. Must not be created by user\nVER internal network for the site. It can only be used for virtual hosts with SMA_PROXY type proxy\nConstraints:\nIt is an internally created by the system. Must not be created by user\nVirtual-network of type VIRTUAL_NETWORK_SITE_LOCAL_INSIDE_OUTSIDE represents both\nVIRTUAL_NETWORK_SITE_LOCAL and VIRTUAL_NETWORK_SITE_LOCAL_INSIDE\n\nConstraints:\nThis network type is only meaningful in an advertise policy\nWhen virtual-network of type VIRTUAL_NETWORK_IP_AUTO is selected for\nan endpoint, VER will try to determine the network based on the provided\nIP address\n\nConstraints:\nThis network type is only meaningful in an endpoint\n\nVoltADN Private Network is used on F5 Distributed Cloud RE(s) to connect to customer private networks\nThis network is created by opening a support ticket\n\nThis network is per site srv6 network\nVER IP Fabric network for the site.\nThis Virtual network type is used for exposing virtual host on IP Fabric network on the VER site or\nfor endpoint in IP Fabric network\nConstraints:\nIt is an internally created by the system. Must not be created by user\nNetwork internally created for a segment\nConstraints:\nIt is an internally created by the system. Must not be created by user\nVirtual-network of type VIRTUAL_NETWORK_MANAGEMENT is used for management purposes.",
-              "required_for": {
-                "minimum_config": false,
-                "create": false,
-                "update": false,
-                "read": false
-              },
-              "default": "VIRTUAL_NETWORK_SITE_LOCAL"
-            },
             "spec.site_local_inside_network": {
               "type": "object",
               "description": "This can be used for messages where no values are needed.",
@@ -424924,7 +424572,6 @@
           "oneOfVariants": {
             "spec.network_choice": [
               "global_network",
-              "legacy_type",
               "site_local_inside_network",
               "site_local_network"
             ]
@@ -425195,17 +424842,6 @@
                 "read": false
               }
             },
-            "spec.legacy_type": {
-              "type": "string",
-              "description": "Different types of virtual networks understood by the system\n\nVirtual-network of type VIRTUAL_NETWORK_SITE_LOCAL provides connectivity to public (outside) network.\nThis is an insecure network and is connected to public internet via NAT Gateways/firwalls\nVirtual-network of this type is local to every site. Two virtual networks of this type on different\nsites are neither related nor connected.\n\nConstraints:\nThere can be atmost one virtual network of this type in a given site.\nThis network type is supported on CE sites. This network is created automatically and present on all sites\nVirtual-network of type VIRTUAL_NETWORK_SITE_LOCAL_INSIDE is a private network inside site.\nIt is a secure network and is not connected to public network.\nVirtual-network of this type is local to every site. Two virtual networks of this type on different\nsites are neither related nor connected.\n\nConstraints:\nThere can be atmost one virtual network of this type in a given site.\nThis network type is supported on CE sites. This network is created during provisioning of site\nUser defined per-site virtual network. Scope of this virtual network is limited to the site.\nThis is not yet supported\nVirtual-network of type VIRTUAL_NETWORK_PUBLIC directly connects to the public internet.\nVirtual-network of this type is local to every site. Two virtual networks of this type on different sites are neither related nor connected.\n\nConstraints:\nThere can be atmost one virtual network of this type in a given site.\nThis network type is supported on RE sites only\nIt is an internally created by the system. They must not be created by user\nVirtual Networks with global scope across different sites in F5XC domain.\nAn example global virtual-network called \"AIN Network\" is created for every tenant.\nFor F5 Distributed Cloud fabric\n\nConstraints:\nIt is currently only supported as internally created by the system.\nVK8s service network for a given tenant. Used to advertise a virtual host only to vk8s pods for that tenant\nConstraints:\nIt is an internally created by the system. Must not be created by user\nVER internal network for the site. It can only be used for virtual hosts with SMA_PROXY type proxy\nConstraints:\nIt is an internally created by the system. Must not be created by user\nVirtual-network of type VIRTUAL_NETWORK_SITE_LOCAL_INSIDE_OUTSIDE represents both\nVIRTUAL_NETWORK_SITE_LOCAL and VIRTUAL_NETWORK_SITE_LOCAL_INSIDE\n\nConstraints:\nThis network type is only meaningful in an advertise policy\nWhen virtual-network of type VIRTUAL_NETWORK_IP_AUTO is selected for\nan endpoint, VER will try to determine the network based on the provided\nIP address\n\nConstraints:\nThis network type is only meaningful in an endpoint\n\nVoltADN Private Network is used on F5 Distributed Cloud RE(s) to connect to customer private networks\nThis network is created by opening a support ticket\n\nThis network is per site srv6 network\nVER IP Fabric network for the site.\nThis Virtual network type is used for exposing virtual host on IP Fabric network on the VER site or\nfor endpoint in IP Fabric network\nConstraints:\nIt is an internally created by the system. Must not be created by user\nNetwork internally created for a segment\nConstraints:\nIt is an internally created by the system. Must not be created by user\nVirtual-network of type VIRTUAL_NETWORK_MANAGEMENT is used for management purposes.",
-              "required_for": {
-                "minimum_config": false,
-                "create": false,
-                "update": false,
-                "read": false
-              },
-              "default": "VIRTUAL_NETWORK_SITE_LOCAL"
-            },
             "spec.site_local_inside_network": {
               "type": "object",
               "description": "This can be used for messages where no values are needed.",
@@ -425252,7 +424888,6 @@
           "oneOfVariants": {
             "spec.network_choice": [
               "global_network",
-              "legacy_type",
               "site_local_inside_network",
               "site_local_network"
             ]
@@ -425609,7 +425244,7 @@
               }
             },
             "x-f5xc-minimum-configuration": {
-              "description": "Label-based site selector for grouping RE and CE sites — used as advertise_where target for HTTP LBs",
+              "description": "Label-based site selector for grouping RE and CE sites \u2014 used as advertise_where target for HTTP LBs",
               "required_fields": [
                 "metadata.name",
                 "metadata.namespace",
@@ -425647,7 +425282,7 @@
               "spec.site_type",
               "spec.site_selector"
             ],
-            "description": "Label-based site selector for grouping RE and CE sites — used as advertise_where target for HTTP LBs"
+            "description": "Label-based site selector for grouping RE and CE sites \u2014 used as advertise_where target for HTTP LBs"
           },
           "fieldMetadata": {
             "metadata": {
@@ -425926,7 +425561,7 @@
               }
             },
             "x-f5xc-minimum-configuration": {
-              "description": "Label-based site selector for grouping RE and CE sites — used as advertise_where target for HTTP LBs",
+              "description": "Label-based site selector for grouping RE and CE sites \u2014 used as advertise_where target for HTTP LBs",
               "required_fields": [
                 "metadata.name",
                 "metadata.namespace",
@@ -425963,7 +425598,7 @@
               "spec.site_type",
               "spec.site_selector"
             ],
-            "description": "Label-based site selector for grouping RE and CE sites — used as advertise_where target for HTTP LBs"
+            "description": "Label-based site selector for grouping RE and CE sites \u2014 used as advertise_where target for HTTP LBs"
           },
           "fieldMetadata": {
             "metadata": {

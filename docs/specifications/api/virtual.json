@@ -49893,6 +49893,7 @@
               "update": false,
               "read": false
             },
+            "description": "Inline rate-limiter settings for this domain, base-path, or endpoint rule. Select this field as the required rate_limiter_choice when no stored rate-limiter object is used.",
             "x-f5xc-conflicts-with": [
               "ref_rate_limiter"
             ]
@@ -49910,6 +49911,7 @@
               "update": false,
               "read": false
             },
+            "description": "Reference to a stored rate-limiter object for this scoped rule. Select exactly one of ref_rate_limiter and inline_rate_limiter.",
             "x-f5xc-conflicts-with": [
               "inline_rate_limiter"
             ],
@@ -50867,12 +50869,15 @@
                 "$ref": "#/components/schemas/common_wafOpenApiValidationModeActive__ves_io_schema_app_security"
               }
             ],
+            "x-f5xc-description-short": "Enable OpenAPI validation and explicitly select enforcement_report to allow and log invalid traffic, or enforcement_block to reject invalid...",
+            "x-f5xc-description-medium": "Enable OpenAPI validation and explicitly select enforcement_report to allow and log invalid traffic, or enforcement_block to reject invalid requests with HTTP 403.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Enable OpenAPI validation and explicitly select enforcement_report to allow and log invalid traffic, or enforcement_block to reject invalid requests with HTTP 403.",
             "x-f5xc-conflicts-with": [
               "skip_validation"
             ]
@@ -50924,12 +50929,15 @@
               }
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
+            "x-f5xc-description-short": "Blocking validation: reject traffic that violates the selected OpenAPI validation properties.",
+            "x-f5xc-description-medium": "Blocking validation: reject traffic that violates the selected OpenAPI validation properties. Invalid requests are returned as HTTP 403.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Blocking validation: reject traffic that violates the selected OpenAPI validation properties. Invalid requests are returned as HTTP 403.",
             "x-f5xc-conflicts-with": [
               "enforcement_report"
             ]
@@ -50940,12 +50948,15 @@
                 "$ref": "#/components/schemas/schemaEmpty"
               }
             ],
+            "x-f5xc-description-short": "Report-only validation: record OpenAPI violations while allowing the request or response to continue.",
+            "x-f5xc-description-medium": "Report-only validation: record OpenAPI violations while allowing the request or response to continue.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Report-only validation: record OpenAPI violations while allowing the request or response to continue.",
             "x-f5xc-conflicts-with": [
               "enforcement_block"
             ]
@@ -51041,12 +51052,15 @@
               }
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
+            "x-f5xc-description-short": "Blocking validation: reject traffic that violates the selected OpenAPI validation properties.",
+            "x-f5xc-description-medium": "Blocking validation: reject traffic that violates the selected OpenAPI validation properties. Invalid requests are returned as HTTP 403.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Blocking validation: reject traffic that violates the selected OpenAPI validation properties. Invalid requests are returned as HTTP 403.",
             "x-f5xc-conflicts-with": [
               "enforcement_report"
             ]
@@ -51057,12 +51071,15 @@
                 "$ref": "#/components/schemas/schemaEmpty"
               }
             ],
+            "x-f5xc-description-short": "Report-only validation: record OpenAPI violations while allowing the request or response to continue.",
+            "x-f5xc-description-medium": "Report-only validation: record OpenAPI violations while allowing the request or response to continue.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Report-only validation: record OpenAPI violations while allowing the request or response to continue.",
             "x-f5xc-conflicts-with": [
               "enforcement_block"
             ]
@@ -52977,16 +52994,18 @@
                 "$ref": "#/components/schemas/policyDetectionContext"
               }
             ],
+            "x-f5xc-description-medium": "Exclusion scope. Use CONTEXT_PARAMETER with context_name for one parameter, CONTEXT_COOKIE for one cookie, or CONTEXT_ANY only for an intentionally global scope.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
-            }
+            },
+            "description": "Exclusion scope. Use CONTEXT_PARAMETER with context_name for one parameter, CONTEXT_COOKIE for one cookie, or CONTEXT_ANY only for an intentionally global scope."
           },
           "context_name": {
             "type": "string",
-            "description": "Relevant only for contexts: Header, Cookie and Parameter.\nName of the Context that the WAF Exclusion Rules will check.\nWildcard matching can be used by prefixing or suffixing the context name\nwith an wildcard asterisk (*).",
+            "description": "Parameter, cookie, or header name selected by context. For a parameter-scoped WAF exception, set context to CONTEXT_PARAMETER and name only the intended parameter.",
             "title": "Context Name",
             "maxLength": 128,
             "x-displayname": "Context Name.",
@@ -52994,12 +53013,9 @@
             "x-ves-validation-rules": {
               "ves.io.schema.rules.string.max_len": "128"
             },
-            "x-f5xc-example": "exampleuser-agent for Header",
-            "x-validation-rules": {
-              "ves.io.schema.rules.string.max_len": "128"
-            },
-            "x-f5xc-description-short": "Relevant only for contexts: Header, Cookie and Parameter. Name of the Context that the WAF Exclusion Rules will check.",
-            "x-f5xc-description-medium": "Relevant only for contexts: Header, Cookie and Parameter. Name of the Context that the WAF Exclusion Rules will check. Wildcard matching can be used by prefixing or suffixing the context name with an wildcard asterisk (*).",
+            "x-f5xc-example": "example-resource",
+            "x-f5xc-description-short": "Parameter, cookie, or header name selected by context.",
+            "x-f5xc-description-medium": "Parameter, cookie, or header name selected by context. For a parameter-scoped WAF exception, set context to CONTEXT_PARAMETER and name only the intended parameter.",
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "discovery",
@@ -53024,12 +53040,15 @@
                 "$ref": "#/components/schemas/app_firewallAttackType"
               }
             ],
+            "x-f5xc-description-short": "Attack-type enum excluded in this context, for example ATTACK_TYPE_CROSS_SITE_SCRIPTING.",
+            "x-f5xc-description-medium": "Attack-type enum excluded in this context, for example ATTACK_TYPE_CROSS_SITE_SCRIPTING. Other attack types remain enforced.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
-            }
+            },
+            "description": "Attack-type enum excluded in this context, for example ATTACK_TYPE_CROSS_SITE_SCRIPTING. Other attack types remain enforced."
           }
         },
         "x-f5xc-description-short": "App Firewall Attack Type context changes to be applied for this request.",
@@ -53070,7 +53089,7 @@
         "properties": {
           "exclude_attack_type_contexts": {
             "type": "array",
-            "description": "Attack Types to be excluded for the defined match criteria.",
+            "description": "Exclude an entire attack type only in the named context. For migrated per-parameter exceptions, prefer this over signature-ID exclusions because one payload can trigger several signatures; unrelated parameters and attack types remain protected.",
             "title": "Exclude Attack Types Contexts",
             "maxItems": 64,
             "items": {
@@ -53081,11 +53100,8 @@
               "ves.io.schema.rules.repeated.max_items": "64",
               "ves.io.schema.rules.repeated.unique": "true"
             },
-            "x-validation-rules": {
-              "ves.io.schema.rules.repeated.max_items": "64",
-              "ves.io.schema.rules.repeated.unique": "true"
-            },
-            "x-f5xc-description-short": "Attack Types to be excluded for the defined match criteria.",
+            "x-f5xc-description-short": "Exclude an entire attack type only in the named context.",
+            "x-f5xc-description-medium": "Exclude an entire attack type only in the named context. For migrated per-parameter exceptions, prefer this over signature-ID exclusions because one payload can trigger several signatures; unrelated parameters and attack types remain protected.",
             "x-f5xc-constraints": {
               "constraintType": "array",
               "category": "discovery",
@@ -60793,7 +60809,7 @@
         "title": "HeaderTransformationType",
         "x-displayname": "Header Transformation.",
         "x-ves-displayorder": "1",
-        "x-ves-oneof-field-header_transformation_choice": "[\"default_header_transformation\",\"legacy_header_transformation\",\"preserve_case_header_transformation\",\"proper_case_header_transformation\"]",
+        "x-ves-oneof-field-header_transformation_choice": "[\"default_header_transformation\",\"preserve_case_header_transformation\",\"proper_case_header_transformation\"]",
         "x-ves-proto-message": "ves.io.schema.HeaderTransformationType",
         "properties": {
           "default_header_transformation": {
@@ -60802,32 +60818,15 @@
                 "$ref": "#/components/schemas/ioschemaEmpty"
               }
             ],
+            "x-f5xc-description-short": "Use the platform's current default HTTP header transformation behavior.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Use the platform's current default HTTP header transformation behavior.",
             "x-f5xc-conflicts-with": [
-              "legacy_header_transformation",
-              "preserve_case_header_transformation",
-              "proper_case_header_transformation"
-            ]
-          },
-          "legacy_header_transformation": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/ioschemaEmpty"
-              }
-            ],
-            "x-f5xc-required-for": {
-              "minimum_config": false,
-              "create": false,
-              "update": false,
-              "read": false
-            },
-            "x-f5xc-conflicts-with": [
-              "default_header_transformation",
               "preserve_case_header_transformation",
               "proper_case_header_transformation"
             ]
@@ -60838,15 +60837,16 @@
                 "$ref": "#/components/schemas/ioschemaEmpty"
               }
             ],
+            "x-f5xc-description-short": "Preserve HTTP header-name case when upstream case must remain unchanged.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Preserve HTTP header-name case when upstream case must remain unchanged.",
             "x-f5xc-conflicts-with": [
               "default_header_transformation",
-              "legacy_header_transformation",
               "proper_case_header_transformation"
             ]
           },
@@ -60856,15 +60856,16 @@
                 "$ref": "#/components/schemas/ioschemaEmpty"
               }
             ],
+            "x-f5xc-description-short": "Transform HTTP header names to proper case when explicit transformation is required.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Transform HTTP header names to proper case when explicit transformation is required.",
             "x-f5xc-conflicts-with": [
               "default_header_transformation",
-              "legacy_header_transformation",
               "preserve_case_header_transformation"
             ]
           }
@@ -67662,7 +67663,7 @@
         "properties": {
           "api_endpoint_rules": {
             "type": "array",
-            "description": "Sets of rules for a specific endpoints.\nOrder is matter as it uses first match policy.\nFor creating rule that contain a whole domain or group of endpoints, please use the server URL rules above.",
+            "description": "Ordered endpoint-specific rate-limit rules. Each rule must choose exactly one rate_limiter_choice: inline_rate_limiter or ref_rate_limiter.",
             "title": "api_endpoint_policy",
             "maxItems": 20,
             "items": {
@@ -67672,12 +67673,9 @@
             "x-ves-validation-rules": {
               "ves.io.schema.rules.repeated.max_items": "20"
             },
-            "x-validation-rules": {
-              "ves.io.schema.rules.repeated.max_items": "20"
-            },
             "x-f5xc-example": "{\"key\": \"value\"}",
-            "x-f5xc-description-short": "Sets of rules for a specific endpoints. Order is matter as it uses first match policy.",
-            "x-f5xc-description-medium": "Sets of rules for a specific endpoints. Order is matter as it uses first match policy. For creating rule that contain a whole domain or group of endpoints, please use the server URL rules above.",
+            "x-f5xc-description-short": "Ordered endpoint-specific rate-limit rules. Each rule must choose exactly one rate_limiter_choice: inline_rate_limiter or ref_rate_limiter.",
+            "x-f5xc-description-medium": "Ordered endpoint-specific rate-limit rules. Each rule must choose exactly one rate_limiter_choice: inline_rate_limiter or ref_rate_limiter.",
             "x-f5xc-constraints": {
               "constraintType": "array",
               "category": "discovery",
@@ -67771,7 +67769,7 @@
           },
           "server_url_rules": {
             "type": "array",
-            "description": "Set of rules for entire domain or base path that contain multiple endpoints.\nOrder is matter as it uses first match policy.\nFor matching also specific endpoints you can use the API endpoint rules set below.",
+            "description": "Ordered domain or base-path rules for path-scoped rate limiting. Each rule must choose exactly one rate_limiter_choice: inline_rate_limiter or ref_rate_limiter.",
             "title": "server_url_policy",
             "maxItems": 20,
             "items": {
@@ -67781,12 +67779,9 @@
             "x-ves-validation-rules": {
               "ves.io.schema.rules.repeated.max_items": "20"
             },
-            "x-validation-rules": {
-              "ves.io.schema.rules.repeated.max_items": "20"
-            },
             "x-f5xc-example": "{\"key\": \"value\"}",
-            "x-f5xc-description-short": "Set of rules for entire domain or base path that contain multiple endpoints. Order is matter as it uses first match policy.",
-            "x-f5xc-description-medium": "Set of rules for entire domain or base path that contain multiple endpoints. Order is matter as it uses first match policy. For matching also specific endpoints you can use the API endpoint rules set below.",
+            "x-f5xc-description-short": "Ordered domain or base-path rules for path-scoped rate limiting.",
+            "x-f5xc-description-medium": "Ordered domain or base-path rules for path-scoped rate limiting. Each rule must choose exactly one rate_limiter_choice: inline_rate_limiter or ref_rate_limiter.",
             "x-f5xc-constraints": {
               "constraintType": "array",
               "category": "discovery",
@@ -68541,6 +68536,7 @@
               "update": false,
               "read": false
             },
+            "description": "Inline rate-limiter settings for this domain, base-path, or endpoint rule. Select this field as the required rate_limiter_choice when no stored rate-limiter object is used.",
             "x-f5xc-conflicts-with": [
               "ref_rate_limiter"
             ]
@@ -68558,6 +68554,7 @@
               "update": false,
               "read": false
             },
+            "description": "Reference to a stored rate-limiter object for this scoped rule. Select exactly one of ref_rate_limiter and inline_rate_limiter.",
             "x-f5xc-conflicts-with": [
               "inline_rate_limiter"
             ],
@@ -70650,12 +70647,15 @@
                 "$ref": "#/components/schemas/common_wafOpenApiValidationModeActive__ves_io_schema_views_bigip_virtual_server"
               }
             ],
+            "x-f5xc-description-short": "Enable OpenAPI validation and explicitly select enforcement_report to allow and log invalid traffic, or enforcement_block to reject invalid...",
+            "x-f5xc-description-medium": "Enable OpenAPI validation and explicitly select enforcement_report to allow and log invalid traffic, or enforcement_block to reject invalid requests with HTTP 403.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Enable OpenAPI validation and explicitly select enforcement_report to allow and log invalid traffic, or enforcement_block to reject invalid requests with HTTP 403.",
             "x-f5xc-conflicts-with": [
               "skip_validation"
             ]
@@ -70707,12 +70707,15 @@
               }
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
+            "x-f5xc-description-short": "Blocking validation: reject traffic that violates the selected OpenAPI validation properties.",
+            "x-f5xc-description-medium": "Blocking validation: reject traffic that violates the selected OpenAPI validation properties. Invalid requests are returned as HTTP 403.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Blocking validation: reject traffic that violates the selected OpenAPI validation properties. Invalid requests are returned as HTTP 403.",
             "x-f5xc-conflicts-with": [
               "enforcement_report"
             ]
@@ -70723,12 +70726,15 @@
                 "$ref": "#/components/schemas/ioschemaEmpty"
               }
             ],
+            "x-f5xc-description-short": "Report-only validation: record OpenAPI violations while allowing the request or response to continue.",
+            "x-f5xc-description-medium": "Report-only validation: record OpenAPI violations while allowing the request or response to continue.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Report-only validation: record OpenAPI violations while allowing the request or response to continue.",
             "x-f5xc-conflicts-with": [
               "enforcement_block"
             ]
@@ -70824,12 +70830,15 @@
               }
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
+            "x-f5xc-description-short": "Blocking validation: reject traffic that violates the selected OpenAPI validation properties.",
+            "x-f5xc-description-medium": "Blocking validation: reject traffic that violates the selected OpenAPI validation properties. Invalid requests are returned as HTTP 403.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Blocking validation: reject traffic that violates the selected OpenAPI validation properties. Invalid requests are returned as HTTP 403.",
             "x-f5xc-conflicts-with": [
               "enforcement_report"
             ]
@@ -70840,12 +70849,15 @@
                 "$ref": "#/components/schemas/ioschemaEmpty"
               }
             ],
+            "x-f5xc-description-short": "Report-only validation: record OpenAPI violations while allowing the request or response to continue.",
+            "x-f5xc-description-medium": "Report-only validation: record OpenAPI violations while allowing the request or response to continue.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Report-only validation: record OpenAPI violations while allowing the request or response to continue.",
             "x-f5xc-conflicts-with": [
               "enforcement_block"
             ]
@@ -71544,13 +71556,15 @@
                 "$ref": "#/components/schemas/common_wafInlineRateLimiter__ves_io_schema_views_cdn_loadbalancer"
               }
             ],
-            "x-f5xc-description-short": "Configuration parameter for inline rate limiter.",
+            "x-f5xc-description-short": "Inline rate-limiter settings for this domain, base-path, or endpoint rule.",
+            "x-f5xc-description-medium": "Inline rate-limiter settings for this domain, base-path, or endpoint rule. Select this field as the required rate_limiter_choice when no stored rate-limiter object is used.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Inline rate-limiter settings for this domain, base-path, or endpoint rule. Select this field as the required rate_limiter_choice when no stored rate-limiter object is used.",
             "x-f5xc-conflicts-with": [
               "ref_rate_limiter"
             ]
@@ -71561,13 +71575,15 @@
                 "$ref": "#/components/schemas/schemaviewsObjectRefType"
               }
             ],
-            "x-f5xc-description-short": "Configuration parameter for ref rate limiter.",
+            "x-f5xc-description-short": "Reference to a stored rate-limiter object for this scoped rule. Select exactly one of ref_rate_limiter and inline_rate_limiter.",
+            "x-f5xc-description-medium": "Reference to a stored rate-limiter object for this scoped rule. Select exactly one of ref_rate_limiter and inline_rate_limiter.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Reference to a stored rate-limiter object for this scoped rule. Select exactly one of ref_rate_limiter and inline_rate_limiter.",
             "x-f5xc-conflicts-with": [
               "inline_rate_limiter"
             ],
@@ -98773,12 +98789,15 @@
                 "$ref": "#/components/schemas/common_wafAPIRateLimit"
               }
             ],
+            "x-f5xc-description-short": "Path- or API-group-scoped rate limiting.",
+            "x-f5xc-description-medium": "Path- or API-group-scoped rate limiting. Define server_url_rules or api_endpoint_rules and choose inline_rate_limiter for an inline limit, or ref_rate_limiter for a stored rate-limiter reference.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Path- or API-group-scoped rate limiting. Define server_url_rules or api_endpoint_rules and choose inline_rate_limiter for an inline limit, or ref_rate_limiter for a stored rate-limiter reference.",
             "x-f5xc-conflicts-with": [
               "disable_rate_limit",
               "rate_limit"
@@ -100109,12 +100128,15 @@
               }
             ],
             "x-f5xc-example": "{\"requests_per_second\": 100}",
+            "x-f5xc-description-short": "Load-balancer-wide per-client rate limiting.",
+            "x-f5xc-description-medium": "Load-balancer-wide per-client rate limiting. The counter applies across every path; use api_rate_limit rules when only selected paths such as /login should be limited.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Load-balancer-wide per-client rate limiting. The counter applies across every path; use api_rate_limit rules when only selected paths such as /login should be limited.",
             "x-f5xc-conflicts-with": [
               "api_rate_limit",
               "disable_rate_limit"
@@ -101097,12 +101119,15 @@
                 "$ref": "#/components/schemas/common_wafAPIRateLimit"
               }
             ],
+            "x-f5xc-description-short": "Path- or API-group-scoped rate limiting.",
+            "x-f5xc-description-medium": "Path- or API-group-scoped rate limiting. Define server_url_rules or api_endpoint_rules and choose inline_rate_limiter for an inline limit, or ref_rate_limiter for a stored rate-limiter reference.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Path- or API-group-scoped rate limiting. Define server_url_rules or api_endpoint_rules and choose inline_rate_limiter for an inline limit, or ref_rate_limiter for a stored rate-limiter reference.",
             "x-f5xc-conflicts-with": [
               "disable_rate_limit",
               "rate_limit"
@@ -102521,12 +102546,15 @@
               }
             ],
             "x-f5xc-example": "{\"requests_per_second\": 100}",
+            "x-f5xc-description-short": "Load-balancer-wide per-client rate limiting.",
+            "x-f5xc-description-medium": "Load-balancer-wide per-client rate limiting. The counter applies across every path; use api_rate_limit rules when only selected paths such as /login should be limited.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Load-balancer-wide per-client rate limiting. The counter applies across every path; use api_rate_limit rules when only selected paths such as /login should be limited.",
             "x-f5xc-conflicts-with": [
               "api_rate_limit",
               "disable_rate_limit"
@@ -103475,12 +103503,15 @@
                 "$ref": "#/components/schemas/common_wafAPIRateLimit"
               }
             ],
+            "x-f5xc-description-short": "Path- or API-group-scoped rate limiting.",
+            "x-f5xc-description-medium": "Path- or API-group-scoped rate limiting. Define server_url_rules or api_endpoint_rules and choose inline_rate_limiter for an inline limit, or ref_rate_limiter for a stored rate-limiter reference.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Path- or API-group-scoped rate limiting. Define server_url_rules or api_endpoint_rules and choose inline_rate_limiter for an inline limit, or ref_rate_limiter for a stored rate-limiter reference.",
             "x-f5xc-conflicts-with": [
               "disable_rate_limit",
               "rate_limit"
@@ -104811,12 +104842,15 @@
               }
             ],
             "x-f5xc-example": "{\"requests_per_second\": 100}",
+            "x-f5xc-description-short": "Load-balancer-wide per-client rate limiting.",
+            "x-f5xc-description-medium": "Load-balancer-wide per-client rate limiting. The counter applies across every path; use api_rate_limit rules when only selected paths such as /login should be limited.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Load-balancer-wide per-client rate limiting. The counter applies across every path; use api_rate_limit rules when only selected paths such as /login should be limited.",
             "x-f5xc-conflicts-with": [
               "api_rate_limit",
               "disable_rate_limit"
@@ -132195,12 +132229,15 @@
               }
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
+            "x-f5xc-description-short": "Ordered service-policy rules for non-geographic predicates and actions.",
+            "x-f5xc-description-medium": "Ordered service-policy rules for non-geographic predicates and actions. Do not use country_list for a geo-only rule here: the platform adds match-all any_ip and any_asn selectors on readback, so the rule can match all traffic. Use deny_list or allow_list with country_list for geographic source...",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Ordered service-policy rules for non-geographic predicates and actions. Do not use country_list for a geo-only rule here: the platform adds match-all any_ip and any_asn selectors on readback, so the rule can match all traffic. Use deny_list or allow_list with country_list for geographic source matching.",
             "x-f5xc-conflicts-with": [
               "allow_all_requests",
               "allow_list",
@@ -132371,7 +132408,7 @@
         "description": "GET service_policy reads a given object from storage backend for metadata.namespace.",
         "title": "Get service policy",
         "x-displayname": "GET Service Policy.",
-        "x-ves-oneof-field-rule_choice": "[\"allow_all_requests\",\"allow_list\",\"deny_all_requests\",\"deny_list\",\"legacy_rule_list\",\"rule_list\"]",
+        "x-ves-oneof-field-rule_choice": "[\"allow_all_requests\",\"allow_list\",\"deny_all_requests\",\"deny_list\",\"rule_list\"]",
         "x-ves-oneof-field-server_choice": "[\"any_server\",\"server_name\",\"server_name_matcher\",\"server_selector\"]",
         "x-ves-proto-message": "ves.io.schema.service_policy.GetSpecType",
         "properties": {
@@ -132392,7 +132429,6 @@
               "allow_list",
               "deny_all_requests",
               "deny_list",
-              "legacy_rule_list",
               "rule_list"
             ]
           },
@@ -132412,7 +132448,6 @@
               "allow_all_requests",
               "deny_all_requests",
               "deny_list",
-              "legacy_rule_list",
               "rule_list"
             ]
           },
@@ -132453,7 +132488,6 @@
               "allow_all_requests",
               "allow_list",
               "deny_list",
-              "legacy_rule_list",
               "rule_list"
             ]
           },
@@ -132473,28 +132507,6 @@
               "allow_all_requests",
               "allow_list",
               "deny_all_requests",
-              "legacy_rule_list",
-              "rule_list"
-            ]
-          },
-          "legacy_rule_list": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/service_policyLegacyRuleList"
-              }
-            ],
-            "x-f5xc-example": "{\"key\": \"value\"}",
-            "x-f5xc-required-for": {
-              "minimum_config": false,
-              "create": false,
-              "update": false,
-              "read": false
-            },
-            "x-f5xc-conflicts-with": [
-              "allow_all_requests",
-              "allow_list",
-              "deny_all_requests",
-              "deny_list",
               "rule_list"
             ]
           },
@@ -132505,30 +132517,22 @@
               }
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
+            "x-f5xc-description-short": "Ordered service-policy rules for non-geographic predicates and actions.",
+            "x-f5xc-description-medium": "Ordered service-policy rules for non-geographic predicates and actions. Do not use country_list for a geo-only rule here: the platform adds match-all any_ip and any_asn selectors on readback, so the rule can match all traffic. Use deny_list or allow_list with country_list for geographic source...",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Ordered service-policy rules for non-geographic predicates and actions. Do not use country_list for a geo-only rule here: the platform adds match-all any_ip and any_asn selectors on readback, so the rule can match all traffic. Use deny_list or allow_list with country_list for geographic source matching.",
             "x-f5xc-conflicts-with": [
               "allow_all_requests",
               "allow_list",
               "deny_all_requests",
-              "deny_list",
-              "legacy_rule_list"
+              "deny_list"
             ],
             "x-f5xc-requires": [
-              {
-                "field": "rules.spec.waf_action",
-                "required": true,
-                "reason": "waf_action is REQUIRED in rule_list rules (400: 'waf_action should be not nil')"
-              },
-              {
-                "field": "rules.spec.action",
-                "required": true,
-                "reason": "action is required in each rule (ALLOW, DENY, etc.)"
-              },
               {
                 "field": "rules.spec.waf_action",
                 "required": true,
@@ -132682,7 +132686,7 @@
         "description": "Replace service_policy replaces an existing object in the storage backend for metadata.namespace.",
         "title": "Replace service policy",
         "x-displayname": "Replace Service Policy.",
-        "x-ves-oneof-field-rule_choice": "[\"allow_all_requests\",\"allow_list\",\"deny_all_requests\",\"deny_list\",\"legacy_rule_list\",\"rule_list\"]",
+        "x-ves-oneof-field-rule_choice": "[\"allow_all_requests\",\"allow_list\",\"deny_all_requests\",\"deny_list\",\"rule_list\"]",
         "x-ves-oneof-field-server_choice": "[\"any_server\",\"server_name\",\"server_name_matcher\",\"server_selector\"]",
         "x-ves-proto-message": "ves.io.schema.service_policy.ReplaceSpecType",
         "properties": {
@@ -132703,7 +132707,6 @@
               "allow_list",
               "deny_all_requests",
               "deny_list",
-              "legacy_rule_list",
               "rule_list"
             ]
           },
@@ -132723,7 +132726,6 @@
               "allow_all_requests",
               "deny_all_requests",
               "deny_list",
-              "legacy_rule_list",
               "rule_list"
             ]
           },
@@ -132764,7 +132766,6 @@
               "allow_all_requests",
               "allow_list",
               "deny_list",
-              "legacy_rule_list",
               "rule_list"
             ]
           },
@@ -132784,28 +132785,6 @@
               "allow_all_requests",
               "allow_list",
               "deny_all_requests",
-              "legacy_rule_list",
-              "rule_list"
-            ]
-          },
-          "legacy_rule_list": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/service_policyLegacyRuleList"
-              }
-            ],
-            "x-f5xc-example": "{\"key\": \"value\"}",
-            "x-f5xc-required-for": {
-              "minimum_config": false,
-              "create": false,
-              "update": false,
-              "read": false
-            },
-            "x-f5xc-conflicts-with": [
-              "allow_all_requests",
-              "allow_list",
-              "deny_all_requests",
-              "deny_list",
               "rule_list"
             ]
           },
@@ -132816,30 +132795,22 @@
               }
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
+            "x-f5xc-description-short": "Ordered service-policy rules for non-geographic predicates and actions.",
+            "x-f5xc-description-medium": "Ordered service-policy rules for non-geographic predicates and actions. Do not use country_list for a geo-only rule here: the platform adds match-all any_ip and any_asn selectors on readback, so the rule can match all traffic. Use deny_list or allow_list with country_list for geographic source...",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Ordered service-policy rules for non-geographic predicates and actions. Do not use country_list for a geo-only rule here: the platform adds match-all any_ip and any_asn selectors on readback, so the rule can match all traffic. Use deny_list or allow_list with country_list for geographic source matching.",
             "x-f5xc-conflicts-with": [
               "allow_all_requests",
               "allow_list",
               "deny_all_requests",
-              "deny_list",
-              "legacy_rule_list"
+              "deny_list"
             ],
             "x-f5xc-requires": [
-              {
-                "field": "rules.spec.waf_action",
-                "required": true,
-                "reason": "waf_action is REQUIRED in rule_list rules (400: 'waf_action should be not nil')"
-              },
-              {
-                "field": "rules.spec.action",
-                "required": true,
-                "reason": "action is required in each rule (ALLOW, DENY, etc.)"
-              },
               {
                 "field": "rules.spec.waf_action",
                 "required": true,

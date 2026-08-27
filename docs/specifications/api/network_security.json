@@ -42796,7 +42796,6 @@
         "description": "Gets Network Policy parameters in specified namespace.",
         "title": "Get Network Policy",
         "x-displayname": "GET Network Policy.",
-        "x-ves-oneof-field-rule_choice": "[\"legacy_rules\",\"rules\"]",
         "x-ves-proto-message": "ves.io.schema.network_policy.GetSpecType",
         "properties": {
           "endpoint": {
@@ -42813,28 +42812,6 @@
               "read": false
             }
           },
-          "legacy_rules": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/network_policyLegacyNetworkPolicyRuleChoice"
-              }
-            ],
-            "x-f5xc-example": "{\"key\": \"value\"}",
-            "x-f5xc-required-for": {
-              "minimum_config": false,
-              "create": false,
-              "update": false,
-              "read": false
-            },
-            "default": {
-              "ingress_rules": [],
-              "egress_rules": []
-            },
-            "x-f5xc-server-default": true,
-            "x-f5xc-conflicts-with": [
-              "rules"
-            ]
-          },
           "rules": {
             "allOf": [
               {
@@ -42842,15 +42819,15 @@
               }
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
+            "x-f5xc-description-short": "Current network-policy ingress and egress rule configuration. Use this field instead of the removed compatibility rule container.",
+            "x-f5xc-description-medium": "Current network-policy ingress and egress rule configuration. Use this field instead of the removed compatibility rule container.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "legacy_rules"
-            ]
+            "description": "Current network-policy ingress and egress rule configuration. Use this field instead of the removed compatibility rule container."
           }
         },
         "x-f5xc-description-short": "Gets Network Policy parameters in specified namespace.",
@@ -42907,7 +42884,6 @@
         "description": "Replaces configured Network Policy with new set of parameters in specified namespace.",
         "title": "Replace Network Policy",
         "x-displayname": "Replace Network Policy.",
-        "x-ves-oneof-field-rule_choice": "[\"legacy_rules\",\"rules\"]",
         "x-ves-proto-message": "ves.io.schema.network_policy.ReplaceSpecType",
         "properties": {
           "endpoint": {
@@ -42924,28 +42900,6 @@
               "read": false
             }
           },
-          "legacy_rules": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/network_policyLegacyNetworkPolicyRuleChoice"
-              }
-            ],
-            "x-f5xc-example": "{\"key\": \"value\"}",
-            "x-f5xc-required-for": {
-              "minimum_config": false,
-              "create": false,
-              "update": false,
-              "read": false
-            },
-            "default": {
-              "ingress_rules": [],
-              "egress_rules": []
-            },
-            "x-f5xc-server-default": true,
-            "x-f5xc-conflicts-with": [
-              "rules"
-            ]
-          },
           "rules": {
             "allOf": [
               {
@@ -42953,15 +42907,15 @@
               }
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
+            "x-f5xc-description-short": "Current network-policy ingress and egress rule configuration. Use this field instead of the removed compatibility rule container.",
+            "x-f5xc-description-medium": "Current network-policy ingress and egress rule configuration. Use this field instead of the removed compatibility rule container.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "legacy_rules"
-            ]
+            "description": "Current network-policy ingress and egress rule configuration. Use this field instead of the removed compatibility rule container."
           }
         },
         "x-f5xc-description-short": "Replaces configured Network Policy with new set of parameters in specified namespace.",
@@ -51177,16 +51131,18 @@
                 "$ref": "#/components/schemas/policyDetectionContext"
               }
             ],
+            "x-f5xc-description-medium": "Exclusion scope. Use CONTEXT_PARAMETER with context_name for one parameter, CONTEXT_COOKIE for one cookie, or CONTEXT_ANY only for an intentionally global scope.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
-            }
+            },
+            "description": "Exclusion scope. Use CONTEXT_PARAMETER with context_name for one parameter, CONTEXT_COOKIE for one cookie, or CONTEXT_ANY only for an intentionally global scope."
           },
           "context_name": {
             "type": "string",
-            "description": "Relevant only for contexts: Header, Cookie and Parameter.\nName of the Context that the WAF Exclusion Rules will check.\nWildcard matching can be used by prefixing or suffixing the context name\nwith an wildcard asterisk (*).",
+            "description": "Parameter, cookie, or header name selected by context. For a parameter-scoped WAF exception, set context to CONTEXT_PARAMETER and name only the intended parameter.",
             "title": "Context Name",
             "maxLength": 128,
             "x-displayname": "Context Name.",
@@ -51194,12 +51150,9 @@
             "x-ves-validation-rules": {
               "ves.io.schema.rules.string.max_len": "128"
             },
-            "x-f5xc-example": "exampleuser-agent for Header",
-            "x-validation-rules": {
-              "ves.io.schema.rules.string.max_len": "128"
-            },
-            "x-f5xc-description-short": "Relevant only for contexts: Header, Cookie and Parameter. Name of the Context that the WAF Exclusion Rules will check.",
-            "x-f5xc-description-medium": "Relevant only for contexts: Header, Cookie and Parameter. Name of the Context that the WAF Exclusion Rules will check. Wildcard matching can be used by prefixing or suffixing the context name with an wildcard asterisk (*).",
+            "x-f5xc-example": "example-resource",
+            "x-f5xc-description-short": "Parameter, cookie, or header name selected by context.",
+            "x-f5xc-description-medium": "Parameter, cookie, or header name selected by context. For a parameter-scoped WAF exception, set context to CONTEXT_PARAMETER and name only the intended parameter.",
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "discovery",
@@ -51224,12 +51177,15 @@
                 "$ref": "#/components/schemas/app_firewallAttackType"
               }
             ],
+            "x-f5xc-description-short": "Attack-type enum excluded in this context, for example ATTACK_TYPE_CROSS_SITE_SCRIPTING.",
+            "x-f5xc-description-medium": "Attack-type enum excluded in this context, for example ATTACK_TYPE_CROSS_SITE_SCRIPTING. Other attack types remain enforced.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
-            }
+            },
+            "description": "Attack-type enum excluded in this context, for example ATTACK_TYPE_CROSS_SITE_SCRIPTING. Other attack types remain enforced."
           }
         },
         "x-f5xc-description-short": "App Firewall Attack Type context changes to be applied for this request.",
@@ -51270,7 +51226,7 @@
         "properties": {
           "exclude_attack_type_contexts": {
             "type": "array",
-            "description": "Attack Types to be excluded for the defined match criteria.",
+            "description": "Exclude an entire attack type only in the named context. For migrated per-parameter exceptions, prefer this over signature-ID exclusions because one payload can trigger several signatures; unrelated parameters and attack types remain protected.",
             "title": "Exclude Attack Types Contexts",
             "maxItems": 64,
             "items": {
@@ -51281,11 +51237,8 @@
               "ves.io.schema.rules.repeated.max_items": "64",
               "ves.io.schema.rules.repeated.unique": "true"
             },
-            "x-validation-rules": {
-              "ves.io.schema.rules.repeated.max_items": "64",
-              "ves.io.schema.rules.repeated.unique": "true"
-            },
-            "x-f5xc-description-short": "Attack Types to be excluded for the defined match criteria.",
+            "x-f5xc-description-short": "Exclude an entire attack type only in the named context.",
+            "x-f5xc-description-medium": "Exclude an entire attack type only in the named context. For migrated per-parameter exceptions, prefer this over signature-ID exclusions because one payload can trigger several signatures; unrelated parameters and attack types remain protected.",
             "x-f5xc-constraints": {
               "constraintType": "array",
               "category": "discovery",
@@ -55621,12 +55574,15 @@
               }
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
+            "x-f5xc-description-short": "Ordered service-policy rules for non-geographic predicates and actions.",
+            "x-f5xc-description-medium": "Ordered service-policy rules for non-geographic predicates and actions. Do not use country_list for a geo-only rule here: the platform adds match-all any_ip and any_asn selectors on readback, so the rule can match all traffic. Use deny_list or allow_list with country_list for geographic source...",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Ordered service-policy rules for non-geographic predicates and actions. Do not use country_list for a geo-only rule here: the platform adds match-all any_ip and any_asn selectors on readback, so the rule can match all traffic. Use deny_list or allow_list with country_list for geographic source matching.",
             "x-f5xc-conflicts-with": [
               "allow_all_requests",
               "allow_list",
@@ -55787,7 +55743,7 @@
         "description": "GET service_policy reads a given object from storage backend for metadata.namespace.",
         "title": "Get service policy",
         "x-displayname": "GET Service Policy.",
-        "x-ves-oneof-field-rule_choice": "[\"allow_all_requests\",\"allow_list\",\"deny_all_requests\",\"deny_list\",\"legacy_rule_list\",\"rule_list\"]",
+        "x-ves-oneof-field-rule_choice": "[\"allow_all_requests\",\"allow_list\",\"deny_all_requests\",\"deny_list\",\"rule_list\"]",
         "x-ves-oneof-field-server_choice": "[\"any_server\",\"server_name\",\"server_name_matcher\",\"server_selector\"]",
         "x-ves-proto-message": "ves.io.schema.service_policy.GetSpecType",
         "properties": {
@@ -55808,7 +55764,6 @@
               "allow_list",
               "deny_all_requests",
               "deny_list",
-              "legacy_rule_list",
               "rule_list"
             ]
           },
@@ -55828,7 +55783,6 @@
               "allow_all_requests",
               "deny_all_requests",
               "deny_list",
-              "legacy_rule_list",
               "rule_list"
             ]
           },
@@ -55869,7 +55823,6 @@
               "allow_all_requests",
               "allow_list",
               "deny_list",
-              "legacy_rule_list",
               "rule_list"
             ]
           },
@@ -55889,28 +55842,6 @@
               "allow_all_requests",
               "allow_list",
               "deny_all_requests",
-              "legacy_rule_list",
-              "rule_list"
-            ]
-          },
-          "legacy_rule_list": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/service_policyLegacyRuleList"
-              }
-            ],
-            "x-f5xc-example": "{\"key\": \"value\"}",
-            "x-f5xc-required-for": {
-              "minimum_config": false,
-              "create": false,
-              "update": false,
-              "read": false
-            },
-            "x-f5xc-conflicts-with": [
-              "allow_all_requests",
-              "allow_list",
-              "deny_all_requests",
-              "deny_list",
               "rule_list"
             ]
           },
@@ -55921,18 +55852,20 @@
               }
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
+            "x-f5xc-description-short": "Ordered service-policy rules for non-geographic predicates and actions.",
+            "x-f5xc-description-medium": "Ordered service-policy rules for non-geographic predicates and actions. Do not use country_list for a geo-only rule here: the platform adds match-all any_ip and any_asn selectors on readback, so the rule can match all traffic. Use deny_list or allow_list with country_list for geographic source...",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Ordered service-policy rules for non-geographic predicates and actions. Do not use country_list for a geo-only rule here: the platform adds match-all any_ip and any_asn selectors on readback, so the rule can match all traffic. Use deny_list or allow_list with country_list for geographic source matching.",
             "x-f5xc-conflicts-with": [
               "allow_all_requests",
               "allow_list",
               "deny_all_requests",
-              "deny_list",
-              "legacy_rule_list"
+              "deny_list"
             ],
             "x-f5xc-requires": [
               {
@@ -56088,7 +56021,7 @@
         "description": "Replace service_policy replaces an existing object in the storage backend for metadata.namespace.",
         "title": "Replace service policy",
         "x-displayname": "Replace Service Policy.",
-        "x-ves-oneof-field-rule_choice": "[\"allow_all_requests\",\"allow_list\",\"deny_all_requests\",\"deny_list\",\"legacy_rule_list\",\"rule_list\"]",
+        "x-ves-oneof-field-rule_choice": "[\"allow_all_requests\",\"allow_list\",\"deny_all_requests\",\"deny_list\",\"rule_list\"]",
         "x-ves-oneof-field-server_choice": "[\"any_server\",\"server_name\",\"server_name_matcher\",\"server_selector\"]",
         "x-ves-proto-message": "ves.io.schema.service_policy.ReplaceSpecType",
         "properties": {
@@ -56109,7 +56042,6 @@
               "allow_list",
               "deny_all_requests",
               "deny_list",
-              "legacy_rule_list",
               "rule_list"
             ]
           },
@@ -56129,7 +56061,6 @@
               "allow_all_requests",
               "deny_all_requests",
               "deny_list",
-              "legacy_rule_list",
               "rule_list"
             ]
           },
@@ -56170,7 +56101,6 @@
               "allow_all_requests",
               "allow_list",
               "deny_list",
-              "legacy_rule_list",
               "rule_list"
             ]
           },
@@ -56190,28 +56120,6 @@
               "allow_all_requests",
               "allow_list",
               "deny_all_requests",
-              "legacy_rule_list",
-              "rule_list"
-            ]
-          },
-          "legacy_rule_list": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/service_policyLegacyRuleList"
-              }
-            ],
-            "x-f5xc-example": "{\"key\": \"value\"}",
-            "x-f5xc-required-for": {
-              "minimum_config": false,
-              "create": false,
-              "update": false,
-              "read": false
-            },
-            "x-f5xc-conflicts-with": [
-              "allow_all_requests",
-              "allow_list",
-              "deny_all_requests",
-              "deny_list",
               "rule_list"
             ]
           },
@@ -56222,18 +56130,20 @@
               }
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
+            "x-f5xc-description-short": "Ordered service-policy rules for non-geographic predicates and actions.",
+            "x-f5xc-description-medium": "Ordered service-policy rules for non-geographic predicates and actions. Do not use country_list for a geo-only rule here: the platform adds match-all any_ip and any_asn selectors on readback, so the rule can match all traffic. Use deny_list or allow_list with country_list for geographic source...",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
               "update": false,
               "read": false
             },
+            "description": "Ordered service-policy rules for non-geographic predicates and actions. Do not use country_list for a geo-only rule here: the platform adds match-all any_ip and any_asn selectors on readback, so the rule can match all traffic. Use deny_list or allow_list with country_list for geographic source matching.",
             "x-f5xc-conflicts-with": [
               "allow_all_requests",
               "allow_list",
               "deny_all_requests",
-              "deny_list",
-              "legacy_rule_list"
+              "deny_list"
             ],
             "x-f5xc-requires": [
               {
