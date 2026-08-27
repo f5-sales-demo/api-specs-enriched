@@ -21,7 +21,7 @@ concurrency:
 
 jobs:
   docs:
-    uses: f5-sales-demo/docs-control/.github/workflows/github-pages-deploy.yml@456fed72b588919317fc10a99c2afe9ad0efe115
+    uses: f5-sales-demo/docs-control/.github/workflows/github-pages-deploy.yml@58ce2a9b09aa28f6a37b53c6cce445216bc46670
     permissions:
       contents: read # read documentation sources at the verified content ref
       packages: read # pull the pinned fleet documentation builder image
@@ -30,3 +30,5 @@ jobs:
     with:
       content-ref: ${{ inputs.target-commit }}
       builder-image: ghcr.io/f5-sales-demo/docs-builder@sha256:905d2398fec15c05e828c881ab0e8b782368c30d70d97a978dc383935d7d0163
+      socketless_runner_label: managed-socketless
+      container_build_runner_label: managed-container-build
