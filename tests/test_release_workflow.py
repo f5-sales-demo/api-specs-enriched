@@ -17,6 +17,34 @@ def test_specification_validation_is_release_blocking() -> None:
     assert "run: python -m scripts.validate --dry-run" in validation_step
 
 
+def test_dry_run_validation_receives_no_f5xc_secrets() -> None:
+    """Offline validation must not receive unnecessary tenant credentials."""
+
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    validation_step = workflow.split("- name: Validate specifications", maxsplit=1)[1].split(
+        "- name: Detect release-worthy changes", maxsplit=1
+    )[0]
+
+    assert "F5XC_API_TOKEN" not in validation_step
+    assert "F5XC_API_URL" not in validation_step
+
+
+def test_secret_consumers_are_bound_to_protected_environments() -> None:
+    """Release and downstream credentials stay scoped to their environments."""
+
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    release_job = workflow.split("\n  sync-and-enrich:\n", maxsplit=1)[1].split(
+        "\n  deploy-docs:\n", maxsplit=1
+    )[0]
+    notify_job = workflow.split("\n  notify-downstream:\n", maxsplit=1)[1].split(
+        "\n  # ==========================================================================",
+        maxsplit=1,
+    )[0]
+
+    assert "\n    environment: release\n" in release_job
+    assert "\n    environment: downstream-dispatch\n" in notify_job
+
+
 def test_release_pr_create_is_non_interactive() -> None:
     """The release workflow must supply every prompt-required PR field."""
 
