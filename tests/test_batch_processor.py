@@ -8,6 +8,7 @@ to reduce memory pressure during pipeline execution.
 """
 
 import json
+import os
 import tempfile
 from pathlib import Path
 from unittest.mock import patch
@@ -15,6 +16,17 @@ from unittest.mock import patch
 import pytest
 
 from scripts.utils.batch_processor import BatchSpecProcessor
+
+
+def _record_worker(spec: dict, config: dict) -> tuple[dict, dict]:
+    """Record the process used by the batch worker."""
+    spec["worker_pid"] = os.getpid()
+    return spec, {}
+
+
+def _identity_transform(spec: dict, config: dict) -> tuple[dict, dict]:
+    """Return a spec unchanged from a process-safe test helper."""
+    return spec, {}
 
 
 @pytest.fixture
@@ -80,6 +92,18 @@ class TestBatchProcessorInitialization:
 
         assert processor.batch_size == 10
 
+    def test_custom_worker_count(self):
+        """Verify a bounded worker count is retained."""
+        processor = BatchSpecProcessor(worker_count=4)
+
+        assert processor.worker_count == 4
+
+    @pytest.mark.parametrize("worker_count", [0, -1])
+    def test_worker_count_must_be_positive(self, worker_count):
+        """Reject worker counts that cannot execute work."""
+        with pytest.raises(ValueError, match="worker_count"):
+            BatchSpecProcessor(worker_count=worker_count)
+
     def test_default_cache_directories_are_isolated(self):
         """Concurrent processors must never delete each other's cached specs."""
         first = BatchSpecProcessor()
@@ -109,6 +133,8 @@ class TestBatchProcessorInitialization:
         expected_stats = {
             "batches_processed": 0,
             "specs_processed": 0,
+            "specs_failed": 0,
+            "errors": [],
             "cache_writes": 0,
             "cache_reads": 0,
             "gc_collections": 0,
@@ -227,6 +253,29 @@ class TestBatchProcessing:
         # Should process 4 out of 5 specs (excluding failing one)
         assert len(cache_paths) == 4
         assert processor.stats["specs_processed"] == 4
+        assert processor.stats["specs_failed"] == 1
+        assert processor.stats["errors"] == [
+            {"file": "spec_2.json", "error": "Simulated enrichment error"},
+        ]
+
+    def test_parallel_processing_preserves_order_and_uses_processes(self, temp_spec_dir):
+        """Parallel processing stays ordered and executes outside the parent."""
+        processor = BatchSpecProcessor(batch_size=5, worker_count=4)
+        spec_files = sorted(temp_spec_dir.glob("*.json"))
+
+        cache_paths = processor.process_batch(
+            spec_files,
+            _record_worker,
+            _identity_transform,
+            {},
+        )
+
+        assert list(cache_paths) == [path.name for path in spec_files]
+        worker_pids = {
+            processor.load_cached_spec(path)["worker_pid"] for path in cache_paths.values()
+        }
+        assert worker_pids
+        assert os.getpid() not in worker_pids
 
     def test_cache_path_generation(self, temp_spec_dir):
         """Verify cache paths are generated correctly."""

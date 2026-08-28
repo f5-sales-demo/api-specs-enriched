@@ -160,6 +160,18 @@ stubby as long as the `### x-name` header exists and the
 - **Example:** `"x-f5xc-response-time-ms": 42`
 - **Pass-through from upstream:** no
 
+### x-f5xc-summary
+
+- **Applied at:** info
+- **Purpose:** Concise domain summary for CLI banners and tooltips.
+- **Consumers:** CLI, IDE, documentation
+- **Value type:** string
+- **Value schema:** `{"type": "string", "maxLength": 150}`
+- **Injected by:** scripts/utils/description_enricher.py
+- **Driven by config:** config/domain_descriptions.yaml
+- **Example:** `"x-f5xc-summary": "Application delivery and security APIs."`
+- **Pass-through from upstream:** no
+
 ### x-f5xc-best-practices
 
 - **Applied at:** info
@@ -293,6 +305,18 @@ stubby as long as the `### x-name` header exists and the
 - **Driven by config:** config/schema_overrides.yaml
 - **Example:** `"x-f5xc-action": "approve"`
 - **Pass-through from upstream:** no
+
+### x-f5xc-upstream-defect
+
+- **Applied at:** schema
+- **Purpose:** Documents an upstream contract defect that required a local compatibility stub.
+- **Consumers:** pipeline, documentation, SDK generators
+- **Value type:** string
+- **Value schema:** `{"type": "string"}`
+- **Injected by:** reviewed generated-source repair
+- **Driven by config:** upstream defect evidence linked in the value
+- **Example:** `"x-f5xc-upstream-defect": "Stub for a referenced schema missing upstream."`
+- **Pass-through from upstream:** yes
 
 ### x-f5xc-ce-automation-contract
 
@@ -585,6 +609,18 @@ stubby as long as the `### x-name` header exists and the
 - **Injected by:** scripts/utils/canonical_merge.py
 - **Driven by config:** explicit reviewed alias registry in the canonical merger
 - **Example:** `"x-f5xc-operation-aliases": ["ves.io.schema.discovered_service.CustomAPI.SuggestValues"]`
+- **Pass-through from upstream:** no
+
+### x-f5xc-operation-metadata
+
+- **Applied at:** operation
+- **Purpose:** Groups purpose, field, safety, error, and performance metadata for an operation.
+- **Consumers:** CLI, MCP, IDE
+- **Value type:** object
+- **Value schema:** `{"type": "object"}`
+- **Injected by:** scripts/utils/operation_metadata_enricher.py
+- **Driven by config:** config/operation_metadata.yaml and config/operation_descriptions.yaml
+- **Example:** `"x-f5xc-operation-metadata": {"purpose": "HTTP load balancer configuration"}`
 - **Pass-through from upstream:** no
 
 ### x-f5xc-operation-role

@@ -35,6 +35,7 @@ X_F5XC_DISCOVERED_AT = "x-f5xc-discovered-at"
 X_F5XC_API_URL = "x-f5xc-api-url"
 X_F5XC_API_REFERENCE_URL = "x-f5xc-api-reference-url"
 X_F5XC_RESPONSE_TIME_MS = "x-f5xc-response-time-ms"
+X_F5XC_SUMMARY = "x-f5xc-summary"
 
 # Domain-level extensions for operational knowledge (Issue #314)
 X_F5XC_BEST_PRACTICES = "x-f5xc-best-practices"
@@ -54,6 +55,7 @@ X_F5XC_DISPLAYORDER = "x-f5xc-displayorder"
 X_F5XC_TERRAFORM_RESOURCE = "x-f5xc-terraform-resource"
 X_F5XC_DISPLAY_NAME = "x-f5xc-display-name"
 X_F5XC_ACTION = "x-f5xc-action"
+X_F5XC_UPSTREAM_DEFECT = "x-f5xc-upstream-defect"
 
 # Checksum-bound Secure Mesh Site v2 automation contract (Issue #1508)
 X_F5XC_CE_AUTOMATION_CONTRACT = "x-f5xc-ce-automation-contract"
@@ -105,6 +107,7 @@ X_F5XC_SIDE_EFFECTS = "x-f5xc-side-effects"
 X_F5XC_OPERATION_ROLE = "x-f5xc-operation-role"
 X_F5XC_TERRAFORM_NAME = "x-f5xc-terraform-name"
 X_F5XC_OPERATION_ALIASES = "x-f5xc-operation-aliases"
+X_F5XC_OPERATION_METADATA = "x-f5xc-operation-metadata"
 
 # Discovery-derived extensions for live API behavior (Issue #314)
 X_F5XC_DISCOVERED_RESPONSE_TIME = "x-f5xc-discovered-response-time"
@@ -224,6 +227,7 @@ VALID_X_F5XC_EXTENSIONS = frozenset(
         X_F5XC_API_URL,
         X_F5XC_API_REFERENCE_URL,
         X_F5XC_RESPONSE_TIME_MS,
+        X_F5XC_SUMMARY,
         # Domain-level (Issue #314)
         X_F5XC_BEST_PRACTICES,
         X_F5XC_GUIDED_WORKFLOWS,
@@ -235,6 +239,7 @@ VALID_X_F5XC_EXTENSIONS = frozenset(
         X_F5XC_TERRAFORM_RESOURCE,
         X_F5XC_DISPLAY_NAME,
         X_F5XC_ACTION,
+        X_F5XC_UPSTREAM_DEFECT,
         X_F5XC_CE_AUTOMATION_CONTRACT,
         # Property-level
         X_F5XC_DESCRIPTION,
@@ -267,6 +272,7 @@ VALID_X_F5XC_EXTENSIONS = frozenset(
         X_F5XC_OPERATION_ROLE,
         X_F5XC_TERRAFORM_NAME,
         X_F5XC_OPERATION_ALIASES,
+        X_F5XC_OPERATION_METADATA,
         # Discovery-derived (Issue #314)
         X_F5XC_DISCOVERED_RESPONSE_TIME,
         X_F5XC_DISCOVERED_RATE_LIMITS,
