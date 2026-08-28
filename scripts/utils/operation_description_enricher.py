@@ -226,6 +226,12 @@ class OperationDescriptionEnricher:
         """
         # Match patterns: /{resource_types} or /{resource_types}/{id}
         # Common API patterns: /namespaces/{namespace}/{resource_types}
+        raw_parts = [part for part in path.split("/") if part]
+        if raw_parts and raw_parts[-1] == "namespaces":
+            # A terminal collection segment is the resource. In nested paths,
+            # namespaces remains structural and is skipped below.
+            return "namespace"
+
         path_parts = [p for p in path.split("/") if p and not p.startswith("{")]
 
         # Look for resource type (usually the last non-parameter part before optional {id})

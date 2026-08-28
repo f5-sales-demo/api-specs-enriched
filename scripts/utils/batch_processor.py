@@ -23,10 +23,53 @@ import json
 import logging
 import tempfile
 from collections.abc import Callable
+from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
-from typing import Any
+from typing import Any, TypedDict
 
 logger = logging.getLogger(__name__)
+
+
+class BatchError(TypedDict):
+    """One per-file processing failure."""
+
+    file: str
+    error: str
+
+
+class BatchStats(TypedDict):
+    """Counters and failures collected across batch processing."""
+
+    batches_processed: int
+    specs_processed: int
+    specs_failed: int
+    errors: list[BatchError]
+    cache_writes: int
+    cache_reads: int
+    gc_collections: int
+
+
+def _process_spec_file(
+    args: tuple[
+        Path,
+        Path,
+        Callable[[dict, dict], tuple[dict, dict]],
+        Callable[[dict, dict], tuple[dict, dict]],
+        dict[str, Any],
+    ],
+) -> tuple[str, Path | None, str | None]:
+    """Process one spec in a worker and persist its deterministic cache entry."""
+    spec_file, cache_path, enrich_func, normalize_func, config = args
+    try:
+        with spec_file.open() as file_handle:
+            spec = json.load(file_handle)
+        spec, _ = enrich_func(spec, config)
+        spec, _ = normalize_func(spec, config)
+        with cache_path.open("w") as file_handle:
+            json.dump(spec, file_handle, indent=2)
+        return spec_file.name, cache_path, None
+    except Exception as exc:  # Workers return failures so the parent can aggregate them.
+        return spec_file.name, None, str(exc)
 
 
 class BatchSpecProcessor:
@@ -46,14 +89,21 @@ class BatchSpecProcessor:
         self,
         batch_size: int = 20,
         cache_dir: Path | None = None,
+        worker_count: int = 1,
     ) -> None:
         """Initialize batch processor.
 
         Args:
             batch_size: Number of specs to process per batch (default: 20)
             cache_dir: Optional custom cache directory (defaults to system temp)
+            worker_count: Maximum number of worker processes (default: 1)
         """
+        if batch_size < 1:
+            raise ValueError("batch_size must be at least 1")
+        if worker_count < 1:
+            raise ValueError("worker_count must be at least 1")
         self.batch_size = batch_size
+        self.worker_count = worker_count
         self.cache_dir = (
             Path(cache_dir)
             if cache_dir is not None
@@ -61,17 +111,20 @@ class BatchSpecProcessor:
         )
         self.cache_dir.mkdir(parents=True, exist_ok=True)
 
-        self.stats = {
+        self.stats: BatchStats = {
             "batches_processed": 0,
             "specs_processed": 0,
+            "specs_failed": 0,
+            "errors": [],
             "cache_writes": 0,
             "cache_reads": 0,
             "gc_collections": 0,
         }
 
         logger.info(
-            "Initialized BatchSpecProcessor: batch_size=%d, cache_dir=%s",
+            "Initialized BatchSpecProcessor: batch_size=%d, worker_count=%d, cache_dir=%s",
             batch_size,
+            worker_count,
             self.cache_dir,
         )
 
@@ -112,63 +165,71 @@ class BatchSpecProcessor:
         """
         processed_paths: dict[str, Path] = {}
         total_specs = len(spec_files)
+        continue_on_error = config.get("processing", {}).get("continue_on_error", True)
 
-        logger.info("Processing %d specs in batches of %d", total_specs, self.batch_size)
+        logger.info(
+            "Processing %d specs in batches of %d with %d worker(s)",
+            total_specs,
+            self.batch_size,
+            self.worker_count,
+        )
 
-        # Process specs in batches
-        for batch_idx in range(0, total_specs, self.batch_size):
-            batch = spec_files[batch_idx : batch_idx + self.batch_size]
-            batch_num = (batch_idx // self.batch_size) + 1
+        executor = (
+            ProcessPoolExecutor(max_workers=min(self.worker_count, total_specs))
+            if self.worker_count > 1 and total_specs
+            else None
+        )
+        try:
+            for batch_idx in range(0, total_specs, self.batch_size):
+                batch = spec_files[batch_idx : batch_idx + self.batch_size]
+                batch_num = (batch_idx // self.batch_size) + 1
+                tasks = [
+                    (
+                        spec_file,
+                        self._get_cache_path(spec_file),
+                        enrich_func,
+                        normalize_func,
+                        config,
+                    )
+                    for spec_file in batch
+                ]
+                results = (
+                    executor.map(_process_spec_file, tasks)
+                    if executor
+                    else map(_process_spec_file, tasks)
+                )
 
-            logger.info(
-                "Processing batch %d (%d specs)",
-                batch_num,
-                len(batch),
-            )
-
-            for spec_file in batch:
-                try:
-                    # Load spec
-                    with spec_file.open() as f:
-                        spec = json.load(f)
-
-                    # Enrich
-                    spec, _ = enrich_func(spec, config)
-
-                    # Normalize
-                    spec, _ = normalize_func(spec, config)
-
-                    # Write to cache immediately
-                    cache_path = self._get_cache_path(spec_file)
-                    with cache_path.open("w") as f:
-                        json.dump(spec, f, indent=2)
-
-                    processed_paths[spec_file.name] = cache_path
+                for filename, cache_path, error in results:
+                    if error is not None:
+                        logger.error("Error processing %s: %s", filename, error)
+                        self.stats["specs_failed"] += 1
+                        self.stats["errors"].append({"file": filename, "error": error})
+                        if not continue_on_error:
+                            raise RuntimeError(f"Failed to process {filename}: {error}")
+                        continue
+                    if cache_path is None:
+                        raise RuntimeError(f"Worker returned no cache path for {filename}")
+                    processed_paths[filename] = cache_path
                     self.stats["cache_writes"] += 1
                     self.stats["specs_processed"] += 1
 
-                    # Explicit cleanup
-                    del spec
-
-                except Exception:
-                    logger.exception("Error processing %s", spec_file.name)
-                    # Continue processing other specs
-
-            # Garbage collection after each batch
-            collected = gc.collect()
-            self.stats["gc_collections"] += 1
-            self.stats["batches_processed"] += 1
-
-            logger.info(
-                "Batch %d complete: %d specs processed, %d objects collected",
-                batch_num,
-                len(batch),
-                collected,
-            )
+                collected = gc.collect()
+                self.stats["gc_collections"] += 1
+                self.stats["batches_processed"] += 1
+                logger.info(
+                    "Batch %d complete: %d specs, %d objects collected",
+                    batch_num,
+                    len(batch),
+                    collected,
+                )
+        finally:
+            if executor:
+                executor.shutdown(cancel_futures=True)
 
         logger.info(
-            "Batch processing complete: %d specs in %d batches",
+            "Batch processing complete: %d succeeded, %d failed in %d batches",
             self.stats["specs_processed"],
+            self.stats["specs_failed"],
             self.stats["batches_processed"],
         )
 
@@ -312,7 +373,7 @@ class BatchSpecProcessor:
 
         return processed_paths
 
-    def get_stats(self) -> dict[str, int]:
+    def get_stats(self) -> BatchStats:
         """Get processing statistics.
 
         Returns:

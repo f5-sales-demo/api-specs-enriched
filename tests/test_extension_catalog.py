@@ -24,7 +24,7 @@ from scripts.utils.extension_constants import (
 
 REPO_ROOT = Path(__file__).parent.parent
 CATALOG = REPO_ROOT / "docs" / "en" / "extensions" / "catalog.md"
-ENRICHED_DIR = REPO_ROOT / "docs" / "en" / "specifications" / "api"
+ENRICHED_DIR = REPO_ROOT / "docs" / "specifications" / "api"
 
 
 def _catalog_entries() -> set[str]:
@@ -85,10 +85,6 @@ def test_no_dead_catalog_entries(catalog):
     assert not extra, f"Catalog entries not in extension_constants.py: {sorted(extra)}"
 
 
-@pytest.mark.skipif(
-    not ENRICHED_DIR.exists() or not any(ENRICHED_DIR.glob("*.json")),
-    reason="Enriched output not built; run `make pipeline` first.",
-)
 def test_every_emitted_x_f5xc_key_has_a_catalog_entry(catalog):
     """Anti-drift invariant: every ``x-f5xc-*`` key that actually appears
     in the enriched output must be documented in the catalog AND live in
@@ -99,32 +95,16 @@ def test_every_emitted_x_f5xc_key_has_a_catalog_entry(catalog):
     guard: it catches a new enricher that starts emitting a key without
     documenting it.
     """
-    # Known-undeclared keys the current pipeline emits. Each entry here
-    # represents a real drift between an enricher and extension_constants
-    # that should be reconciled in a follow-up: either declare the key in
-    # VALID_X_F5XC_EXTENSIONS + catalog.md, or stop emitting it.
-    #
-    # x-f5xc-operation-metadata: emitted by operation_metadata_enricher
-    # x-f5xc-summary: emitted by operation description enrichers
-    known_drift: set[str] = {
-        "x-f5xc-operation-metadata",
-        "x-f5xc-summary",
-    }
     actual = {k for k in _enriched_x_keys() if k.startswith("x-f5xc-")}
-    undocumented = actual - VALID_X_F5XC_EXTENSIONS - known_drift
+    undocumented = actual - VALID_X_F5XC_EXTENSIONS
     assert not undocumented, (
         f"Enriched output emits x-f5xc-* keys that are not declared in "
         f"VALID_X_F5XC_EXTENSIONS (and therefore have no catalog entry): "
         f"{sorted(undocumented)}. Either declare them in extension_constants "
-        f"+ catalog.md, stop emitting them, or add them to the known_drift "
-        f"tolerance set with a tracking comment."
+        f"+ catalog.md or stop emitting them."
     )
 
 
-@pytest.mark.skipif(
-    not ENRICHED_DIR.exists() or not any(ENRICHED_DIR.glob("*.json")),
-    reason="Enriched output not built; run `make pipeline` first.",
-)
 @pytest.mark.xfail(
     strict=False,
     reason=(

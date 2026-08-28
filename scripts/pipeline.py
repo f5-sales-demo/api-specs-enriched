@@ -53,7 +53,9 @@ import json
 import logging
 import os
 import re
+import shutil
 import sys
+import tempfile
 from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -1730,7 +1732,50 @@ def restore_native_contract_constraints(
             restore_native_contract_constraints(processed_item, original_item)
 
 
+def _publish_candidate(candidate_dir: Path, output_dir: Path) -> None:
+    """Replace the published directory with a complete candidate, with rollback."""
+    backup_dir: Path | None = None
+    if output_dir.exists():
+        backup_dir = Path(
+            tempfile.mkdtemp(prefix=f".{output_dir.name}-backup-", dir=output_dir.parent)
+        )
+        backup_dir.rmdir()
+        output_dir.replace(backup_dir)
+
+    try:
+        candidate_dir.replace(output_dir)
+    except Exception:
+        if backup_dir is not None and backup_dir.exists() and not output_dir.exists():
+            backup_dir.replace(output_dir)
+        raise
+
+    if backup_dir is not None:
+        shutil.rmtree(backup_dir)
+
+
 def run_pipeline(
+    input_dir: Path,
+    output_dir: Path,
+    config: dict,
+    dry_run: bool = False,
+) -> PipelineStats:
+    """Build in an isolated directory and publish only a complete successful result."""
+    output_dir = output_dir.resolve()
+    output_dir.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(
+        prefix=f".{output_dir.name}-candidate-",
+        dir=output_dir.parent,
+    ) as candidate_root:
+        # Retain the publishing path marker used by the JSON formatter.
+        candidate_dir = Path(candidate_root) / "docs" / "specifications" / "api"
+        candidate_dir.mkdir(parents=True)
+        stats = _run_pipeline(input_dir, candidate_dir, config, dry_run=dry_run)
+        if not dry_run and stats.files_failed == 0:
+            _publish_candidate(candidate_dir, output_dir)
+        return stats
+
+
+def _run_pipeline(
     input_dir: Path,
     output_dir: Path,
     config: dict,
@@ -1823,9 +1868,15 @@ def run_pipeline(
         indent = output_config.get("json_indent", 2)
         profiler.checkpoint("configuration_loaded")
 
-        # Initialize batch processor with configurable batch size
-        batch_size = config.get("processing", {}).get("batch_size", 20)
-        batch_processor = BatchSpecProcessor(batch_size=batch_size)
+        # Initialize batch processor with bounded configured workers.
+        processing_config = config.get("processing", {})
+        batch_size = processing_config.get("batch_size", 20)
+        worker_count = processing_config.get("parallel_workers", 1)
+        batch_processor = BatchSpecProcessor(
+            batch_size=batch_size,
+            cache_dir=output_dir / ".batch-cache",
+            worker_count=worker_count,
+        )
         console.print(f"[blue]Using batch processing: {batch_size} specs per batch[/blue]")
 
         # Step 1-2: Batch process enrichment and normalization (disk-cached)
@@ -1838,22 +1889,21 @@ def run_pipeline(
             )
             profiler.checkpoint("batch_processing_complete", force_gc=True)
 
-            # Collect batch stats from first spec (all specs contribute equally)
-            if cache_paths:
-                first_cache_path = next(iter(cache_paths.values()))
-                batch_processor.load_cached_spec(first_cache_path)
-
-                # Estimate stats (multiply by number of processed specs)
-                processed_count = len(cache_paths)
-                stats.files_processed = processed_count
-                stats.files_succeeded = processed_count
-                # Note: Actual enrichment/normalization stats collection happens below
-
             batch_stats = batch_processor.get_stats()
+            stats.files_processed = batch_stats["specs_processed"] + batch_stats["specs_failed"]
+            stats.files_succeeded = batch_stats["specs_processed"]
+            stats.files_failed = batch_stats["specs_failed"]
+            stats.errors.extend(
+                {"file": error["file"], "error": error["error"]} for error in batch_stats["errors"]
+            )
             console.print(
-                f"[green]Batch processing complete: {batch_stats['specs_processed']} specs in "
+                f"[green]Batch processing complete: {batch_stats['specs_processed']} succeeded, "
+                f"{batch_stats['specs_failed']} failed in "
                 f"{batch_stats['batches_processed']} batches[/green]",
             )
+            if stats.files_failed:
+                batch_processor.cleanup_cache()
+                return stats
 
         except Exception as e:
             console.print(f"[red]Batch processing failed: {e!s}[/red]")
@@ -2297,7 +2347,7 @@ Output (merged domain specs only):
     # Exit with error if any files failed
     if stats.files_failed > 0:
         console.print(f"\n[yellow]Completed with {stats.files_failed} failures[/yellow]")
-        return 1 if not config.get("processing", {}).get("continue_on_error", True) else 0
+        return 1
 
     console.print(f"\n[bold green]Pipeline complete! Output: {output_dir}[/bold green]")
     return 0

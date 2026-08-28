@@ -250,13 +250,7 @@ class TestAllExplicitResources:
 
     # Complete inventory of all 10 explicit resources from config/operation_descriptions.yaml
     # Test data format: resource_type, expected_short_description, api_path_pattern
-    # NOTE: EXPLICIT_RESOURCES_FULL_PIPELINE includes xfail for namespace due to path extraction limitation
-    # EXPLICIT_RESOURCES_PRESERVATION tests don't need xfail since they don't use path extraction
     # Mirrors config/operation_descriptions.yaml:resources (55 entries).
-    # `namespace` is marked xfail because _extract_resource_type skips
-    # "namespaces" as a structural path segment — legitimate limitation,
-    # not a test bug. All other 54 resources extract cleanly from a
-    # /api/config/namespaces/{namespace}/<resource>s path.
     EXPLICIT_RESOURCES_FULL_PIPELINE: ClassVar[list] = [
         (
             "alert_policy",
@@ -408,14 +402,10 @@ class TestAllExplicitResources:
             "Malicious user detection and blocking configuration",
             "/api/config/namespaces/{namespace}/malicious_users",
         ),
-        pytest.param(
+        (
             "namespace",
             "Logical resource grouping and multi-tenancy boundary",
             "/api/system/namespaces",
-            marks=pytest.mark.xfail(
-                reason="Path extraction limitation: 'namespace' cannot be extracted from standard API paths",
-                strict=True,
-            ),
         ),
         (
             "network_connector",

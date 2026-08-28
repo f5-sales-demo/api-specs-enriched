@@ -137,6 +137,18 @@ class TestResourceTypeExtraction:
         )
         assert resource == "certificate"
 
+    def test_extract_terminal_namespace_collection(self, enricher):
+        """Treat a terminal namespaces segment as the namespace resource."""
+        resource = enricher._extract_resource_type("/api/system/namespaces")
+        assert resource == "namespace"
+
+    def test_nested_namespace_path_keeps_structural_resource(self, enricher):
+        """A namespace path parameter remains structural, not the resource."""
+        resource = enricher._extract_resource_type(
+            "/api/system/namespaces/{namespace}/certificates",
+        )
+        assert resource == "certificate"
+
     def test_extract_returns_none_for_invalid_path(self, enricher):
         """Test returns None for paths without resource type."""
         resource = enricher._extract_resource_type("/api/config")
