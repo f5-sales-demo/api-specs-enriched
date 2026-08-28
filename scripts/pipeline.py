@@ -1893,7 +1893,9 @@ def _run_pipeline(
             stats.files_processed = batch_stats["specs_processed"] + batch_stats["specs_failed"]
             stats.files_succeeded = batch_stats["specs_processed"]
             stats.files_failed = batch_stats["specs_failed"]
-            stats.errors.extend(batch_stats["errors"])
+            stats.errors.extend(
+                {"file": error["file"], "error": error["error"]} for error in batch_stats["errors"]
+            )
             console.print(
                 f"[green]Batch processing complete: {batch_stats['specs_processed']} succeeded, "
                 f"{batch_stats['specs_failed']} failed in "
