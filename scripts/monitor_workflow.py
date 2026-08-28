@@ -25,6 +25,14 @@ from typing import Any
 
 import yaml
 
+JOB_RESULT_ENV_VARS = (
+    ("JOB_CHECK_UPDATES", "Check for Updates"),
+    ("JOB_SYNC_ENRICH", "Sync and Enrich Specifications"),
+    ("JOB_DEPLOY", "Deploy Documentation"),
+    ("JOB_BUILD_MATRIX", "Build Downstream Matrix"),
+    ("JOB_NOTIFY_DOWNSTREAM", "Notify Downstream Repositories"),
+)
+
 
 @dataclass
 class WorkflowFailure:
@@ -84,8 +92,6 @@ class WorkflowFailure:
     @property
     def severity(self) -> str:
         """Determine severity based on failure type."""
-        if self.conclusion == "cancelled":
-            return "info"
         if self.category in ("deployment", "release"):
             return "critical"
         if self.category == "deprecation":
@@ -152,14 +158,14 @@ def parse_failures(run_details: dict[str, Any], env_vars: dict[str, str]) -> lis
         job_name = job.get("name", "unknown")
         conclusion = job.get("conclusion", "unknown")
 
-        if conclusion in ("failure", "cancelled"):
+        if conclusion == "failure":
             # Check steps for specific failure
             steps = job.get("steps", [])
             failed_step = None
             error_msg = ""
 
             for step in steps:
-                if step.get("conclusion") in ("failure", "cancelled"):
+                if step.get("conclusion") == "failure":
                     failed_step = step.get("name")
                     error_msg = f"Step '{failed_step}' {step.get('conclusion')}"
                     break
@@ -179,6 +185,28 @@ def parse_failures(run_details: dict[str, Any], env_vars: dict[str, str]) -> lis
             )
             failures.append(failure)
 
+    return failures
+
+
+def parse_fallback_failures(env_vars: dict[str, str]) -> list[WorkflowFailure]:
+    """Parse genuine job failures from workflow result environment variables."""
+    failures: list[WorkflowFailure] = []
+    for job_var, job_name in JOB_RESULT_ENV_VARS:
+        result = os.environ.get(job_var, "success")
+        if result != "failure":
+            continue
+        failures.append(
+            WorkflowFailure(
+                job_name=job_name,
+                step_name=None,
+                conclusion=result,
+                error_message=f"Job '{job_name}' {result}",
+                run_id=env_vars.get("RUN_ID", ""),
+                workflow=env_vars.get("WORKFLOW_NAME", ""),
+                branch=env_vars.get("BRANCH", ""),
+                commit=env_vars.get("COMMIT_SHA", ""),
+            )
+        )
     return failures
 
 
@@ -387,25 +415,7 @@ def main() -> int:
     if not run_details:
         # Fall back to environment variables for job results
         print("Could not fetch run details, using environment variables...")
-        failures = []
-        for job_var, job_name in [
-            ("JOB_CHECK_UPDATES", "Check for Updates"),
-            ("JOB_SYNC_ENRICH", "Sync and Enrich"),
-            ("JOB_DEPLOY", "Deploy Documentation"),
-        ]:
-            result = os.environ.get(job_var, "success")
-            if result in ("failure", "cancelled"):
-                failure = WorkflowFailure(
-                    job_name=job_name,
-                    step_name=None,
-                    conclusion=result,
-                    error_message=f"Job '{job_name}' {result}",
-                    run_id=args.run_id,
-                    workflow=args.workflow,
-                    branch=args.branch,
-                    commit=args.commit,
-                )
-                failures.append(failure)
+        failures = parse_fallback_failures(env_vars)
     else:
         failures = parse_failures(run_details, env_vars)
 

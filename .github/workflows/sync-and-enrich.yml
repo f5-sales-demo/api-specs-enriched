@@ -928,17 +928,12 @@ jobs:
           BUILD_DOWNSTREAM_MATRIX_RESULT: ${{ needs.build-downstream-matrix.result }}
           NOTIFY_DOWNSTREAM_RESULT: ${{ needs.notify-downstream.result }}
         run: |
-          # Check if any job failed or was cancelled
+          # Check if any job failed
           if [ "$CHECK_UPDATES_RESULT" = "failure" ] || \
             [ "$SYNC_AND_ENRICH_RESULT" = "failure" ] || \
             [ "$DEPLOY_DOCS_RESULT" = "failure" ] || \
             [ "$BUILD_DOWNSTREAM_MATRIX_RESULT" = "failure" ] || \
-            [ "$NOTIFY_DOWNSTREAM_RESULT" = "failure" ] || \
-            [ "$CHECK_UPDATES_RESULT" = "cancelled" ] || \
-            [ "$SYNC_AND_ENRICH_RESULT" = "cancelled" ] || \
-            [ "$DEPLOY_DOCS_RESULT" = "cancelled" ] || \
-            [ "$BUILD_DOWNSTREAM_MATRIX_RESULT" = "cancelled" ] || \
-            [ "$NOTIFY_DOWNSTREAM_RESULT" = "cancelled" ]; then
+            [ "$NOTIFY_DOWNSTREAM_RESULT" = "failure" ]; then
             echo "has_failure=true" >> "$GITHUB_OUTPUT"
             echo "::warning::Workflow failure detected - will create issue"
           else
