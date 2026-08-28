@@ -79,7 +79,7 @@ def test_contract_is_deterministic_and_guest_names_are_not_authoritative(
         ]
         == "observational_only"
     )
-    assert create_contract[X_F5XC_CE_AUTOMATION_CONTRACT]["contract_id"] == "f5xc-ce-automation/v1"
+    assert create_contract[X_F5XC_CE_AUTOMATION_CONTRACT]["contract_id"] == "f5xc-ce-automation/v2"
     assert "eth" not in json.dumps(create_contract).lower()
 
 
@@ -87,7 +87,7 @@ def test_contract_defines_stable_identity_and_role_invariants() -> None:
     enricher = InterfaceContractEnricher()
     contract = enricher.contracts[0][1]
     azure = contract["providers"]["azure"]
-    assert contract["contract_id"] == "f5xc-ce-automation/v1"
+    assert contract["contract_id"] == "f5xc-ce-automation/v2"
     assert contract["api"]["namespace"] == "system"
     assert contract["api"]["operations"] == ["create", "read", "replace", "delete"]
     assert contract["providers"]["aws"]["availability"] == "evidence_backed"
@@ -177,12 +177,11 @@ def test_rejects_aws_profile_that_claims_unverified_automation(
         InterfaceContractEnricher(_write_config(tmp_path, invalid))
 
 
-def test_accepts_additive_v1_contract_fields_and_revision(
+def test_accepts_additive_current_contract_fields(
     tmp_path: Path, contract_config: dict[str, Any]
 ) -> None:
     compatible = copy.deepcopy(contract_config)
     contract = _contract(compatible)
-    contract["version"] = "2.7.9"
     contract["api"]["status_path"] = (
         "/api/config/namespaces/{namespace}/securemesh_site_v2s/{name}/status"
     )
@@ -194,11 +193,11 @@ def test_accepts_additive_v1_contract_fields_and_revision(
 
     enricher = InterfaceContractEnricher(_write_config(tmp_path, compatible))
 
-    assert enricher.contracts[0][1]["version"] == "2.7.9"
+    assert enricher.contracts[0][1]["version"] == "3.0.0"
     assert enricher.contracts[0][1]["providers"]["gcp"]["availability"] == "schema_only"
 
 
-@pytest.mark.parametrize("version", ["2", "2.1", "02.1.0", "2.1.0-dev", "3.0.0"])
+@pytest.mark.parametrize("version", ["2", "2.1", "02.1.0", "2.1.0-dev", "2.1.0", "3.0.1", "4.0.0"])
 def test_rejects_malformed_or_incompatible_schema_versions(
     tmp_path: Path, contract_config: dict[str, Any], version: str
 ) -> None:
@@ -213,9 +212,23 @@ def test_rejects_unknown_contract_identity_major(
     tmp_path: Path, contract_config: dict[str, Any]
 ) -> None:
     incompatible = copy.deepcopy(contract_config)
-    _contract(incompatible)["contract_id"] = "f5xc-ce-automation/v2"
+    _contract(incompatible)["contract_id"] = "f5xc-ce-automation/v1"
 
     with pytest.raises(InterfaceContractValidationError, match="invalid contract identity"):
+        InterfaceContractEnricher(_write_config(tmp_path, incompatible))
+
+
+@pytest.mark.parametrize("version", [None, "2.0.0", "3.0.1", "4.0.0"])
+def test_rejects_noncurrent_configuration_version(
+    tmp_path: Path, contract_config: dict[str, Any], version: object
+) -> None:
+    incompatible = copy.deepcopy(contract_config)
+    incompatible["version"] = version
+
+    with pytest.raises(
+        InterfaceContractValidationError,
+        match="configuration has an unsupported version",
+    ):
         InterfaceContractEnricher(_write_config(tmp_path, incompatible))
 
 
@@ -286,6 +299,26 @@ def test_rejects_unsanitized_aws_evidence(tmp_path: Path, contract_config: dict[
     invalid = copy.deepcopy(contract_config)
     _contract(invalid)["providers"]["aws"]["evidence"]["receipts"][0]["sanitized"] = False
     with pytest.raises(InterfaceContractValidationError, match="evidence receipt is invalid"):
+        InterfaceContractEnricher(_write_config(tmp_path, invalid))
+
+
+def test_aws_evidence_receipt_has_closed_modern_shape(
+    contract_config: dict[str, Any],
+) -> None:
+    assert contract_config["version"] == "3.0.0"
+    receipt = _contract(contract_config)["providers"]["aws"]["evidence"]["receipts"][0]
+    assert set(receipt) == {"operations", "sanitized", "redaction"}
+
+
+def test_rejects_undeclared_aws_receipt_field(
+    tmp_path: Path, contract_config: dict[str, Any]
+) -> None:
+    invalid = copy.deepcopy(contract_config)
+    receipt = _contract(invalid)["providers"]["aws"]["evidence"]["receipts"][0]
+    receipt["source_url"] = "https://example.invalid/legacy"
+    with pytest.raises(
+        InterfaceContractValidationError, match="evidence receipt contains unsupported fields"
+    ):
         InterfaceContractEnricher(_write_config(tmp_path, invalid))
 
 

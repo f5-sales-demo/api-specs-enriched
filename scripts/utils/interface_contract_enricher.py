@@ -14,12 +14,9 @@ from .extension_constants import X_F5XC_CE_AUTOMATION_CONTRACT
 
 CONFIG_PATH = Path(__file__).parent.parent.parent / "config" / "interface_contracts.yaml"
 SUPPORTED_ROLES = frozenset({"slo", "external", "sli"})
-SUPPORTED_CONTRACT_MAJOR = 1
-SUPPORTED_SCHEMA_MAJOR = 2
-CONTRACT_ID_PATTERN = re.compile(r"^f5xc-ce-automation/v(?P<major>[1-9][0-9]*)$")
-SEMVER_PATTERN = re.compile(
-    r"^(?P<major>0|[1-9][0-9]*)\.(?P<minor>0|[1-9][0-9]*)\.(?P<patch>0|[1-9][0-9]*)$"
-)
+CONFIG_VERSION = "3.0.0"
+CONTRACT_VERSION = "3.0.0"
+CONTRACT_ID = "f5xc-ce-automation/v2"
 CAPABILITY_STATES = frozenset({"available", "unavailable"})
 STABLE_IDENTITY_FIELDS = frozenset(
     {
@@ -120,6 +117,11 @@ class InterfaceContractEnricher:
         with self.config_path.open() as config_file:
             config = yaml.safe_load(config_file) or {}
 
+        if config.get("version") != CONFIG_VERSION:
+            raise InterfaceContractValidationError(
+                "interface contract configuration has an unsupported version"
+            )
+
         contracts = config.get("contracts")
         if not isinstance(contracts, dict) or not contracts:
             raise InterfaceContractValidationError(
@@ -162,19 +164,13 @@ class InterfaceContractEnricher:
         return value
 
     def _validate_contract(self, resource: str, contract: dict[str, Any]) -> None:
-        version = contract.get("version")
-        version_match = SEMVER_PATTERN.fullmatch(version) if isinstance(version, str) else None
-        if not version_match or int(version_match["major"]) != SUPPORTED_SCHEMA_MAJOR:
+        if contract.get("version") != CONTRACT_VERSION:
             raise InterfaceContractValidationError(f"{resource}: unsupported contract version")
         if contract.get("resource") != resource:
             raise InterfaceContractValidationError(
                 f"{resource}: resource identity must match its key"
             )
-        contract_id = contract.get("contract_id")
-        identity_match = (
-            CONTRACT_ID_PATTERN.fullmatch(contract_id) if isinstance(contract_id, str) else None
-        )
-        if not identity_match or int(identity_match["major"]) != SUPPORTED_CONTRACT_MAJOR:
+        if contract.get("contract_id") != CONTRACT_ID:
             raise InterfaceContractValidationError(f"{resource}: invalid contract identity")
         api = self._required_object(contract, "api", resource=resource)
         required_api = {
@@ -313,9 +309,13 @@ class InterfaceContractEnricher:
         ):
             raise InterfaceContractValidationError(f"{resource}: AWS evidence receipt is required")
         receipt = receipts[0]
+        expected_receipt_fields = {"operations", "sanitized", "redaction"}
+        if set(receipt) != expected_receipt_fields:
+            raise InterfaceContractValidationError(
+                f"{resource}: AWS evidence receipt contains unsupported fields"
+            )
         if (
-            not isinstance(receipt.get("source_url"), str)
-            or receipt.get("operations") != ["create", "read", "replace", "delete"]
+            receipt.get("operations") != ["create", "read", "replace", "delete"]
             or receipt.get("sanitized") is not True
             or not isinstance(receipt.get("redaction"), str)
         ):
