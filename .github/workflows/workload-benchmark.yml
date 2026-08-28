@@ -1,0 +1,226 @@
+---
+name: Workload benchmark
+
+on:
+  workflow_dispatch:
+    inputs:
+      runner:
+        description: Runner class under test
+        required: true
+        type: choice
+        options: [d8-socketless, d16-compute]
+      workers:
+        description: Independent per-spec workers
+        required: true
+        type: choice
+        options: ['1', '2', '4', '8']
+      cache_state:
+        description: Dependency cache state
+        required: true
+        type: choice
+        options: [warm, cold]
+      variant:
+        description: Comparison key (use baseline for the control)
+        required: true
+        default: baseline
+        type: string
+      cprofile:
+        description: Also retain Python cProfile data
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+env:
+  PYTHON_VERSION: '3.13.7'
+
+jobs:
+  pipeline-d8:
+    if: inputs.runner == 'd8-socketless'
+    name: Pipeline D8 w${{ inputs.workers }} pair-${{ matrix.pair }}
+    runs-on: managed-socketless
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        pair: [1, 2, 3, 4, 5]
+    steps:
+      - name: Validate benchmark inputs
+        env:
+          VARIANT: ${{ inputs.variant }}
+        run: |
+          [[ "$VARIANT" =~ ^[a-z0-9][a-z0-9._-]{0,63}$ ]]
+
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Setup Python with warm dependency cache
+        if: inputs.cache_state == 'warm'
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Setup Python without dependency cache
+        if: inputs.cache_state == 'cold'
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        env:
+          CACHE_STATE: ${{ inputs.cache_state }}
+        run: |
+          if [[ "$CACHE_STATE" == cold ]]; then
+            pip install --no-cache-dir -r requirements.txt
+          else
+            pip install -r requirements.txt
+          fi
+
+      - name: Seed specifications
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python -m scripts.download --force
+
+      - name: Profile enrichment pipeline
+        env:
+          CACHE_STATE: ${{ inputs.cache_state }}
+          PAIR_ID: ${{ matrix.pair }}
+          VARIANT: ${{ inputs.variant }}
+          WORKERS: ${{ inputs.workers }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/workload-profile"
+          runner-profile \
+            --name enrichment-pipeline \
+            --output "$RUNNER_TEMP/workload-profile/pipeline.json" \
+            --cache-state "$CACHE_STATE" \
+            --pair-id "$PAIR_ID" \
+            --variant "$VARIANT" \
+            -- python -m scripts.pipeline --workers "$WORKERS"
+          digest="$(find docs/specifications/api -type f -print0 | sort -z | xargs -0 sha256sum | sha256sum | cut -d' ' -f1)"
+          jq --arg digest "$digest" '.output_digest = $digest' \
+            "$RUNNER_TEMP/workload-profile/pipeline.json" >"$RUNNER_TEMP/workload-profile/pipeline.tmp"
+          mv "$RUNNER_TEMP/workload-profile/pipeline.tmp" "$RUNNER_TEMP/workload-profile/pipeline.json"
+
+      - name: Capture cProfile data
+        if: inputs.cprofile
+        env:
+          WORKERS: ${{ inputs.workers }}
+        run: python -m cProfile -o "$RUNNER_TEMP/pipeline.pstats" -m scripts.pipeline --workers "$WORKERS"
+
+      - name: Upload workload profile
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: workload-profile-enriched-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.pair }}
+          path: ${{ runner.temp }}/workload-profile/*.json
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload manual cProfile data
+        if: inputs.cprofile && always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: cprofile-enriched-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.pair }}
+          path: ${{ runner.temp }}/pipeline.pstats
+          if-no-files-found: warn
+          retention-days: 7
+
+  pipeline-d16:
+    if: inputs.runner == 'd16-compute'
+    name: Pipeline D16 w${{ inputs.workers }} pair-${{ matrix.pair }}
+    runs-on: api-specs-enriched-compute
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        pair: [1, 2, 3, 4, 5]
+    steps:
+      - name: Validate benchmark inputs
+        env:
+          VARIANT: ${{ inputs.variant }}
+        run: |
+          [[ "$VARIANT" =~ ^[a-z0-9][a-z0-9._-]{0,63}$ ]]
+
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Setup Python with warm dependency cache
+        if: inputs.cache_state == 'warm'
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Setup Python without dependency cache
+        if: inputs.cache_state == 'cold'
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        env:
+          CACHE_STATE: ${{ inputs.cache_state }}
+        run: |
+          if [[ "$CACHE_STATE" == cold ]]; then
+            pip install --no-cache-dir -r requirements.txt
+          else
+            pip install -r requirements.txt
+          fi
+
+      - name: Seed specifications
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python -m scripts.download --force
+
+      - name: Profile enrichment pipeline
+        env:
+          CACHE_STATE: ${{ inputs.cache_state }}
+          PAIR_ID: ${{ matrix.pair }}
+          VARIANT: ${{ inputs.variant }}
+          WORKERS: ${{ inputs.workers }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/workload-profile"
+          runner-profile \
+            --name enrichment-pipeline \
+            --output "$RUNNER_TEMP/workload-profile/pipeline.json" \
+            --cache-state "$CACHE_STATE" \
+            --pair-id "$PAIR_ID" \
+            --variant "$VARIANT" \
+            -- python -m scripts.pipeline --workers "$WORKERS"
+          digest="$(find docs/specifications/api -type f -print0 | sort -z | xargs -0 sha256sum | sha256sum | cut -d' ' -f1)"
+          jq --arg digest "$digest" '.output_digest = $digest' \
+            "$RUNNER_TEMP/workload-profile/pipeline.json" >"$RUNNER_TEMP/workload-profile/pipeline.tmp"
+          mv "$RUNNER_TEMP/workload-profile/pipeline.tmp" "$RUNNER_TEMP/workload-profile/pipeline.json"
+
+      - name: Capture cProfile data
+        if: inputs.cprofile
+        env:
+          WORKERS: ${{ inputs.workers }}
+        run: python -m cProfile -o "$RUNNER_TEMP/pipeline.pstats" -m scripts.pipeline --workers "$WORKERS"
+
+      - name: Upload workload profile
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: workload-profile-enriched-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.pair }}
+          path: ${{ runner.temp }}/workload-profile/*.json
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload manual cProfile data
+        if: inputs.cprofile && always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: cprofile-enriched-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.pair }}
+          path: ${{ runner.temp }}/pipeline.pstats
+          if-no-files-found: warn
+          retention-days: 7

@@ -2238,6 +2238,12 @@ def generate_report(stats: PipelineStats, output_path: Path) -> None:
     console.print(f"[green]Report saved to {output_path}[/green]")
 
 
+def configure_parallel_workers(config: dict[str, Any], workers: int | None) -> None:
+    """Apply an explicit benchmark worker count without changing defaults."""
+    if workers is not None:
+        config.setdefault("processing", {})["parallel_workers"] = workers
+
+
 def main() -> int:
     """Main entry point."""
     parser = argparse.ArgumentParser(
@@ -2296,10 +2302,18 @@ Output (merged domain specs only):
         help="Analyze specs without writing output",
     )
 
+    parser.add_argument(
+        "--workers",
+        type=int,
+        choices=(1, 2, 4, 8),
+        help="Override the configured independent per-spec worker count",
+    )
+
     args = parser.parse_args()
 
     # Load configuration
     config = load_config(args.config)
+    configure_parallel_workers(config, args.workers)
 
     # Auto-enable discovery enrichment if environment variable is set
     # This allows GitHub Actions to enable discovery without config changes

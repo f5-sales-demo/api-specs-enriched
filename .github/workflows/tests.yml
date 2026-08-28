@@ -80,7 +80,18 @@ jobs:
         run: python -m scripts.download --force
 
       - name: Run pytest
-        run: python -m pytest
+        run: |
+          mkdir -p "$RUNNER_TEMP/workload-profile"
+          runner-profile --name pytest --output "$RUNNER_TEMP/workload-profile/pytest.json" -- python -m pytest --durations=25
+
+      - name: Upload pytest workload profile
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: workload-profile-pytest-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/workload-profile/*.json
+          if-no-files-found: error
+          retention-days: 30
 
   contract-diff:
     name: Contract-diff gate
@@ -134,7 +145,9 @@ jobs:
         # enrich workflow installs and pins biome for the release path.
         env:
           API_SPECS_SKIP_BIOME: "1"
-        run: make pipeline PYTHON=python
+        run: |
+          mkdir -p "$RUNNER_TEMP/workload-profile"
+          runner-profile --name enrichment-pipeline --output "$RUNNER_TEMP/workload-profile/enrichment-pipeline.json" -- make pipeline PYTHON=python
 
       # #1152: the pipeline just rebuilt every spec from the freshly downloaded
       # upstream seed, so this is the cheapest possible place to answer "is the
@@ -242,11 +255,21 @@ jobs:
         id: contract_diff
         run: |
           mkdir -p reports
-          python -m scripts.contract_diff \
-            --input specs/original \
-            --output docs/specifications/api \
-            --report reports/contract_diff.json \
-            --markdown reports/contract_diff.md
+          runner-profile --name contract-diff --output "$RUNNER_TEMP/workload-profile/contract-diff.json" -- \
+            python -m scripts.contract_diff \
+              --input specs/original \
+              --output docs/specifications/api \
+              --report reports/contract_diff.json \
+              --markdown reports/contract_diff.md
+
+      - name: Upload workload profiles
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: workload-profile-contract-diff-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/workload-profile/*.json
+          if-no-files-found: warn
+          retention-days: 30
 
       - name: Upload contract-diff artifacts
         if: always()

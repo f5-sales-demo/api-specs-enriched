@@ -8,6 +8,7 @@ memory hotspots and validate optimization improvements.
 
 import gc
 import json
+import time
 import tracemalloc
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -30,6 +31,8 @@ class MemoryCheckpoint:
     current_mb: float
     peak_mb: float
     timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    elapsed_seconds: float = 0.0
+    phase_duration_seconds: float = 0.0
 
 
 @dataclass
@@ -71,6 +74,8 @@ class MemoryProfiler:
             started_at=datetime.now(timezone.utc).isoformat(),
         )
         self._tracking = False
+        self._started_monotonic = 0.0
+        self._last_checkpoint_monotonic = 0.0
 
     def __enter__(self) -> "MemoryProfiler":
         """Enter context and start memory tracking."""
@@ -86,6 +91,8 @@ class MemoryProfiler:
         if not self._tracking:
             tracemalloc.start()
             gc.enable()
+            self._started_monotonic = time.perf_counter()
+            self._last_checkpoint_monotonic = self._started_monotonic
             self._tracking = True
 
     def stop(self) -> None:
@@ -113,11 +120,15 @@ class MemoryProfiler:
             return MemoryCheckpoint(name=name, current_mb=0.0, peak_mb=0.0)
 
         current, peak = tracemalloc.get_traced_memory()
+        now = time.perf_counter()
         checkpoint = MemoryCheckpoint(
             name=name,
             current_mb=current / (1024 * 1024),
             peak_mb=peak / (1024 * 1024),
+            elapsed_seconds=now - self._started_monotonic,
+            phase_duration_seconds=now - self._last_checkpoint_monotonic,
         )
+        self._last_checkpoint_monotonic = now
 
         self.stats.checkpoints.append(checkpoint)
         self.stats.peak_memory_mb = max(self.stats.peak_memory_mb, checkpoint.peak_mb)
@@ -161,6 +172,8 @@ class MemoryProfiler:
                     "current_mb": round(cp.current_mb, 2),
                     "peak_mb": round(cp.peak_mb, 2),
                     "timestamp": cp.timestamp,
+                    "elapsed_seconds": round(cp.elapsed_seconds, 6),
+                    "phase_duration_seconds": round(cp.phase_duration_seconds, 6),
                 }
                 for cp in self.stats.checkpoints
             ],

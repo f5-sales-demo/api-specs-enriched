@@ -112,6 +112,12 @@ class TestMemoryProfiler:
             assert len(profiler.stats.checkpoints) == 2
             assert profiler.stats.checkpoints[0].name == "checkpoint1"
             assert profiler.stats.checkpoints[1].name == "checkpoint2"
+            assert profiler.stats.checkpoints[0].elapsed_seconds >= 0
+            assert profiler.stats.checkpoints[1].elapsed_seconds >= (
+                profiler.stats.checkpoints[0].elapsed_seconds
+            )
+            assert profiler.stats.checkpoints[0].phase_duration_seconds >= 0
+            assert profiler.stats.checkpoints[1].phase_duration_seconds >= 0
 
     def test_checkpoint_with_force_gc(self):
         """Verify checkpoint with forced garbage collection."""
@@ -191,6 +197,8 @@ class TestMemoryProfiler:
             assert report["checkpoints"][0]["name"] == "start"
             assert report["checkpoints"][1]["name"] == "middle"
             assert report["checkpoints"][2]["name"] == "end"
+            assert report["checkpoints"][0]["elapsed_seconds"] >= 0
+            assert report["checkpoints"][0]["phase_duration_seconds"] >= 0
 
             # Verify summary
             assert report["summary"]["total_checkpoints"] == 3

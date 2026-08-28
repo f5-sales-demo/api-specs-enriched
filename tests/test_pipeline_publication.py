@@ -57,3 +57,14 @@ def test_candidate_directory_is_removed_after_exception(tmp_path, monkeypatch):
         pipeline.run_pipeline(tmp_path / "input", published, {})
 
     assert not list(tmp_path.glob(".published-candidate-*"))
+
+
+def test_explicit_worker_override_preserves_default_when_absent():
+    """Benchmark worker input changes only the configured independent worker count."""
+    config = {"processing": {"parallel_workers": 4}, "unrelated": "kept"}
+
+    pipeline.configure_parallel_workers(config, None)
+    assert config == {"processing": {"parallel_workers": 4}, "unrelated": "kept"}
+
+    pipeline.configure_parallel_workers(config, 8)
+    assert config == {"processing": {"parallel_workers": 8}, "unrelated": "kept"}

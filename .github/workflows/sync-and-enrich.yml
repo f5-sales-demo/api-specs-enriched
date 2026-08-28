@@ -249,16 +249,18 @@ jobs:
 
       - name: Run enrichment pipeline
         if: steps.enriched-cache.outputs.cache-hit != 'true'
-        run: python -m scripts.pipeline
+        run: |
+          mkdir -p "$RUNNER_TEMP/workload-profile"
+          runner-profile --name enrichment-pipeline --output "$RUNNER_TEMP/workload-profile/enrichment-pipeline.json" -- python -m scripts.pipeline
         env:
           DISCOVERY_ENRICHMENT_ENABLED: ${{ steps.check-discovery.outputs.has_discovery }}
 
       - name: Generate constraint analysis report
         if: steps.check-discovery.outputs.has_full_discovery == 'true' && steps.enriched-cache.outputs.cache-hit != 'true'
-        run: python -m scripts.analyze_constraints
+        run: runner-profile --name constraint-analysis --output "$RUNNER_TEMP/workload-profile/constraint-analysis.json" -- python -m scripts.analyze_constraints
 
       - name: Compile API catalog
-        run: python -m scripts.compile_catalog --input docs/specifications/api/openapi.json --output release/api-catalog.json
+        run: runner-profile --name catalog --output "$RUNNER_TEMP/workload-profile/catalog.json" -- python -m scripts.compile_catalog --input docs/specifications/api/openapi.json --output release/api-catalog.json
 
       - name: Gate consecutive upstream contract removals
         env:
@@ -273,13 +275,13 @@ jobs:
           key: enriched-${{ steps.specs-fingerprint.outputs.hash }}-${{ steps.pipeline-fingerprint.outputs.hash }}-biome-${{ steps.biome.outputs.version }}
 
       - name: Generate API viewer pages
-        run: python -m scripts.generate_api_viewer
+        run: runner-profile --name viewer --output "$RUNNER_TEMP/workload-profile/viewer.json" -- python -m scripts.generate_api_viewer
 
       - name: Lint specifications with Spectral
-        run: python scripts/lint.py --input-dir docs/specifications/api --fail-on-error --fail-on-warning
+        run: runner-profile --name spectral --output "$RUNNER_TEMP/workload-profile/spectral.json" -- python scripts/lint.py --input-dir docs/specifications/api --fail-on-error --fail-on-warning
 
       - name: Validate specifications
-        run: python -m scripts.validate --dry-run
+        run: runner-profile --name validation --output "$RUNNER_TEMP/workload-profile/validation.json" -- python -m scripts.validate --dry-run
 
       - name: Detect release-worthy changes
         id: detect
@@ -777,6 +779,15 @@ jobs:
             "${ASSET_PATHS[@]}"
 
           echo "::notice::Created release: v$VERSION with publication receipt for ${release_commit}"
+
+      - name: Upload workload profiles
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: workload-profile-sync-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/workload-profile/*.json
+          if-no-files-found: warn
+          retention-days: 30
 
   deploy-docs:
     name: Deploy Documentation

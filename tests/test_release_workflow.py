@@ -14,7 +14,8 @@ def test_specification_validation_is_release_blocking() -> None:
     )[0]
 
     assert "continue-on-error" not in validation_step
-    assert "run: python -m scripts.validate --dry-run" in validation_step
+    assert "runner-profile --name validation" in validation_step
+    assert "python -m scripts.validate --dry-run" in validation_step
 
 
 def test_dry_run_validation_receives_no_f5xc_secrets() -> None:
