@@ -25,9 +25,28 @@ import tempfile
 from collections.abc import Callable
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
-from typing import Any
+from typing import Any, TypedDict
 
 logger = logging.getLogger(__name__)
+
+
+class BatchError(TypedDict):
+    """One per-file processing failure."""
+
+    file: str
+    error: str
+
+
+class BatchStats(TypedDict):
+    """Counters and failures collected across batch processing."""
+
+    batches_processed: int
+    specs_processed: int
+    specs_failed: int
+    errors: list[BatchError]
+    cache_writes: int
+    cache_reads: int
+    gc_collections: int
 
 
 def _process_spec_file(
@@ -92,7 +111,7 @@ class BatchSpecProcessor:
         )
         self.cache_dir.mkdir(parents=True, exist_ok=True)
 
-        self.stats = {
+        self.stats: BatchStats = {
             "batches_processed": 0,
             "specs_processed": 0,
             "specs_failed": 0,
@@ -188,6 +207,8 @@ class BatchSpecProcessor:
                         if not continue_on_error:
                             raise RuntimeError(f"Failed to process {filename}: {error}")
                         continue
+                    if cache_path is None:
+                        raise RuntimeError(f"Worker returned no cache path for {filename}")
                     processed_paths[filename] = cache_path
                     self.stats["cache_writes"] += 1
                     self.stats["specs_processed"] += 1
@@ -352,7 +373,7 @@ class BatchSpecProcessor:
 
         return processed_paths
 
-    def get_stats(self) -> dict[str, Any]:
+    def get_stats(self) -> BatchStats:
         """Get processing statistics.
 
         Returns:
