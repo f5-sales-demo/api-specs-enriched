@@ -33,6 +33,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: workload-benchmark-${{ github.workflow }}-${{ inputs.runner }}-${{ inputs.cache_state }}-${{ inputs.variant }}
+  cancel-in-progress: false
+
 env:
   PYTHON_VERSION: '3.13.7'
 
