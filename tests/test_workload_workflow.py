@@ -15,9 +15,13 @@ def workflow() -> dict:
 def test_pull_request_benchmark_is_label_and_same_repository_gated() -> None:
     value = workflow()
     assert "pull_request" in value["on"]
-    condition = value["jobs"]["seed"]["if"]
-    assert "head.repo.full_name == github.repository" in condition
-    assert "autresearch" in condition
+    authorize = value["jobs"]["authorize"]
+    script = authorize["steps"][0]["run"]
+    assert authorize["permissions"] == {}
+    assert "HEAD_REPOSITORY" in script
+    assert "GITHUB_REPOSITORY" in script
+    assert "autresearch" in script
+    assert value["jobs"]["seed"]["if"] == "needs.authorize.outputs.approved == 'true'"
     assert value["permissions"] == {"contents": "read"}
 
 
