@@ -58,6 +58,12 @@ def test_profile_enrichment_merges_checkpoint_durations(tmp_path: Path) -> None:
     assert value["output_digest"] == "sha256:abc"
     assert value["phase_timings"] == [{"name": "load", "duration_seconds": 1.25}]
 
+    memory.write_text(json.dumps({"checkpoints": [{"name": "legacy"}]}))
+    enrich_profile(profile, evidence, memory)
+    value = json.loads(profile.read_text())
+    assert value["output_digest"] == "sha256:abc"
+    assert value["phase_timings"] == [{"name": "load", "duration_seconds": 1.25}]
+
 
 def profile(pair: int, duration: float, digest: str = "same") -> dict:
     return {
