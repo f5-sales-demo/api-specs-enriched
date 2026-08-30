@@ -54,12 +54,13 @@ jobs:
         id: authorize
         env:
           ACTION: ${{ github.event.action }}
+          BASE_REPOSITORY: ${{ github.repository }}
           EVENT_LABEL: ${{ github.event.label.name }}
           HEAD_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name }}
           PR_LABELS: ${{ toJSON(github.event.pull_request.labels.*.name) }}
         run: |
           approved=false
-          if [[ "$HEAD_REPOSITORY" == "$GITHUB_REPOSITORY" ]] && \
+          if [[ "$HEAD_REPOSITORY" == "$BASE_REPOSITORY" ]] && \
              { [[ "$ACTION" == labeled && "$EVENT_LABEL" == autoresearch ]] || \
                jq -e 'any(.[]; . == "autresearch")' <<<"$PR_LABELS" >/dev/null; }; then
             approved=true
