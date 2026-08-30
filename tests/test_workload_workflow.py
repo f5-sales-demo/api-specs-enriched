@@ -19,8 +19,8 @@ def test_pull_request_benchmark_is_label_and_same_repository_gated() -> None:
     script = authorize["steps"][0]["run"]
     assert authorize["permissions"] == {}
     assert "HEAD_REPOSITORY" in script
-    assert "GITHUB_REPOSITORY" in script
-    assert "autresearch" in script
+    assert "BASE_REPOSITORY" in script
+    assert "autoresearch" in script
     assert value["jobs"]["seed"]["if"] == "needs.authorize.outputs.approved == 'true'"
     assert value["permissions"] == {"contents": "read"}
 

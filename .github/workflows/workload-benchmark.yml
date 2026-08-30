@@ -62,7 +62,7 @@ jobs:
           approved=false
           if [[ "$HEAD_REPOSITORY" == "$BASE_REPOSITORY" ]] && \
              { [[ "$ACTION" == labeled && "$EVENT_LABEL" == autoresearch ]] || \
-               jq -e 'any(.[]; . == "autresearch")' <<<"$PR_LABELS" >/dev/null; }; then
+               jq -e 'any(.[]; . == "autoresearch")' <<<"$PR_LABELS" >/dev/null; }; then
             approved=true
           fi
           echo "approved=$approved" >>"$GITHUB_OUTPUT"
