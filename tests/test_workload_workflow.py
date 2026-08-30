@@ -3,6 +3,7 @@ from pathlib import Path
 import yaml
 
 WORKFLOW_PATH = Path(".github/workflows/workload-benchmark.yml")
+DRIVER_PATH = Path("scripts/run-workload-benchmark.sh")
 
 
 def workflow() -> dict:
@@ -40,3 +41,9 @@ def test_cprofile_is_single_process_and_retained_for_seven_days() -> None:
         upload = next(step for step in steps if step["name"] == "Upload manual cProfile data")
         assert "--workers 1" in capture["run"]
         assert upload["with"]["retention-days"] == 7
+
+
+def test_pytest_archive_has_an_index_for_git_aware_tests() -> None:
+    driver = DRIVER_PATH.read_text(encoding="utf-8")
+    pytest_body = driver.split("profile_pytest()", 1)[1]
+    assert "git init --quiet && git add -A" in pytest_body

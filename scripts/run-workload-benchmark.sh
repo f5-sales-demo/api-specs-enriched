@@ -79,6 +79,10 @@ profile_pytest() {
   prepare_source "$ref" "$source"
   (
     cd "$source"
+    git init --quiet && git add -A
+  )
+  (
+    cd "$source"
     runner-profile --name pytest-routing --output "$profile" --cache-state warm \
       --variant "$variant" --pair-id "$pair" -- \
       python -m pytest --junitxml "$junit"
