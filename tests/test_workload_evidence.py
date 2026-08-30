@@ -92,7 +92,9 @@ def test_selection_prefers_d8_within_five_percent_then_fewer_workers() -> None:
         {"variant": "d8-w4", "candidate_p95_seconds": 104.9, "qualifies": True},
         {"variant": "d8-w2", "candidate_p95_seconds": 104.0, "qualifies": True},
     ]
-    assert select_candidate(values)["variant"] == "d8-w2"
+    selected = select_candidate(values)
+    assert selected is not None
+    assert selected["variant"] == "d8-w2"
 
 
 def test_malformed_profile_is_rejected(tmp_path: Path) -> None:
