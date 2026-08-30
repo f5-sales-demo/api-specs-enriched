@@ -252,6 +252,12 @@ jobs:
         run: |
           mkdir -p "$RUNNER_TEMP/workload-profile"
           runner-profile --name enrichment-pipeline --output "$RUNNER_TEMP/workload-profile/enrichment-pipeline.json" -- python -m scripts.pipeline
+          python -m scripts.workload_evidence evidence \
+            --tree docs/specifications/api \
+            --archive "$RUNNER_TEMP/workload-profile/enrichment-output.zip" \
+            --output "$RUNNER_TEMP/workload-profile/enrichment-evidence.json"
+          python -m scripts.workload_evidence enrich-profile --profile "$RUNNER_TEMP/workload-profile/enrichment-pipeline.json" \
+            --evidence "$RUNNER_TEMP/workload-profile/enrichment-evidence.json" --memory reports/memory-profile.json
         env:
           DISCOVERY_ENRICHMENT_ENABLED: ${{ steps.check-discovery.outputs.has_discovery }}
 

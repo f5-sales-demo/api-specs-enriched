@@ -82,7 +82,9 @@ jobs:
       - name: Run pytest
         run: |
           mkdir -p "$RUNNER_TEMP/workload-profile"
-          runner-profile --name pytest --output "$RUNNER_TEMP/workload-profile/pytest.json" -- python -m pytest --durations=25
+          runner-profile --name pytest --output "$RUNNER_TEMP/workload-profile/pytest.json" -- python -m pytest --durations=25 --junitxml "$RUNNER_TEMP/pytest.xml"
+          python -m scripts.workload_evidence evidence --pytest-xml "$RUNNER_TEMP/pytest.xml" --output "$RUNNER_TEMP/pytest-evidence.json"
+          python -m scripts.workload_evidence enrich-profile --profile "$RUNNER_TEMP/workload-profile/pytest.json" --evidence "$RUNNER_TEMP/pytest-evidence.json"
 
       - name: Upload pytest workload profile
         if: always()
@@ -148,6 +150,12 @@ jobs:
         run: |
           mkdir -p "$RUNNER_TEMP/workload-profile"
           runner-profile --name enrichment-pipeline --output "$RUNNER_TEMP/workload-profile/enrichment-pipeline.json" -- make pipeline PYTHON=python
+          python -m scripts.workload_evidence evidence \
+            --tree docs/specifications/api \
+            --archive "$RUNNER_TEMP/workload-profile/enrichment-output.zip" \
+            --output "$RUNNER_TEMP/enrichment-evidence.json"
+          python -m scripts.workload_evidence enrich-profile --profile "$RUNNER_TEMP/workload-profile/enrichment-pipeline.json" \
+            --evidence "$RUNNER_TEMP/enrichment-evidence.json" --memory reports/memory-profile.json
 
       # #1152: the pipeline just rebuilt every spec from the freshly downloaded
       # upstream seed, so this is the cheapest possible place to answer "is the
@@ -261,6 +269,9 @@ jobs:
               --output docs/specifications/api \
               --report reports/contract_diff.json \
               --markdown reports/contract_diff.md
+          python -m scripts.workload_evidence evidence --manifest reports/contract_diff.json --output "$RUNNER_TEMP/contract-diff-evidence.json"
+          python -m scripts.workload_evidence enrich-profile --profile "$RUNNER_TEMP/workload-profile/contract-diff.json" \
+            --evidence "$RUNNER_TEMP/contract-diff-evidence.json"
 
       - name: Upload workload profiles
         if: always()
