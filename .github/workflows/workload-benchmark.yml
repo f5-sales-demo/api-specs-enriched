@@ -46,8 +46,10 @@ jobs:
   seed:
     if: >-
       github.event_name == 'pull_request' &&
-      github.event.pull_request.head.repo.full_name == github.repository &&
-      contains(github.event.pull_request.labels.*.name, 'autresearch')
+      github.event.pull_request.head.repo.fork == false &&
+      ((github.event.action == 'labeled' && github.event.label.name == 'autresearch') ||
+       (github.event.action != 'labeled' &&
+        contains(github.event.pull_request.labels.*.name, 'autresearch')))
     name: Immutable upstream seed
     runs-on: managed-socketless
     timeout-minutes: 20
