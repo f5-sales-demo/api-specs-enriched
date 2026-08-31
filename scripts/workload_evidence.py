@@ -12,7 +12,7 @@ import re
 import statistics
 import zipfile
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, NoReturn
 from xml.etree import ElementTree
 
 if TYPE_CHECKING:
@@ -24,7 +24,7 @@ DIGEST_RE = re.compile(r"^sha256:[0-9a-f]{64}$")
 
 
 def validate_profile(path: Path, value: Any) -> None:
-    def malformed(reason: str) -> None:
+    def malformed(reason: str) -> NoReturn:
         raise ValueError(f"{path}: malformed workload profile: {reason}")
 
     if not isinstance(value, dict) or value.get("schema_version") != SCHEMA_VERSION:
