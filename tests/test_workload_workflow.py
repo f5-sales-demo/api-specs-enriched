@@ -48,3 +48,11 @@ def test_pytest_archive_has_an_index_for_git_aware_tests() -> None:
     pytest_body = driver.split("profile_pytest()", 1)[1]
     assert "git init --quiet && git add --force -A" in pytest_body
     assert 'cp "$root/scripts/utils/memory_profiler.py"' in driver
+
+
+def test_cross_runner_comparisons_execute_identical_candidate_code() -> None:
+    driver = DRIVER_PATH.read_text(encoding="utf-8")
+    assert 'profile_pytest "$HEAD_SHA" baseline "$pair"' in driver
+    assert 'profile_pytest "$BASE_SHA" baseline "$pair"' not in driver
+    assert '"$variant" != baseline && "$RUNNER_CLASS" == d8' in driver
+    assert '.phase = $phase | .variant = "baseline"' in driver

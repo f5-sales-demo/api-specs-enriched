@@ -63,10 +63,14 @@ profile_pipeline() {
   python "$helper" "${args[@]}"
   python "$helper" enrich-profile --profile "$profile" --evidence "$evidence" --memory "$source/reports/memory-profile.json"
 
-  # Reuse the same measured run in the cross-runner comparison without
-  # pretending a second execution occurred. The phase key prevents collector collisions.
+  # Reuse candidate-head measurements for the cross-runner comparison without
+  # pretending a second execution occurred. D8 is the routing baseline, so both
+  # sides execute identical code and differ only by runner class.
   local route="$PROFILE_DIR/pipeline-routing-w${WORKERS}-${variant}-${CACHE_STATE}-${pair}.json"
-  if [[ ("$RUNNER_CLASS" == d8 && "$variant" == baseline) || ("$RUNNER_CLASS" == d16 && "$variant" != baseline) ]]; then
+  if [[ "$variant" != baseline && "$RUNNER_CLASS" == d8 ]]; then
+    jq --arg phase "pipeline-routing-w${WORKERS}" \
+      '.phase = $phase | .variant = "baseline"' "$profile" >"$route"
+  elif [[ "$variant" != baseline && "$RUNNER_CLASS" == d16 ]]; then
     jq --arg phase "pipeline-routing-w${WORKERS}" '.phase = $phase' "$profile" >"$route"
   fi
 }
@@ -100,7 +104,7 @@ done
 # Pytest routing is independent of pipeline workers and dependency-cache state.
 if [[ "$WORKERS" == 1 && "$CACHE_STATE" == warm ]]; then
   if [[ "$RUNNER_CLASS" == d8 ]]; then
-    for pair in 1 2 3 4 5; do profile_pytest "$BASE_SHA" baseline "$pair"; done
+    for pair in 1 2 3 4 5; do profile_pytest "$HEAD_SHA" baseline "$pair"; done
   else
     for pair in 1 2 3 4 5; do profile_pytest "$HEAD_SHA" d16-w1 "$pair"; done
   fi
