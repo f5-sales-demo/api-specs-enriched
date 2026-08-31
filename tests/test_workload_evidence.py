@@ -8,8 +8,10 @@ from scripts.workload_evidence import (
     build_evidence,
     enrich_profile,
     evaluate_group,
+    evaluate_profiles,
     normalized_pytest_outcomes,
     select_candidate,
+    select_outcomes,
 )
 
 
@@ -82,6 +84,9 @@ def test_gate_requires_all_acceptance_conditions() -> None:
     candidate[-1]["output_digest"] = "same"
     candidate[-1]["memory"]["events"]["oom_kill"] = 1
     assert not evaluate_group(baseline, candidate)["qualifies"]
+    candidate[-1]["memory"]["events"]["oom_kill"] = 0
+    assert not evaluate_group(baseline[:-1], candidate)["qualifies"]
+    assert not evaluate_group([*baseline, profile(5, 15)], candidate)["qualifies"]
 
 
 def test_selection_prefers_d8_within_five_percent_then_fewer_workers() -> None:
@@ -102,3 +107,45 @@ def test_malformed_profile_is_rejected(tmp_path: Path) -> None:
     evidence.write_text('{"schema_version":1,"output_digest":"x"}')
     with pytest.raises(ValueError, match="unsupported"):
         enrich_profile(profile_path, evidence, None)
+
+
+def result(
+    phase: str,
+    cache_state: str,
+    variant: str,
+    p95: float,
+    qualifies: bool = True,
+) -> dict:
+    return {
+        "phase": phase,
+        "cache_state": cache_state,
+        "variant": variant,
+        "candidate_p95_seconds": p95,
+        "qualifies": qualifies,
+    }
+
+
+def test_selection_requires_cold_confirmation_and_keeps_workloads_separate() -> None:
+    values = [
+        result("pipeline-worker-d8-w2", "warm", "d8-w2", 105),
+        result("pipeline-worker-d8-w2", "cold", "d8-w2", 110),
+        result("pipeline-worker-d8-w4", "warm", "d8-w4", 90),
+        result("pipeline-worker-d16-w1", "warm", "d16-w1", 80),
+        result("pipeline-worker-d16-w1", "cold", "d16-w1", 82),
+        result("pipeline-routing-w1", "warm", "d16-w1", 80),
+        result("pipeline-routing-w1", "cold", "d16-w1", 82, qualifies=False),
+        result("pytest-routing", "warm", "d16-w1", 20),
+    ]
+
+    selected = select_outcomes(values)
+
+    assert selected["pipeline"]["variant"] == "d8-w2"
+    assert selected["pipeline"]["candidate_p95_seconds"] == 110
+    assert selected["pytest"]["variant"] == "d16-w1"
+
+
+def test_current_schema_malformed_profile_is_rejected(tmp_path: Path) -> None:
+    profile_path = tmp_path / "profile.json"
+    profile_path.write_text('{"schema_version":1,"phase":"pytest"}')
+    with pytest.raises(ValueError, match="malformed workload profile"):
+        evaluate_profiles([profile_path])

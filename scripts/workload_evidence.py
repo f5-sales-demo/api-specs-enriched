@@ -20,6 +20,47 @@ if TYPE_CHECKING:
 
 SCHEMA_VERSION = 1
 VARIANT_RE = re.compile(r"^(?P<runner>d8|d16)-w(?P<workers>1|2|4|8)$")
+DIGEST_RE = re.compile(r"^sha256:[0-9a-f]{64}$")
+
+
+def validate_profile(path: Path, value: Any) -> None:
+    def malformed(reason: str) -> None:
+        raise ValueError(f"{path}: malformed workload profile: {reason}")
+
+    if not isinstance(value, dict) or value.get("schema_version") != SCHEMA_VERSION:
+        raise ValueError(f"{path}: unsupported workload profile")
+    for field in ("phase", "variant", "pair_id", "cache_state"):
+        if not isinstance(value.get(field), str) or not value[field]:
+            malformed(f"{field} must be a non-empty string")
+    if value["cache_state"] not in {"warm", "cold"}:
+        malformed("cache_state must be warm or cold")
+    duration = value.get("duration_seconds")
+    if isinstance(duration, bool) or not isinstance(duration, (int, float)) or duration < 0:
+        malformed("duration_seconds must be a non-negative number")
+    if not isinstance(value.get("output_digest"), str) or not DIGEST_RE.fullmatch(
+        value["output_digest"]
+    ):
+        malformed("output_digest must be a SHA-256 digest")
+    exit_status = value.get("exit")
+    exit_code = exit_status.get("code") if isinstance(exit_status, dict) else None
+    if isinstance(exit_code, bool) or not isinstance(exit_code, int):
+        malformed("exit.code must be an integer")
+    memory = value.get("memory")
+    if not isinstance(memory, dict):
+        malformed("memory must be an object")
+    ratio = memory.get("peak_limit_ratio")
+    if ratio is not None and (
+        isinstance(ratio, bool) or not isinstance(ratio, (int, float)) or ratio < 0
+    ):
+        malformed("memory.peak_limit_ratio must be null or a non-negative number")
+    events = memory.get("events")
+    if not isinstance(events, dict) or any(
+        isinstance(events.get(name), bool)
+        or not isinstance(events.get(name), int)
+        or events[name] < 0
+        for name in ("oom", "oom_kill")
+    ):
+        malformed("memory OOM counters must be non-negative integers")
 
 
 def canonical_json(value: Any) -> bytes:
@@ -127,6 +168,9 @@ def evaluate_group(
     baseline = {str(item["pair_id"]): item for item in baselines if item.get("pair_id")}
     candidate = {str(item["pair_id"]): item for item in candidates if item.get("pair_id")}
     pairs = sorted(set(baseline) & set(candidate))
+    complete = len(baselines) == len(candidates) == len(baseline) == len(candidate) == 5 and set(
+        baseline
+    ) == set(candidate) == {"1", "2", "3", "4", "5"}
     before = [float(baseline[pair]["duration_seconds"]) for pair in pairs]
     after = [float(candidate[pair]["duration_seconds"]) for pair in pairs]
     before_median = statistics.median(before) if before else None
@@ -136,19 +180,19 @@ def evaluate_group(
         if before_median and after_median is not None
         else None
     )
-    equivalent = len(pairs) >= 5 and all(
+    equivalent = complete and all(
         baseline[pair].get("output_digest") is not None
         and baseline[pair].get("output_digest") == candidate[pair].get("output_digest")
         for pair in pairs
     )
-    stable = len(pairs) >= 5 and all(
+    stable = complete and all(
         item.get("exit", {}).get("code") == 0
         and item.get("memory", {}).get("events", {}).get("oom", 0) == 0
         and item.get("memory", {}).get("events", {}).get("oom_kill", 0) == 0
         for pair in pairs
         for item in (baseline[pair], candidate[pair])
     )
-    memory_ok = len(pairs) >= 5 and all(
+    memory_ok = complete and all(
         candidate[pair].get("memory", {}).get("peak_limit_ratio") is not None
         and candidate[pair]["memory"]["peak_limit_ratio"] < 0.8
         for pair in pairs
@@ -156,7 +200,7 @@ def evaluate_group(
     before_p95 = percentile95(before) if before else None
     after_p95 = percentile95(after) if after else None
     qualifies = bool(
-        len(pairs) >= 5
+        complete
         and improvement is not None
         and improvement >= 0.2
         and before_p95 is not None
@@ -201,12 +245,67 @@ def select_candidate(results: list[dict[str, Any]]) -> dict[str, Any] | None:
     return min(close, key=rank)
 
 
+def select_outcomes(results: list[dict[str, Any]]) -> dict[str, Any]:
+    by_key = {
+        (str(item["phase"]), str(item["cache_state"]), str(item["variant"])): item
+        for item in results
+    }
+    pipeline_candidates = []
+    worker_pattern = re.compile(r"^pipeline-worker-(d8|d16)-w(1|2|4|8)$")
+    for phase in sorted({str(item["phase"]) for item in results}):
+        match = worker_pattern.fullmatch(phase)
+        if not match:
+            continue
+        runner, workers = match.groups()
+        variant = f"{runner}-w{workers}"
+        worker_results = [
+            by_key[(phase, cache_state, variant)]
+            for cache_state in ("warm", "cold")
+            if (phase, cache_state, variant) in by_key
+        ]
+        if len(worker_results) != 2 or not all(item["qualifies"] for item in worker_results):
+            continue
+        evidence = {"worker_tuning": worker_results}
+        required_results = list(worker_results)
+        if runner == "d16":
+            route_phase = f"pipeline-routing-w{workers}"
+            route_results = [
+                by_key[(route_phase, cache_state, variant)]
+                for cache_state in ("warm", "cold")
+                if (route_phase, cache_state, variant) in by_key
+            ]
+            if len(route_results) != 2 or not all(item["qualifies"] for item in route_results):
+                continue
+            evidence["runner_routing"] = route_results
+            required_results.extend(route_results)
+        pipeline_candidates.append(
+            {
+                "phase": "pipeline",
+                "variant": variant,
+                "qualifies": True,
+                "candidate_p95_seconds": max(
+                    float(item["candidate_p95_seconds"]) for item in required_results
+                ),
+                "evidence": evidence,
+            }
+        )
+
+    pytest_candidates = [
+        item
+        for item in results
+        if item["phase"] == "pytest-routing" and item["cache_state"] == "warm" and item["qualifies"]
+    ]
+    return {
+        "pipeline": select_candidate(pipeline_candidates),
+        "pytest": select_candidate(pytest_candidates),
+    }
+
+
 def evaluate_profiles(paths: Iterable[Path]) -> dict[str, Any]:
     profiles = []
     for path in paths:
         value = json.loads(path.read_text(encoding="utf-8"))
-        if value.get("schema_version") != 1:
-            raise ValueError(f"{path}: unsupported workload profile")
+        validate_profile(path, value)
         profiles.append(value)
     results = []
     groups = sorted({(str(item.get("phase")), str(item.get("cache_state"))) for item in profiles})
@@ -228,7 +327,7 @@ def evaluate_profiles(paths: Iterable[Path]) -> dict[str, Any]:
                     ),
                 }
             )
-    return {"schema_version": 1, "comparisons": results, "selected": select_candidate(results)}
+    return {"schema_version": 1, "comparisons": results, "selected": select_outcomes(results)}
 
 
 def main() -> int:
