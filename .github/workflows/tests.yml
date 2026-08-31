@@ -82,7 +82,8 @@ jobs:
       - name: Run pytest
         run: |
           mkdir -p "$RUNNER_TEMP/workload-profile"
-          runner-profile --name pytest --output "$RUNNER_TEMP/workload-profile/pytest.json" -- python -m pytest --durations=25 --junitxml "$RUNNER_TEMP/pytest.xml"
+          runner-profile --name pytest --output "$RUNNER_TEMP/workload-profile/pytest.json" -- \
+            python -m pytest --durations=25 --junitxml "$RUNNER_TEMP/pytest.xml"
           python -m scripts.workload_evidence evidence --pytest-xml "$RUNNER_TEMP/pytest.xml" --output "$RUNNER_TEMP/pytest-evidence.json"
           python -m scripts.workload_evidence enrich-profile --profile "$RUNNER_TEMP/workload-profile/pytest.json" --evidence "$RUNNER_TEMP/pytest-evidence.json"
 

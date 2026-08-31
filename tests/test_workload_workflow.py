@@ -3,6 +3,7 @@ from pathlib import Path
 import yaml
 
 WORKFLOW_PATH = Path(".github/workflows/workload-benchmark.yml")
+TESTS_WORKFLOW_PATH = Path(".github/workflows/tests.yml")
 DRIVER_PATH = Path("scripts/run-workload-benchmark.sh")
 
 
@@ -56,3 +57,10 @@ def test_cross_runner_comparisons_execute_identical_candidate_code() -> None:
     assert 'profile_pytest "$BASE_SHA" baseline "$pair"' not in driver
     assert '"$variant" != baseline && "$RUNNER_CLASS" == d8' in driver
     assert '.phase = $phase | .variant = "baseline"' in driver
+
+
+def test_pytest_profile_executes_the_test_command() -> None:
+    tests_workflow = TESTS_WORKFLOW_PATH.read_text(encoding="utf-8")
+    assert "runner-profile --name pytest" in tests_workflow
+    assert "-- " + chr(92) in tests_workflow
+    assert "python -m pytest --durations=25 --junitxml" in tests_workflow
