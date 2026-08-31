@@ -132243,28 +132243,6 @@
               "allow_list",
               "deny_all_requests",
               "deny_list"
-            ],
-            "x-f5xc-requires": [
-              {
-                "field": "rules.spec.waf_action",
-                "required": true,
-                "reason": "waf_action is REQUIRED in rule_list rules (400: 'waf_action should be not nil')"
-              },
-              {
-                "field": "rules.spec.action",
-                "required": true,
-                "reason": "action is required in each rule (ALLOW, DENY, etc.)"
-              },
-              {
-                "field": "rules.spec.waf_action",
-                "required": true,
-                "reason": "waf_action is REQUIRED in rule_list rules (400: 'waf_action should be not nil')"
-              },
-              {
-                "field": "rules.spec.action",
-                "required": true,
-                "reason": "action is required in each rule (ALLOW, DENY, etc.)"
-              }
             ]
           },
           "server_name": {
@@ -132531,18 +132509,6 @@
               "allow_list",
               "deny_all_requests",
               "deny_list"
-            ],
-            "x-f5xc-requires": [
-              {
-                "field": "rules.spec.waf_action",
-                "required": true,
-                "reason": "waf_action is REQUIRED in rule_list rules (400: 'waf_action should be not nil')"
-              },
-              {
-                "field": "rules.spec.action",
-                "required": true,
-                "reason": "action is required in each rule (ALLOW, DENY, etc.)"
-              }
             ]
           },
           "server_name": {
@@ -132809,18 +132775,6 @@
               "allow_list",
               "deny_all_requests",
               "deny_list"
-            ],
-            "x-f5xc-requires": [
-              {
-                "field": "rules.spec.waf_action",
-                "required": true,
-                "reason": "waf_action is REQUIRED in rule_list rules (400: 'waf_action should be not nil')"
-              },
-              {
-                "field": "rules.spec.action",
-                "required": true,
-                "reason": "action is required in each rule (ALLOW, DENY, etc.)"
-              }
             ]
           },
           "server_name": {
@@ -132978,9 +132932,10 @@
                 "$ref": "#/components/schemas/policyRuleAction"
               }
             ],
+            "x-ves-required": "true",
             "x-f5xc-required-for": {
-              "minimum_config": false,
-              "create": false,
+              "minimum_config": true,
+              "create": true,
               "update": false,
               "read": false
             },
@@ -133648,9 +133603,10 @@
                 "$ref": "#/components/schemas/policyWafAction"
               }
             ],
+            "x-ves-required": "true",
             "x-f5xc-required-for": {
-              "minimum_config": false,
-              "create": false,
+              "minimum_config": true,
+              "create": true,
               "update": false,
               "read": false
             }
@@ -133659,10 +133615,13 @@
         "x-f5xc-description-short": "Shape of service_policy_rule in the storage backend.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for schemaservice_policy_ruleGlobalSpecType",
-          "required_fields": [],
+          "required_fields": [
+            "action",
+            "waf_action"
+          ],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for schemaservice_policy_ruleGlobalSpecType\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+          "example_yaml": "# Minimal example for schemaservice_policy_ruleGlobalSpecType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  action: value\n  waf_action: value",
+          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"action\": \"value\",\n    \"waf_action\": \"value\"\n  }\n}"
         },
         "x-f5xc-cli-domain": "network_security",
         "x-f5xc-recommended-oneof-variant": {
@@ -136176,9 +136135,10 @@
                 "$ref": "#/components/schemas/policyRuleAction"
               }
             ],
+            "x-ves-required": "true",
             "x-f5xc-required-for": {
-              "minimum_config": false,
-              "create": false,
+              "minimum_config": true,
+              "create": true,
               "update": false,
               "read": false
             }
@@ -136813,9 +136773,10 @@
                 "$ref": "#/components/schemas/policyWafAction"
               }
             ],
+            "x-ves-required": "true",
             "x-f5xc-required-for": {
-              "minimum_config": false,
-              "create": false,
+              "minimum_config": true,
+              "create": true,
               "update": false,
               "read": false
             }
@@ -137616,9 +137577,10 @@
                 "$ref": "#/components/schemas/policyRuleAction"
               }
             ],
+            "x-ves-required": "true",
             "x-f5xc-required-for": {
-              "minimum_config": false,
-              "create": false,
+              "minimum_config": true,
+              "create": true,
               "update": false,
               "read": false
             }
@@ -138253,9 +138215,10 @@
                 "$ref": "#/components/schemas/policyWafAction"
               }
             ],
+            "x-ves-required": "true",
             "x-f5xc-required-for": {
-              "minimum_config": false,
-              "create": false,
+              "minimum_config": true,
+              "create": true,
               "update": false,
               "read": false
             }
