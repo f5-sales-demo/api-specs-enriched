@@ -16,6 +16,24 @@ description: >
 # not to the general /healthchecks endpoint used by HTTP load balancers.
 # See issue #294 for context.
 overrides:
+  service_policy_rule_required_actions:
+    canonical: true
+    upstream_issue: "f5-sales-demo/api-specs-enriched#1667"
+    description: >-
+      Sanitized live evidence from marketplace#1269: XC rejects an inline
+      service-policy rule when either action or waf_action is absent. The neutral
+      WAF selection is none: {}, while waf_skip_processing and
+      app_firewall_detection_control remain the other valid action_type variants.
+      Requiredness belongs to each rule schema rather than to a dependency on the
+      parent service policy.
+    schemas:
+      - pattern: "^schemaservice_policy_rule(Create|Global|Replace)SpecType$"
+        set_property_extensions:
+          action:
+            x-ves-required: "true"
+          waf_action:
+            x-ves-required: "true"
+
   securemesh_site_v2_segment_network:
     canonical: true
     upstream_issue: "f5-sales-demo/api-specs-enriched#1053"

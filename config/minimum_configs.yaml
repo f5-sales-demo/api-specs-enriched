@@ -1039,16 +1039,6 @@ resources:
         fields: ["spec.any_server", "spec.server_name", "spec.server_selector", "spec.server_name_matcher"]
         reason: "Choose server scope (default: any_server)"
 
-    # Cross-field dependencies (verified via live API 2026-05-10)
-    dependencies:
-      - field: "spec.rule_list.rules[].spec.waf_action"
-        required: true
-        reason: "waf_action is REQUIRED in rule_list rules (400: 'waf_action should be not nil')"
-
-      - field: "spec.rule_list.rules[].spec.action"
-        required: true
-        reason: "action is required in each rule (ALLOW, DENY, etc.)"
-
     # Referential integrity (verified via live API 2026-05-10)
     referential_integrity:
       - field: "spec.rule_list.rules[].spec.server_selector"

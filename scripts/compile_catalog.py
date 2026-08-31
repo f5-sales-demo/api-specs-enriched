@@ -328,6 +328,64 @@ _ENRICHMENT_KEYS = frozenset(
 )
 
 
+def _merge_schema(base: dict[str, Any], overlay: dict[str, Any]) -> dict[str, Any]:
+    """Merge schema layers while preserving properties supplied by each layer."""
+    merged = dict(base)
+    for key, value in overlay.items():
+        if key == "properties" and isinstance(value, dict):
+            merged[key] = {**merged.get(key, {}), **value}
+        else:
+            merged[key] = value
+    return merged
+
+
+def _expand_schema(
+    schema: dict[str, Any],
+    components: dict[str, Any] | None,
+    active_refs: frozenset[str],
+) -> tuple[dict[str, Any], frozenset[str]]:
+    """Resolve this schema's ref and allOf layers without descending into children."""
+    merged: dict[str, Any] = {}
+    refs = active_refs
+    ref = schema.get("$ref")
+    if isinstance(ref, str) and ref not in refs:
+        target = _resolve_schema_ref(schema, components)
+        if target is not schema:
+            refs = refs | {ref}
+            expanded, refs = _expand_schema(target, components, refs)
+            merged = _merge_schema(merged, expanded)
+    for member in schema.get("allOf", []):
+        if isinstance(member, dict):
+            expanded, member_refs = _expand_schema(member, components, refs)
+            merged = _merge_schema(merged, expanded)
+            refs = refs | member_refs
+    local = {key: value for key, value in schema.items() if key not in {"$ref", "allOf"}}
+    return _merge_schema(merged, local), refs
+
+
+def _walk_schema(
+    schema: dict[str, Any],
+    components: dict[str, Any] | None,
+    *,
+    prefix: str = "",
+    active_refs: frozenset[str] = frozenset(),
+) -> list[tuple[str, dict[str, Any]]]:
+    """Return every reachable schema node with canonical ``[]`` array paths."""
+    resolved, refs = _expand_schema(schema, components, active_refs)
+    nodes = [(prefix, resolved)]
+    properties = resolved.get("properties")
+    if isinstance(properties, dict):
+        for name, child in properties.items():
+            if isinstance(child, dict):
+                path = f"{prefix}.{name}" if prefix else name
+                nodes.extend(_walk_schema(child, components, prefix=path, active_refs=refs))
+    items = resolved.get("items")
+    if isinstance(items, dict):
+        path = f"{prefix}[]" if prefix else "[]"
+        nodes.extend(_walk_schema(items, components, prefix=path, active_refs=refs))
+    return nodes
+
+
 def _extract_field_metadata(
     schema: dict[str, Any],
     components: dict[str, Any] | None,
@@ -337,93 +395,43 @@ def _extract_field_metadata(
     max_depth: int = 3,
     visited: set[str] | None = None,
 ) -> dict[str, dict[str, Any]]:
-    """Walk schema properties to max_depth, resolving $refs, extracting x-f5xc-* metadata."""
-    if visited is None:
-        visited = set()
-
-    resolved = _resolve_schema_ref(schema, components)
-
-    # Cycle detection
-    ref = schema.get("$ref", "")
-    if ref:
-        if ref in visited:
-            return {}
-        visited = visited | {ref}
-        resolved = _resolve_schema_ref(schema, components)
-
-    if depth >= max_depth:
-        return {}
-
-    properties = resolved.get("properties")
-    if not properties:
-        return {}
-
+    """Extract enriched metadata from every reachable schema node."""
+    del depth, max_depth
     result: dict[str, dict[str, Any]] = {}
-
-    for prop_name, prop_schema in properties.items():
-        prop_resolved = _resolve_schema_ref(prop_schema, components)
-        field_path = f"{prefix}.{prop_name}" if prefix else prop_name
-
-        if prop_schema is not prop_resolved:
-            inline_extensions = {k: prop_schema[k] for k in _ENRICHMENT_KEYS if k in prop_schema}
-            if inline_extensions:
-                prop_resolved = {**prop_resolved, **inline_extensions}
-
-        has_enrichment = any(k in prop_resolved for k in _ENRICHMENT_KEYS)
-
-        if has_enrichment:
-            entry: dict[str, Any] = {
-                "type": prop_resolved.get("type", "object"),
-            }
-            desc = prop_resolved.get("x-f5xc-description") or prop_resolved.get("description")
-            if desc:
-                entry["description"] = desc
-
-            constraints = prop_resolved.get("x-f5xc-constraints")
-            if constraints:
-                entry["constraints"] = constraints
-
-            required_for = prop_resolved.get("x-f5xc-required-for")
-            if required_for:
-                entry["required_for"] = required_for
-
-            if prop_resolved.get("x-f5xc-server-default"):
-                entry["serverDefault"] = True
-
-            default_val = prop_resolved.get("default")
-            if default_val is not None:
-                entry["default"] = default_val
-
-            recommended = prop_resolved.get("x-f5xc-recommended-value")
-            if recommended is not None:
-                entry["recommendedValue"] = recommended
-
-            conflicts = prop_resolved.get("x-f5xc-conflicts-with")
-            if conflicts:
-                entry["conflictsWith"] = conflicts
-
-            requires = prop_resolved.get("x-f5xc-requires")
-            if requires:
-                entry["requires"] = requires
-
-            wire_name = prop_resolved.get("x-f5xc-wire-name")
-            if wire_name:
-                entry["wireName"] = wire_name
-
-            result[field_path] = entry
-
-        # Recurse into nested objects
-        if prop_resolved.get("type") == "object" or prop_resolved.get("properties"):
-            nested = _extract_field_metadata(
-                prop_resolved,
-                components,
-                prefix=field_path,
-                depth=depth + 1,
-                max_depth=max_depth,
-                visited=visited,
-            )
-            result.update(nested)
-
+    for field_path, prop_resolved in _walk_schema(
+        schema, components, prefix=prefix, active_refs=frozenset(visited or ())
+    ):
+        has_enrichment = field_path and any(k in prop_resolved for k in _ENRICHMENT_KEYS)
+        if not has_enrichment:
+            continue
+        entry: dict[str, Any] = {"type": prop_resolved.get("type", "object")}
+        desc = prop_resolved.get("x-f5xc-description") or prop_resolved.get("description")
+        if desc:
+            entry["description"] = desc
+        constraints = prop_resolved.get("x-f5xc-constraints")
+        if constraints:
+            entry["constraints"] = constraints
+        required_for = prop_resolved.get("x-f5xc-required-for")
+        if required_for:
+            entry["required_for"] = required_for
+        if prop_resolved.get("x-f5xc-server-default"):
+            entry["serverDefault"] = True
+        default_val = prop_resolved.get("default")
+        if default_val is not None:
+            entry["default"] = default_val
+        recommended = prop_resolved.get("x-f5xc-recommended-value")
+        if recommended is not None:
+            entry["recommendedValue"] = recommended
+        conflicts = prop_resolved.get("x-f5xc-conflicts-with")
+        if conflicts:
+            entry["conflictsWith"] = conflicts
+        requires = prop_resolved.get("x-f5xc-requires")
+        if requires:
+            entry["requires"] = requires
+        wire_name = prop_resolved.get("x-f5xc-wire-name")
+        if wire_name:
+            entry["wireName"] = wire_name
+        result[field_path] = entry
     return result
 
 
@@ -436,43 +444,17 @@ def _collect_oneof_recommendations(
     max_depth: int = 3,
     visited: set[str] | None = None,
 ) -> dict[str, str]:
-    """Walk schemas reachable via $ref, collecting x-f5xc-recommended-oneof-variant entries."""
-    if visited is None:
-        visited = set()
-
-    ref = schema.get("$ref", "")
-    if ref:
-        if ref in visited:
-            return {}
-        visited = visited | {ref}
-
-    resolved = _resolve_schema_ref(schema, components)
-
-    if depth > max_depth:
-        return {}
-
+    """Collect recommended oneOf variants from all reachable schema nodes."""
+    del depth, max_depth
     result: dict[str, str] = {}
-
-    oneof_map = resolved.get("x-f5xc-recommended-oneof-variant")
-    if isinstance(oneof_map, dict):
-        for group_name, variant in oneof_map.items():
-            key = f"{prefix}.{group_name}" if prefix else group_name
-            result[key] = variant
-
-    properties = resolved.get("properties")
-    if properties:
-        for prop_name, prop_schema in properties.items():
-            prop_path = f"{prefix}.{prop_name}" if prefix else prop_name
-            nested = _collect_oneof_recommendations(
-                prop_schema,
-                components,
-                prefix=prop_path,
-                depth=depth + 1,
-                max_depth=max_depth,
-                visited=visited,
-            )
-            result.update(nested)
-
+    for path, resolved in _walk_schema(
+        schema, components, prefix=prefix, active_refs=frozenset(visited or ())
+    ):
+        oneof_map = resolved.get("x-f5xc-recommended-oneof-variant")
+        if isinstance(oneof_map, dict):
+            for group_name, variant in oneof_map.items():
+                key = f"{path}.{group_name}" if path else group_name
+                result[key] = variant
     return result
 
 
@@ -485,59 +467,26 @@ def _collect_oneof_variants(
     max_depth: int = 3,
     visited: set[str] | None = None,
 ) -> dict[str, list[str]]:
-    """Walk schemas collecting full oneOf variant lists from x-ves-oneof-field-* extensions.
-
-    Returns {group_name: [variant1, variant2, ...]} for every oneOf group found.
-    """
-    if visited is None:
-        visited = set()
-
-    ref = schema.get("$ref", "")
-    if ref:
-        if ref in visited:
-            return {}
-        visited = visited | {ref}
-
-    resolved = _resolve_schema_ref(schema, components)
-
-    if depth > max_depth:
-        return {}
-
+    """Collect complete oneOf variant lists from all reachable schema nodes."""
+    del depth, max_depth
     result: dict[str, list[str]] = {}
-
-    # Collect x-ves-oneof-field-* extensions from this schema
-    # Collect x-ves-oneof-field-* extensions from this schema.
-    # Values may be JSON-encoded strings (e.g. '["a","b"]') or native lists.
-    for key, val in resolved.items():
-        if not key.startswith("x-ves-oneof-field-"):
-            continue
-        group_name = key[len("x-ves-oneof-field-") :]
-        full_key = f"{prefix}.{group_name}" if prefix else group_name
-        if isinstance(val, list):
-            result[full_key] = val
-        elif isinstance(val, str):
-            try:
-                parsed = json.loads(val)
-                if isinstance(parsed, list):
-                    result[full_key] = parsed
-            except (json.JSONDecodeError, ValueError):
-                pass
-
-    # Recurse into properties
-    properties = resolved.get("properties")
-    if properties:
-        for prop_name, prop_schema in properties.items():
-            prop_path = f"{prefix}.{prop_name}" if prefix else prop_name
-            nested = _collect_oneof_variants(
-                prop_schema,
-                components,
-                prefix=prop_path,
-                depth=depth + 1,
-                max_depth=max_depth,
-                visited=visited,
-            )
-            result.update(nested)
-
+    for path, resolved in _walk_schema(
+        schema, components, prefix=prefix, active_refs=frozenset(visited or ())
+    ):
+        for key, val in resolved.items():
+            if not key.startswith("x-ves-oneof-field-"):
+                continue
+            group_name = key[len("x-ves-oneof-field-") :]
+            full_key = f"{path}.{group_name}" if path else group_name
+            if isinstance(val, list):
+                result[full_key] = val
+            elif isinstance(val, str):
+                try:
+                    parsed = json.loads(val)
+                    if isinstance(parsed, list):
+                        result[full_key] = parsed
+                except (json.JSONDecodeError, ValueError):
+                    pass
     return result
 
 

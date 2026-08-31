@@ -936,7 +936,7 @@ def test_extract_field_metadata_handles_circular_refs():
     assert "value" in result
 
 
-def test_extract_field_metadata_respects_max_depth():
+def test_extract_field_metadata_has_no_arbitrary_depth_limit():
     from scripts.compile_catalog import _extract_field_metadata
 
     schema = {
@@ -964,7 +964,7 @@ def test_extract_field_metadata_respects_max_depth():
         },
     }
     result = _extract_field_metadata(schema, {}, prefix="", depth=0, max_depth=3)
-    assert "level1.level2.level3.level4" not in result
+    assert result["level1.level2.level3.level4"]["constraints"]["maxLength"] == 5
 
 
 # ── Task 5: _collect_oneof_recommendations ───────────────────────────────────
