@@ -66,12 +66,10 @@ def test_stamp_directory_updates_only_build_version_artifacts(tmp_path: Path) ->
 
 
 def test_release_bundle_copies_resource_coverage_metadata() -> None:
-    workflow = Path(".github/workflows/sync-and-enrich.yml").read_text()
+    builder = Path("scripts/release/build-package.sh").read_text()
 
-    assert "for spec_file in docs/specifications/api/*.json" in workflow
-    assert (
-        '"resource_coverage.json"'
-        not in workflow.split("# Copy domain specifications", 1)[1].split(
-            "# Copy metadata index", 1
-        )[0]
-    )
+    assert "for spec_file in docs/specifications/api/*.json" in builder
+    domains_loop = builder.split("for spec_file in docs/specifications/api/*.json", 1)[1].split(
+        "done", 1
+    )[0]
+    assert '"resource_coverage.json"' not in domains_loop

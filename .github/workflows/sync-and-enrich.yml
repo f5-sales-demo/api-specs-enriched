@@ -34,20 +34,19 @@ on:
         type: boolean
         default: false
 
-# Read-only default; each job declares what it consumes. Traced per write:
-#   sync-and-enrich  contents: write   `gh release create` runs as GITHUB_TOKEN
-#   deploy-docs      pages + id-token  actions/deploy-pages
-#   monitor-failures issues: write     opens/updates the failure issue as GITHUB_TOKEN
-# Two of the previous workflow-wide scopes had no GITHUB_TOKEN consumer at all and
-# are gone rather than pushed down: `pull-requests: write`, because every `gh pr`
-# call authenticates with VERSION_BUMP_PAT (as do the pushes, via an explicit
-# remote URL), and `actions: read`, because nothing reads the Actions API.
+# Read-only default; each job declares only what it consumes. Compute jobs remain
+# read-only and receive no release environment or publication credential. The
+# socketless coordinator owns release PR/tag writes, the socketless publisher
+# verifies the compute handoff before release publication, deploy-docs owns its
+# Pages scopes, and monitor-failures owns issue reporting.
 permissions:
   contents: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  # A release-PR merge can trigger a new main run while its package handoff is
+  # still publishing. Queue that run instead of cancelling the verified release.
+  cancel-in-progress: false
 
 env:
   # Exact version pre-populated in the immutable runner tool cache.
@@ -131,20 +130,16 @@ jobs:
     name: Sync and Enrich Specifications
     needs: check-updates
     if: needs.check-updates.outputs.has_updates == 'true'
-    runs-on: managed-socketless
-    environment: release
-    # `gh release create` runs as GITHUB_TOKEN and needs contents: write. The
-    # release-branch exemption below posts the existing required linked-issue
-    # context with GITHUB_TOKEN. Branch pushes, PR create/merge/close and tag
-    # push all authenticate with VERSION_BUMP_PAT instead, so no pull-requests
-    # scope is required here.
+    runs-on: api-specs-enriched-compute
     permissions:
-      contents: write # Publish the generated release and its tag with the workflow token.
-      statuses: write # Post the required linked-issue status on the release pull request head.
+      contents: read
     outputs:
       version: ${{ steps.version.outputs.new_version }}
+      bump_type: ${{ steps.version.outputs.bump_type }}
       has_changes: ${{ steps.detect.outputs.has_changes }}
-      target_commit: ${{ steps.release.outputs.target_commit }}
+      candidate_manifest_digest: ${{ steps.candidate.outputs.manifest_digest }}
+      upstream_digest: sha256:${{ steps.specs-fingerprint.outputs.hash }}
+      pipeline_fingerprint: sha256:${{ steps.pipeline-fingerprint.outputs.hash }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -152,7 +147,6 @@ jobs:
           persist-credentials: false
           fetch-depth: 0  # Full history needed for git describe --tags
           fetch-tags: true  # Explicitly fetch tags for version calculation
-          token: ${{ secrets.VERSION_BUMP_PAT }}  # Use admin PAT for bypass permissions
 
       - name: Setup Python
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
@@ -251,7 +245,7 @@ jobs:
         if: steps.enriched-cache.outputs.cache-hit != 'true'
         run: |
           mkdir -p "$RUNNER_TEMP/workload-profile"
-          runner-profile --name enrichment-pipeline --output "$RUNNER_TEMP/workload-profile/enrichment-pipeline.json" -- python -m scripts.pipeline
+          runner-profile --name enrichment-pipeline --output "$RUNNER_TEMP/workload-profile/enrichment-pipeline.json" -- python -m scripts.pipeline --workers 8
           python -m scripts.workload_evidence evidence \
             --tree docs/specifications/api \
             --archive "$RUNNER_TEMP/workload-profile/enrichment-output.zip" \
@@ -479,312 +473,52 @@ jobs:
             fi
           } > CHANGELOG.md
 
-      - name: Upload docs artifact for deployment
-        if: steps.detect.outputs.has_changes == 'true'
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: docs-site
-          path: docs
-          retention-days: 1
-
       - name: Biome-format generated JSON for release PR
         if: steps.detect.outputs.has_changes == 'true'
         run: |
-          # Re-run biome format on all generated output as a single batch.
-          # json_writer.py already formats per-file during the pipeline, but
-          # biome ci (run by Super-Linter on the release PR) checks all files
-          # in batch mode. Per-file and batch formatting can diverge across
-          # Biome versions. This final batch pass guarantees the committed
-          # files match exactly what biome ci will check.
-          # Files exceeding biome.json maxSize (5 MB) are silently skipped
-          # by both this step and the Super-Linter check.
+          # json_writer.py formats per-file during generation, but Biome batch
+          # formatting can differ. Normalize the complete generated trees before
+          # the candidate manifest binds their bytes.
           biome format --write docs/specifications/api/ docs/api-reference/ || true
 
-      - name: Commit and tag release
-        id: release
+      - name: Revalidate formatted specifications
+        if: steps.detect.outputs.has_changes == 'true'
+        run: python -m scripts.validate --dry-run
+
+      - name: Build schema-v1 release candidate handoff
+        id: candidate
         if: steps.detect.outputs.has_changes == 'true'
         env:
-          GH_TOKEN: ${{ secrets.VERSION_BUMP_PAT }}
-          RELEASE_STATUS_TOKEN: ${{ github.token }}
+          SOURCE_COMMIT: ${{ github.sha }}
+          UPSTREAM_DIGEST: sha256:${{ steps.specs-fingerprint.outputs.hash }}
           VERSION: ${{ steps.version.outputs.new_version }}
-          BUMP_TYPE: ${{ steps.version.outputs.bump_type }}
-          REPOSITORY: ${{ github.repository }}
+          PIPELINE_FINGERPRINT: sha256:${{ steps.pipeline-fingerprint.outputs.hash }}
         run: |
-          set -e
-
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-
-          # Configure git to use VERSION_BUMP_PAT for authentication
-          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${REPOSITORY}.git"
-
-          BRANCH="release/v${VERSION}"
-
-          # A retry must preserve the exact release PR that an earlier run
-          # created. In particular, never close or delete an OPEN release PR:
-          # its required checks may simply outlive this runner's wait budget.
-          # A later forced retry resumes from the merged PR's immutable commit.
-          publish_tag() {
-            TARGET_COMMIT="$1"
-            git fetch --tags origin main
-            git merge-base --is-ancestor "$TARGET_COMMIT" origin/main || {
-              echo "::error::Release PR merge commit is not reachable from main"
-              exit 1
-            }
-            if git rev-parse -q --verify "refs/tags/v${VERSION}" >/dev/null; then
-              TAG_COMMIT=$(git rev-parse "v${VERSION}^{}")
-              [ "$TAG_COMMIT" = "$TARGET_COMMIT" ] || {
-                echo "::error::Existing v${VERSION} tag names a different commit"
-                exit 1
-              }
-            else
-              git tag -a "v${VERSION}" "$TARGET_COMMIT" -m "Release v${VERSION} (${BUMP_TYPE})"
-              git push origin "v${VERSION}"
-            fi
-            git checkout --detach "$TARGET_COMMIT"
-            echo "release_commit=${TARGET_COMMIT}" >> "$GITHUB_ENV"
-            echo "target_commit=${TARGET_COMMIT}" >> "$GITHUB_OUTPUT"
-            echo "::notice::Released v${VERSION} from immutable merge ${TARGET_COMMIT}"
-          }
-
-          EXISTING_PR=$(gh pr list --state all --head "$BRANCH" \
-            --json number,state,mergeCommit --jq '.[0] // empty')
-          if [ -n "$EXISTING_PR" ]; then
-            RELEASE_PR=$(printf '%s' "$EXISTING_PR" | jq -r '.number')
-            RELEASE_STATE=$(printf '%s' "$EXISTING_PR" | jq -r '.state')
-            case "$RELEASE_STATE" in
-            MERGED)
-              TARGET_COMMIT=$(printf '%s' "$EXISTING_PR" | jq -er '.mergeCommit.oid')
-              publish_tag "$TARGET_COMMIT"
-              ;;
-            OPEN)
-              # Preserve the existing PR and let its currently running checks
-              # finish. Enable auto-merge only if the original run did not.
-              AUTO_MERGE=$(gh pr view "$RELEASE_PR" --json autoMergeRequest \
-                --jq 'if .autoMergeRequest then "true" else "false" end')
-              if [ "$AUTO_MERGE" != true ]; then
-                gh pr merge "$RELEASE_PR" --squash --auto --delete-branch
-              fi
-              # Shared self-hosted capacity can defer the release PR's checks
-              # beyond the normal 30-minute contract-diff window. Keep this
-              # bounded below the job limit, but long enough for a queued PR
-              # to drain without manufacturing a second release identity.
-              WAIT_FOR_MERGE_MAX_TOTAL=7200 bash scripts/release/wait-for-merge.sh "$RELEASE_PR"
-              TARGET_COMMIT=$(gh pr view "$RELEASE_PR" --json state,mergeCommit \
-                --jq 'if .state == "MERGED" then .mergeCommit.oid else empty end')
-              [ -n "$TARGET_COMMIT" ] || {
-                echo "::error::Release PR did not produce a merge commit"
-                exit 1
-              }
-              publish_tag "$TARGET_COMMIT"
-              ;;
-            CLOSED)
-              echo "::error::Release PR #${RELEASE_PR} closed without merging; refusing to supersede it"
-              exit 1
-              ;;
-            *)
-              echo "::error::Unexpected release PR state: ${RELEASE_STATE}"
-              exit 1
-              ;;
-            esac
-          else
-            # Create a new release PR only when this version has no prior PR.
-            git checkout -b "$BRANCH"
-            git add -f CHANGELOG.md .github_release release/api-catalog.json docs/specifications/api/ docs/api-reference/
-            if git diff --staged --quiet; then
-              echo "::error::Release detector requested v${VERSION}, but no generated output is staged"
-              exit 1
-            fi
-
-            git commit -m "chore: release v${VERSION} (${BUMP_TYPE})"
-            git push origin "$BRANCH"
-            PR_URL=$(gh pr create \
-              --base main \
-              --head "$BRANCH" \
-              --title "chore: release v${VERSION} (${BUMP_TYPE})" \
-              --body "Automated release v${VERSION} (${BUMP_TYPE}). Created by the sync-and-enrich workflow.")
-            RELEASE_PR=$(gh pr view "$BRANCH" --json number --jq '.number')
-
-            # `release/**` is exempt from the linked-issue policy, but its
-            # required context must be posted synchronously before auto-merge.
-            PR_HEAD_SHA=$(gh pr view "$RELEASE_PR" --json headRefOid --jq '.headRefOid')
-            GH_TOKEN="$RELEASE_STATUS_TOKEN" gh api \
-              --method POST \
-              "repos/${GITHUB_REPOSITORY}/statuses/${PR_HEAD_SHA}" \
-              -f state=success \
-              -f context='Check linked issues' \
-              -f description='Automated release branch is exempt'
-            echo "Created release PR: ${PR_URL}"
-
-            gh pr merge "$RELEASE_PR" --squash --auto --delete-branch
-            # See the existing-PR path above: release PR checks share the
-            # organization runner pool and can be queued behind normal work.
-            WAIT_FOR_MERGE_MAX_TOTAL=7200 bash scripts/release/wait-for-merge.sh "$RELEASE_PR"
-            TARGET_COMMIT=$(gh pr view "$RELEASE_PR" --json state,mergeCommit \
-              --jq 'if .state == "MERGED" then .mergeCommit.oid else empty end')
-            [ -n "$TARGET_COMMIT" ] || {
-              echo "::error::Release PR did not produce a merge commit"
-              exit 1
-            }
-            publish_tag "$TARGET_COMMIT"
-          fi
-
-      - name: Create release package
-        if: steps.detect.outputs.has_changes == 'true'
-        env:
-          VERSION: ${{ steps.version.outputs.new_version }}
-        run: |
-          RELEASE_DIR="release-package"
-          DATE=$(date -u +"%Y-%m-%d")
-
-          # Extract upstream info from index.json
-          UPSTREAM_TS=$(jq -r '."x-upstream-timestamp" // "unknown"' docs/specifications/api/index.json)
-          ENRICHED_VER=$(jq -r '."x-enriched-version" // "'"$VERSION"'"' docs/specifications/api/index.json)
-
-          # Create ZIP filename
-          ZIP_NAME="f5xc-api-specs-v${VERSION}.zip"
-
-          echo "::notice::Creating release package: ${ZIP_NAME}"
-
-          # Create release directory structure and the independently verifiable
-          # SMSv2 contract assets. The manifest binds the contract and sanitized
-          # evidence receipt to the exact commit that was tagged above.
-          mkdir -p "$RELEASE_DIR/domains"
-          python -m scripts.smsv2_release_assets \
-            --output-dir "$RELEASE_DIR" \
-            --version "v${VERSION}" \
-            --commit "${release_commit:?release commit is required}"
-
-          # Copy master specification
-          cp docs/specifications/api/openapi.json "$RELEASE_DIR/"
-
-          # Convert JSON to YAML format
-          python3 -c "
-          import json
-          import yaml
-
-          with open('docs/specifications/api/openapi.json', 'r') as f:
-              spec = json.load(f)
-
-          with open('$RELEASE_DIR/openapi.yaml', 'w') as f:
-              yaml.dump(spec, f, default_flow_style=False, allow_unicode=True, sort_keys=False)
-
-          print('Created openapi.yaml')
-          "
-
-          # Copy domain specifications to domains/ subdirectory
-          for spec_file in docs/specifications/api/*.json; do
-            basename_f=$(basename "$spec_file")
-            if [ "$basename_f" != "openapi.json" ] && [ "$basename_f" != "index.json" ] \
-               && [ "$basename_f" != "minimal-export-defaults.json" ]; then
-              cp "$spec_file" "$RELEASE_DIR/domains/"
-              echo "Copied domain: $basename_f"
-            fi
-          done
-
-          # Copy metadata index
-          cp docs/specifications/api/index.json "$RELEASE_DIR/"
-
-          # Copy changelog
-          cp CHANGELOG.md "$RELEASE_DIR/"
-
-          # Process README template with placeholder substitution
-          sed "s/{VERSION}/${UPSTREAM_TS}-${ENRICHED_VER}/g; s/{DATE}/${DATE}/g" \
-            release/README.md > "$RELEASE_DIR/README.md"
-
-          # Show package contents
-          echo "::group::Package contents"
-          find "$RELEASE_DIR" -type f | sort
-          echo "::endgroup::"
-
-          # Create ZIP package
-          cd "$RELEASE_DIR"
-          zip -r "../${ZIP_NAME}" .
-          cd ..
-
-          echo "zip_name=${ZIP_NAME}" >> "$GITHUB_ENV"
-          echo "::notice::Package created: ${ZIP_NAME}"
-
-          python -m scripts.verify_release_version \
+          manifest_digest=$(python -m scripts.release_handoff candidate-create \
+            --root . \
+            --stage "$RUNNER_TEMP/release-candidate" \
+            --source-commit "$SOURCE_COMMIT" \
+            --upstream-digest "$UPSTREAM_DIGEST" \
             --version "$VERSION" \
-            --tag "v$VERSION" \
-            --document docs/specifications/api/openapi.json \
-            --document docs/specifications/api/index.json \
-            --document docs/specifications/api/concurrency_contracts.json \
-            --document docs/specifications/api/smsv2_parity_manifest.json \
-            --document release/api-catalog.json \
-            --contract-manifest release-package/smsv2-contract-manifest.json \
-            --archive-name "$ZIP_NAME"
+            --pipeline-fingerprint "$PIPELINE_FINGERPRINT" \
+            --path CHANGELOG.md \
+            --path .github_release \
+            --path docs/specifications/api \
+            --path docs/api-reference \
+            --path release/api-catalog.json \
+            --path release/upstream-contract-removals.json \
+            --path release/upstream-contract-removals.md)
+          echo "manifest_digest=$manifest_digest" >> "$GITHUB_OUTPUT"
 
-      - name: Create release
+      - name: Upload release candidate handoff
         if: steps.detect.outputs.has_changes == 'true'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VERSION: ${{ steps.version.outputs.new_version }}
-        run: |
-          # Check if release already exists
-          if gh release view "v$VERSION" >/dev/null 2>&1; then
-            echo "Release v$VERSION already exists, skipping"
-            exit 0
-          fi
-
-          # The exact release assets. The receipt below covers this same list,
-          # including the checksum-bound SMSv2 contract manifest and its sanitized
-          # evidence receipt, so a consumer never has to trust mutable branch data.
-          ASSET_PATHS=(
-            "${zip_name}"
-            docs/specifications/api/openapi.json
-            docs/specifications/api/index.json
-            docs/specifications/api/minimal-export-defaults.json
-            docs/specifications/api/concurrency_contracts.json
-            docs/specifications/api/smsv2_parity_manifest.json
-            release/api-catalog.json
-            release/upstream-contract-removals.json
-            release-package/smsv2-contract.json
-            release-package/smsv2-evidence-receipt.json
-            release-package/smsv2-contract-manifest.json
-          )
-
-          # Publication receipt: binds each asset's SHA-256 to the commit the tag
-          # resolves to, so a consumer can prove the bundle it downloaded is the one
-          # this release published. Consumers refuse a release without it
-          # (f5-sales-demo/terraform-provider-xcsh#1460), and a release is immutable
-          # once created, so this has to be in the body from the start — it cannot be
-          # added afterwards.
-          if [ -z "${release_commit:-}" ]; then
-            echo "::error::release_commit was not captured while tagging; cannot build a publication receipt"
-            exit 1
-          fi
-          NOTES_FILE=$(mktemp)
-          RECEIPT_LINE_FILE=$(mktemp)
-          RECEIPT_JSON_FILE=$(mktemp)
-          trap 'rm -f "$NOTES_FILE" "$RECEIPT_LINE_FILE" "$RECEIPT_JSON_FILE"' EXIT
-
-          bash scripts/release/build-publication-receipt.sh \
-            "$VERSION" "$release_commit" "${ASSET_PATHS[@]}" > "$RECEIPT_LINE_FILE"
-          sed -n 's/^<!-- publication-receipt:\(.*\) -->$/\1/p' \
-            "$RECEIPT_LINE_FILE" > "$RECEIPT_JSON_FILE"
-          jq -e . "$RECEIPT_JSON_FILE" >/dev/null
-          python -m scripts.verify_release_version \
-            --version "$VERSION" \
-            --tag "v$VERSION" \
-            --receipt "$RECEIPT_JSON_FILE"
-
-          {
-            cat CHANGELOG.md
-            printf '\n'
-            cat release/upstream-contract-removals.md
-            printf '\n'
-            cat "$RECEIPT_LINE_FILE"
-          } > "$NOTES_FILE"
-
-          # Create release with ZIP package
-          gh release create "v$VERSION" \
-            --title "API Specs v$VERSION" \
-            --notes-file "$NOTES_FILE" \
-            "${ASSET_PATHS[@]}"
-
-          echo "::notice::Created release: v$VERSION with publication receipt for ${release_commit}"
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: release-candidate-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/release-candidate
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 1
 
       - name: Upload workload profiles
         if: always()
@@ -795,9 +529,219 @@ jobs:
           if-no-files-found: warn
           retention-days: 30
 
+  release-coordinator:
+    name: Coordinate Release
+    needs: sync-and-enrich
+    if: needs.sync-and-enrich.outputs.has_changes == 'true'
+    runs-on: managed-socketless
+    environment: release
+    permissions:
+      contents: write # Create the release branch and tag through the coordinator.
+      statuses: write # Post the release-branch linked-issue exemption context.
+    outputs:
+      target_commit: ${{ steps.release.outputs.target_commit }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          fetch-tags: true
+      - name: Setup Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+      - name: Download release candidate
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: release-candidate-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/release-candidate
+      - name: Verify candidate and coordinate release PR
+        id: release
+        env:
+          CANDIDATE_DIR: ${{ runner.temp }}/release-candidate
+          CANDIDATE_MANIFEST_DIGEST: ${{ needs.sync-and-enrich.outputs.candidate_manifest_digest }}
+          SOURCE_COMMIT: ${{ github.sha }}
+          UPSTREAM_DIGEST: ${{ needs.sync-and-enrich.outputs.upstream_digest }}
+          VERSION: ${{ needs.sync-and-enrich.outputs.version }}
+          PIPELINE_FINGERPRINT: ${{ needs.sync-and-enrich.outputs.pipeline_fingerprint }}
+          BUMP_TYPE: ${{ needs.sync-and-enrich.outputs.bump_type }}
+          GH_TOKEN: ${{ secrets.VERSION_BUMP_PAT }}
+          RELEASE_STATUS_TOKEN: ${{ github.token }}
+        run: bash scripts/release/coordinator.sh
+
+  build-release-package:
+    name: Build Release Package
+    needs: [sync-and-enrich, release-coordinator]
+    if: needs.sync-and-enrich.outputs.has_changes == 'true'
+    runs-on: api-specs-enriched-compute
+    permissions:
+      contents: read
+    outputs:
+      artifact_name: ${{ steps.names.outputs.artifact_name }}
+      artifact_digest: ${{ steps.payload.outputs.artifact-digest }}
+    steps:
+      - name: Checkout exact release commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.release-coordinator.outputs.target_commit }}
+          persist-credentials: false
+          fetch-depth: 0
+          fetch-tags: true
+      - name: Setup Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+      - name: Download candidate manifest
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: release-candidate-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/release-candidate
+      - name: Verify merged candidate identity
+        env:
+          CANDIDATE_MANIFEST_DIGEST: ${{ needs.sync-and-enrich.outputs.candidate_manifest_digest }}
+          SOURCE_COMMIT: ${{ github.sha }}
+          UPSTREAM_DIGEST: ${{ needs.sync-and-enrich.outputs.upstream_digest }}
+          VERSION: ${{ needs.sync-and-enrich.outputs.version }}
+          PIPELINE_FINGERPRINT: ${{ needs.sync-and-enrich.outputs.pipeline_fingerprint }}
+        run: |
+          python -m scripts.release_handoff candidate-verify \
+            --root . \
+            --manifest "$RUNNER_TEMP/release-candidate/.handoff/candidate-manifest.json" \
+            --manifest-digest "$CANDIDATE_MANIFEST_DIGEST" \
+            --source-commit "$SOURCE_COMMIT" \
+            --upstream-digest "$UPSTREAM_DIGEST" \
+            --version "$VERSION" \
+            --pipeline-fingerprint "$PIPELINE_FINGERPRINT"
+      - name: Build deterministic release assets
+        id: package
+        env:
+          VERSION: ${{ needs.sync-and-enrich.outputs.version }}
+          RELEASE_COMMIT: ${{ needs.release-coordinator.outputs.target_commit }}
+          CANDIDATE_MANIFEST: ${{ runner.temp }}/release-candidate/.handoff/candidate-manifest.json
+          OUTPUT_DIR: ${{ runner.temp }}/release-payload
+        run: bash scripts/release/build-package.sh
+      - name: Name package artifact
+        id: names
+        env:
+          RUN_ID: ${{ github.run_id }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
+        run: echo "artifact_name=release-payload-${RUN_ID}-${RUN_ATTEMPT}" >> "$GITHUB_OUTPUT"
+      - name: Upload release package
+        id: payload
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: ${{ steps.names.outputs.artifact_name }}
+          path: ${{ runner.temp }}/release-payload
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 1
+      - name: Create schema-v1 package handoff
+        env:
+          VERSION: ${{ needs.sync-and-enrich.outputs.version }}
+          RELEASE_COMMIT: ${{ needs.release-coordinator.outputs.target_commit }}
+          ARTIFACT_NAME: ${{ steps.names.outputs.artifact_name }}
+          ARTIFACT_DIGEST: ${{ steps.payload.outputs.artifact-digest }}
+        run: |
+          python -m scripts.release_handoff package-create \
+            --root "$RUNNER_TEMP/release-payload" \
+            --candidate-manifest "$RUNNER_TEMP/release-payload/.handoff/candidate-manifest.json" \
+            --release-commit "$RELEASE_COMMIT" \
+            --artifact-name "$ARTIFACT_NAME" \
+            --artifact-digest "$ARTIFACT_DIGEST" \
+            --archive "f5xc-api-specs-v${VERSION}.zip" \
+            --asset "f5xc-api-specs-v${VERSION}.zip" \
+            --asset docs/specifications/api/openapi.json \
+            --asset docs/specifications/api/index.json \
+            --asset docs/specifications/api/minimal-export-defaults.json \
+            --asset docs/specifications/api/concurrency_contracts.json \
+            --asset docs/specifications/api/smsv2_parity_manifest.json \
+            --asset release/api-catalog.json \
+            --asset release/upstream-contract-removals.json \
+            --asset release-package/smsv2-contract.json \
+            --asset release-package/smsv2-evidence-receipt.json \
+            --asset release-package/smsv2-contract-manifest.json \
+            --output "$RUNNER_TEMP/package-handoff.json"
+      - name: Upload package handoff
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: release-handoff-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/package-handoff.json
+          if-no-files-found: error
+          retention-days: 1
+      - name: Upload docs artifact for deployment
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: docs-site
+          path: docs
+          retention-days: 1
+
+  release-publisher:
+    name: Publish Release
+    needs: [sync-and-enrich, release-coordinator, build-release-package]
+    if: needs.sync-and-enrich.outputs.has_changes == 'true'
+    runs-on: managed-socketless
+    environment: release
+    permissions:
+      actions: read # Resolve the uploaded package artifact server-side digest.
+      contents: write # Release coordinator or publisher write scope; see the job comment.
+    outputs:
+      has_changes: ${{ needs.sync-and-enrich.outputs.has_changes }}
+    steps:
+      - name: Checkout exact release commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.release-coordinator.outputs.target_commit }}
+          persist-credentials: false
+          fetch-depth: 0
+          fetch-tags: true
+      - name: Setup Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+      - name: Download release package
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: ${{ needs.build-release-package.outputs.artifact_name }}
+          path: ${{ runner.temp }}/release-payload
+      - name: Download package handoff
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: release-handoff-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/release-handoff
+      - name: Verify handoff and publish release
+        env:
+          VERSION: ${{ needs.sync-and-enrich.outputs.version }}
+          RELEASE_COMMIT: ${{ needs.release-coordinator.outputs.target_commit }}
+          PAYLOAD_DIR: ${{ runner.temp }}/release-payload
+          HANDOFF_PATH: ${{ runner.temp }}/release-handoff/package-handoff.json
+          ARTIFACT_NAME: ${{ needs.build-release-package.outputs.artifact_name }}
+          ARTIFACT_DIGEST: ${{ needs.build-release-package.outputs.artifact_digest }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # shellcheck disable=SC2016
+          server_digest=$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/artifacts" \
+            --paginate --jq --arg name "$ARTIFACT_NAME" \
+            '[.artifacts[] | select(.name == $name and .expired == false)] | if length == 1 then .[0].digest else empty end')
+          [ "$server_digest" = "$ARTIFACT_DIGEST" ] || {
+            echo "::error::Package artifact digest does not match GitHub metadata"
+            exit 1
+          }
+          bash scripts/release/publish-package.sh
+
+
   deploy-docs:
     name: Deploy Documentation
-    needs: sync-and-enrich
+    needs: [sync-and-enrich, build-release-package]
     if: needs.sync-and-enrich.outputs.has_changes == 'true'
     runs-on: managed-socketless
     # actions/deploy-pages needs both of these; id-token is for its OIDC exchange.
@@ -833,7 +777,7 @@ jobs:
   # ==========================================================================
   build-downstream-matrix:
     name: Build Downstream Matrix
-    needs: [sync-and-enrich]
+    needs: [sync-and-enrich, release-publisher]
     if: needs.sync-and-enrich.outputs.has_changes == 'true'
     runs-on: managed-socketless
     outputs:
@@ -885,7 +829,7 @@ jobs:
 
   notify-downstream:
     name: Notify Downstream Repositories
-    needs: [sync-and-enrich, build-downstream-matrix]
+    needs: [sync-and-enrich, release-coordinator, build-downstream-matrix]
     if: needs.build-downstream-matrix.outputs.has_targets == 'true'
     runs-on: managed-socketless
     environment: downstream-dispatch
@@ -906,7 +850,7 @@ jobs:
           EVENT_TYPE: ${{ matrix.downstream.event_type }}
           VERSION: ${{ needs.sync-and-enrich.outputs.version }}
           SOURCE_REPOSITORY: ${{ github.repository }}
-          SOURCE_TARGET_COMMIT: ${{ needs.sync-and-enrich.outputs.target_commit }}
+          SOURCE_TARGET_COMMIT: ${{ needs.release-coordinator.outputs.target_commit }}
         run: bash scripts/release/dispatch-downstream.sh
 
       - name: Log dispatch result
@@ -925,7 +869,7 @@ jobs:
   monitor-failures:
     name: Monitor Workflow Failures
     runs-on: managed-socketless
-    needs: [check-updates, sync-and-enrich, deploy-docs, build-downstream-matrix, notify-downstream]
+    needs: [check-updates, sync-and-enrich, release-coordinator, build-release-package, release-publisher, deploy-docs, build-downstream-matrix, notify-downstream]
     if: always()
     # Ensures the monitoring labels exist and opens or updates the failure issue,
     # both as GITHUB_TOKEN.
@@ -938,6 +882,9 @@ jobs:
         env:
           CHECK_UPDATES_RESULT: ${{ needs.check-updates.result }}
           SYNC_AND_ENRICH_RESULT: ${{ needs.sync-and-enrich.result }}
+          RELEASE_COORDINATOR_RESULT: ${{ needs.release-coordinator.result }}
+          BUILD_RELEASE_PACKAGE_RESULT: ${{ needs.build-release-package.result }}
+          RELEASE_PUBLISHER_RESULT: ${{ needs.release-publisher.result }}
           DEPLOY_DOCS_RESULT: ${{ needs.deploy-docs.result }}
           BUILD_DOWNSTREAM_MATRIX_RESULT: ${{ needs.build-downstream-matrix.result }}
           NOTIFY_DOWNSTREAM_RESULT: ${{ needs.notify-downstream.result }}
@@ -945,6 +892,9 @@ jobs:
           # Check if any job failed
           if [ "$CHECK_UPDATES_RESULT" = "failure" ] || \
             [ "$SYNC_AND_ENRICH_RESULT" = "failure" ] || \
+            [ "$RELEASE_COORDINATOR_RESULT" = "failure" ] || \
+            [ "$BUILD_RELEASE_PACKAGE_RESULT" = "failure" ] || \
+            [ "$RELEASE_PUBLISHER_RESULT" = "failure" ] || \
             [ "$DEPLOY_DOCS_RESULT" = "failure" ] || \
             [ "$BUILD_DOWNSTREAM_MATRIX_RESULT" = "failure" ] || \
             [ "$NOTIFY_DOWNSTREAM_RESULT" = "failure" ]; then
