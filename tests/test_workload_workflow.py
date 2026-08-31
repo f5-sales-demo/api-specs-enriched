@@ -46,4 +46,5 @@ def test_cprofile_is_single_process_and_retained_for_seven_days() -> None:
 def test_pytest_archive_has_an_index_for_git_aware_tests() -> None:
     driver = DRIVER_PATH.read_text(encoding="utf-8")
     pytest_body = driver.split("profile_pytest()", 1)[1]
-    assert "git init --quiet && git add -A" in pytest_body
+    assert "git init --quiet && git add --force -A" in pytest_body
+    assert 'cp "$root/scripts/utils/memory_profiler.py"' in driver

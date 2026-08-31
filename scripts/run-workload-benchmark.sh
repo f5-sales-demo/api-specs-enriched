@@ -24,6 +24,7 @@ prepare_source() {
   mkdir -p "$destination/specs/original"
   git archive "$ref" | tar -xf - -C "$destination"
   tar -xzf "$SEED_ARCHIVE" -C "$destination/specs/original"
+  cp "$root/scripts/utils/memory_profiler.py" "$destination/scripts/utils/memory_profiler.py"
 }
 
 manifest_args() {
@@ -79,7 +80,7 @@ profile_pytest() {
   prepare_source "$ref" "$source"
   (
     cd "$source"
-    git init --quiet && git add -A
+    git init --quiet && git add --force -A
   )
   (
     cd "$source"

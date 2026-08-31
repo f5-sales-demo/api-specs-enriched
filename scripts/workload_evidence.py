@@ -111,7 +111,6 @@ def enrich_profile(profile_path: Path, evidence_path: Path, memory_path: Path | 
         timings = [
             {"name": item["name"], "duration_seconds": item["phase_duration_seconds"]}
             for item in memory.get("checkpoints", [])
-            if "phase_duration_seconds" in item
         ]
         if timings:
             profile["phase_timings"] = timings
