@@ -9,7 +9,7 @@ import os
 import re
 import tempfile
 from dataclasses import asdict, dataclass
-from datetime import UTC, date, datetime
+from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -216,7 +216,7 @@ def load_acknowledgements(path: Path) -> dict[str, dict[str, str]]:
             raise UpstreamRemovalError(
                 f"acknowledgements[{index}] has invalid acknowledgement date"
             ) from error
-        if acknowledged_date > datetime.now(UTC).date():
+        if acknowledged_date > datetime.now(timezone.utc).date():
             raise UpstreamRemovalError(f"acknowledgements[{index}] is future-dated")
         if fingerprint in result:
             raise UpstreamRemovalError(f"duplicate acknowledgement: {fingerprint}")

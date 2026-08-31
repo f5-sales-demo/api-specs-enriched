@@ -6,7 +6,7 @@ import argparse
 import hashlib
 import json
 import re
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
@@ -152,7 +152,7 @@ def validate_release_assets(
     if release.get("immutable") is not True:
         raise Smsv2ReleaseValidationError("mutable contract releases are unavailable")
     published = _parse_timestamp(release.get("published_at"), "release.published_at")
-    current = now or datetime.now(UTC)
+    current = now or datetime.now(timezone.utc)
     if published > current or current - published > max_age:
         raise Smsv2ReleaseValidationError("contract release is stale")
     release_identity = manifest.get("release")
