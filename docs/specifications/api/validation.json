@@ -6,47 +6,18 @@
   "source": "api-specs-enriched",
   "required_fields": {
     "common": {
-      "all_operations": [
-        "metadata.name",
-        "metadata.namespace"
-      ]
+      "all_operations": ["metadata.name", "metadata.namespace"]
     },
     "resources": {
       "http_loadbalancer": {
-        "create": [
-          "metadata.name",
-          "metadata.namespace",
-          "spec.domains",
-          "spec.routes",
-          "spec.origin_pools"
-        ],
-        "update": [
-          "metadata.name",
-          "metadata.namespace"
-        ],
-        "minimum_config": [
-          "metadata.name",
-          "metadata.namespace",
-          "spec.domains"
-        ]
+        "create": ["metadata.name", "metadata.namespace", "spec.domains", "spec.routes", "spec.origin_pools"],
+        "update": ["metadata.name", "metadata.namespace"],
+        "minimum_config": ["metadata.name", "metadata.namespace", "spec.domains"]
       },
       "origin_pool": {
-        "create": [
-          "metadata.name",
-          "metadata.namespace",
-          "spec.origin_servers",
-          "spec.port"
-        ],
-        "update": [
-          "metadata.name",
-          "metadata.namespace"
-        ],
-        "minimum_config": [
-          "metadata.name",
-          "metadata.namespace",
-          "spec.origin_servers",
-          "spec.port"
-        ]
+        "create": ["metadata.name", "metadata.namespace", "spec.origin_servers", "spec.port"],
+        "update": ["metadata.name", "metadata.namespace"],
+        "minimum_config": ["metadata.name", "metadata.namespace", "spec.origin_servers", "spec.port"]
       },
       "healthcheck": {
         "create": [
@@ -57,10 +28,7 @@
           "spec.healthy_threshold",
           "spec.unhealthy_threshold"
         ],
-        "update": [
-          "metadata.name",
-          "metadata.namespace"
-        ],
+        "update": ["metadata.name", "metadata.namespace"],
         "minimum_config": [
           "metadata.name",
           "metadata.namespace",
@@ -71,64 +39,24 @@
         ]
       },
       "tcp_loadbalancer": {
-        "create": [
-          "metadata.name",
-          "metadata.namespace",
-          "spec.origin_pools"
-        ],
-        "update": [
-          "metadata.name",
-          "metadata.namespace"
-        ],
-        "minimum_config": [
-          "metadata.name",
-          "metadata.namespace",
-          "spec.origin_pools"
-        ]
+        "create": ["metadata.name", "metadata.namespace", "spec.origin_pools"],
+        "update": ["metadata.name", "metadata.namespace"],
+        "minimum_config": ["metadata.name", "metadata.namespace", "spec.origin_pools"]
       },
       "app_firewall": {
-        "create": [
-          "metadata.name",
-          "metadata.namespace"
-        ],
-        "update": [
-          "metadata.name",
-          "metadata.namespace"
-        ],
-        "minimum_config": [
-          "metadata.name",
-          "metadata.namespace"
-        ]
+        "create": ["metadata.name", "metadata.namespace"],
+        "update": ["metadata.name", "metadata.namespace"],
+        "minimum_config": ["metadata.name", "metadata.namespace"]
       },
       "certificate": {
-        "create": [
-          "metadata.name",
-          "metadata.namespace",
-          "spec.certificate_url"
-        ],
-        "update": [
-          "metadata.name",
-          "metadata.namespace"
-        ],
-        "minimum_config": [
-          "metadata.name",
-          "metadata.namespace",
-          "spec.certificate_url"
-        ]
+        "create": ["metadata.name", "metadata.namespace", "spec.certificate_url"],
+        "update": ["metadata.name", "metadata.namespace"],
+        "minimum_config": ["metadata.name", "metadata.namespace", "spec.certificate_url"]
       },
       "service_policy": {
-        "create": [
-          "metadata.name",
-          "metadata.namespace"
-        ],
-        "update": [
-          "metadata.name",
-          "metadata.namespace"
-        ],
-        "minimum_config": [
-          "metadata.name",
-          "metadata.namespace"
-        ]
+        "create": ["metadata.name", "metadata.namespace"],
+        "update": ["metadata.name", "metadata.namespace"],
+        "minimum_config": ["metadata.name", "metadata.namespace"]
       }
     }
   },
@@ -524,17 +452,11 @@
       "http_loadbalancer": {
         "mutually_exclusive": [
           {
-            "fields": [
-              "spec.dns_name",
-              "spec.advertise"
-            ],
+            "fields": ["spec.dns_name", "spec.advertise"],
             "reason": "Choose either DNS-based or advertised traffic routing"
           },
           {
-            "fields": [
-              "spec.certificate_chain",
-              "spec.tls_config.vault_secret"
-            ],
+            "fields": ["spec.certificate_chain", "spec.tls_config.vault_secret"],
             "reason": "Certificate source: inline or vault"
           }
         ],
@@ -552,11 +474,7 @@
       "healthcheck": {
         "mutually_exclusive": [
           {
-            "fields": [
-              "spec.http_health_check",
-              "spec.tcp_health_check",
-              "spec.udp_icmp_health_check"
-            ],
+            "fields": ["spec.http_health_check", "spec.tcp_health_check", "spec.udp_icmp_health_check"],
             "reason": "Choose exactly one health check type"
           }
         ],
@@ -565,32 +483,19 @@
       "origin_pool": {
         "mutually_exclusive": [
           {
-            "fields": [
-              "spec.port",
-              "spec.automatic_port",
-              "spec.lb_port"
-            ],
+            "fields": ["spec.port", "spec.automatic_port", "spec.lb_port"],
             "reason": "Choose exactly one port configuration method"
           },
           {
-            "fields": [
-              "spec.enable_conn_pool_reuse",
-              "spec.disable_conn_pool_reuse"
-            ],
+            "fields": ["spec.enable_conn_pool_reuse", "spec.disable_conn_pool_reuse"],
             "reason": "Choose exactly one connection pool reuse setting"
           },
           {
-            "fields": [
-              "spec.advanced_options.health_check_port",
-              "spec.advanced_options.same_as_endpoint_port"
-            ],
+            "fields": ["spec.advanced_options.health_check_port", "spec.advanced_options.same_as_endpoint_port"],
             "reason": "Choose exactly one health check port method"
           },
           {
-            "fields": [
-              "spec.no_tls",
-              "spec.use_tls"
-            ],
+            "fields": ["spec.no_tls", "spec.use_tls"],
             "reason": "Choose exactly one TLS configuration"
           },
           {
@@ -602,24 +507,15 @@
             "reason": "Choose exactly one circuit breaker configuration"
           },
           {
-            "fields": [
-              "spec.advanced_options.disable_outlier_detection",
-              "spec.advanced_options.outlier_detection"
-            ],
+            "fields": ["spec.advanced_options.disable_outlier_detection", "spec.advanced_options.outlier_detection"],
             "reason": "Choose exactly one outlier detection configuration"
           },
           {
-            "fields": [
-              "spec.advanced_options.no_panic_threshold",
-              "spec.advanced_options.panic_threshold"
-            ],
+            "fields": ["spec.advanced_options.no_panic_threshold", "spec.advanced_options.panic_threshold"],
             "reason": "Choose exactly one panic threshold configuration"
           },
           {
-            "fields": [
-              "spec.advanced_options.disable_subsets",
-              "spec.advanced_options.enable_subsets"
-            ],
+            "fields": ["spec.advanced_options.disable_subsets", "spec.advanced_options.enable_subsets"],
             "reason": "Choose exactly one subset load balancing configuration"
           },
           {
@@ -651,17 +547,11 @@
       "tcp_loadbalancer": {
         "mutually_exclusive": [
           {
-            "fields": [
-              "spec.listen_port",
-              "spec.port_ranges"
-            ],
+            "fields": ["spec.listen_port", "spec.port_ranges"],
             "reason": "Specify either a single port or port ranges (port_choice)"
           },
           {
-            "fields": [
-              "spec.listener.tcp_port",
-              "spec.listener.udp_port"
-            ],
+            "fields": ["spec.listener.tcp_port", "spec.listener.udp_port"],
             "reason": "Specify either TCP or UDP protocol"
           }
         ],
@@ -695,9 +585,7 @@
             "namespace": "default"
           },
           "spec": {
-            "domains": [
-              "example.com"
-            ],
+            "domains": ["example.com"],
             "http": [
               {
                 "port": 80
@@ -940,9 +828,7 @@
           "http_health_check": {
             "path": "/",
             "use_http2": false,
-            "expected_status_codes": [
-              "200"
-            ],
+            "expected_status_codes": ["200"],
             "use_origin_server_name": {}
           }
         }
@@ -1178,11 +1064,7 @@
   },
   "reconciliation": {
     "description": "Strategy for resolving conflicts between constraint sources",
-    "priority_order": [
-      "existing",
-      "discovery",
-      "inferred"
-    ],
+    "priority_order": ["existing", "discovery", "inferred"],
     "behavior": {
       "existing_wins": true,
       "log_conflicts": true,
