@@ -97,6 +97,35 @@ overrides:
             type: boolean
             readOnly: true
 
+  securemesh_site_v2_ethernet_interface_requiredness:
+    canonical: true
+    upstream_issue: "f5-sales-demo/api-specs-enriched#1666"
+    description: >-
+      The SMSv2 AWS interface contract is MAC-bound: mac is required and device
+      is optional. Correct markers before requiredness derivation.
+    schemas:
+      - pattern: "^viewssecuremesh_site_v2EthernetInterfaceType$"
+        set_property_extensions:
+          mac:
+            x-ves-required: "true"
+            x-f5xc-required-for:
+              create: true
+          device:
+            x-ves-required: "false"
+            x-f5xc-required-for:
+              create: false
+        set_property_extension_keys:
+          mac:
+            x-ves-validation-rules:
+              ves.io.schema.rules.message.required: "true"
+            x-validation-rules:
+              ves.io.schema.rules.message.required: "true"
+          device:
+            x-ves-validation-rules:
+              ves.io.schema.rules.message.required: "false"
+            x-validation-rules:
+              ves.io.schema.rules.message.required: "false"
+
   registration_image_download:
     upstream_issue: "f5-sales-demo/api-specs-enriched#1485"
     description: >-

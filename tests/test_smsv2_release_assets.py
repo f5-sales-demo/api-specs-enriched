@@ -66,7 +66,12 @@ def test_validates_stable_receipted_release(tmp_path: Path) -> None:
     contract = validate_release_assets(
         assets[MANIFEST_FILE], assets, _release(), _receipt(manifest), now=_NOW
     )
-    assert contract["providers"]["aws"]["capabilities"]["aws_ce_create"] == "available"
+    assert contract["version"] == "5.0.0"
+    assert contract["providers"]["aws"]["capabilities"] == {
+        "aws_ce_create": "available",
+        "runtime_status": "available",
+        "tgw_connect": "available",
+    }
 
 
 @pytest.mark.parametrize(
@@ -127,3 +132,55 @@ def test_rejects_release_race_with_changed_tag(tmp_path: Path) -> None:
             _receipt(manifest),
             now=_NOW,
         )
+
+
+def _mutate_contract_asset(
+    assets: dict[str, bytes], mutation: object
+) -> tuple[dict[str, bytes], dict[str, object]]:
+    contract = json.loads(assets[CONTRACT_FILE])
+    assert callable(mutation)
+    mutation(contract)
+    assets[CONTRACT_FILE] = json.dumps(contract, sort_keys=True, separators=(",", ":")).encode()
+    manifest = json.loads(assets[MANIFEST_FILE])
+    manifest["assets"][CONTRACT_FILE] = digest(assets[CONTRACT_FILE])
+    assets[MANIFEST_FILE] = json.dumps(manifest, sort_keys=True, separators=(",", ":")).encode()
+    return assets, _receipt(manifest)
+
+
+@pytest.mark.parametrize(
+    ("mutation", "message"),
+    [
+        (lambda contract: contract.update({"contract_id": "f5xc-ce-automation/v1"}), "identity"),
+        (
+            lambda contract: contract["providers"]["aws"]["capabilities"].update(
+                {"runtime_status": "unavailable"}
+            ),
+            "capability model",
+        ),
+        (
+            lambda contract: contract["providers"]["aws"]["runtime"]["configuration"].update(
+                {"path": "/api/config/namespaces/{namespace}/sites/{site}/interface"}
+            ),
+            "incomplete or legacy",
+        ),
+        (
+            lambda contract: contract["providers"]["aws"]["runtime"]["simplified_routes"].update(
+                {"path": "/api/operate/namespaces/{namespace}/sites/{site}/ver/routes"}
+            ),
+            "incomplete or legacy",
+        ),
+        (
+            lambda contract: contract["providers"]["aws"]["authorities"]["aws"].append(
+                "runtime_health"
+            ),
+            "authority declarations",
+        ),
+    ],
+)
+def test_rejects_legacy_or_inconsistent_v2_contract_assets(
+    tmp_path: Path, mutation: object, message: str
+) -> None:
+    assets = _assets(tmp_path)
+    assets, receipt = _mutate_contract_asset(assets, mutation)
+    with pytest.raises(Smsv2ReleaseValidationError, match=message):
+        validate_release_assets(assets[MANIFEST_FILE], assets, _release(), receipt, now=_NOW)

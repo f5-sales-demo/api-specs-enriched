@@ -180,3 +180,26 @@ def test_no_property_description_reasserts_requiredness() -> None:
                 if marker.search(prop.get(field, ""))
             )
     assert not offenders, f"requiredness prose reappeared: {offenders[:10]}"
+
+
+class TestSMSv2MacRequiredness:
+    """#1666: AWS SMSv2 interface identity is MAC-bound, never device-bound."""
+
+    @pytest.fixture
+    def properties(self) -> dict:
+        schema = load_schema("sites.json", "viewssecuremesh_site_v2EthernetInterfaceType")
+        return schema["properties"]
+
+    def test_mac_is_required_for_create(self, properties: dict) -> None:
+        assert properties["mac"].get("x-ves-required") == "true"
+        assert required_for_create(properties["mac"])
+        for rules_name in ("x-ves-validation-rules", "x-validation-rules"):
+            assert properties["mac"][rules_name]["ves.io.schema.rules.message.required"] == "true"
+
+    def test_device_is_explicitly_non_authoritative(self, properties: dict) -> None:
+        assert properties["device"].get("x-ves-required") == "false"
+        assert not required_for_create(properties["device"])
+        for rules_name in ("x-ves-validation-rules", "x-validation-rules"):
+            assert (
+                properties["device"][rules_name]["ves.io.schema.rules.message.required"] == "false"
+            )
