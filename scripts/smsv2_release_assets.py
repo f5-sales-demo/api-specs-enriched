@@ -210,14 +210,15 @@ def validate_release_assets(
     ]:
         raise Smsv2ReleaseValidationError("SMSv2 API authority is incomplete")
     aws = contract.get("providers", {}).get("aws", {})
-    if (
-        aws.get("availability") != "evidence_backed"
-        or aws.get("node_list_path") != "aws.not_managed.node_list[]"
-        or aws.get("interface_list_path") != "aws.not_managed.node_list[].interface_list[]"
-        or aws.get("capabilities") != AWS_V2_CAPABILITIES
-        or aws.get("prohibited_legacy_apis") != ["aws_vpc_site", "aws_tgw_site"]
-        or aws.get("unavailable_capabilities") != []
-    ):
+    expected_aws_fields = {
+        "availability": "evidence_backed",
+        "node_list_path": "aws.not_managed.node_list[]",
+        "interface_list_path": "aws.not_managed.node_list[].interface_list[]",
+        "capabilities": AWS_V2_CAPABILITIES,
+        "prohibited_legacy_apis": ["aws_vpc_site", "aws_tgw_site"],
+        "unavailable_capabilities": [],
+    }
+    if any(aws.get(key) != value for key, value in expected_aws_fields.items()):
         raise Smsv2ReleaseValidationError("AWS SMSv2 v2 capability model is incomplete")
     try:
         telemetry_complete = validate_aws_telemetry_intake(aws.get("telemetry_intake"))
