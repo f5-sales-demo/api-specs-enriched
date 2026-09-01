@@ -32,7 +32,8 @@ else
 fi
 
 if [[ "$UNRELEASED_MESSAGES" == *"[major]"* ]] || \
-  [[ "$UNRELEASED_MESSAGES" == *"BREAKING CHANGE"* ]]; then
+  [[ "$UNRELEASED_MESSAGES" == *"BREAKING CHANGE"* ]] || \
+  grep -Eq '^[a-z][a-z0-9-]*(\([^)]*\))?!:' <<<"$UNRELEASED_MESSAGES"; then
   NEW_VERSION="$((MAJOR + 1)).0.0"
   BUMP_TYPE="major"
 elif [ "$CHANGE_TYPE" = "source" ]; then
