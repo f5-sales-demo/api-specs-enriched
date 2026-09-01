@@ -43,7 +43,7 @@ def _repo(tmp_path: Path) -> Path:
 
 def test_breaking_signal_survives_intervening_fix(tmp_path: Path) -> None:
     repo = _repo(tmp_path)
-    _commit(repo, "feat(api)!: clean break\n\nBREAKING CHANGE: remove legacy fields")
+    _commit(repo, "feat(api)!: clean break")
     _commit(repo, "fix(validation): fail closed")
 
     assert _run(repo, "forced") == {
