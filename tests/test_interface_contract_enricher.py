@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import copy
-import json
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
@@ -80,7 +79,9 @@ def test_contract_is_deterministic_and_guest_names_are_not_authoritative(
         == "observational_only"
     )
     assert create_contract[X_F5XC_CE_AUTOMATION_CONTRACT]["contract_id"] == "f5xc-ce-automation/v2"
-    assert "eth" not in json.dumps(create_contract).lower()
+    aws = create_contract[X_F5XC_CE_AUTOMATION_CONTRACT]["providers"]["aws"]
+    assert aws["interface_identity"]["guest_device"] == "observational_only"
+    assert aws["interface_identity"]["field"] == "ethernet_interface.mac"
 
 
 def test_contract_defines_stable_identity_and_role_invariants() -> None:
@@ -91,11 +92,13 @@ def test_contract_defines_stable_identity_and_role_invariants() -> None:
     assert contract["api"]["namespace"] == "system"
     assert contract["api"]["operations"] == ["create", "read", "replace", "delete"]
     assert contract["providers"]["aws"]["availability"] == "evidence_backed"
+    assert contract["version"] == "5.0.0"
     assert contract["providers"]["aws"]["capabilities"] == {
         "aws_ce_create": "available",
-        "runtime_status": "unavailable",
-        "tgw_connect": "unavailable",
+        "runtime_status": "available",
+        "tgw_connect": "available",
     }
+    assert [role["name"] for role in contract["providers"]["aws"]["roles"]] == ["slo", "sli"]
     assert contract["providers"]["aws"]["bootstrap"]["mode"] == "interactive_console_only"
     assert azure["stable_identity"]["required_fields"]
     assert [role["name"] for role in azure["roles"]] == ["slo", "external", "sli"]
@@ -166,13 +169,13 @@ def test_rejects_bindable_optional_role_without_authoritative_evidence(
         InterfaceContractEnricher(_write_config(tmp_path, invalid))
 
 
-def test_rejects_aws_profile_that_claims_unverified_automation(
+def test_rejects_aws_profile_that_withdraws_v2_automation(
     tmp_path: Path, contract_config: dict[str, Any]
 ) -> None:
     invalid = copy.deepcopy(contract_config)
-    _contract(invalid)["providers"]["aws"]["capabilities"]["tgw_connect"] = "available"
+    _contract(invalid)["providers"]["aws"]["capabilities"]["tgw_connect"] = "unavailable"
     with pytest.raises(
-        InterfaceContractValidationError, match="AWS capability model must fail closed"
+        InterfaceContractValidationError, match="AWS v2 capability model is incomplete"
     ):
         InterfaceContractEnricher(_write_config(tmp_path, invalid))
 
@@ -187,17 +190,17 @@ def test_accepts_additive_current_contract_fields(
     )
     contract["api"]["operations"].append("status")
     contract["providers"]["aws"]["future_additive_field"] = {"safe": True}
-    contract["providers"]["aws"]["capabilities"]["future_capability"] = "unavailable"
-    contract["providers"]["aws"]["unavailable_capabilities"].append("future_capability")
     contract["providers"]["gcp"] = {"availability": "schema_only"}
 
     enricher = InterfaceContractEnricher(_write_config(tmp_path, compatible))
 
-    assert enricher.contracts[0][1]["version"] == "3.0.0"
+    assert enricher.contracts[0][1]["version"] == "5.0.0"
     assert enricher.contracts[0][1]["providers"]["gcp"]["availability"] == "schema_only"
 
 
-@pytest.mark.parametrize("version", ["2", "2.1", "02.1.0", "2.1.0-dev", "2.1.0", "3.0.1", "4.0.0"])
+@pytest.mark.parametrize(
+    "version", ["2", "2.1", "02.1.0", "5.0.0-dev", "2.1.0", "3.0.0", "4.9.9", "5.0.1", "6.0.0"]
+)
 def test_rejects_malformed_or_incompatible_schema_versions(
     tmp_path: Path, contract_config: dict[str, Any], version: str
 ) -> None:
@@ -218,7 +221,7 @@ def test_rejects_unknown_contract_identity_major(
         InterfaceContractEnricher(_write_config(tmp_path, incompatible))
 
 
-@pytest.mark.parametrize("version", [None, "2.0.0", "3.0.1", "4.0.0"])
+@pytest.mark.parametrize("version", [None, "3.0.0", "4.9.9", "5.0.1", "6.0.0"])
 def test_rejects_noncurrent_configuration_version(
     tmp_path: Path, contract_config: dict[str, Any], version: object
 ) -> None:
@@ -305,7 +308,7 @@ def test_rejects_unsanitized_aws_evidence(tmp_path: Path, contract_config: dict[
 def test_aws_evidence_receipt_has_closed_modern_shape(
     contract_config: dict[str, Any],
 ) -> None:
-    assert contract_config["version"] == "3.0.0"
+    assert contract_config["version"] == "5.0.0"
     receipt = _contract(contract_config)["providers"]["aws"]["evidence"]["receipts"][0]
     assert set(receipt) == {"operations", "sanitized", "redaction"}
 
@@ -326,10 +329,6 @@ def test_aws_telemetry_intake_accepts_complete_required_observations(
     contract_config: dict[str, Any],
 ) -> None:
     intake = copy.deepcopy(_contract(contract_config)["providers"]["aws"]["telemetry_intake"])
-    intake["availability"] = "available"
-    intake["observed_facts"] = list(intake["required_facts"])
-    intake["unavailable_facts"] = []
-    intake["complete"] = True
     assert validate_aws_telemetry_intake(intake) is True
 
 
@@ -338,7 +337,7 @@ def test_aws_telemetry_intake_accepts_complete_required_observations(
     [
         lambda intake: intake["required_facts"].remove("runtime"),
         lambda intake: intake["observed_facts"].append("runtime"),
-        lambda intake: intake.update({"complete": True}),
+        lambda intake: intake.update({"complete": False}),
         lambda intake: intake.update({"schema_id": "unknown/v1"}),
         lambda intake: intake.update(
             {
@@ -357,3 +356,46 @@ def test_aws_telemetry_intake_fails_closed(
     mutation(intake)
     with pytest.raises(InterfaceContractValidationError):
         validate_aws_telemetry_intake(intake)
+
+
+@pytest.mark.parametrize(
+    ("mutation", "message"),
+    [
+        (
+            lambda aws: aws["interface_identity"].update({"field": "ethernet_interface.device"}),
+            "MAC-bound",
+        ),
+        (
+            lambda aws: aws["roles"].append(
+                {"name": "external", "network_option": "site_local_network"}
+            ),
+            "exactly slo and sli",
+        ),
+        (
+            lambda aws: aws["runtime"]["configuration"].update(
+                {"path": "/api/config/namespaces/{namespace}/sites/{site}/interface"}
+            ),
+            "incomplete or legacy",
+        ),
+        (
+            lambda aws: aws["runtime"]["simplified_routes"].update(
+                {"path": "/api/operate/namespaces/{namespace}/sites/{site}/ver/routes"}
+            ),
+            "incomplete or legacy",
+        ),
+        (
+            lambda aws: aws["authorities"]["aws"].append("runtime_health"),
+            "authority declarations",
+        ),
+    ],
+)
+def test_rejects_non_v2_runtime_identity_and_authority(
+    tmp_path: Path,
+    contract_config: dict[str, Any],
+    mutation: Mutation,
+    message: str,
+) -> None:
+    invalid = copy.deepcopy(contract_config)
+    mutation(_contract(invalid)["providers"]["aws"])
+    with pytest.raises(InterfaceContractValidationError, match=message):
+        InterfaceContractEnricher(_write_config(tmp_path, invalid))

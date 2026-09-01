@@ -13,9 +13,13 @@ from typing import Any
 import yaml
 
 from scripts.utils.interface_contract_enricher import (
+    AWS_V2_CAPABILITIES,
+    CONTRACT_ID,
+    CONTRACT_VERSION,
     InterfaceContractEnricher,
     InterfaceContractValidationError,
     validate_aws_telemetry_intake,
+    validate_aws_v2_contract,
 )
 
 CONTRACT_FILE = "smsv2-contract.json"
@@ -189,22 +193,41 @@ def validate_release_assets(
     except json.JSONDecodeError as error:
         raise Smsv2ReleaseValidationError("contract release asset JSON is malformed") from error
     _assert_sanitized_evidence(evidence)
-    if contract.get("contract_id") != manifest.get("contract_id") or contract.get(
-        "version"
-    ) != manifest.get("contract_version"):
+    if (
+        contract.get("contract_id") != CONTRACT_ID
+        or contract.get("contract_id") != manifest.get("contract_id")
+        or contract.get("version") != CONTRACT_VERSION
+        or contract.get("version") != manifest.get("contract_version")
+        or contract.get("resource") != "securemesh_site_v2"
+    ):
         raise Smsv2ReleaseValidationError("contract identity does not match manifest")
+    api = contract.get("api", {})
+    if api.get("namespace") != "system" or api.get("operations") != [
+        "create",
+        "read",
+        "replace",
+        "delete",
+    ]:
+        raise Smsv2ReleaseValidationError("SMSv2 API authority is incomplete")
     aws = contract.get("providers", {}).get("aws", {})
-    capabilities = aws.get("capabilities")
-    if capabilities != {
-        "aws_ce_create": "available",
-        "runtime_status": "unavailable",
-        "tgw_connect": "unavailable",
-    }:
-        raise Smsv2ReleaseValidationError("AWS SMSv2 capability model is unavailable or unproven")
+    if (
+        aws.get("availability") != "evidence_backed"
+        or aws.get("node_list_path") != "aws.not_managed.node_list[]"
+        or aws.get("interface_list_path") != "aws.not_managed.node_list[].interface_list[]"
+        or aws.get("capabilities") != AWS_V2_CAPABILITIES
+        or aws.get("prohibited_legacy_apis") != ["aws_vpc_site", "aws_tgw_site"]
+        or aws.get("unavailable_capabilities") != []
+    ):
+        raise Smsv2ReleaseValidationError("AWS SMSv2 v2 capability model is incomplete")
     try:
-        validate_aws_telemetry_intake(aws.get("telemetry_intake"))
+        telemetry_complete = validate_aws_telemetry_intake(aws.get("telemetry_intake"))
+        validate_aws_v2_contract(aws)
     except InterfaceContractValidationError as error:
         raise Smsv2ReleaseValidationError(str(error)) from error
+    if not telemetry_complete:
+        raise Smsv2ReleaseValidationError("AWS v2 requires completed telemetry intake")
+    if evidence.get("contract_id") != CONTRACT_ID:
+        raise Smsv2ReleaseValidationError("evidence contract identity is invalid")
     return contract
 
 

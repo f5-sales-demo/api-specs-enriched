@@ -14,8 +14,8 @@ from .extension_constants import X_F5XC_CE_AUTOMATION_CONTRACT
 
 CONFIG_PATH = Path(__file__).parent.parent.parent / "config" / "interface_contracts.yaml"
 SUPPORTED_ROLES = frozenset({"slo", "external", "sli"})
-CONFIG_VERSION = "3.0.0"
-CONTRACT_VERSION = "3.0.0"
+CONFIG_VERSION = "5.0.0"
+CONTRACT_VERSION = "5.0.0"
 CONTRACT_ID = "f5xc-ce-automation/v2"
 CAPABILITY_STATES = frozenset({"available", "unavailable"})
 STABLE_IDENTITY_FIELDS = frozenset(
@@ -32,6 +32,69 @@ AWS_TELEMETRY_SCHEMA_ID = "f5xc-smsv2-aws-tgw-telemetry/v1"
 AWS_REQUIRED_TELEMETRY_FACTS = frozenset(
     {"runtime", "gre", "bgp", "mtu", "route", "bgp_inside_cidr_block"}
 )
+AWS_V2_CAPABILITIES = {
+    "aws_ce_create": "available",
+    "runtime_status": "available",
+    "tgw_connect": "available",
+}
+AWS_V2_INTERFACE_IDENTITY = {
+    "field": "ethernet_interface.mac",
+    "guest_device": "observational_only",
+    "known_macs": "non_empty_unique_per_node",
+}
+AWS_V2_ROLES = [
+    {"name": "slo", "network_option": "site_local_network"},
+    {"name": "sli", "network_option": "site_local_inside_network"},
+]
+AWS_V2_RUNTIME = {
+    "configuration": {
+        "method": "GET",
+        "path": "/api/config/namespaces/{namespace}/securemesh_site_v2s/{site}",
+        "operation_id": "ves.io.schema.views.securemesh_site_v2.API.Get",
+        "response_schema": "securemesh_site_v2GetResponse",
+    },
+    "health": {
+        "method": "GET",
+        "path": "/api/operate/namespaces/system/sites/{site}/vpm/debug/global/health",
+        "operation_id": "ves.io.schema.operate.debug.CustomPublicAPI.HealthPublic",
+        "response_schema": "debugHealthResponse",
+    },
+    "bgp_peers": {
+        "method": "GET",
+        "path": "/api/operate/namespaces/{namespace}/sites/{site}/ver/bgp_peers",
+        "operation_id": "ves.io.schema.operate.bgp.CustomPublicAPI.ShowBGPPeers",
+        "response_schema": "bgpBGPPeersResponse",
+    },
+    "bgp_routes": {
+        "method": "GET",
+        "path": "/api/operate/namespaces/{namespace}/sites/{site}/ver/bgp_routes",
+        "operation_id": "ves.io.schema.operate.bgp.CustomPublicAPI.ShowBGPRoutes",
+        "response_schema": "bgpBGPRoutesResponse",
+    },
+    "simplified_routes": {
+        "method": "POST",
+        "path": "/api/operate/namespaces/{namespace}/sites/{site}/ver/simplified_routes",
+        "operation_id": "ves.io.schema.operate.route.CustomPublicAPI.ShowSimplifiedRoutes",
+        "request_schema": "routeSimplifiedRouteRequest",
+        "response_schema": "routeSimplifiedRouteResponse",
+    },
+}
+AWS_V2_AUTHORITIES = {
+    "f5xc": [
+        "smsv2_configuration",
+        "runtime_health",
+        "bgp_peers",
+        "bgp_routes",
+        "simplified_routes",
+    ],
+    "aws": [
+        "eni",
+        "transit_gateway",
+        "transit_gateway_connect",
+        "gre_endpoints",
+        "bgp_inside_cidrs",
+    ],
+}
 
 
 class InterfaceContractValidationError(ValueError):
@@ -80,6 +143,22 @@ def validate_aws_telemetry_intake(intake: object) -> bool:
     if complete != derived_complete:
         raise InterfaceContractValidationError("AWS telemetry intake completion is inconsistent")
     return complete
+
+
+def validate_aws_v2_contract(profile: object) -> None:
+    """Validate the exact clean-break MAC-bound AWS SMSv2 contract."""
+    if not isinstance(profile, dict):
+        raise InterfaceContractValidationError("AWS v2 profile must be an object")
+    if profile.get("interface_identity") != AWS_V2_INTERFACE_IDENTITY:
+        raise InterfaceContractValidationError("AWS interface identity must be MAC-bound")
+    if profile.get("roles") != AWS_V2_ROLES:
+        raise InterfaceContractValidationError("AWS runtime roles must be exactly slo and sli")
+    if profile.get("runtime") != AWS_V2_RUNTIME:
+        raise InterfaceContractValidationError(
+            "AWS runtime endpoints or schemas are incomplete or legacy"
+        )
+    if profile.get("authorities") != AWS_V2_AUTHORITIES:
+        raise InterfaceContractValidationError("AWS and F5 authority declarations are invalid")
 
 
 @dataclass
@@ -216,41 +295,23 @@ class InterfaceContractEnricher:
             raise InterfaceContractValidationError(f"{resource}: AWS availability is invalid")
 
         capabilities = self._required_object(profile, "capabilities", resource=resource)
-        if availability == "schema_only" and any(
-            state != "unavailable" for state in capabilities.values()
-        ):
-            raise InterfaceContractValidationError(
-                f"{resource}: schema-only AWS capabilities must fail closed"
-            )
-        required_capabilities = {
-            "aws_ce_create": "available" if availability == "evidence_backed" else "unavailable",
-        }
-        if (
-            any(capabilities.get(name) != state for name, state in required_capabilities.items())
-            or not {"runtime_status", "tgw_connect"}.issubset(capabilities)
-            or not set(capabilities.values()) <= CAPABILITY_STATES
-            or any(
-                state != "unavailable"
-                for name, state in capabilities.items()
-                if name not in set(required_capabilities) | {"runtime_status", "tgw_connect"}
-            )
-        ):
-            raise InterfaceContractValidationError(
-                f"{resource}: AWS capability model must fail closed"
-            )
-
         telemetry_complete = validate_aws_telemetry_intake(profile.get("telemetry_intake"))
-        runtime_available = capabilities["runtime_status"] == "available"
-        tgw_available = capabilities["tgw_connect"] == "available"
-        if runtime_available and not telemetry_complete:
+        if availability == "schema_only":
+            if not capabilities or set(capabilities.values()) != {"unavailable"}:
+                raise InterfaceContractValidationError(
+                    f"{resource}: schema-only AWS capabilities must fail closed"
+                )
+        elif capabilities != AWS_V2_CAPABILITIES:
             raise InterfaceContractValidationError(
-                f"{resource}: AWS runtime availability requires completed telemetry intake"
+                f"{resource}: AWS v2 capability model is incomplete or unavailable"
             )
-        if tgw_available and not (runtime_available and telemetry_complete):
+        elif not telemetry_complete:
             raise InterfaceContractValidationError(
-                f"{resource}: AWS capability model must fail closed; TGW availability "
-                "requires runtime and completed telemetry"
+                f"{resource}: AWS v2 requires completed telemetry intake"
             )
+        else:
+            validate_aws_v2_contract(profile)
+
         if profile.get("prohibited_legacy_apis") != ["aws_vpc_site", "aws_tgw_site"]:
             raise InterfaceContractValidationError(
                 f"{resource}: legacy AWS site APIs must remain prohibited"
@@ -260,20 +321,15 @@ class InterfaceContractEnricher:
         unavailable = {name for name, state in capabilities.items() if state == "unavailable"}
         if (
             not isinstance(unsupported, list)
-            or not unsupported
             or any(not isinstance(capability, str) or not capability for capability in unsupported)
             or len(unsupported) != len(set(unsupported))
-            or not unavailable.issubset(unsupported)
+            or set(unsupported) != unavailable
         ):
             raise InterfaceContractValidationError(
                 f"{resource}: AWS unsupported capabilities must fail closed"
             )
 
         if availability == "schema_only":
-            if set(capabilities.values()) != {"unavailable"}:
-                raise InterfaceContractValidationError(
-                    f"{resource}: schema-only AWS capabilities must fail closed"
-                )
             return
 
         bootstrap = self._required_object(profile, "bootstrap", resource=resource)

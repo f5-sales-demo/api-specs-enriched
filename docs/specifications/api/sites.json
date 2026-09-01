@@ -99369,7 +99369,7 @@
           "logs_receiver_choice": "logs_streaming_disabled"
         },
         "x-f5xc-ce-automation-contract": {
-          "version": "3.0.0",
+          "version": "5.0.0",
           "contract_id": "f5xc-ce-automation/v2",
           "resource": "securemesh_site_v2",
           "api": {
@@ -99390,12 +99390,27 @@
               "interface_list_path": "aws.not_managed.node_list[].interface_list[]",
               "capabilities": {
                 "aws_ce_create": "available",
-                "runtime_status": "unavailable",
-                "tgw_connect": "unavailable"
+                "runtime_status": "available",
+                "tgw_connect": "available"
               },
+              "interface_identity": {
+                "field": "ethernet_interface.mac",
+                "guest_device": "observational_only",
+                "known_macs": "non_empty_unique_per_node"
+              },
+              "roles": [
+                {
+                  "name": "slo",
+                  "network_option": "site_local_network"
+                },
+                {
+                  "name": "sli",
+                  "network_option": "site_local_inside_network"
+                }
+              ],
               "telemetry_intake": {
                 "schema_id": "f5xc-smsv2-aws-tgw-telemetry/v1",
-                "availability": "unavailable",
+                "availability": "available",
                 "required_facts": [
                   "runtime",
                   "gre",
@@ -99404,8 +99419,7 @@
                   "route",
                   "bgp_inside_cidr_block"
                 ],
-                "observed_facts": [],
-                "unavailable_facts": [
+                "observed_facts": [
                   "runtime",
                   "gre",
                   "bgp",
@@ -99413,7 +99427,57 @@
                   "route",
                   "bgp_inside_cidr_block"
                 ],
-                "complete": false
+                "unavailable_facts": [],
+                "complete": true
+              },
+              "runtime": {
+                "configuration": {
+                  "method": "GET",
+                  "path": "/api/config/namespaces/{namespace}/securemesh_site_v2s/{site}",
+                  "operation_id": "ves.io.schema.views.securemesh_site_v2.API.Get",
+                  "response_schema": "securemesh_site_v2GetResponse"
+                },
+                "health": {
+                  "method": "GET",
+                  "path": "/api/operate/namespaces/system/sites/{site}/vpm/debug/global/health",
+                  "operation_id": "ves.io.schema.operate.debug.CustomPublicAPI.HealthPublic",
+                  "response_schema": "debugHealthResponse"
+                },
+                "bgp_peers": {
+                  "method": "GET",
+                  "path": "/api/operate/namespaces/{namespace}/sites/{site}/ver/bgp_peers",
+                  "operation_id": "ves.io.schema.operate.bgp.CustomPublicAPI.ShowBGPPeers",
+                  "response_schema": "bgpBGPPeersResponse"
+                },
+                "bgp_routes": {
+                  "method": "GET",
+                  "path": "/api/operate/namespaces/{namespace}/sites/{site}/ver/bgp_routes",
+                  "operation_id": "ves.io.schema.operate.bgp.CustomPublicAPI.ShowBGPRoutes",
+                  "response_schema": "bgpBGPRoutesResponse"
+                },
+                "simplified_routes": {
+                  "method": "POST",
+                  "path": "/api/operate/namespaces/{namespace}/sites/{site}/ver/simplified_routes",
+                  "operation_id": "ves.io.schema.operate.route.CustomPublicAPI.ShowSimplifiedRoutes",
+                  "request_schema": "routeSimplifiedRouteRequest",
+                  "response_schema": "routeSimplifiedRouteResponse"
+                }
+              },
+              "authorities": {
+                "f5xc": [
+                  "smsv2_configuration",
+                  "runtime_health",
+                  "bgp_peers",
+                  "bgp_routes",
+                  "simplified_routes"
+                ],
+                "aws": [
+                  "eni",
+                  "transit_gateway",
+                  "transit_gateway_connect",
+                  "gre_endpoints",
+                  "bgp_inside_cidrs"
+                ]
               },
               "prohibited_legacy_apis": [
                 "aws_vpc_site",
@@ -99443,10 +99507,7 @@
                   }
                 ]
               },
-              "unavailable_capabilities": [
-                "runtime_status",
-                "tgw_connect"
-              ]
+              "unavailable_capabilities": []
             },
             "azure": {
               "availability": "evidence_backed",
@@ -99565,18 +99626,21 @@
             "maxLength": 64,
             "x-displayname": "Ethernet Device.",
             "x-ves-example": "Ver1",
-            "x-ves-required": "true",
+            "x-ves-required": "false",
             "x-ves-validation-rules": {
-              "ves.io.schema.rules.message.required": "true",
+              "ves.io.schema.rules.message.required": "false",
+              "ves.io.schema.rules.string.max_len": "64",
+              "ves.io.schema.rules.string.min_len": "1"
+            },
+            "x-f5xc-required-for": {
+              "create": false
+            },
+            "x-validation-rules": {
+              "ves.io.schema.rules.message.required": "false",
               "ves.io.schema.rules.string.max_len": "64",
               "ves.io.schema.rules.string.min_len": "1"
             },
             "x-f5xc-example": "ver1",
-            "x-validation-rules": {
-              "ves.io.schema.rules.message.required": "true",
-              "ves.io.schema.rules.string.max_len": "64",
-              "ves.io.schema.rules.string.min_len": "1"
-            },
             "x-f5xc-description-short": "Select an Ethernet device from the discovered interfaces to configure.",
             "x-f5xc-description-medium": "Select an Ethernet device from the discovered interfaces to configure. Once configured, this interface will be part of this sites dataplane and can participate in the networking services configured on this site.",
             "x-f5xc-constraints": {
@@ -99590,12 +99654,6 @@
                 "confidence": 0.99,
                 "validatedAt": "2026-08-20T09:12:47+00:00"
               }
-            },
-            "x-f5xc-required-for": {
-              "minimum_config": true,
-              "create": true,
-              "update": false,
-              "read": false
             }
           },
           "mac": {
@@ -99605,12 +99663,18 @@
             "x-displayname": "MAC Address.",
             "x-ves-example": "01:10:20:0a:bb:1c.",
             "x-ves-validation-rules": {
-              "ves.io.schema.rules.string.mac": "true"
+              "ves.io.schema.rules.string.mac": "true",
+              "ves.io.schema.rules.message.required": "true"
+            },
+            "x-ves-required": "true",
+            "x-f5xc-required-for": {
+              "create": true
+            },
+            "x-validation-rules": {
+              "ves.io.schema.rules.string.mac": "true",
+              "ves.io.schema.rules.message.required": "true"
             },
             "x-f5xc-example": "01:10:20:0a:bb:1c",
-            "x-validation-rules": {
-              "ves.io.schema.rules.string.mac": "true"
-            },
             "maxLength": 1024,
             "x-f5xc-constraints": {
               "constraintType": "string",
@@ -99623,23 +99687,17 @@
                 "confidence": 0.99,
                 "validatedAt": "2026-08-20T09:12:47+00:00"
               }
-            },
-            "x-f5xc-required-for": {
-              "minimum_config": false,
-              "create": false,
-              "update": false,
-              "read": false
             }
           }
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for viewssecuremesh_site_v2EthernetInterfaceType",
           "required_fields": [
-            "device"
+            "mac"
           ],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for viewssecuremesh_site_v2EthernetInterfaceType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  device: value",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"device\": \"value\"\n  }\n}"
+          "example_yaml": "# Minimal example for viewssecuremesh_site_v2EthernetInterfaceType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  mac: value",
+          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"mac\": \"value\"\n  }\n}"
         },
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
@@ -100865,7 +100923,7 @@
           "logs_receiver_choice": "logs_streaming_disabled"
         },
         "x-f5xc-ce-automation-contract": {
-          "version": "3.0.0",
+          "version": "5.0.0",
           "contract_id": "f5xc-ce-automation/v2",
           "resource": "securemesh_site_v2",
           "api": {
@@ -100886,12 +100944,27 @@
               "interface_list_path": "aws.not_managed.node_list[].interface_list[]",
               "capabilities": {
                 "aws_ce_create": "available",
-                "runtime_status": "unavailable",
-                "tgw_connect": "unavailable"
+                "runtime_status": "available",
+                "tgw_connect": "available"
               },
+              "interface_identity": {
+                "field": "ethernet_interface.mac",
+                "guest_device": "observational_only",
+                "known_macs": "non_empty_unique_per_node"
+              },
+              "roles": [
+                {
+                  "name": "slo",
+                  "network_option": "site_local_network"
+                },
+                {
+                  "name": "sli",
+                  "network_option": "site_local_inside_network"
+                }
+              ],
               "telemetry_intake": {
                 "schema_id": "f5xc-smsv2-aws-tgw-telemetry/v1",
-                "availability": "unavailable",
+                "availability": "available",
                 "required_facts": [
                   "runtime",
                   "gre",
@@ -100900,8 +100973,7 @@
                   "route",
                   "bgp_inside_cidr_block"
                 ],
-                "observed_facts": [],
-                "unavailable_facts": [
+                "observed_facts": [
                   "runtime",
                   "gre",
                   "bgp",
@@ -100909,7 +100981,57 @@
                   "route",
                   "bgp_inside_cidr_block"
                 ],
-                "complete": false
+                "unavailable_facts": [],
+                "complete": true
+              },
+              "runtime": {
+                "configuration": {
+                  "method": "GET",
+                  "path": "/api/config/namespaces/{namespace}/securemesh_site_v2s/{site}",
+                  "operation_id": "ves.io.schema.views.securemesh_site_v2.API.Get",
+                  "response_schema": "securemesh_site_v2GetResponse"
+                },
+                "health": {
+                  "method": "GET",
+                  "path": "/api/operate/namespaces/system/sites/{site}/vpm/debug/global/health",
+                  "operation_id": "ves.io.schema.operate.debug.CustomPublicAPI.HealthPublic",
+                  "response_schema": "debugHealthResponse"
+                },
+                "bgp_peers": {
+                  "method": "GET",
+                  "path": "/api/operate/namespaces/{namespace}/sites/{site}/ver/bgp_peers",
+                  "operation_id": "ves.io.schema.operate.bgp.CustomPublicAPI.ShowBGPPeers",
+                  "response_schema": "bgpBGPPeersResponse"
+                },
+                "bgp_routes": {
+                  "method": "GET",
+                  "path": "/api/operate/namespaces/{namespace}/sites/{site}/ver/bgp_routes",
+                  "operation_id": "ves.io.schema.operate.bgp.CustomPublicAPI.ShowBGPRoutes",
+                  "response_schema": "bgpBGPRoutesResponse"
+                },
+                "simplified_routes": {
+                  "method": "POST",
+                  "path": "/api/operate/namespaces/{namespace}/sites/{site}/ver/simplified_routes",
+                  "operation_id": "ves.io.schema.operate.route.CustomPublicAPI.ShowSimplifiedRoutes",
+                  "request_schema": "routeSimplifiedRouteRequest",
+                  "response_schema": "routeSimplifiedRouteResponse"
+                }
+              },
+              "authorities": {
+                "f5xc": [
+                  "smsv2_configuration",
+                  "runtime_health",
+                  "bgp_peers",
+                  "bgp_routes",
+                  "simplified_routes"
+                ],
+                "aws": [
+                  "eni",
+                  "transit_gateway",
+                  "transit_gateway_connect",
+                  "gre_endpoints",
+                  "bgp_inside_cidrs"
+                ]
               },
               "prohibited_legacy_apis": [
                 "aws_vpc_site",
@@ -100939,10 +101061,7 @@
                   }
                 ]
               },
-              "unavailable_capabilities": [
-                "runtime_status",
-                "tgw_connect"
-              ]
+              "unavailable_capabilities": []
             },
             "azure": {
               "availability": "evidence_backed",
@@ -102300,7 +102419,7 @@
           "logs_receiver_choice": "logs_streaming_disabled"
         },
         "x-f5xc-ce-automation-contract": {
-          "version": "3.0.0",
+          "version": "5.0.0",
           "contract_id": "f5xc-ce-automation/v2",
           "resource": "securemesh_site_v2",
           "api": {
@@ -102321,12 +102440,27 @@
               "interface_list_path": "aws.not_managed.node_list[].interface_list[]",
               "capabilities": {
                 "aws_ce_create": "available",
-                "runtime_status": "unavailable",
-                "tgw_connect": "unavailable"
+                "runtime_status": "available",
+                "tgw_connect": "available"
               },
+              "interface_identity": {
+                "field": "ethernet_interface.mac",
+                "guest_device": "observational_only",
+                "known_macs": "non_empty_unique_per_node"
+              },
+              "roles": [
+                {
+                  "name": "slo",
+                  "network_option": "site_local_network"
+                },
+                {
+                  "name": "sli",
+                  "network_option": "site_local_inside_network"
+                }
+              ],
               "telemetry_intake": {
                 "schema_id": "f5xc-smsv2-aws-tgw-telemetry/v1",
-                "availability": "unavailable",
+                "availability": "available",
                 "required_facts": [
                   "runtime",
                   "gre",
@@ -102335,8 +102469,7 @@
                   "route",
                   "bgp_inside_cidr_block"
                 ],
-                "observed_facts": [],
-                "unavailable_facts": [
+                "observed_facts": [
                   "runtime",
                   "gre",
                   "bgp",
@@ -102344,7 +102477,57 @@
                   "route",
                   "bgp_inside_cidr_block"
                 ],
-                "complete": false
+                "unavailable_facts": [],
+                "complete": true
+              },
+              "runtime": {
+                "configuration": {
+                  "method": "GET",
+                  "path": "/api/config/namespaces/{namespace}/securemesh_site_v2s/{site}",
+                  "operation_id": "ves.io.schema.views.securemesh_site_v2.API.Get",
+                  "response_schema": "securemesh_site_v2GetResponse"
+                },
+                "health": {
+                  "method": "GET",
+                  "path": "/api/operate/namespaces/system/sites/{site}/vpm/debug/global/health",
+                  "operation_id": "ves.io.schema.operate.debug.CustomPublicAPI.HealthPublic",
+                  "response_schema": "debugHealthResponse"
+                },
+                "bgp_peers": {
+                  "method": "GET",
+                  "path": "/api/operate/namespaces/{namespace}/sites/{site}/ver/bgp_peers",
+                  "operation_id": "ves.io.schema.operate.bgp.CustomPublicAPI.ShowBGPPeers",
+                  "response_schema": "bgpBGPPeersResponse"
+                },
+                "bgp_routes": {
+                  "method": "GET",
+                  "path": "/api/operate/namespaces/{namespace}/sites/{site}/ver/bgp_routes",
+                  "operation_id": "ves.io.schema.operate.bgp.CustomPublicAPI.ShowBGPRoutes",
+                  "response_schema": "bgpBGPRoutesResponse"
+                },
+                "simplified_routes": {
+                  "method": "POST",
+                  "path": "/api/operate/namespaces/{namespace}/sites/{site}/ver/simplified_routes",
+                  "operation_id": "ves.io.schema.operate.route.CustomPublicAPI.ShowSimplifiedRoutes",
+                  "request_schema": "routeSimplifiedRouteRequest",
+                  "response_schema": "routeSimplifiedRouteResponse"
+                }
+              },
+              "authorities": {
+                "f5xc": [
+                  "smsv2_configuration",
+                  "runtime_health",
+                  "bgp_peers",
+                  "bgp_routes",
+                  "simplified_routes"
+                ],
+                "aws": [
+                  "eni",
+                  "transit_gateway",
+                  "transit_gateway_connect",
+                  "gre_endpoints",
+                  "bgp_inside_cidrs"
+                ]
               },
               "prohibited_legacy_apis": [
                 "aws_vpc_site",
@@ -102374,10 +102557,7 @@
                   }
                 ]
               },
-              "unavailable_capabilities": [
-                "runtime_status",
-                "tgw_connect"
-              ]
+              "unavailable_capabilities": []
             },
             "azure": {
               "availability": "evidence_backed",
