@@ -40,13 +40,15 @@ def test_privileged_dispatch_has_no_third_party_action_dependency() -> None:
     assert "peter-evans/repository-dispatch@" not in workflow
 
 
-def test_release_pr_posts_its_linked_issue_exemption_synchronously() -> None:
-    """A release must not depend on the delayed scheduled policy publisher."""
+def test_release_pr_uses_native_issue_relationship_without_status_override() -> None:
+    """A release must satisfy the normal linked-issue policy before PR creation."""
     workflow = (WORKFLOWS / "sync-and-enrich.yml").read_text()
 
-    assert "statuses: write" in workflow
-    assert "RELEASE_STATUS_TOKEN: ${{ github.token }}" in workflow
-    assert "PR_HEAD_SHA=$(gh pr view" in workflow
-    assert '"repos/${GITHUB_REPOSITORY}/statuses/${PR_HEAD_SHA}"' in workflow
-    assert "-f context='Check linked issues'" in workflow
-    assert "-f description='Automated release branch is exempt'" in workflow
+    issue_create = "RELEASE_ISSUE_URL=$(gh issue create"
+    pr_create = "PR_URL=$(gh pr create"
+    assert issue_create in workflow
+    assert workflow.index(issue_create) < workflow.index(pr_create)
+    assert "Closes #%s" in workflow
+    assert "statuses: write" not in workflow
+    assert "RELEASE_STATUS_TOKEN" not in workflow
+    assert "statuses/${PR_HEAD_SHA}" not in workflow
