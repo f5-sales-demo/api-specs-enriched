@@ -158,7 +158,7 @@ def test_merge_order_contract_changes_are_not_additive(member: str) -> None:
     )
 
 
-# Rule 1 — error-response type additions (family 5)
+# Nullable schema widening
 
 
 def test_nullable_true_addition_to_schema_property_is_additive() -> None:
