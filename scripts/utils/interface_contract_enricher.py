@@ -296,6 +296,10 @@ class InterfaceContractEnricher:
 
         capabilities = self._required_object(profile, "capabilities", resource=resource)
         telemetry_intake = profile.get("telemetry_intake")
+        if not isinstance(telemetry_intake, dict):
+            raise InterfaceContractValidationError(
+                f"{resource}: AWS telemetry intake must be an object"
+            )
         telemetry_complete = validate_aws_telemetry_intake(telemetry_intake)
         validate_aws_v2_contract(profile)
         if availability == "schema_only":
