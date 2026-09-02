@@ -50,14 +50,38 @@ def test_release_pr_create_is_non_interactive() -> None:
 
     workflow = WORKFLOW.read_text(encoding="utf-8")
     command = workflow.split("PR_URL=$(gh pr create", maxsplit=1)[1].split(
-        "# `release/**` is exempt", maxsplit=1
+        'echo "Created release PR:', maxsplit=1
     )[0]
 
     assert '--title "chore: release v${VERSION} (${BUMP_TYPE})"' in command
-    assert (
-        '--body "Automated release v${VERSION} (${BUMP_TYPE}). Created by the sync-and-enrich workflow."'
-        in command
-    )
+    assert '--body "$PR_BODY"' in command
+
+
+def test_release_pr_is_linked_before_normal_check_runs() -> None:
+    """Generated release PRs must use a native closing relationship without status races."""
+
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    release_job = workflow.split("\n  sync-and-enrich:\n", maxsplit=1)[1].split(
+        "\n  deploy-docs:\n", maxsplit=1
+    )[0]
+
+    create_issue = "RELEASE_ISSUE_URL=$(gh issue create"
+    create_pr = "PR_URL=$(gh pr create"
+    assert create_issue in release_job
+    assert "Closes #%s" in release_job
+    assert release_job.index(create_issue) < release_job.index(create_pr)
+    assert "statuses/${PR_HEAD_SHA}" not in release_job
+    assert "-f context='Check linked issues'" not in release_job
+
+
+def test_release_retry_reuses_dedicated_issue() -> None:
+    """A retry reuses and, when needed, reopens the exact version issue."""
+
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+
+    assert 'RELEASE_ISSUE_TITLE="Release v${VERSION}"' in workflow
+    assert "gh issue list --state all" in workflow
+    assert 'gh issue reopen "$RELEASE_ISSUE"' in workflow
 
 
 def test_downstream_matrix_sets_up_python_before_installing_pyyaml() -> None:
