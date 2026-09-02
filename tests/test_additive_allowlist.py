@@ -161,6 +161,24 @@ def test_merge_order_contract_changes_are_not_additive(member: str) -> None:
 # Rule 1 — error-response type additions (family 5)
 
 
+def test_nullable_true_addition_to_schema_property_is_additive() -> None:
+    pointer = "root['components']['schemas']['Foo']['properties']['bar']['nullable']"
+    assert is_additive_change("dictionary_item_added", pointer, None, True)
+
+
+def test_nullable_false_addition_is_not_additive() -> None:
+    pointer = "root['components']['schemas']['Foo']['properties']['bar']['nullable']"
+    assert not is_additive_change("dictionary_item_added", pointer, None, False)
+
+
+def test_nullable_true_outside_schema_property_is_not_additive() -> None:
+    pointer = "root['paths']['/x']['get']['nullable']"
+    assert not is_additive_change("dictionary_item_added", pointer, None, True)
+
+
+# Rule 1 — error-response type additions (family 5)
+
+
 def test_error_response_type_add_is_additive():
     pointer = (
         "root['paths']['/x']['get']['responses']['401']"
