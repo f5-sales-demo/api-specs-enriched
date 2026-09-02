@@ -67,10 +67,11 @@ def test_validates_stable_receipted_release(tmp_path: Path) -> None:
         assets[MANIFEST_FILE], assets, _release(), _receipt(manifest), now=_NOW
     )
     assert contract["version"] == "5.0.0"
+    assert contract["providers"]["aws"]["availability"] == "schema_only"
     assert contract["providers"]["aws"]["capabilities"] == {
-        "aws_ce_create": "available",
-        "runtime_status": "available",
-        "tgw_connect": "available",
+        "aws_ce_create": "unavailable",
+        "runtime_status": "unavailable",
+        "tgw_connect": "unavailable",
     }
 
 
@@ -121,6 +122,21 @@ def test_rejects_malformed_manifest_and_sensitive_evidence(tmp_path: Path) -> No
         validate_release_assets(assets[MANIFEST_FILE], assets, _release(), receipt, now=_NOW)
 
 
+def test_rejects_tampered_blocking_evidence(tmp_path: Path) -> None:
+    assets = _assets(tmp_path)
+    evidence = json.loads(assets[EVIDENCE_FILE])
+    evidence["receipts"][0]["blocking_conditions"] = ["unknown"]
+    assets[EVIDENCE_FILE] = json.dumps(evidence, sort_keys=True, separators=(",", ":")).encode()
+    manifest = json.loads(assets[MANIFEST_FILE])
+    manifest["assets"][EVIDENCE_FILE] = digest(assets[EVIDENCE_FILE])
+    assets[MANIFEST_FILE] = json.dumps(manifest, sort_keys=True, separators=(",", ":")).encode()
+
+    with pytest.raises(Smsv2ReleaseValidationError, match="blocking evidence"):
+        validate_release_assets(
+            assets[MANIFEST_FILE], assets, _release(), _receipt(manifest), now=_NOW
+        )
+
+
 def test_rejects_release_race_with_changed_tag(tmp_path: Path) -> None:
     assets = _assets(tmp_path)
     manifest = json.loads(assets[MANIFEST_FILE])
@@ -153,9 +169,9 @@ def _mutate_contract_asset(
         (lambda contract: contract.update({"contract_id": "f5xc-ce-automation/v1"}), "identity"),
         (
             lambda contract: contract["providers"]["aws"]["capabilities"].update(
-                {"runtime_status": "unavailable"}
+                {"runtime_status": "available"}
             ),
-            "capability model",
+            "fail closed",
         ),
         (
             lambda contract: contract["providers"]["aws"]["runtime"]["configuration"].update(

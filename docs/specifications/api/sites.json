@@ -99385,13 +99385,13 @@
           },
           "providers": {
             "aws": {
-              "availability": "evidence_backed",
+              "availability": "schema_only",
               "node_list_path": "aws.not_managed.node_list[]",
               "interface_list_path": "aws.not_managed.node_list[].interface_list[]",
               "capabilities": {
-                "aws_ce_create": "available",
-                "runtime_status": "available",
-                "tgw_connect": "available"
+                "aws_ce_create": "unavailable",
+                "runtime_status": "unavailable",
+                "tgw_connect": "unavailable"
               },
               "interface_identity": {
                 "field": "ethernet_interface.mac",
@@ -99410,7 +99410,7 @@
               ],
               "telemetry_intake": {
                 "schema_id": "f5xc-smsv2-aws-tgw-telemetry/v1",
-                "availability": "available",
+                "availability": "unavailable",
                 "required_facts": [
                   "runtime",
                   "gre",
@@ -99428,7 +99428,7 @@
                   "bgp_inside_cidr_block"
                 ],
                 "unavailable_facts": [],
-                "complete": true
+                "complete": false
               },
               "runtime": {
                 "configuration": {
@@ -99490,24 +99490,30 @@
               },
               "evidence": {
                 "provenance": "f5-distributed-cloud-smsv2-system-namespace",
-                "observed_at": "2026-08-17T00:00:00Z",
+                "observed_at": "2026-09-02T00:00:00Z",
                 "profiles": [
                   "aws-shaped-ce-configuration"
                 ],
                 "receipts": [
                   {
                     "operations": [
-                      "create",
-                      "read",
-                      "replace",
-                      "delete"
+                      "replace"
+                    ],
+                    "result": "rejected",
+                    "blocking_conditions": [
+                      "mac_only_interface_rejected_by_live_api",
+                      "public_ip_empty_string_null_round_trip"
                     ],
                     "sanitized": true,
                     "redaction": "no tenant response, token, bootstrap material, or resource identifier"
                   }
                 ]
               },
-              "unavailable_capabilities": []
+              "unavailable_capabilities": [
+                "aws_ce_create",
+                "runtime_status",
+                "tgw_connect"
+              ]
             },
             "azure": {
               "availability": "evidence_backed",
@@ -100939,13 +100945,13 @@
           },
           "providers": {
             "aws": {
-              "availability": "evidence_backed",
+              "availability": "schema_only",
               "node_list_path": "aws.not_managed.node_list[]",
               "interface_list_path": "aws.not_managed.node_list[].interface_list[]",
               "capabilities": {
-                "aws_ce_create": "available",
-                "runtime_status": "available",
-                "tgw_connect": "available"
+                "aws_ce_create": "unavailable",
+                "runtime_status": "unavailable",
+                "tgw_connect": "unavailable"
               },
               "interface_identity": {
                 "field": "ethernet_interface.mac",
@@ -100964,7 +100970,7 @@
               ],
               "telemetry_intake": {
                 "schema_id": "f5xc-smsv2-aws-tgw-telemetry/v1",
-                "availability": "available",
+                "availability": "unavailable",
                 "required_facts": [
                   "runtime",
                   "gre",
@@ -100982,7 +100988,7 @@
                   "bgp_inside_cidr_block"
                 ],
                 "unavailable_facts": [],
-                "complete": true
+                "complete": false
               },
               "runtime": {
                 "configuration": {
@@ -101044,24 +101050,30 @@
               },
               "evidence": {
                 "provenance": "f5-distributed-cloud-smsv2-system-namespace",
-                "observed_at": "2026-08-17T00:00:00Z",
+                "observed_at": "2026-09-02T00:00:00Z",
                 "profiles": [
                   "aws-shaped-ce-configuration"
                 ],
                 "receipts": [
                   {
                     "operations": [
-                      "create",
-                      "read",
-                      "replace",
-                      "delete"
+                      "replace"
+                    ],
+                    "result": "rejected",
+                    "blocking_conditions": [
+                      "mac_only_interface_rejected_by_live_api",
+                      "public_ip_empty_string_null_round_trip"
                     ],
                     "sanitized": true,
                     "redaction": "no tenant response, token, bootstrap material, or resource identifier"
                   }
                 ]
               },
-              "unavailable_capabilities": []
+              "unavailable_capabilities": [
+                "aws_ce_create",
+                "runtime_status",
+                "tgw_connect"
+              ]
             },
             "azure": {
               "availability": "evidence_backed",
@@ -101260,6 +101272,7 @@
             "x-ves-validation-rules": {
               "ves.io.schema.rules.string.max_len": "256"
             },
+            "nullable": true,
             "x-f5xc-example": "192.0.2.242",
             "x-validation-rules": {
               "ves.io.schema.rules.string.max_len": "256"
@@ -102435,13 +102448,13 @@
           },
           "providers": {
             "aws": {
-              "availability": "evidence_backed",
+              "availability": "schema_only",
               "node_list_path": "aws.not_managed.node_list[]",
               "interface_list_path": "aws.not_managed.node_list[].interface_list[]",
               "capabilities": {
-                "aws_ce_create": "available",
-                "runtime_status": "available",
-                "tgw_connect": "available"
+                "aws_ce_create": "unavailable",
+                "runtime_status": "unavailable",
+                "tgw_connect": "unavailable"
               },
               "interface_identity": {
                 "field": "ethernet_interface.mac",
@@ -102460,7 +102473,7 @@
               ],
               "telemetry_intake": {
                 "schema_id": "f5xc-smsv2-aws-tgw-telemetry/v1",
-                "availability": "available",
+                "availability": "unavailable",
                 "required_facts": [
                   "runtime",
                   "gre",
@@ -102478,7 +102491,7 @@
                   "bgp_inside_cidr_block"
                 ],
                 "unavailable_facts": [],
-                "complete": true
+                "complete": false
               },
               "runtime": {
                 "configuration": {
@@ -102540,24 +102553,30 @@
               },
               "evidence": {
                 "provenance": "f5-distributed-cloud-smsv2-system-namespace",
-                "observed_at": "2026-08-17T00:00:00Z",
+                "observed_at": "2026-09-02T00:00:00Z",
                 "profiles": [
                   "aws-shaped-ce-configuration"
                 ],
                 "receipts": [
                   {
                     "operations": [
-                      "create",
-                      "read",
-                      "replace",
-                      "delete"
+                      "replace"
+                    ],
+                    "result": "rejected",
+                    "blocking_conditions": [
+                      "mac_only_interface_rejected_by_live_api",
+                      "public_ip_empty_string_null_round_trip"
                     ],
                     "sanitized": true,
                     "redaction": "no tenant response, token, bootstrap material, or resource identifier"
                   }
                 ]
               },
-              "unavailable_capabilities": []
+              "unavailable_capabilities": [
+                "aws_ce_create",
+                "runtime_status",
+                "tgw_connect"
+              ]
             },
             "azure": {
               "availability": "evidence_backed",

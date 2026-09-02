@@ -126,6 +126,19 @@ overrides:
             x-validation-rules:
               ves.io.schema.rules.message.required: "false"
 
+  securemesh_site_v2_node_public_ip_nullability:
+    canonical: true
+    upstream_issue: "f5-sales-demo/api-specs-enriched#1684"
+    description: >-
+      Sanitized live UAT on 2026-09-02 observed an omitted node public_ip read
+      back as null. Model the wire value as nullable so generated clients do not
+      normalize absence to an empty string and create perpetual state drift.
+    schemas:
+      - pattern: "^viewssecuremesh_site_v2Node$"
+        set_property_extensions:
+          public_ip:
+            nullable: true
+
   registration_image_download:
     upstream_issue: "f5-sales-demo/api-specs-enriched#1485"
     description: >-

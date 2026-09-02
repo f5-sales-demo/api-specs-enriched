@@ -166,6 +166,24 @@ class TestSchemaOverrideEnricher:
                 "readOnly": True,
             }
 
+    def test_marks_smsv2_node_public_ip_nullable(self, enricher):
+        """Null readback must remain distinct from a configured empty string."""
+        spec = {
+            "components": {
+                "schemas": {
+                    "viewssecuremesh_site_v2Node": {
+                        "type": "object",
+                        "properties": {"public_ip": {"type": "string"}},
+                    },
+                },
+            },
+        }
+
+        public_ip = enricher.enrich_spec(spec)["components"]["schemas"][
+            "viewssecuremesh_site_v2Node"
+        ]["properties"]["public_ip"]
+        assert public_ip == {"type": "string", "nullable": True}
+
     def test_adds_live_verified_segment_network_reference(self, enricher):
         """The accepted named Segment reference is part of the canonical contract."""
         spec = {
