@@ -3,7 +3,7 @@
   "info": {
     "title": "Managed Kubernetes",
     "description": "Role-based access controls with cluster-scoped permissions and namespace bindings. Pod security admission levels enforce baseline, restricted, or privileged profiles. Container registry credentials support private image pulls across hybrid deployments. Policy rules define resource verbs, groups, and non-resource URL access patterns.",
-    "version": "5.0.0",
+    "version": "5.0.1",
     "contact": {
       "name": "F5 Distributed Cloud",
       "url": "https://docs.cloud.f5.com"
@@ -72,7 +72,11 @@
     },
     "x-f5xc-namespace-profile": {
       "constraint": {
-        "allowed": ["custom", "default", "shared"],
+        "allowed": [
+          "custom",
+          "default",
+          "shared"
+        ],
         "enforced": true
       },
       "recommendation": {
@@ -98,12 +102,19 @@
         "console_url": {
           "default": "console.ves.volterra.io",
           "description": "Console URL base (e.g., console.ves.volterra.io for production, staging.volterra.us for staging)",
-          "enum": ["console.ves.volterra.io", "staging.volterra.us"]
+          "enum": [
+            "console.ves.volterra.io",
+            "staging.volterra.us"
+          ]
         },
         "environment": {
           "default": "production",
           "description": "Environment designation (production, staging, development)",
-          "enum": ["production", "staging", "development"]
+          "enum": [
+            "production",
+            "staging",
+            "development"
+          ]
         },
         "domain_prefix": {
           "default": "api",
@@ -264,18 +275,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/managed_kubernetes/"
         },
         "x-ves-proto-rpc": "ves.io.schema.container_registry.API.Create",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.metadata.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.metadata.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Container-registry resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Container-registry resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["container-registry"]
+            "creates": [
+              "container-registry"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -316,10 +340,16 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.metadata.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.metadata.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["container-registry"]
+          "creates": [
+            "container-registry"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -477,18 +507,29 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/managed_kubernetes/"
         },
         "x-ves-proto-rpc": "ves.io.schema.container_registry.API.Replace",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource replacement operation",
-          "required_fields": ["path.metadata.name", "path.metadata.namespace"],
+          "required_fields": [
+            "path.metadata.name",
+            "path.metadata.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Resource updated with new values"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Resource updated with new values"
+            ]
           },
           "side_effects": {
-            "modifies": ["container-registry"]
+            "modifies": [
+              "container-registry"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -529,10 +570,15 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["path.metadata.name", "path.metadata.namespace"],
+        "x-f5xc-required-fields": [
+          "path.metadata.name",
+          "path.metadata.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "modifies": ["container-registry"]
+          "modifies": [
+            "container-registry"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 800,
@@ -708,14 +754,20 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/managed_kubernetes/"
         },
         "x-ves-proto-rpc": "ves.io.schema.container_registry.API.List",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": ["path.namespace"],
+          "required_fields": [
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -758,7 +810,9 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -926,14 +980,21 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/managed_kubernetes/"
         },
         "x-ves-proto-rpc": "ves.io.schema.container_registry.API.Get",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": ["path.name", "path.namespace"],
+          "required_fields": [
+            "path.name",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -976,7 +1037,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["path.name", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.name",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -1127,18 +1191,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/managed_kubernetes/"
         },
         "x-ves-proto-rpc": "ves.io.schema.container_registry.API.Delete",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource deletion operation",
-          "required_fields": ["path.name", "path.namespace"],
+          "required_fields": [
+            "path.name",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Resource removed from system", "Associated resources may be affected"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Resource removed from system",
+              "Associated resources may be affected"
+            ]
           },
           "side_effects": {
-            "deletes": ["container-registry", "contained_resources"]
+            "deletes": [
+              "container-registry",
+              "contained_resources"
+            ]
           },
           "danger_level": "high",
           "confirmation_required": true,
@@ -1179,11 +1256,17 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.name", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.name",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "high",
         "x-f5xc-confirmation-required": true,
         "x-f5xc-side-effects": {
-          "deletes": ["container-registry", "contained_resources"]
+          "deletes": [
+            "container-registry",
+            "contained_resources"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 500,
@@ -1330,18 +1413,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/managed_kubernetes/"
         },
         "x-ves-proto-rpc": "ves.io.schema.k8s_cluster_role.API.Create",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Kubernetes workload configuration",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.metadata.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.metadata.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["K8s-cluster-role resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "K8s-cluster-role resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["k8s-cluster-role"]
+            "creates": [
+              "k8s-cluster-role"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -1382,10 +1478,16 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.metadata.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.metadata.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["k8s-cluster-role"]
+          "creates": [
+            "k8s-cluster-role"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -1543,18 +1645,29 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/managed_kubernetes/"
         },
         "x-ves-proto-rpc": "ves.io.schema.k8s_cluster_role.API.Replace",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Kubernetes workload configuration",
-          "required_fields": ["path.metadata.name", "path.metadata.namespace"],
+          "required_fields": [
+            "path.metadata.name",
+            "path.metadata.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Resource updated with new values"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Resource updated with new values"
+            ]
           },
           "side_effects": {
-            "modifies": ["k8s-cluster-role"]
+            "modifies": [
+              "k8s-cluster-role"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -1595,10 +1708,15 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["path.metadata.name", "path.metadata.namespace"],
+        "x-f5xc-required-fields": [
+          "path.metadata.name",
+          "path.metadata.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "modifies": ["k8s-cluster-role"]
+          "modifies": [
+            "k8s-cluster-role"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 800,
@@ -1774,14 +1892,20 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/managed_kubernetes/"
         },
         "x-ves-proto-rpc": "ves.io.schema.k8s_cluster_role.API.List",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Kubernetes workload configuration",
-          "required_fields": ["path.namespace"],
+          "required_fields": [
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -1824,7 +1948,9 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-discovered-response-time-ms": 153.1,
         "x-discovered-sample-size": 1,
@@ -1995,14 +2121,21 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/managed_kubernetes/"
         },
         "x-ves-proto-rpc": "ves.io.schema.k8s_cluster_role.API.Get",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Kubernetes workload configuration",
-          "required_fields": ["path.name", "path.namespace"],
+          "required_fields": [
+            "path.name",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -2045,7 +2178,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["path.name", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.name",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -2196,18 +2332,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/managed_kubernetes/"
         },
         "x-ves-proto-rpc": "ves.io.schema.k8s_cluster_role.API.Delete",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Kubernetes workload configuration",
-          "required_fields": ["path.name", "path.namespace"],
+          "required_fields": [
+            "path.name",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Resource removed from system", "Associated resources may be affected"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Resource removed from system",
+              "Associated resources may be affected"
+            ]
           },
           "side_effects": {
-            "deletes": ["k8s-cluster-role", "contained_resources"]
+            "deletes": [
+              "k8s-cluster-role",
+              "contained_resources"
+            ]
           },
           "danger_level": "high",
           "confirmation_required": true,
@@ -2248,11 +2397,17 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.name", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.name",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "high",
         "x-f5xc-confirmation-required": true,
         "x-f5xc-side-effects": {
-          "deletes": ["k8s-cluster-role", "contained_resources"]
+          "deletes": [
+            "k8s-cluster-role",
+            "contained_resources"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 500,
@@ -2399,18 +2554,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/managed_kubernetes/"
         },
         "x-ves-proto-rpc": "ves.io.schema.k8s_cluster_role_binding.API.Create",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Kubernetes workload configuration",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.metadata.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.metadata.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["K8s-cluster-role-binding resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "K8s-cluster-role-binding resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["k8s-cluster-role-binding"]
+            "creates": [
+              "k8s-cluster-role-binding"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -2451,10 +2619,16 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.metadata.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.metadata.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["k8s-cluster-role-binding"]
+          "creates": [
+            "k8s-cluster-role-binding"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -2612,18 +2786,29 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/managed_kubernetes/"
         },
         "x-ves-proto-rpc": "ves.io.schema.k8s_cluster_role_binding.API.Replace",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Kubernetes workload configuration",
-          "required_fields": ["path.metadata.name", "path.metadata.namespace"],
+          "required_fields": [
+            "path.metadata.name",
+            "path.metadata.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Resource updated with new values"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Resource updated with new values"
+            ]
           },
           "side_effects": {
-            "modifies": ["k8s-cluster-role-binding"]
+            "modifies": [
+              "k8s-cluster-role-binding"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -2664,10 +2849,15 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["path.metadata.name", "path.metadata.namespace"],
+        "x-f5xc-required-fields": [
+          "path.metadata.name",
+          "path.metadata.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "modifies": ["k8s-cluster-role-binding"]
+          "modifies": [
+            "k8s-cluster-role-binding"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 800,
@@ -2843,14 +3033,20 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/managed_kubernetes/"
         },
         "x-ves-proto-rpc": "ves.io.schema.k8s_cluster_role_binding.API.List",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Kubernetes workload configuration",
-          "required_fields": ["path.namespace"],
+          "required_fields": [
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -2893,7 +3089,9 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-discovered-response-time-ms": 161.41,
         "x-discovered-sample-size": 1,
@@ -3064,14 +3262,21 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/managed_kubernetes/"
         },
         "x-ves-proto-rpc": "ves.io.schema.k8s_cluster_role_binding.API.Get",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Kubernetes workload configuration",
-          "required_fields": ["path.name", "path.namespace"],
+          "required_fields": [
+            "path.name",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -3114,7 +3319,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["path.name", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.name",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -3265,18 +3473,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/managed_kubernetes/"
         },
         "x-ves-proto-rpc": "ves.io.schema.k8s_cluster_role_binding.API.Delete",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Kubernetes workload configuration",
-          "required_fields": ["path.name", "path.namespace"],
+          "required_fields": [
+            "path.name",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Resource removed from system", "Associated resources may be affected"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Resource removed from system",
+              "Associated resources may be affected"
+            ]
           },
           "side_effects": {
-            "deletes": ["k8s-cluster-role-binding", "contained_resources"]
+            "deletes": [
+              "k8s-cluster-role-binding",
+              "contained_resources"
+            ]
           },
           "danger_level": "high",
           "confirmation_required": true,
@@ -3317,11 +3538,17 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.name", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.name",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "high",
         "x-f5xc-confirmation-required": true,
         "x-f5xc-side-effects": {
-          "deletes": ["k8s-cluster-role-binding", "contained_resources"]
+          "deletes": [
+            "k8s-cluster-role-binding",
+            "contained_resources"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 500,
@@ -3468,18 +3695,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/managed_kubernetes/"
         },
         "x-ves-proto-rpc": "ves.io.schema.k8s_pod_security_admission.API.Create",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Kubernetes workload configuration",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.metadata.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.metadata.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["K8s-pod-security-admission resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "K8s-pod-security-admission resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["k8s-pod-security-admission"]
+            "creates": [
+              "k8s-pod-security-admission"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -3520,10 +3760,16 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.metadata.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.metadata.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["k8s-pod-security-admission"]
+          "creates": [
+            "k8s-pod-security-admission"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -3681,18 +3927,29 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/managed_kubernetes/"
         },
         "x-ves-proto-rpc": "ves.io.schema.k8s_pod_security_admission.API.Replace",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Kubernetes workload configuration",
-          "required_fields": ["path.metadata.name", "path.metadata.namespace"],
+          "required_fields": [
+            "path.metadata.name",
+            "path.metadata.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Resource updated with new values"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Resource updated with new values"
+            ]
           },
           "side_effects": {
-            "modifies": ["k8s-pod-security-admission"]
+            "modifies": [
+              "k8s-pod-security-admission"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -3733,10 +3990,15 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["path.metadata.name", "path.metadata.namespace"],
+        "x-f5xc-required-fields": [
+          "path.metadata.name",
+          "path.metadata.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "modifies": ["k8s-pod-security-admission"]
+          "modifies": [
+            "k8s-pod-security-admission"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 800,
@@ -3912,14 +4174,20 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/managed_kubernetes/"
         },
         "x-ves-proto-rpc": "ves.io.schema.k8s_pod_security_admission.API.List",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Kubernetes workload configuration",
-          "required_fields": ["path.namespace"],
+          "required_fields": [
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -3962,7 +4230,9 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-discovered-response-time-ms": 155.68,
         "x-discovered-sample-size": 1,
@@ -4133,14 +4403,21 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/managed_kubernetes/"
         },
         "x-ves-proto-rpc": "ves.io.schema.k8s_pod_security_admission.API.Get",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Kubernetes workload configuration",
-          "required_fields": ["path.name", "path.namespace"],
+          "required_fields": [
+            "path.name",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -4183,7 +4460,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["path.name", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.name",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -4334,18 +4614,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/managed_kubernetes/"
         },
         "x-ves-proto-rpc": "ves.io.schema.k8s_pod_security_admission.API.Delete",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Kubernetes workload configuration",
-          "required_fields": ["path.name", "path.namespace"],
+          "required_fields": [
+            "path.name",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Resource removed from system", "Associated resources may be affected"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Resource removed from system",
+              "Associated resources may be affected"
+            ]
           },
           "side_effects": {
-            "deletes": ["k8s-pod-security-admission", "contained_resources"]
+            "deletes": [
+              "k8s-pod-security-admission",
+              "contained_resources"
+            ]
           },
           "danger_level": "high",
           "confirmation_required": true,
@@ -4386,11 +4679,17 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.name", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.name",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "high",
         "x-f5xc-confirmation-required": true,
         "x-f5xc-side-effects": {
-          "deletes": ["k8s-pod-security-admission", "contained_resources"]
+          "deletes": [
+            "k8s-pod-security-admission",
+            "contained_resources"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 500,
@@ -4537,18 +4836,32 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/managed_kubernetes/"
         },
         "x-ves-proto-rpc": "ves.io.schema.k8s_pod_security_policy.API.Create",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Configuration policy for resource behavior",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.metadata.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.metadata.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace", "Policy parameters defined"],
-            "postconditions": ["K8s-pod-security-policy resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace",
+              "Policy parameters defined"
+            ],
+            "postconditions": [
+              "K8s-pod-security-policy resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["k8s-pod-security-policy"]
+            "creates": [
+              "k8s-pod-security-policy"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -4589,10 +4902,16 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.metadata.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.metadata.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["k8s-pod-security-policy"]
+          "creates": [
+            "k8s-pod-security-policy"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -4750,18 +5069,30 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/managed_kubernetes/"
         },
         "x-ves-proto-rpc": "ves.io.schema.k8s_pod_security_policy.API.Replace",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Configuration policy for resource behavior",
-          "required_fields": ["path.metadata.name", "path.metadata.namespace"],
+          "required_fields": [
+            "path.metadata.name",
+            "path.metadata.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace", "Policy parameters defined"],
-            "postconditions": ["Resource updated with new values"]
+            "prerequisites": [
+              "Active namespace",
+              "Policy parameters defined"
+            ],
+            "postconditions": [
+              "Resource updated with new values"
+            ]
           },
           "side_effects": {
-            "modifies": ["k8s-pod-security-policy"]
+            "modifies": [
+              "k8s-pod-security-policy"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -4802,10 +5133,15 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["path.metadata.name", "path.metadata.namespace"],
+        "x-f5xc-required-fields": [
+          "path.metadata.name",
+          "path.metadata.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "modifies": ["k8s-pod-security-policy"]
+          "modifies": [
+            "k8s-pod-security-policy"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 800,
@@ -4981,14 +5317,21 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/managed_kubernetes/"
         },
         "x-ves-proto-rpc": "ves.io.schema.k8s_pod_security_policy.API.List",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Configuration policy for resource behavior",
-          "required_fields": ["path.namespace"],
+          "required_fields": [
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace", "Policy parameters defined"],
+            "prerequisites": [
+              "Active namespace",
+              "Policy parameters defined"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -5031,7 +5374,9 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -5199,14 +5544,22 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/managed_kubernetes/"
         },
         "x-ves-proto-rpc": "ves.io.schema.k8s_pod_security_policy.API.Get",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Configuration policy for resource behavior",
-          "required_fields": ["path.name", "path.namespace"],
+          "required_fields": [
+            "path.name",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace", "Policy parameters defined"],
+            "prerequisites": [
+              "Active namespace",
+              "Policy parameters defined"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -5249,7 +5602,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["path.name", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.name",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -5400,18 +5756,32 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/managed_kubernetes/"
         },
         "x-ves-proto-rpc": "ves.io.schema.k8s_pod_security_policy.API.Delete",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Configuration policy for resource behavior",
-          "required_fields": ["path.name", "path.namespace"],
+          "required_fields": [
+            "path.name",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace", "Policy parameters defined"],
-            "postconditions": ["Resource removed from system", "Associated resources may be affected"]
+            "prerequisites": [
+              "Active namespace",
+              "Policy parameters defined"
+            ],
+            "postconditions": [
+              "Resource removed from system",
+              "Associated resources may be affected"
+            ]
           },
           "side_effects": {
-            "deletes": ["k8s-pod-security-policy", "contained_resources"]
+            "deletes": [
+              "k8s-pod-security-policy",
+              "contained_resources"
+            ]
           },
           "danger_level": "high",
           "confirmation_required": true,
@@ -5452,11 +5822,17 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.name", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.name",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "high",
         "x-f5xc-confirmation-required": true,
         "x-f5xc-side-effects": {
-          "deletes": ["k8s-pod-security-policy", "contained_resources"]
+          "deletes": [
+            "k8s-pod-security-policy",
+            "contained_resources"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 500,
@@ -5533,7 +5909,11 @@
         "x-f5xc-cli-domain": "managed_kubernetes",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -5604,7 +5984,11 @@
         "x-f5xc-cli-domain": "managed_kubernetes",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -5752,7 +6136,10 @@
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for container_registryCreateSpecType",
-          "required_fields": ["registry", "user_name"],
+          "required_fields": [
+            "registry",
+            "user_name"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for container_registryCreateSpecType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  registry: value\n  user_name: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"registry\": \"value\",\n    \"user_name\": \"value\"\n  }\n}"
@@ -5764,7 +6151,11 @@
         },
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -5899,7 +6290,11 @@
         "x-f5xc-cli-domain": "managed_kubernetes",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -6063,7 +6458,9 @@
             "type": "string",
             "x-f5xc-concurrency-token": {
               "server_assigned": true,
-              "echo_on_operations": ["replace"]
+              "echo_on_operations": [
+                "replace"
+              ]
             }
           }
         },
@@ -6077,7 +6474,11 @@
         "x-f5xc-cli-domain": "managed_kubernetes",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -6225,7 +6626,10 @@
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for container_registryGetSpecType",
-          "required_fields": ["registry", "user_name"],
+          "required_fields": [
+            "registry",
+            "user_name"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for container_registryGetSpecType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  registry: value\n  user_name: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"registry\": \"value\",\n    \"user_name\": \"value\"\n  }\n}"
@@ -6233,7 +6637,11 @@
         "x-f5xc-cli-domain": "managed_kubernetes",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -6310,7 +6718,11 @@
         "x-f5xc-cli-domain": "managed_kubernetes",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -6645,7 +7057,11 @@
         "x-f5xc-cli-domain": "managed_kubernetes",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -6698,7 +7114,9 @@
             "type": "string",
             "x-f5xc-concurrency-token": {
               "server_assigned": true,
-              "echo_on_operations": ["replace"]
+              "echo_on_operations": [
+                "replace"
+              ]
             }
           }
         },
@@ -6712,7 +7130,11 @@
         "x-f5xc-cli-domain": "managed_kubernetes",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -6739,7 +7161,11 @@
         "x-f5xc-cli-domain": "managed_kubernetes",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -6887,7 +7313,10 @@
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for container_registryReplaceSpecType",
-          "required_fields": ["registry", "user_name"],
+          "required_fields": [
+            "registry",
+            "user_name"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for container_registryReplaceSpecType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  registry: value\n  user_name: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"registry\": \"value\",\n    \"user_name\": \"value\"\n  }\n}"
@@ -6895,7 +7324,11 @@
         "x-f5xc-cli-domain": "managed_kubernetes",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -6972,7 +7405,11 @@
         "x-f5xc-cli-domain": "managed_kubernetes",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -7052,7 +7489,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -7177,7 +7618,9 @@
         "x-f5xc-description-short": "BlindfoldSecretInfoType specifies information about the Secret managed by F5XC Secret Management.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for schemaBlindfoldSecretInfoType",
-          "required_fields": ["location"],
+          "required_fields": [
+            "location"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for schemaBlindfoldSecretInfoType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  location: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"location\": \"value\"\n  }\n}"
@@ -7185,7 +7628,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -7292,7 +7737,9 @@
         "x-f5xc-description-short": "ClearSecretInfoType specifies information about the Secret that is not encrypted.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for schemaClearSecretInfoType",
-          "required_fields": ["url"],
+          "required_fields": [
+            "url"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for schemaClearSecretInfoType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  url: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"url\": \"value\"\n  }\n}"
@@ -7300,7 +7747,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -7450,7 +7901,15 @@
             "x-f5xc-description-short": "Status of the condition \"Success\" Validation has succeeded.",
             "x-f5xc-description-medium": "Status of the condition \"Success\" Validation has succeeded. Requested operation was successful. \"Failed\" Validation has failed. \"Incomplete\" Validation of configuration has failed due to missing configuration. \"Installed\" Validation has passed and configuration has been installed in data path or...",
             "maxLength": 1024,
-            "enum": ["Success", "Failed", "Incomplete", "Installed", "Down", "Disabled", "NotApplicable"],
+            "enum": [
+              "Success",
+              "Failed",
+              "Incomplete",
+              "Installed",
+              "Down",
+              "Disabled",
+              "NotApplicable"
+            ],
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "general",
@@ -7487,7 +7946,10 @@
             "x-f5xc-description-short": "Type of the condition \"Validation\" represents validation user given configuration object \"Operational\" represents operational status of a given...",
             "x-f5xc-description-medium": "Type of the condition \"Validation\" represents validation user given configuration object \"Operational\" represents operational status of a given configuration object.",
             "maxLength": 1024,
-            "enum": ["Validation", "Operational"],
+            "enum": [
+              "Validation",
+              "Operational"
+            ],
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "general",
@@ -7518,7 +7980,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -7562,7 +8028,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -7646,7 +8116,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -7723,7 +8197,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -7786,7 +8264,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -8010,7 +8492,9 @@
         "x-f5xc-description-short": "ObjectCreateMetaType is metadata that can be specified in Create request of an object.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for schemaObjectCreateMetaType",
-          "required_fields": ["name"],
+          "required_fields": [
+            "name"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for schemaObjectCreateMetaType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  name: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"name\": \"value\"\n  }\n}"
@@ -8018,7 +8502,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -8245,7 +8733,9 @@
         "x-f5xc-description-short": "ObjectGetMetaType is metadata that can be specified in GET/Create response of an object.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for schemaObjectGetMetaType",
-          "required_fields": ["name"],
+          "required_fields": [
+            "name"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for schemaObjectGetMetaType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  name: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"name\": \"value\"\n  }\n}"
@@ -8253,7 +8743,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -8459,7 +8953,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -8692,7 +9190,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -8726,7 +9228,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["clear_secret_info"]
+            "x-f5xc-conflicts-with": [
+              "clear_secret_info"
+            ]
           },
           "clear_secret_info": {
             "allOf": [
@@ -8740,7 +9244,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["blindfold_secret_info"]
+            "x-f5xc-conflicts-with": [
+              "blindfold_secret_info"
+            ]
           }
         },
         "x-f5xc-description-short": "SecretType is used in an object to indicate a sensitive/confidential field.",
@@ -8754,7 +9260,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -8980,7 +9488,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -8998,7 +9510,10 @@
         "type": "string",
         "description": "StatusPublishType is all possible publish operations on a StatusObject\n\n- STATUS_DO_NOT_PUBLISH: Do Not Publish\n\nDo not propagate this status to user. This could be because status is only informational\n- STATUS_PUBLISH: Publish\n\nPropagate this status up to user as it might be actionable.",
         "title": "StatusPublishType",
-        "enum": ["STATUS_DO_NOT_PUBLISH", "STATUS_PUBLISH"],
+        "enum": [
+          "STATUS_DO_NOT_PUBLISH",
+          "STATUS_PUBLISH"
+        ],
         "default": "STATUS_DO_NOT_PUBLISH",
         "x-displayname": "Status Publish Type.",
         "x-ves-proto-enum": "ves.io.schema.StatusPublishType",
@@ -9014,7 +9529,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -9122,7 +9641,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -9445,7 +9968,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -9628,7 +10155,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -9680,7 +10211,10 @@
         },
         "x-f5xc-minimum-configuration": {
           "description": "Kubernetes cluster configuration for F5 XC managed K8s",
-          "required_fields": ["metadata.name", "metadata.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "metadata:\n  name: example-k8s-cluster\n  namespace: system\nspec: {}\n",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example-k8s-cluster\",\n    \"namespace\": \"system\"\n  },\n  \"spec\": {}\n}\n"
@@ -9688,7 +10222,9 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -9759,7 +10295,9 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -9794,7 +10332,10 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["policy_rule_list", "yaml"]
+            "x-f5xc-conflicts-with": [
+              "policy_rule_list",
+              "yaml"
+            ]
           },
           "policy_rule_list": {
             "allOf": [
@@ -9809,7 +10350,10 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["k8s_cluster_role_selector", "yaml"]
+            "x-f5xc-conflicts-with": [
+              "k8s_cluster_role_selector",
+              "yaml"
+            ]
           },
           "yaml": {
             "type": "string",
@@ -9848,14 +10392,20 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["k8s_cluster_role_selector", "policy_rule_list"]
+            "x-f5xc-conflicts-with": [
+              "k8s_cluster_role_selector",
+              "policy_rule_list"
+            ]
           }
         },
         "x-f5xc-description-short": "Create k8s_cluster_role will create the object in the storage backend for namespace metadata.namespace.",
         "x-f5xc-description-medium": "Create k8s_cluster_role will create the object in the storage backend for namespace metadata.namespace.",
         "x-f5xc-minimum-configuration": {
           "description": "Kubernetes cluster configuration for F5 XC managed K8s",
-          "required_fields": ["metadata.name", "metadata.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "metadata:\n  name: example-k8s-cluster\n  namespace: system\nspec: {}\n",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example-k8s-cluster\",\n    \"namespace\": \"system\"\n  },\n  \"spec\": {}\n}\n"
@@ -9863,7 +10413,9 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -9998,7 +10550,9 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -10162,7 +10716,9 @@
             "type": "string",
             "x-f5xc-concurrency-token": {
               "server_assigned": true,
-              "echo_on_operations": ["replace"]
+              "echo_on_operations": [
+                "replace"
+              ]
             }
           }
         },
@@ -10176,7 +10732,9 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -10211,7 +10769,10 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["policy_rule_list", "yaml"]
+            "x-f5xc-conflicts-with": [
+              "policy_rule_list",
+              "yaml"
+            ]
           },
           "policy_rule_list": {
             "allOf": [
@@ -10226,7 +10787,10 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["k8s_cluster_role_selector", "yaml"]
+            "x-f5xc-conflicts-with": [
+              "k8s_cluster_role_selector",
+              "yaml"
+            ]
           },
           "yaml": {
             "type": "string",
@@ -10265,13 +10829,19 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["k8s_cluster_role_selector", "policy_rule_list"]
+            "x-f5xc-conflicts-with": [
+              "k8s_cluster_role_selector",
+              "policy_rule_list"
+            ]
           }
         },
         "x-f5xc-description-short": "GET k8s_cluster_role will GET the object from the storage backend for namespace metadata.namespace.",
         "x-f5xc-minimum-configuration": {
           "description": "Kubernetes cluster configuration for F5 XC managed K8s",
-          "required_fields": ["metadata.name", "metadata.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "metadata:\n  name: example-k8s-cluster\n  namespace: system\nspec: {}\n",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example-k8s-cluster\",\n    \"namespace\": \"system\"\n  },\n  \"spec\": {}\n}\n"
@@ -10279,7 +10849,9 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -10356,7 +10928,9 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -10691,7 +11265,9 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -10814,7 +11390,10 @@
         "x-f5xc-description-short": "Permissions for URL(s) that do not represent K8s resource.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for k8s_cluster_roleNonResourceURLListType",
-          "required_fields": ["urls", "verbs"],
+          "required_fields": [
+            "urls",
+            "verbs"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for k8s_cluster_roleNonResourceURLListType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  urls: value\n  verbs: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"urls\": \"value\",\n    \"verbs\": \"value\"\n  }\n}"
@@ -10822,7 +11401,9 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -10890,7 +11471,9 @@
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for k8s_cluster_rolePolicyRuleListType",
-          "required_fields": ["policy_rule"],
+          "required_fields": [
+            "policy_rule"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for k8s_cluster_rolePolicyRuleListType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  policy_rule: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"policy_rule\": \"value\"\n  }\n}"
@@ -10898,7 +11481,9 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -10932,7 +11517,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["resource_list"]
+            "x-f5xc-conflicts-with": [
+              "resource_list"
+            ]
           },
           "resource_list": {
             "allOf": [
@@ -10946,7 +11533,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["non_resource_url_list"]
+            "x-f5xc-conflicts-with": [
+              "non_resource_url_list"
+            ]
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -10959,7 +11548,9 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -11012,13 +11603,18 @@
             "type": "string",
             "x-f5xc-concurrency-token": {
               "server_assigned": true,
-              "echo_on_operations": ["replace"]
+              "echo_on_operations": [
+                "replace"
+              ]
             }
           }
         },
         "x-f5xc-minimum-configuration": {
           "description": "Kubernetes cluster configuration for F5 XC managed K8s",
-          "required_fields": ["metadata.name", "metadata.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "metadata:\n  name: example-k8s-cluster\n  namespace: system\nspec: {}\n",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example-k8s-cluster\",\n    \"namespace\": \"system\"\n  },\n  \"spec\": {}\n}\n"
@@ -11026,7 +11622,9 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -11053,7 +11651,9 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -11088,7 +11688,10 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["policy_rule_list", "yaml"]
+            "x-f5xc-conflicts-with": [
+              "policy_rule_list",
+              "yaml"
+            ]
           },
           "policy_rule_list": {
             "allOf": [
@@ -11103,7 +11706,10 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["k8s_cluster_role_selector", "yaml"]
+            "x-f5xc-conflicts-with": [
+              "k8s_cluster_role_selector",
+              "yaml"
+            ]
           },
           "yaml": {
             "type": "string",
@@ -11142,14 +11748,20 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["k8s_cluster_role_selector", "policy_rule_list"]
+            "x-f5xc-conflicts-with": [
+              "k8s_cluster_role_selector",
+              "policy_rule_list"
+            ]
           }
         },
         "x-f5xc-description-short": "Replacing an k8s_cluster_role object will update the object by replacing the existing spec with the provided one.",
         "x-f5xc-description-medium": "Replacing an k8s_cluster_role object will update the object by replacing the existing spec with the provided one. For read-then-write operations a resourceVersion mismatch will occur if the object was modified between the read and write.",
         "x-f5xc-minimum-configuration": {
           "description": "Kubernetes cluster configuration for F5 XC managed K8s",
-          "required_fields": ["metadata.name", "metadata.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "metadata:\n  name: example-k8s-cluster\n  namespace: system\nspec: {}\n",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example-k8s-cluster\",\n    \"namespace\": \"system\"\n  },\n  \"spec\": {}\n}\n"
@@ -11157,7 +11769,9 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -11371,7 +11985,11 @@
         "x-f5xc-description-short": "List of resources in terms of API groups/resource types/resource instances and verbs allowed.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for k8s_cluster_roleResourceListType",
-          "required_fields": ["api_groups", "resource_types", "verbs"],
+          "required_fields": [
+            "api_groups",
+            "resource_types",
+            "verbs"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for k8s_cluster_roleResourceListType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  api_groups: value\n  resource_types: value\n  verbs: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"api_groups\": \"value\",\n    \"resource_types\": \"value\",\n    \"verbs\": \"value\"\n  }\n}"
@@ -11379,7 +11997,9 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -11456,7 +12076,9 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -11529,7 +12151,9 @@
         "x-f5xc-description-medium": "Type can be used to establish a 'selector reference' from one object(called selector) to a set of other objects(called selectees) based on the value of expressions. A label selector is a label query over a set of resources. An empty label selector matches all objects.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for schemaLabelSelectorType",
-          "required_fields": ["expressions"],
+          "required_fields": [
+            "expressions"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for schemaLabelSelectorType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  expressions: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"expressions\": \"value\"\n  }\n}"
@@ -11537,7 +12161,9 @@
         "x-f5xc-cli-domain": "label",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -11743,7 +12369,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -11795,7 +12425,10 @@
         },
         "x-f5xc-minimum-configuration": {
           "description": "Kubernetes cluster configuration for F5 XC managed K8s",
-          "required_fields": ["metadata.name", "metadata.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "metadata:\n  name: example-k8s-cluster\n  namespace: system\nspec: {}\n",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example-k8s-cluster\",\n    \"namespace\": \"system\"\n  },\n  \"spec\": {}\n}\n"
@@ -11803,7 +12436,9 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -11874,7 +12509,9 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -11966,7 +12603,10 @@
         "x-f5xc-description-medium": "Create k8s_cluster_role_binding will create the object in the storage backend for namespace metadata.namespace.",
         "x-f5xc-minimum-configuration": {
           "description": "Kubernetes cluster configuration for F5 XC managed K8s",
-          "required_fields": ["metadata.name", "metadata.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "metadata:\n  name: example-k8s-cluster\n  namespace: system\nspec: {}\n",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example-k8s-cluster\",\n    \"namespace\": \"system\"\n  },\n  \"spec\": {}\n}\n"
@@ -11974,7 +12614,9 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -12109,7 +12751,9 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -12273,7 +12917,9 @@
             "type": "string",
             "x-f5xc-concurrency-token": {
               "server_assigned": true,
-              "echo_on_operations": ["replace"]
+              "echo_on_operations": [
+                "replace"
+              ]
             }
           }
         },
@@ -12287,7 +12933,9 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -12379,7 +13027,10 @@
         "x-f5xc-description-medium": "GET k8s_cluster_role_binding will GET the object from the storage backend for namespace metadata.namespace.",
         "x-f5xc-minimum-configuration": {
           "description": "Kubernetes cluster configuration for F5 XC managed K8s",
-          "required_fields": ["metadata.name", "metadata.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "metadata:\n  name: example-k8s-cluster\n  namespace: system\nspec: {}\n",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example-k8s-cluster\",\n    \"namespace\": \"system\"\n  },\n  \"spec\": {}\n}\n"
@@ -12387,7 +13038,9 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -12464,7 +13117,9 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -12800,7 +13455,9 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -12853,13 +13510,18 @@
             "type": "string",
             "x-f5xc-concurrency-token": {
               "server_assigned": true,
-              "echo_on_operations": ["replace"]
+              "echo_on_operations": [
+                "replace"
+              ]
             }
           }
         },
         "x-f5xc-minimum-configuration": {
           "description": "Kubernetes cluster configuration for F5 XC managed K8s",
-          "required_fields": ["metadata.name", "metadata.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "metadata:\n  name: example-k8s-cluster\n  namespace: system\nspec: {}\n",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example-k8s-cluster\",\n    \"namespace\": \"system\"\n  },\n  \"spec\": {}\n}\n"
@@ -12867,7 +13529,9 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -12894,7 +13558,9 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -12986,7 +13652,10 @@
         "x-f5xc-description-medium": "Replacing an k8s_cluster_role_binding object will update the object by replacing the existing spec with the provided one. For read-then-write operations a resourceVersion mismatch will occur if the object was modified between the read and write.",
         "x-f5xc-minimum-configuration": {
           "description": "Kubernetes cluster configuration for F5 XC managed K8s",
-          "required_fields": ["metadata.name", "metadata.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "metadata:\n  name: example-k8s-cluster\n  namespace: system\nspec: {}\n",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example-k8s-cluster\",\n    \"namespace\": \"system\"\n  },\n  \"spec\": {}\n}\n"
@@ -12994,7 +13663,9 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -13123,7 +13794,10 @@
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for k8s_cluster_role_bindingServiceAccountType",
-          "required_fields": ["name", "namespace"],
+          "required_fields": [
+            "name",
+            "namespace"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for k8s_cluster_role_bindingServiceAccountType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  name: value\n  namespace: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"name\": \"value\",\n    \"namespace\": \"value\"\n  }\n}"
@@ -13131,7 +13805,9 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -13208,7 +13884,9 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -13266,7 +13944,10 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["service_account", "user"]
+            "x-f5xc-conflicts-with": [
+              "service_account",
+              "user"
+            ]
           },
           "service_account": {
             "allOf": [
@@ -13280,7 +13961,10 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["group", "user"]
+            "x-f5xc-conflicts-with": [
+              "group",
+              "user"
+            ]
           },
           "user": {
             "type": "string",
@@ -13323,7 +14007,10 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["group", "service_account"]
+            "x-f5xc-conflicts-with": [
+              "group",
+              "service_account"
+            ]
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -13336,7 +14023,9 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -13504,7 +14193,9 @@
         "x-f5xc-description-medium": "Type establishes a direct reference from one object(the referrer) to another(the referred). Such a reference is in form of tenant/namespace/name.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for schemaviewsObjectRefType",
-          "required_fields": ["name"],
+          "required_fields": [
+            "name"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for schemaviewsObjectRefType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  name: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"name\": \"value\"\n  }\n}"
@@ -13512,7 +14203,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -13542,7 +14237,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -13602,7 +14301,9 @@
         "x-f5xc-cli-domain": "managed_kubernetes",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -13673,7 +14374,9 @@
         "x-f5xc-cli-domain": "managed_kubernetes",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -13740,7 +14443,9 @@
         "x-f5xc-description-short": "Create k8s_pod_security_admission will create the object in the storage backend.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for k8s_pod_security_admissionCreateSpecType",
-          "required_fields": ["pod_security_admission_specs"],
+          "required_fields": [
+            "pod_security_admission_specs"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for k8s_pod_security_admissionCreateSpecType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  pod_security_admission_specs: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"pod_security_admission_specs\": \"value\"\n  }\n}"
@@ -13751,7 +14456,9 @@
         },
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -13886,7 +14593,9 @@
         "x-f5xc-cli-domain": "managed_kubernetes",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -14050,7 +14759,9 @@
             "type": "string",
             "x-f5xc-concurrency-token": {
               "server_assigned": true,
-              "echo_on_operations": ["replace"]
+              "echo_on_operations": [
+                "replace"
+              ]
             }
           }
         },
@@ -14064,7 +14775,9 @@
         "x-f5xc-cli-domain": "managed_kubernetes",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -14131,7 +14844,9 @@
         "x-f5xc-description-short": "GET k8s_pod_security_admission will GET the object from the storage backend.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for k8s_pod_security_admissionGetSpecType",
-          "required_fields": ["pod_security_admission_specs"],
+          "required_fields": [
+            "pod_security_admission_specs"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for k8s_pod_security_admissionGetSpecType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  pod_security_admission_specs: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"pod_security_admission_specs\": \"value\"\n  }\n}"
@@ -14139,7 +14854,9 @@
         "x-f5xc-cli-domain": "managed_kubernetes",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -14216,7 +14933,9 @@
         "x-f5xc-cli-domain": "managed_kubernetes",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -14552,7 +15271,9 @@
         "x-f5xc-cli-domain": "managed_kubernetes",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -14587,7 +15308,10 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["enforce", "warn"]
+            "x-f5xc-conflicts-with": [
+              "enforce",
+              "warn"
+            ]
           },
           "baseline": {
             "allOf": [
@@ -14601,7 +15325,10 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["privileged", "restricted"]
+            "x-f5xc-conflicts-with": [
+              "privileged",
+              "restricted"
+            ]
           },
           "enforce": {
             "allOf": [
@@ -14615,7 +15342,10 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["audit", "warn"]
+            "x-f5xc-conflicts-with": [
+              "audit",
+              "warn"
+            ]
           },
           "privileged": {
             "allOf": [
@@ -14629,7 +15359,10 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["baseline", "restricted"]
+            "x-f5xc-conflicts-with": [
+              "baseline",
+              "restricted"
+            ]
           },
           "restricted": {
             "allOf": [
@@ -14643,7 +15376,10 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["baseline", "privileged"]
+            "x-f5xc-conflicts-with": [
+              "baseline",
+              "privileged"
+            ]
           },
           "warn": {
             "allOf": [
@@ -14657,7 +15393,10 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["audit", "enforce"]
+            "x-f5xc-conflicts-with": [
+              "audit",
+              "enforce"
+            ]
           }
         },
         "x-f5xc-description-short": "Pod Security Admission Spec is combination of policy type and admission mode.",
@@ -14671,7 +15410,9 @@
         "x-f5xc-cli-domain": "managed_kubernetes",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -14724,7 +15465,9 @@
             "type": "string",
             "x-f5xc-concurrency-token": {
               "server_assigned": true,
-              "echo_on_operations": ["replace"]
+              "echo_on_operations": [
+                "replace"
+              ]
             }
           }
         },
@@ -14738,7 +15481,9 @@
         "x-f5xc-cli-domain": "managed_kubernetes",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -14765,7 +15510,9 @@
         "x-f5xc-cli-domain": "managed_kubernetes",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -14833,7 +15580,9 @@
         "x-f5xc-description-medium": "Replacing an k8s_pod_security_admission object will update the object by replacing the existing spec with the provided one. For read-then-write operations a resourceVersion mismatch will occur if the object was modified between the read and write.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for k8s_pod_security_admissionReplaceSpecType",
-          "required_fields": ["pod_security_admission_specs"],
+          "required_fields": [
+            "pod_security_admission_specs"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for k8s_pod_security_admissionReplaceSpecType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  pod_security_admission_specs: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"pod_security_admission_specs\": \"value\"\n  }\n}"
@@ -14841,7 +15590,9 @@
         "x-f5xc-cli-domain": "managed_kubernetes",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -14918,7 +15669,9 @@
         "x-f5xc-cli-domain": "managed_kubernetes",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -14989,7 +15742,9 @@
         "x-f5xc-description-short": "List of capabilities that docker container has.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for k8s_pod_security_policyCapabilityListType",
-          "required_fields": ["capabilities"],
+          "required_fields": [
+            "capabilities"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for k8s_pod_security_policyCapabilityListType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  capabilities: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"capabilities\": \"value\"\n  }\n}"
@@ -14997,7 +15752,9 @@
         "x-f5xc-cli-domain": "managed_kubernetes",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -15057,7 +15814,9 @@
         "x-f5xc-cli-domain": "managed_kubernetes",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -15128,7 +15887,9 @@
         "x-f5xc-cli-domain": "managed_kubernetes",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -15162,7 +15923,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["yaml"]
+            "x-f5xc-conflicts-with": [
+              "yaml"
+            ]
           },
           "yaml": {
             "type": "string",
@@ -15201,7 +15964,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["psp_spec"]
+            "x-f5xc-conflicts-with": [
+              "psp_spec"
+            ]
           }
         },
         "x-f5xc-description-short": "Create k8s_pod_security_policy will create the object in the storage backend for namespace metadata.namespace.",
@@ -15216,7 +15981,9 @@
         "x-f5xc-cli-domain": "managed_kubernetes",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -15351,7 +16118,9 @@
         "x-f5xc-cli-domain": "managed_kubernetes",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -15515,7 +16284,9 @@
             "type": "string",
             "x-f5xc-concurrency-token": {
               "server_assigned": true,
-              "echo_on_operations": ["replace"]
+              "echo_on_operations": [
+                "replace"
+              ]
             }
           }
         },
@@ -15529,7 +16300,9 @@
         "x-f5xc-cli-domain": "managed_kubernetes",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -15563,7 +16336,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["yaml"]
+            "x-f5xc-conflicts-with": [
+              "yaml"
+            ]
           },
           "yaml": {
             "type": "string",
@@ -15602,7 +16377,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["psp_spec"]
+            "x-f5xc-conflicts-with": [
+              "psp_spec"
+            ]
           }
         },
         "x-f5xc-description-short": "GET k8s_pod_security_policy will GET the object from the storage backend for namespace metadata.namespace.",
@@ -15617,7 +16394,9 @@
         "x-f5xc-cli-domain": "managed_kubernetes",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -15695,7 +16474,9 @@
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for k8s_pod_security_policyHostPathType",
-          "required_fields": ["path_prefix"],
+          "required_fields": [
+            "path_prefix"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for k8s_pod_security_policyHostPathType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  path_prefix: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"path_prefix\": \"value\"\n  }\n}"
@@ -15703,7 +16484,9 @@
         "x-f5xc-cli-domain": "managed_kubernetes",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -15804,7 +16587,10 @@
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for k8s_pod_security_policyIDRangeType",
-          "required_fields": ["max_id", "min_id"],
+          "required_fields": [
+            "max_id",
+            "min_id"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for k8s_pod_security_policyIDRangeType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  max_id: value\n  min_id: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"max_id\": \"value\",\n    \"min_id\": \"value\"\n  }\n}"
@@ -15812,7 +16598,9 @@
         "x-f5xc-cli-domain": "managed_kubernetes",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -15919,7 +16707,9 @@
         "x-f5xc-cli-domain": "managed_kubernetes",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -15996,7 +16786,9 @@
         "x-f5xc-cli-domain": "managed_kubernetes",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -16332,7 +17124,9 @@
         "x-f5xc-cli-domain": "managed_kubernetes",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -16389,7 +17183,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["no_allowed_capabilities"]
+            "x-f5xc-conflicts-with": [
+              "no_allowed_capabilities"
+            ]
           },
           "allowed_csi_drivers": {
             "type": "array",
@@ -16623,7 +17419,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["no_default_capabilities"]
+            "x-f5xc-conflicts-with": [
+              "no_default_capabilities"
+            ]
           },
           "drop_capabilities": {
             "allOf": [
@@ -16638,7 +17436,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["no_drop_capabilities"]
+            "x-f5xc-conflicts-with": [
+              "no_drop_capabilities"
+            ]
           },
           "forbidden_sysctls": {
             "type": "array",
@@ -16692,7 +17492,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["no_fs_groups"]
+            "x-f5xc-conflicts-with": [
+              "no_fs_groups"
+            ]
           },
           "host_ipc": {
             "type": "boolean",
@@ -16781,7 +17583,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["allowed_capabilities"]
+            "x-f5xc-conflicts-with": [
+              "allowed_capabilities"
+            ]
           },
           "no_default_capabilities": {
             "allOf": [
@@ -16796,7 +17600,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["default_capabilities"]
+            "x-f5xc-conflicts-with": [
+              "default_capabilities"
+            ]
           },
           "no_drop_capabilities": {
             "allOf": [
@@ -16811,7 +17617,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["drop_capabilities"]
+            "x-f5xc-conflicts-with": [
+              "drop_capabilities"
+            ]
           },
           "no_fs_groups": {
             "allOf": [
@@ -16826,7 +17634,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["fs_group_strategy_options"]
+            "x-f5xc-conflicts-with": [
+              "fs_group_strategy_options"
+            ]
           },
           "no_run_as_group": {
             "allOf": [
@@ -16841,7 +17651,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["run_as_group"]
+            "x-f5xc-conflicts-with": [
+              "run_as_group"
+            ]
           },
           "no_run_as_user": {
             "allOf": [
@@ -16856,7 +17668,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["run_as_user"]
+            "x-f5xc-conflicts-with": [
+              "run_as_user"
+            ]
           },
           "no_runtime_class": {
             "allOf": [
@@ -16899,7 +17713,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["supplemental_groups"]
+            "x-f5xc-conflicts-with": [
+              "supplemental_groups"
+            ]
           },
           "privileged": {
             "type": "boolean",
@@ -16942,7 +17758,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["no_run_as_group"]
+            "x-f5xc-conflicts-with": [
+              "no_run_as_group"
+            ]
           },
           "run_as_user": {
             "allOf": [
@@ -16957,7 +17775,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["no_run_as_user"]
+            "x-f5xc-conflicts-with": [
+              "no_run_as_user"
+            ]
           },
           "supplemental_groups": {
             "allOf": [
@@ -16972,7 +17792,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["no_supplemental_groups"]
+            "x-f5xc-conflicts-with": [
+              "no_supplemental_groups"
+            ]
           },
           "volumes": {
             "type": "array",
@@ -17030,7 +17852,9 @@
         "x-f5xc-cli-domain": "managed_kubernetes",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -17083,7 +17907,9 @@
             "type": "string",
             "x-f5xc-concurrency-token": {
               "server_assigned": true,
-              "echo_on_operations": ["replace"]
+              "echo_on_operations": [
+                "replace"
+              ]
             }
           }
         },
@@ -17097,7 +17923,9 @@
         "x-f5xc-cli-domain": "managed_kubernetes",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -17124,7 +17952,9 @@
         "x-f5xc-cli-domain": "managed_kubernetes",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -17158,7 +17988,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["yaml"]
+            "x-f5xc-conflicts-with": [
+              "yaml"
+            ]
           },
           "yaml": {
             "type": "string",
@@ -17197,7 +18029,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["psp_spec"]
+            "x-f5xc-conflicts-with": [
+              "psp_spec"
+            ]
           }
         },
         "x-f5xc-description-short": "Replacing an k8s_pod_security_policy object will update the object by replacing the existing spec with the provided one.",
@@ -17212,7 +18046,9 @@
         "x-f5xc-cli-domain": "managed_kubernetes",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -17289,7 +18125,9 @@
         "x-f5xc-cli-domain": "managed_kubernetes",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
