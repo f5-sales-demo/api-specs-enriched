@@ -103,6 +103,13 @@ def _is_dictionary_item_added_additive(
     after: object,
 ) -> bool:
     """Dispatch table for ``dictionary_item_added`` changes."""
+    if (
+        terminal == "nullable"
+        and after is True
+        and "['components']['schemas']" in pointer
+        and "['properties']" in pointer
+    ):
+        return True
     if _is_terminal_additive(terminal, after) or _under_x_extension(pointer):
         return True
     if _is_error_response_type_add(pointer) or _is_property_add(pointer):

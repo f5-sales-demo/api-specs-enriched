@@ -67,8 +67,24 @@ def test_platform_evidence_records_only_sanitized_behavioral_conclusions() -> No
         assert fields[path]["classification"] == "current_platform_removal"
         assert fields[path]["server_behavior"] == "silently_removed"
         assert fields[path]["returned_unchanged"] is False
-    for conclusion in fields.values():
+    for path in (
+        "spec.segment_vrf[].segment_network",
+        "spec.segment_vrf[].segment_config.nameserver_v6",
+        "spec.segment_vrf[].segment_config.secondary_nameserver_v6",
+    ):
+        conclusion = fields[path]
         assert conclusion["replace_status"] == 200
         assert conclusion["restore_status"] == 200
         assert conclusion["restored_canonical_configuration"] is True
+    device = fields["spec.aws.not_managed.node_list[].interface_list[].ethernet_interface.device"]
+    assert device["classification"] == "current_platform_blocker"
+    assert device["replace_status"] == 400
+    assert device["server_behavior"] == "omitted_device_validated_as_empty_string"
+    assert device["desired_contract"] == "mac_only_identity"
+    public_ip = fields["spec.aws.not_managed.node_list[].public_ip"]
+    assert public_ip["classification"] == "current_parity"
+    assert public_ip["request_value"] is None
+    assert public_ip["response_value"] is None
+    assert public_ip["legacy_value"] == "empty_string"
+    for conclusion in fields.values():
         assert not ({"tenant", "name", "body", "resource_version"} & conclusion.keys())

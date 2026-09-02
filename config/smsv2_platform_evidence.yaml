@@ -2,7 +2,7 @@
 
 version: "1.0.0"
 resource: securemesh_site_v2
-probe_date: "2026-08-26"
+probe_date: "2026-09-02"
 scope: >-
   Authorized non-operational F5 demo object. This record intentionally excludes
   tenant identifiers, object names, request bodies, and resource versions.
@@ -29,3 +29,15 @@ fields:
     server_behavior: silently_removed
     restore_status: 200
     restored_canonical_configuration: true
+  spec.aws.not_managed.node_list[].interface_list[].ethernet_interface.device:
+    classification: current_platform_blocker
+    replace_status: 400
+    server_behavior: omitted_device_validated_as_empty_string
+    desired_contract: mac_only_identity
+    issue: "#1684"
+  spec.aws.not_managed.node_list[].public_ip:
+    classification: current_parity
+    request_value: null
+    response_value: null
+    legacy_value: empty_string
+    issue: "#1684"

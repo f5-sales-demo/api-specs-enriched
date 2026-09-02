@@ -91,12 +91,12 @@ def test_contract_defines_stable_identity_and_role_invariants() -> None:
     assert contract["contract_id"] == "f5xc-ce-automation/v2"
     assert contract["api"]["namespace"] == "system"
     assert contract["api"]["operations"] == ["create", "read", "replace", "delete"]
-    assert contract["providers"]["aws"]["availability"] == "evidence_backed"
+    assert contract["providers"]["aws"]["availability"] == "schema_only"
     assert contract["version"] == "5.0.0"
     assert contract["providers"]["aws"]["capabilities"] == {
-        "aws_ce_create": "available",
-        "runtime_status": "available",
-        "tgw_connect": "available",
+        "aws_ce_create": "unavailable",
+        "runtime_status": "unavailable",
+        "tgw_connect": "unavailable",
     }
     assert [role["name"] for role in contract["providers"]["aws"]["roles"]] == ["slo", "sli"]
     assert contract["providers"]["aws"]["bootstrap"]["mode"] == "interactive_console_only"
@@ -169,13 +169,13 @@ def test_rejects_bindable_optional_role_without_authoritative_evidence(
         InterfaceContractEnricher(_write_config(tmp_path, invalid))
 
 
-def test_rejects_aws_profile_that_withdraws_v2_automation(
+def test_rejects_partially_available_schema_only_aws_automation(
     tmp_path: Path, contract_config: dict[str, Any]
 ) -> None:
     invalid = copy.deepcopy(contract_config)
-    _contract(invalid)["providers"]["aws"]["capabilities"]["tgw_connect"] = "unavailable"
+    _contract(invalid)["providers"]["aws"]["capabilities"]["tgw_connect"] = "available"
     with pytest.raises(
-        InterfaceContractValidationError, match="AWS v2 capability model is incomplete"
+        InterfaceContractValidationError, match="schema-only AWS capabilities must fail closed"
     ):
         InterfaceContractEnricher(_write_config(tmp_path, invalid))
 
@@ -243,22 +243,23 @@ def test_accepts_schema_only_aws_when_every_capability_fails_closed(
     aws["availability"] = "schema_only"
     aws["capabilities"] = dict.fromkeys(aws["capabilities"], "unavailable")
     aws["unavailable_capabilities"] = list(aws["capabilities"])
-    aws.pop("bootstrap")
-    aws.pop("evidence")
+    aws["telemetry_intake"]["availability"] = "unavailable"
+    aws["telemetry_intake"]["complete"] = False
 
     InterfaceContractEnricher(_write_config(tmp_path, compatible))
 
 
-def test_rejects_schema_only_aws_automation_claims(
+def test_rejects_available_telemetry_for_schema_only_aws(
     tmp_path: Path, contract_config: dict[str, Any]
 ) -> None:
     invalid = copy.deepcopy(contract_config)
-    aws = _contract(invalid)["providers"]["aws"]
-    aws["availability"] = "schema_only"
+    intake = _contract(invalid)["providers"]["aws"]["telemetry_intake"]
+    intake["availability"] = "available"
+    intake["complete"] = True
 
     with pytest.raises(
         InterfaceContractValidationError,
-        match="schema-only AWS capabilities must fail closed",
+        match="schema-only AWS telemetry must fail closed",
     ):
         InterfaceContractEnricher(_write_config(tmp_path, invalid))
 
@@ -310,7 +311,18 @@ def test_aws_evidence_receipt_has_closed_modern_shape(
 ) -> None:
     assert contract_config["version"] == "5.0.0"
     receipt = _contract(contract_config)["providers"]["aws"]["evidence"]["receipts"][0]
-    assert set(receipt) == {"operations", "sanitized", "redaction"}
+    assert set(receipt) == {
+        "operations",
+        "result",
+        "blocking_conditions",
+        "sanitized",
+        "redaction",
+    }
+    assert receipt["result"] == "rejected"
+    assert receipt["blocking_conditions"] == [
+        "mac_only_interface_rejected_by_live_api",
+        "public_ip_empty_string_null_round_trip",
+    ]
 
 
 def test_rejects_undeclared_aws_receipt_field(
@@ -329,6 +341,8 @@ def test_aws_telemetry_intake_accepts_complete_required_observations(
     contract_config: dict[str, Any],
 ) -> None:
     intake = copy.deepcopy(_contract(contract_config)["providers"]["aws"]["telemetry_intake"])
+    intake["availability"] = "available"
+    intake["complete"] = True
     assert validate_aws_telemetry_intake(intake) is True
 
 
@@ -337,7 +351,7 @@ def test_aws_telemetry_intake_accepts_complete_required_observations(
     [
         lambda intake: intake["required_facts"].remove("runtime"),
         lambda intake: intake["observed_facts"].append("runtime"),
-        lambda intake: intake.update({"complete": False}),
+        lambda intake: intake.update({"complete": True}),
         lambda intake: intake.update({"schema_id": "unknown/v1"}),
         lambda intake: intake.update(
             {

@@ -295,11 +295,21 @@ class InterfaceContractEnricher:
             raise InterfaceContractValidationError(f"{resource}: AWS availability is invalid")
 
         capabilities = self._required_object(profile, "capabilities", resource=resource)
-        telemetry_complete = validate_aws_telemetry_intake(profile.get("telemetry_intake"))
+        telemetry_intake = profile.get("telemetry_intake")
+        if not isinstance(telemetry_intake, dict):
+            raise InterfaceContractValidationError(
+                f"{resource}: AWS telemetry intake must be an object"
+            )
+        telemetry_complete = validate_aws_telemetry_intake(telemetry_intake)
+        validate_aws_v2_contract(profile)
         if availability == "schema_only":
             if not capabilities or set(capabilities.values()) != {"unavailable"}:
                 raise InterfaceContractValidationError(
                     f"{resource}: schema-only AWS capabilities must fail closed"
+                )
+            if telemetry_intake.get("availability") != "unavailable" or telemetry_complete:
+                raise InterfaceContractValidationError(
+                    f"{resource}: schema-only AWS telemetry must fail closed"
                 )
         elif capabilities != AWS_V2_CAPABILITIES:
             raise InterfaceContractValidationError(
@@ -309,8 +319,6 @@ class InterfaceContractEnricher:
             raise InterfaceContractValidationError(
                 f"{resource}: AWS v2 requires completed telemetry intake"
             )
-        else:
-            validate_aws_v2_contract(profile)
 
         if profile.get("prohibited_legacy_apis") != ["aws_vpc_site", "aws_tgw_site"]:
             raise InterfaceContractValidationError(
@@ -328,9 +336,6 @@ class InterfaceContractEnricher:
             raise InterfaceContractValidationError(
                 f"{resource}: AWS unsupported capabilities must fail closed"
             )
-
-        if availability == "schema_only":
-            return
 
         bootstrap = self._required_object(profile, "bootstrap", resource=resource)
         required_bootstrap = {
@@ -365,13 +370,37 @@ class InterfaceContractEnricher:
         ):
             raise InterfaceContractValidationError(f"{resource}: AWS evidence receipt is required")
         receipt = receipts[0]
-        expected_receipt_fields = {"operations", "sanitized", "redaction"}
+        if availability == "evidence_backed":
+            expected_receipt_fields = {"operations", "sanitized", "redaction"}
+            receipt_is_valid = receipt.get("operations") == [
+                "create",
+                "read",
+                "replace",
+                "delete",
+            ]
+        else:
+            expected_receipt_fields = {
+                "operations",
+                "result",
+                "blocking_conditions",
+                "sanitized",
+                "redaction",
+            }
+            receipt_is_valid = (
+                receipt.get("operations") == ["replace"]
+                and receipt.get("result") == "rejected"
+                and receipt.get("blocking_conditions")
+                == [
+                    "mac_only_interface_rejected_by_live_api",
+                    "public_ip_empty_string_null_round_trip",
+                ]
+            )
         if set(receipt) != expected_receipt_fields:
             raise InterfaceContractValidationError(
                 f"{resource}: AWS evidence receipt contains unsupported fields"
             )
         if (
-            receipt.get("operations") != ["create", "read", "replace", "delete"]
+            not receipt_is_valid
             or receipt.get("sanitized") is not True
             or not isinstance(receipt.get("redaction"), str)
         ):

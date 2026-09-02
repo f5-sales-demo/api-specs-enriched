@@ -211,12 +211,9 @@ def validate_release_assets(
         raise Smsv2ReleaseValidationError("SMSv2 API authority is incomplete")
     aws = contract.get("providers", {}).get("aws", {})
     expected_aws_fields = {
-        "availability": "evidence_backed",
         "node_list_path": "aws.not_managed.node_list[]",
         "interface_list_path": "aws.not_managed.node_list[].interface_list[]",
-        "capabilities": AWS_V2_CAPABILITIES,
         "prohibited_legacy_apis": ["aws_vpc_site", "aws_tgw_site"],
-        "unavailable_capabilities": [],
     }
     if any(aws.get(key) != value for key, value in expected_aws_fields.items()):
         raise Smsv2ReleaseValidationError("AWS SMSv2 v2 capability model is incomplete")
@@ -225,8 +222,48 @@ def validate_release_assets(
         validate_aws_v2_contract(aws)
     except InterfaceContractValidationError as error:
         raise Smsv2ReleaseValidationError(str(error)) from error
-    if not telemetry_complete:
-        raise Smsv2ReleaseValidationError("AWS v2 requires completed telemetry intake")
+    availability = aws.get("availability")
+    if availability == "evidence_backed":
+        if (
+            aws.get("capabilities") != AWS_V2_CAPABILITIES
+            or aws.get("unavailable_capabilities") != []
+            or not telemetry_complete
+        ):
+            raise Smsv2ReleaseValidationError("AWS v2 capability model is incomplete")
+    elif availability == "schema_only":
+        unavailable = dict.fromkeys(AWS_V2_CAPABILITIES, "unavailable")
+        if (
+            aws.get("capabilities") != unavailable
+            or set(aws.get("unavailable_capabilities", [])) != set(unavailable)
+            or aws.get("telemetry_intake", {}).get("availability") != "unavailable"
+            or telemetry_complete
+        ):
+            raise Smsv2ReleaseValidationError(
+                "schema-only AWS capabilities and telemetry must fail closed"
+            )
+    else:
+        raise Smsv2ReleaseValidationError("AWS SMSv2 availability is invalid")
+    evidence_receipts = evidence.get("receipts")
+    if (
+        not isinstance(evidence_receipts, list)
+        or len(evidence_receipts) != 1
+        or not isinstance(evidence_receipts[0], dict)
+    ):
+        raise Smsv2ReleaseValidationError("AWS evidence receipt is missing or malformed")
+    evidence_receipt = evidence_receipts[0]
+    if availability == "schema_only":
+        if (
+            evidence_receipt.get("operations") != ["replace"]
+            or evidence_receipt.get("result") != "rejected"
+            or evidence_receipt.get("blocking_conditions")
+            != [
+                "mac_only_interface_rejected_by_live_api",
+                "public_ip_empty_string_null_round_trip",
+            ]
+        ):
+            raise Smsv2ReleaseValidationError("AWS blocking evidence is incomplete")
+    elif evidence_receipt.get("operations") != ["create", "read", "replace", "delete"]:
+        raise Smsv2ReleaseValidationError("AWS success evidence is incomplete")
     if evidence.get("contract_id") != CONTRACT_ID:
         raise Smsv2ReleaseValidationError("evidence contract identity is invalid")
     return contract
