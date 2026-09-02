@@ -3,7 +3,7 @@
   "info": {
     "title": "Observability",
     "description": "Telemetry systems execute scheduled availability checks from distributed AWS locations worldwide. Response code validation and timing metrics feed into historical trend analysis. DNS resolution accuracy verification ensures name service reliability. Certificate lifecycle tracking generates expiration warnings before outages occur. Regional probe distribution provides geographic coverage insights. Health summaries aggregate results into actionable dashboards with configurable alerting thresholds.",
-    "version": "5.0.0",
+    "version": "5.0.1",
     "contact": {
       "name": "F5 Distributed Cloud",
       "url": "https://docs.cloud.f5.com"
@@ -72,7 +72,11 @@
     },
     "x-f5xc-namespace-profile": {
       "constraint": {
-        "allowed": ["custom", "default", "shared"],
+        "allowed": [
+          "custom",
+          "default",
+          "shared"
+        ],
         "enforced": false
       },
       "recommendation": {
@@ -98,12 +102,19 @@
         "console_url": {
           "default": "console.ves.volterra.io",
           "description": "Console URL base (e.g., console.ves.volterra.io for production, staging.volterra.us for staging)",
-          "enum": ["console.ves.volterra.io", "staging.volterra.us"]
+          "enum": [
+            "console.ves.volterra.io",
+            "staging.volterra.us"
+          ]
         },
         "environment": {
           "default": "production",
           "description": "Environment designation (production, staging, development)",
-          "enum": ["production", "staging", "development"]
+          "enum": [
+            "production",
+            "staging",
+            "development"
+          ]
         },
         "domain_prefix": {
           "default": "api",
@@ -316,14 +327,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.alert.CustomAPI.AlertsAllNamespaces",
-        "tags": ["data"],
+        "tags": [
+          "data"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Alert configuration for monitoring",
           "required_fields": [],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -561,14 +576,20 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.alert.CustomAPI.Alerts",
-        "tags": ["data"],
+        "tags": [
+          "data"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Alert configuration for monitoring",
-          "required_fields": ["path.namespace"],
+          "required_fields": [
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -611,7 +632,9 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -781,14 +804,20 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.alert.CustomAPI.AlertsHistory",
-        "tags": ["data"],
+        "tags": [
+          "data"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": ["path.namespace"],
+          "required_fields": [
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -831,7 +860,9 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -978,18 +1009,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.alert.CustomAPI.AlertsHistoryAggregation",
-        "tags": ["data"],
+        "tags": [
+          "data"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Aggregation resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Aggregation resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["aggregation"]
+            "creates": [
+              "aggregation"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -1030,10 +1074,16 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["aggregation"]
+          "creates": [
+            "aggregation"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -1181,14 +1231,20 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.alert.CustomAPI.AlertsHistoryScroll",
-        "tags": ["data"],
+        "tags": [
+          "data"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": ["path.namespace"],
+          "required_fields": [
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -1231,7 +1287,9 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -1373,18 +1431,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.alert.CustomAPI.AlertsHistoryScroll",
-        "tags": ["data"],
+        "tags": [
+          "data"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Scroll resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Scroll resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["scroll"]
+            "creates": [
+              "scroll"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -1425,10 +1496,16 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["scroll"]
+          "creates": [
+            "scroll"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -1575,18 +1652,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.observability.synthetic_monitor.v1_dns_monitor.API.Create",
-        "tags": ["observability"],
+        "tags": [
+          "observability"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Health monitoring configuration",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.metadata.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.metadata.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["V1-dns-monitor resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "V1-dns-monitor resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["v1-dns-monitor"]
+            "creates": [
+              "v1-dns-monitor"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -1627,10 +1717,16 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.metadata.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.metadata.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["v1-dns-monitor"]
+          "creates": [
+            "v1-dns-monitor"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -1788,18 +1884,29 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.observability.synthetic_monitor.v1_dns_monitor.API.Replace",
-        "tags": ["observability"],
+        "tags": [
+          "observability"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Health monitoring configuration",
-          "required_fields": ["path.metadata.name", "path.metadata.namespace"],
+          "required_fields": [
+            "path.metadata.name",
+            "path.metadata.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Resource updated with new values"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Resource updated with new values"
+            ]
           },
           "side_effects": {
-            "modifies": ["v1-dns-monitor"]
+            "modifies": [
+              "v1-dns-monitor"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -1840,10 +1947,15 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["path.metadata.name", "path.metadata.namespace"],
+        "x-f5xc-required-fields": [
+          "path.metadata.name",
+          "path.metadata.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "modifies": ["v1-dns-monitor"]
+          "modifies": [
+            "v1-dns-monitor"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 800,
@@ -2024,14 +2136,20 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.observability.synthetic_monitor.v1_dns_monitor.CustomAPI.GetFilteredDNSMonitorList",
-        "tags": ["observability"],
+        "tags": [
+          "observability"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Health monitoring configuration",
-          "required_fields": ["path.namespace"],
+          "required_fields": [
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -2074,7 +2192,9 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -2250,14 +2370,20 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.observability.synthetic_monitor.v1_dns_monitor.API.List",
-        "tags": ["observability"],
+        "tags": [
+          "observability"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Health monitoring configuration",
-          "required_fields": ["path.namespace"],
+          "required_fields": [
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -2300,7 +2426,9 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -2468,14 +2596,21 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.observability.synthetic_monitor.v1_dns_monitor.API.Get",
-        "tags": ["observability"],
+        "tags": [
+          "observability"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Health monitoring configuration",
-          "required_fields": ["path.name", "path.namespace"],
+          "required_fields": [
+            "path.name",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -2518,7 +2653,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["path.name", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.name",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -2669,18 +2807,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.observability.synthetic_monitor.v1_dns_monitor.API.Delete",
-        "tags": ["observability"],
+        "tags": [
+          "observability"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Health monitoring configuration",
-          "required_fields": ["path.name", "path.namespace"],
+          "required_fields": [
+            "path.name",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Resource removed from system", "Associated resources may be affected"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Resource removed from system",
+              "Associated resources may be affected"
+            ]
           },
           "side_effects": {
-            "deletes": ["v1-dns-monitor", "contained_resources"]
+            "deletes": [
+              "v1-dns-monitor",
+              "contained_resources"
+            ]
           },
           "danger_level": "high",
           "confirmation_required": true,
@@ -2721,11 +2872,17 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.name", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.name",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "high",
         "x-f5xc-confirmation-required": true,
         "x-f5xc-side-effects": {
-          "deletes": ["v1-dns-monitor", "contained_resources"]
+          "deletes": [
+            "v1-dns-monitor",
+            "contained_resources"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 500,
@@ -2872,18 +3029,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.observability.synthetic_monitor.v1_http_monitor.API.Create",
-        "tags": ["observability"],
+        "tags": [
+          "observability"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Health monitoring configuration",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.metadata.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.metadata.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["V1-http-monitor resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "V1-http-monitor resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["v1-http-monitor"]
+            "creates": [
+              "v1-http-monitor"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -2924,10 +3094,16 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.metadata.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.metadata.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["v1-http-monitor"]
+          "creates": [
+            "v1-http-monitor"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -3085,18 +3261,29 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.observability.synthetic_monitor.v1_http_monitor.API.Replace",
-        "tags": ["observability"],
+        "tags": [
+          "observability"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Health monitoring configuration",
-          "required_fields": ["path.metadata.name", "path.metadata.namespace"],
+          "required_fields": [
+            "path.metadata.name",
+            "path.metadata.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Resource updated with new values"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Resource updated with new values"
+            ]
           },
           "side_effects": {
-            "modifies": ["v1-http-monitor"]
+            "modifies": [
+              "v1-http-monitor"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -3137,10 +3324,15 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["path.metadata.name", "path.metadata.namespace"],
+        "x-f5xc-required-fields": [
+          "path.metadata.name",
+          "path.metadata.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "modifies": ["v1-http-monitor"]
+          "modifies": [
+            "v1-http-monitor"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 800,
@@ -3321,14 +3513,20 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.observability.synthetic_monitor.v1_http_monitor.CustomAPI.GetFilteredHTTPMonitorList",
-        "tags": ["observability"],
+        "tags": [
+          "observability"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Health monitoring configuration",
-          "required_fields": ["path.namespace"],
+          "required_fields": [
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -3371,7 +3569,9 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -3547,14 +3747,20 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.observability.synthetic_monitor.v1_http_monitor.API.List",
-        "tags": ["observability"],
+        "tags": [
+          "observability"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Health monitoring configuration",
-          "required_fields": ["path.namespace"],
+          "required_fields": [
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -3597,7 +3803,9 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -3765,14 +3973,21 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.observability.synthetic_monitor.v1_http_monitor.API.Get",
-        "tags": ["observability"],
+        "tags": [
+          "observability"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Health monitoring configuration",
-          "required_fields": ["path.name", "path.namespace"],
+          "required_fields": [
+            "path.name",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -3815,7 +4030,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["path.name", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.name",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -3966,18 +4184,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.observability.synthetic_monitor.v1_http_monitor.API.Delete",
-        "tags": ["observability"],
+        "tags": [
+          "observability"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Health monitoring configuration",
-          "required_fields": ["path.name", "path.namespace"],
+          "required_fields": [
+            "path.name",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Resource removed from system", "Associated resources may be affected"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Resource removed from system",
+              "Associated resources may be affected"
+            ]
           },
           "side_effects": {
-            "deletes": ["v1-http-monitor", "contained_resources"]
+            "deletes": [
+              "v1-http-monitor",
+              "contained_resources"
+            ]
           },
           "danger_level": "high",
           "confirmation_required": true,
@@ -4018,11 +4249,17 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.name", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.name",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "high",
         "x-f5xc-confirmation-required": true,
         "x-f5xc-side-effects": {
-          "deletes": ["v1-http-monitor", "contained_resources"]
+          "deletes": [
+            "v1-http-monitor",
+            "contained_resources"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 500,
@@ -4169,18 +4406,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.log.CustomAPI.AccessLogQueryV2",
-        "tags": ["data"],
+        "tags": [
+          "data"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Logging configuration for audit and analysis",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Access-log resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Access-log resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["access-log"]
+            "creates": [
+              "access-log"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -4221,10 +4471,16 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["access-log"]
+          "creates": [
+            "access-log"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -4371,18 +4627,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.log.CustomAPI.AccessLogAggregationQuery",
-        "tags": ["data"],
+        "tags": [
+          "data"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Aggregation resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Aggregation resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["aggregation"]
+            "creates": [
+              "aggregation"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -4423,10 +4692,16 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["aggregation"]
+          "creates": [
+            "aggregation"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -4574,14 +4849,20 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.log.CustomAPI.AccessLogScrollQuery",
-        "tags": ["data"],
+        "tags": [
+          "data"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": ["path.namespace"],
+          "required_fields": [
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -4624,7 +4905,9 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -4766,18 +5049,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.log.CustomAPI.AccessLogScrollQuery",
-        "tags": ["data"],
+        "tags": [
+          "data"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Scroll resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Scroll resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["scroll"]
+            "creates": [
+              "scroll"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -4818,10 +5114,16 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["scroll"]
+          "creates": [
+            "scroll"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -4968,18 +5270,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.log.CustomAPI.AuditLogQueryV2",
-        "tags": ["data"],
+        "tags": [
+          "data"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Logging configuration for audit and analysis",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Audit-log resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Audit-log resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["audit-log"]
+            "creates": [
+              "audit-log"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -5020,10 +5335,16 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["audit-log"]
+          "creates": [
+            "audit-log"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -5170,18 +5491,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.log.CustomAPI.AuditLogAggregationQuery",
-        "tags": ["data"],
+        "tags": [
+          "data"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Aggregation resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Aggregation resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["aggregation"]
+            "creates": [
+              "aggregation"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -5222,10 +5556,16 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["aggregation"]
+          "creates": [
+            "aggregation"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -5373,14 +5713,20 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.log.CustomAPI.AuditLogScrollQuery",
-        "tags": ["data"],
+        "tags": [
+          "data"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": ["path.namespace"],
+          "required_fields": [
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -5423,7 +5769,9 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -5565,18 +5913,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.log.CustomAPI.AuditLogScrollQuery",
-        "tags": ["data"],
+        "tags": [
+          "data"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Scroll resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Scroll resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["scroll"]
+            "creates": [
+              "scroll"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -5617,10 +5978,16 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["scroll"]
+          "creates": [
+            "scroll"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -5767,18 +6134,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.log.CustomAPI.FirewallLogQuery",
-        "tags": ["data"],
+        "tags": [
+          "data"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Security policy for threat protection",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Firewall-log resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Firewall-log resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["firewall-log"]
+            "creates": [
+              "firewall-log"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -5819,10 +6199,16 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["firewall-log"]
+          "creates": [
+            "firewall-log"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -5969,18 +6355,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.log.CustomAPI.FirewallLogAggregationQuery",
-        "tags": ["data"],
+        "tags": [
+          "data"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Aggregation resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Aggregation resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["aggregation"]
+            "creates": [
+              "aggregation"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -6021,10 +6420,16 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["aggregation"]
+          "creates": [
+            "aggregation"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -6172,14 +6577,20 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.log.CustomAPI.FirewallLogScrollQuery",
-        "tags": ["data"],
+        "tags": [
+          "data"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": ["path.namespace"],
+          "required_fields": [
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -6222,7 +6633,9 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -6364,18 +6777,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.log.CustomAPI.FirewallLogScrollQuery",
-        "tags": ["data"],
+        "tags": [
+          "data"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Scroll resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Scroll resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["scroll"]
+            "creates": [
+              "scroll"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -6416,10 +6842,16 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["scroll"]
+          "creates": [
+            "scroll"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -6567,14 +6999,20 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.log.CustomAPI.K8SAuditLogScrollQuery",
-        "tags": ["data"],
+        "tags": [
+          "data"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": ["path.namespace"],
+          "required_fields": [
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -6617,7 +7055,9 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -6759,18 +7199,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.log.CustomAPI.K8SAuditLogScrollQuery",
-        "tags": ["data"],
+        "tags": [
+          "data"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Scroll resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Scroll resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["scroll"]
+            "creates": [
+              "scroll"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -6811,10 +7264,16 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["scroll"]
+          "creates": [
+            "scroll"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -6962,14 +7421,20 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.log.CustomAPI.K8SEventsScrollQuery",
-        "tags": ["data"],
+        "tags": [
+          "data"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": ["path.namespace"],
+          "required_fields": [
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -7012,7 +7477,9 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -7154,18 +7621,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.log.CustomAPI.K8SEventsScrollQuery",
-        "tags": ["data"],
+        "tags": [
+          "data"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Scroll resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Scroll resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["scroll"]
+            "creates": [
+              "scroll"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -7206,10 +7686,16 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["scroll"]
+          "creates": [
+            "scroll"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -7356,18 +7842,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.log.CustomAPI.PlatformEventQuery",
-        "tags": ["data"],
+        "tags": [
+          "data"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Platform-event resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Platform-event resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["platform-event"]
+            "creates": [
+              "platform-event"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -7408,10 +7907,16 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["platform-event"]
+          "creates": [
+            "platform-event"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -7558,18 +8063,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.log.CustomAPI.PlatformEventAggregationQuery",
-        "tags": ["data"],
+        "tags": [
+          "data"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Aggregation resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Aggregation resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["aggregation"]
+            "creates": [
+              "aggregation"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -7610,10 +8128,16 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["aggregation"]
+          "creates": [
+            "aggregation"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -7761,14 +8285,20 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.log.CustomAPI.PlatformEventScrollQuery",
-        "tags": ["data"],
+        "tags": [
+          "data"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": ["path.namespace"],
+          "required_fields": [
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -7811,7 +8341,9 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -7953,18 +8485,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.log.CustomAPI.PlatformEventScrollQuery",
-        "tags": ["data"],
+        "tags": [
+          "data"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Scroll resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Scroll resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["scroll"]
+            "creates": [
+              "scroll"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -8005,10 +8550,16 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["scroll"]
+          "creates": [
+            "scroll"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -8155,18 +8706,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.log.CustomAPI.VK8SAuditLogQuery",
-        "tags": ["data"],
+        "tags": [
+          "data"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Logging configuration for audit and analysis",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Vk8s-audit-log resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Vk8s-audit-log resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["vk8s-audit-log"]
+            "creates": [
+              "vk8s-audit-log"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -8207,10 +8771,16 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["vk8s-audit-log"]
+          "creates": [
+            "vk8s-audit-log"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -8357,18 +8927,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.log.CustomAPI.VK8SAuditLogAggregationQuery",
-        "tags": ["data"],
+        "tags": [
+          "data"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Aggregation resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Aggregation resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["aggregation"]
+            "creates": [
+              "aggregation"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -8409,10 +8992,16 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["aggregation"]
+          "creates": [
+            "aggregation"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -8560,14 +9149,20 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.log.CustomAPI.VK8SAuditLogScrollQuery",
-        "tags": ["data"],
+        "tags": [
+          "data"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": ["path.namespace"],
+          "required_fields": [
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -8610,7 +9205,9 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -8752,18 +9349,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.log.CustomAPI.VK8SAuditLogScrollQuery",
-        "tags": ["data"],
+        "tags": [
+          "data"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Scroll resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Scroll resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["scroll"]
+            "creates": [
+              "scroll"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -8804,10 +9414,16 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["scroll"]
+          "creates": [
+            "scroll"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -8954,18 +9570,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.log.CustomAPI.VK8SEventsQuery",
-        "tags": ["data"],
+        "tags": [
+          "data"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Kubernetes workload configuration",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Vk8s-event resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Vk8s-event resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["vk8s-event"]
+            "creates": [
+              "vk8s-event"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -9006,10 +9635,16 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["vk8s-event"]
+          "creates": [
+            "vk8s-event"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -9156,18 +9791,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.log.CustomAPI.VK8SEventsAggregationQuery",
-        "tags": ["data"],
+        "tags": [
+          "data"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Aggregation resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Aggregation resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["aggregation"]
+            "creates": [
+              "aggregation"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -9208,10 +9856,16 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["aggregation"]
+          "creates": [
+            "aggregation"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -9359,14 +10013,20 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.log.CustomAPI.VK8SEventsScrollQuery",
-        "tags": ["data"],
+        "tags": [
+          "data"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": ["path.namespace"],
+          "required_fields": [
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -9409,7 +10069,9 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -9551,18 +10213,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.log.CustomAPI.VK8SEventsScrollQuery",
-        "tags": ["data"],
+        "tags": [
+          "data"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Scroll resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Scroll resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["scroll"]
+            "creates": [
+              "scroll"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -9603,10 +10278,16 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["scroll"]
+          "creates": [
+            "scroll"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -9740,18 +10421,30 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.observability.subscription.CustomAPI.Subscribe",
-        "tags": ["observability"],
+        "tags": [
+          "observability"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Subscribe resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Subscribe resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["subscribe"]
+            "creates": [
+              "subscribe"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -9792,10 +10485,15 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["subscribe"]
+          "creates": [
+            "subscribe"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -9929,18 +10627,30 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.observability.subscription.CustomAPI.Unsubscribe",
-        "tags": ["observability"],
+        "tags": [
+          "observability"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Unsubscribe resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Unsubscribe resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["unsubscribe"]
+            "creates": [
+              "unsubscribe"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -9981,10 +10691,15 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["unsubscribe"]
+          "creates": [
+            "unsubscribe"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -10121,14 +10836,21 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.observability.synthetic_monitor.CustomAPI.GetCertificateReportDetail",
-        "tags": ["observability"],
+        "tags": [
+          "observability"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "TLS/SSL certificate management",
-          "required_fields": ["path.namespace"],
+          "required_fields": [
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace", "Certificate file or data"],
+            "prerequisites": [
+              "Active namespace",
+              "Certificate file or data"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -10171,7 +10893,9 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -10320,14 +11044,21 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.observability.synthetic_monitor.CustomAPI.GetCertSummary",
-        "tags": ["observability"],
+        "tags": [
+          "observability"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "TLS/SSL certificate management",
-          "required_fields": ["path.namespace"],
+          "required_fields": [
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace", "Certificate file or data"],
+            "prerequisites": [
+              "Active namespace",
+              "Certificate file or data"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -10370,7 +11101,9 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -10540,14 +11273,20 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.observability.synthetic_monitor.CustomAPI.GetDNSMonitorSummary",
-        "tags": ["observability"],
+        "tags": [
+          "observability"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Health monitoring configuration",
-          "required_fields": ["path.namespace"],
+          "required_fields": [
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -10590,7 +11329,9 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -10737,18 +11478,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.observability.synthetic_monitor.CustomAPI.GetDNSMonitorHealth",
-        "tags": ["observability"],
+        "tags": [
+          "observability"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Health monitoring configuration",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Dns-monitors-health resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Dns-monitors-health resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["dns-monitors-health"]
+            "creates": [
+              "dns-monitors-health"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -10789,10 +11543,16 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["dns-monitors-health"]
+          "creates": [
+            "dns-monitors-health"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -10973,14 +11733,20 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.observability.synthetic_monitor.CustomAPI.GetGlobalHistory",
-        "tags": ["observability"],
+        "tags": [
+          "observability"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": ["path.namespace"],
+          "required_fields": [
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -11023,7 +11789,9 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -11171,14 +11939,20 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.observability.synthetic_monitor.CustomAPI.GetGlobalSummary",
-        "tags": ["observability"],
+        "tags": [
+          "observability"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": ["path.namespace"],
+          "required_fields": [
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -11221,7 +11995,9 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -11358,14 +12134,20 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.observability.synthetic_monitor.CustomAPI.GetHealth",
-        "tags": ["observability"],
+        "tags": [
+          "observability"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Health monitoring configuration",
-          "required_fields": ["path.namespace"],
+          "required_fields": [
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -11408,7 +12190,9 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -11578,14 +12362,20 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.observability.synthetic_monitor.CustomAPI.GetHTTPMonitorDetail",
-        "tags": ["observability"],
+        "tags": [
+          "observability"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Health monitoring configuration",
-          "required_fields": ["path.namespace"],
+          "required_fields": [
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -11628,7 +12418,9 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -11798,14 +12590,20 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.observability.synthetic_monitor.CustomAPI.GetHTTPMonitorSummary",
-        "tags": ["observability"],
+        "tags": [
+          "observability"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Health monitoring configuration",
-          "required_fields": ["path.namespace"],
+          "required_fields": [
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -11848,7 +12646,9 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -11995,18 +12795,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.observability.synthetic_monitor.CustomAPI.GetHTTPMonitorHealth",
-        "tags": ["observability"],
+        "tags": [
+          "observability"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Health monitoring configuration",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Http-monitors-health resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Http-monitors-health resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["http-monitors-health"]
+            "creates": [
+              "http-monitors-health"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -12047,10 +12860,16 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["http-monitors-health"]
+          "creates": [
+            "http-monitors-health"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -12197,18 +13016,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.observability.synthetic_monitor.CustomAPI.GetMetricQueryData",
-        "tags": ["observability"],
+        "tags": [
+          "observability"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Metric-query resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Metric-query resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["metric-query"]
+            "creates": [
+              "metric-query"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -12249,10 +13081,16 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["metric-query"]
+          "creates": [
+            "metric-query"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -12433,14 +13271,20 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.observability.synthetic_monitor.CustomAPI.GetMonitorEvents",
-        "tags": ["observability"],
+        "tags": [
+          "observability"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Health monitoring configuration",
-          "required_fields": ["path.namespace"],
+          "required_fields": [
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -12483,7 +13327,9 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -12675,14 +13521,20 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.observability.synthetic_monitor.CustomAPI.GetMonitorHistory",
-        "tags": ["observability"],
+        "tags": [
+          "observability"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Health monitoring configuration",
-          "required_fields": ["path.namespace"],
+          "required_fields": [
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -12725,7 +13577,9 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -12862,14 +13716,20 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.observability.synthetic_monitor.CustomAPI.GetRecordTypeSummary",
-        "tags": ["observability"],
+        "tags": [
+          "observability"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": ["path.namespace"],
+          "required_fields": [
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -12912,7 +13772,9 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -13082,14 +13944,20 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.observability.synthetic_monitor.CustomAPI.GetSourceSummary",
-        "tags": ["observability"],
+        "tags": [
+          "observability"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": ["path.namespace"],
+          "required_fields": [
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -13132,7 +14000,9 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -13279,18 +14149,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.observability.synthetic_monitor.CustomAPI.SuggestValues",
-        "tags": ["observability"],
+        "tags": [
+          "observability"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Suggest-value resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Suggest-value resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["suggest-value"]
+            "creates": [
+              "suggest-value"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -13331,10 +14214,16 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["suggest-value"]
+          "creates": [
+            "suggest-value"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -13482,14 +14371,20 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.observability.synthetic_monitor.CustomAPI.GetTLSReportDetail",
-        "tags": ["observability"],
+        "tags": [
+          "observability"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "TLS/SSL certificate management",
-          "required_fields": ["path.namespace"],
+          "required_fields": [
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -13532,7 +14427,9 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -13680,14 +14577,20 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.observability.synthetic_monitor.CustomAPI.GetTLSReportSummary",
-        "tags": ["observability"],
+        "tags": [
+          "observability"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "TLS/SSL certificate management",
-          "required_fields": ["path.namespace"],
+          "required_fields": [
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -13730,7 +14633,9 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -13867,14 +14772,20 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/observability/"
         },
         "x-ves-proto-rpc": "ves.io.schema.observability.synthetic_monitor.CustomAPI.GetTLSSummary",
-        "tags": ["observability"],
+        "tags": [
+          "observability"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "TLS/SSL certificate management",
-          "required_fields": ["path.namespace"],
+          "required_fields": [
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -13917,7 +14828,9 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -14119,7 +15032,9 @@
         "x-f5xc-cli-domain": "statistics",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -14194,7 +15109,9 @@
         "x-f5xc-cli-domain": "statistics",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -14301,7 +15218,9 @@
         "x-f5xc-cli-domain": "statistics",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -14406,7 +15325,9 @@
         "x-f5xc-cli-domain": "statistics",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -14465,7 +15386,9 @@
         "x-f5xc-cli-domain": "statistics",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -14495,7 +15418,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -14575,7 +15502,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -14725,7 +15656,15 @@
             "x-f5xc-description-short": "Status of the condition \"Success\" Validation has succeeded.",
             "x-f5xc-description-medium": "Status of the condition \"Success\" Validation has succeeded. Requested operation was successful. \"Failed\" Validation has failed. \"Incomplete\" Validation of configuration has failed due to missing configuration. \"Installed\" Validation has passed and configuration has been installed in data path or...",
             "maxLength": 1024,
-            "enum": ["Success", "Failed", "Incomplete", "Installed", "Down", "Disabled", "NotApplicable"],
+            "enum": [
+              "Success",
+              "Failed",
+              "Incomplete",
+              "Installed",
+              "Down",
+              "Disabled",
+              "NotApplicable"
+            ],
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "general",
@@ -14762,7 +15701,10 @@
             "x-f5xc-description-short": "Type of the condition \"Validation\" represents validation user given configuration object \"Operational\" represents operational status of a given...",
             "x-f5xc-description-medium": "Type of the condition \"Validation\" represents validation user given configuration object \"Operational\" represents operational status of a given configuration object.",
             "maxLength": 1024,
-            "enum": ["Validation", "Operational"],
+            "enum": [
+              "Validation",
+              "Operational"
+            ],
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "general",
@@ -14793,7 +15735,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -14837,7 +15783,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -14921,7 +15871,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -14998,7 +15952,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -15061,7 +16019,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -15285,7 +16247,9 @@
         "x-f5xc-description-short": "ObjectCreateMetaType is metadata that can be specified in Create request of an object.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for schemaObjectCreateMetaType",
-          "required_fields": ["name"],
+          "required_fields": [
+            "name"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for schemaObjectCreateMetaType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  name: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"name\": \"value\"\n  }\n}"
@@ -15293,7 +16257,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -15520,7 +16488,9 @@
         "x-f5xc-description-short": "ObjectGetMetaType is metadata that can be specified in GET/Create response of an object.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for schemaObjectGetMetaType",
-          "required_fields": ["name"],
+          "required_fields": [
+            "name"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for schemaObjectGetMetaType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  name: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"name\": \"value\"\n  }\n}"
@@ -15528,7 +16498,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -15795,7 +16769,9 @@
         "x-f5xc-description-medium": "ObjectMetaType is metadata(common attributes) of an object that all configuration objects will have. The information in this type can be specified by user during create and replace APIs.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for schemaObjectMetaType",
-          "required_fields": ["name"],
+          "required_fields": [
+            "name"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for schemaObjectMetaType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  name: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"name\": \"value\"\n  }\n}"
@@ -15803,7 +16779,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -16009,7 +16989,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -16242,7 +17226,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -16468,7 +17456,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -16486,7 +17478,10 @@
         "type": "string",
         "description": "StatusPublishType is all possible publish operations on a StatusObject\n\n- STATUS_DO_NOT_PUBLISH: Do Not Publish\n\nDo not propagate this status to user. This could be because status is only informational\n- STATUS_PUBLISH: Publish\n\nPropagate this status up to user as it might be actionable.",
         "title": "StatusPublishType",
-        "enum": ["STATUS_DO_NOT_PUBLISH", "STATUS_PUBLISH"],
+        "enum": [
+          "STATUS_DO_NOT_PUBLISH",
+          "STATUS_PUBLISH"
+        ],
         "default": "STATUS_DO_NOT_PUBLISH",
         "x-displayname": "Status Publish Type.",
         "x-ves-proto-enum": "ves.io.schema.StatusPublishType",
@@ -16502,7 +17497,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -16610,7 +17609,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -16933,7 +17936,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -17465,7 +18472,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -17648,7 +18659,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -17712,7 +18727,9 @@
         "x-f5xc-example": "us-east-1",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for synthetic_monitorAWSRegions",
-          "required_fields": ["regions"],
+          "required_fields": [
+            "regions"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for synthetic_monitorAWSRegions\nmetadata:\n  name: example\n  namespace: default\nspec:\n  regions: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"regions\": \"value\"\n  }\n}"
@@ -17720,7 +18737,11 @@
         "x-f5xc-cli-domain": "observability",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -17784,7 +18805,9 @@
         "x-f5xc-example": "us-east-1",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for synthetic_monitorAWSRegionsExternal",
-          "required_fields": ["regions"],
+          "required_fields": [
+            "regions"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for synthetic_monitorAWSRegionsExternal\nmetadata:\n  name: example\n  namespace: default\nspec:\n  regions: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"regions\": \"value\"\n  }\n}"
@@ -17792,7 +18815,11 @@
         "x-f5xc-cli-domain": "observability",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -17851,7 +18878,11 @@
         "x-f5xc-cli-domain": "observability",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -17869,7 +18900,12 @@
         "type": "string",
         "description": "- EVAL_PERIOD_3_MINS: EVAL_PERIOD_3_MINS\n\n- EVAL_PERIOD_5_MINS: EVAL_PERIOD_5_MINS\n\n- EVAL_PERIOD_10_MINS: EVAL_PERIOD_10_MINS\n\n- EVAL_PERIOD_15_MINS: EVAL_PERIOD_15_MINS.",
         "title": "EvalPeriod",
-        "enum": ["EVAL_PERIOD_3_MINS", "EVAL_PERIOD_5_MINS", "EVAL_PERIOD_10_MINS", "EVAL_PERIOD_15_MINS"],
+        "enum": [
+          "EVAL_PERIOD_3_MINS",
+          "EVAL_PERIOD_5_MINS",
+          "EVAL_PERIOD_10_MINS",
+          "EVAL_PERIOD_15_MINS"
+        ],
         "default": "EVAL_PERIOD_3_MINS",
         "x-displayname": "Evaluation Period.",
         "x-ves-proto-enum": "ves.io.schema.observability.synthetic_monitor.EvalPeriod",
@@ -17885,7 +18921,11 @@
         "x-f5xc-cli-domain": "observability",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -17921,7 +18961,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["dynamic_threshold_disabled"]
+            "x-f5xc-conflicts-with": [
+              "dynamic_threshold_disabled"
+            ]
           },
           "dynamic_threshold_disabled": {
             "allOf": [
@@ -17935,7 +18977,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["dynamic_threshold"]
+            "x-f5xc-conflicts-with": [
+              "dynamic_threshold"
+            ]
           },
           "static_max_threshold": {
             "allOf": [
@@ -17950,7 +18994,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["static_max_threshold_disabled"]
+            "x-f5xc-conflicts-with": [
+              "static_max_threshold_disabled"
+            ]
           },
           "static_max_threshold_disabled": {
             "allOf": [
@@ -17964,7 +19010,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["static_max_threshold"]
+            "x-f5xc-conflicts-with": [
+              "static_max_threshold"
+            ]
           },
           "static_min_threshold": {
             "allOf": [
@@ -17979,7 +19027,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["static_min_threshold_disabled"]
+            "x-f5xc-conflicts-with": [
+              "static_min_threshold_disabled"
+            ]
           },
           "static_min_threshold_disabled": {
             "allOf": [
@@ -17993,7 +19043,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["static_min_threshold"]
+            "x-f5xc-conflicts-with": [
+              "static_min_threshold"
+            ]
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -18006,7 +19058,11 @@
         "x-f5xc-cli-domain": "observability",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -18071,7 +19127,9 @@
         "x-f5xc-description-short": "Specific source location within F5 Distributed Cloud.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for synthetic_monitorRegionalEdgeExternal",
-          "required_fields": ["regions"],
+          "required_fields": [
+            "regions"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for synthetic_monitorRegionalEdgeExternal\nmetadata:\n  name: example\n  namespace: default\nspec:\n  regions: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"regions\": \"value\"\n  }\n}"
@@ -18079,7 +19137,11 @@
         "x-f5xc-cli-domain": "observability",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -18144,7 +19206,9 @@
         "x-f5xc-description-short": "Specific source location within F5 Distributed Cloud.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for synthetic_monitorRegionalEdgeRegions",
-          "required_fields": ["regions"],
+          "required_fields": [
+            "regions"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for synthetic_monitorRegionalEdgeRegions\nmetadata:\n  name: example\n  namespace: default\nspec:\n  regions: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"regions\": \"value\"\n  }\n}"
@@ -18152,7 +19216,11 @@
         "x-f5xc-cli-domain": "observability",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -18186,7 +19254,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["f5xc"]
+            "x-f5xc-conflicts-with": [
+              "f5xc"
+            ]
           },
           "f5xc": {
             "allOf": [
@@ -18200,7 +19270,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["aws"]
+            "x-f5xc-conflicts-with": [
+              "aws"
+            ]
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -18213,7 +19285,11 @@
         "x-f5xc-cli-domain": "observability",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -18247,7 +19323,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["f5xc"]
+            "x-f5xc-conflicts-with": [
+              "f5xc"
+            ]
           },
           "f5xc": {
             "allOf": [
@@ -18261,7 +19339,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["aws"]
+            "x-f5xc-conflicts-with": [
+              "aws"
+            ]
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -18274,7 +19354,11 @@
         "x-f5xc-cli-domain": "observability",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -18350,7 +19434,9 @@
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for synthetic_monitorStaticMaxThreshold",
-          "required_fields": ["max_response_time"],
+          "required_fields": [
+            "max_response_time"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for synthetic_monitorStaticMaxThreshold\nmetadata:\n  name: example\n  namespace: default\nspec:\n  max_response_time: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"max_response_time\": \"value\"\n  }\n}"
@@ -18358,7 +19444,11 @@
         "x-f5xc-cli-domain": "observability",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -18434,7 +19524,9 @@
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for synthetic_monitorStaticMinThreshold",
-          "required_fields": ["min_response_time"],
+          "required_fields": [
+            "min_response_time"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for synthetic_monitorStaticMinThreshold\nmetadata:\n  name: example\n  namespace: default\nspec:\n  min_response_time: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"min_response_time\": \"value\"\n  }\n}"
@@ -18442,7 +19534,11 @@
         "x-f5xc-cli-domain": "observability",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -18460,7 +19556,12 @@
         "type": "string",
         "description": "- STD_DEV_VAL_3: STD_DEV_VAL_3\n\n- STD_DEV_VAL_4: STD_DEV_VAL_4\n\n- STD_DEV_VAL_5: STD_DEV_VAL_5\n\n- STD_DEV_VAL_6: STD_DEV_VAL_6.",
         "title": "StdDevVal",
-        "enum": ["STD_DEV_VAL_3", "STD_DEV_VAL_4", "STD_DEV_VAL_5", "STD_DEV_VAL_6"],
+        "enum": [
+          "STD_DEV_VAL_3",
+          "STD_DEV_VAL_4",
+          "STD_DEV_VAL_5",
+          "STD_DEV_VAL_6"
+        ],
         "default": "STD_DEV_VAL_3",
         "x-displayname": "Standard Deviation Value.",
         "x-ves-proto-enum": "ves.io.schema.observability.synthetic_monitor.StdDevVal",
@@ -18476,7 +19577,11 @@
         "x-f5xc-cli-domain": "observability",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -18536,7 +19641,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -18607,7 +19714,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -19049,7 +20158,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["on_failure_to_any"]
+            "x-f5xc-conflicts-with": [
+              "on_failure_to_any"
+            ]
           },
           "on_failure_to_any": {
             "allOf": [
@@ -19064,7 +20175,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["on_failure_to_all"]
+            "x-f5xc-conflicts-with": [
+              "on_failure_to_all"
+            ]
           },
           "protocol": {
             "type": "string",
@@ -19082,7 +20195,10 @@
               "ves.io.schema.rules.string.in": "[\\\"UDP\\\",\\\"TCP\\\"]"
             },
             "maxLength": 1024,
-            "enum": ["UDP", "TCP"],
+            "enum": [
+              "UDP",
+              "TCP"
+            ],
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "general",
@@ -19150,7 +20266,17 @@
               "ves.io.schema.rules.string.in": "[\\\"A\\\",\\\"AAAA\\\",\\\"CNAME\\\",\\\"MX\\\",\\\"NS\\\",\\\"PTR\\\",\\\"TXT\\\",\\\"SOA\\\",\\\"SRV\\\"]"
             },
             "maxLength": 1024,
-            "enum": ["A", "AAAA", "CNAME", "MX", "NS", "PTR", "TXT", "SOA", "SRV"],
+            "enum": [
+              "A",
+              "AAAA",
+              "CNAME",
+              "MX",
+              "NS",
+              "PTR",
+              "TXT",
+              "SOA",
+              "SRV"
+            ],
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "general",
@@ -19232,7 +20358,9 @@
         },
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -19367,7 +20495,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -19445,7 +20575,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -19609,7 +20741,9 @@
             "type": "string",
             "x-f5xc-concurrency-token": {
               "server_assigned": true,
-              "echo_on_operations": ["replace"]
+              "echo_on_operations": [
+                "replace"
+              ]
             }
           }
         },
@@ -19623,7 +20757,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -20065,7 +21201,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["on_failure_to_any"]
+            "x-f5xc-conflicts-with": [
+              "on_failure_to_any"
+            ]
           },
           "on_failure_to_any": {
             "allOf": [
@@ -20080,7 +21218,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["on_failure_to_all"]
+            "x-f5xc-conflicts-with": [
+              "on_failure_to_all"
+            ]
           },
           "protocol": {
             "type": "string",
@@ -20098,7 +21238,10 @@
               "ves.io.schema.rules.string.in": "[\\\"UDP\\\",\\\"TCP\\\"]"
             },
             "maxLength": 1024,
-            "enum": ["UDP", "TCP"],
+            "enum": [
+              "UDP",
+              "TCP"
+            ],
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "general",
@@ -20166,7 +21309,17 @@
               "ves.io.schema.rules.string.in": "[\\\"A\\\",\\\"AAAA\\\",\\\"CNAME\\\",\\\"MX\\\",\\\"NS\\\",\\\"PTR\\\",\\\"TXT\\\",\\\"SOA\\\",\\\"SRV\\\"]"
             },
             "maxLength": 1024,
-            "enum": ["A", "AAAA", "CNAME", "MX", "NS", "PTR", "TXT", "SOA", "SRV"],
+            "enum": [
+              "A",
+              "AAAA",
+              "CNAME",
+              "MX",
+              "NS",
+              "PTR",
+              "TXT",
+              "SOA",
+              "SRV"
+            ],
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "general",
@@ -20241,7 +21394,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -20688,7 +21843,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["on_failure_to_any"]
+            "x-f5xc-conflicts-with": [
+              "on_failure_to_any"
+            ]
           },
           "on_failure_to_any": {
             "allOf": [
@@ -20703,7 +21860,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["on_failure_to_all"]
+            "x-f5xc-conflicts-with": [
+              "on_failure_to_all"
+            ]
           },
           "protocol": {
             "type": "string",
@@ -20722,7 +21881,10 @@
               "ves.io.schema.rules.string.in": "[\\\"UDP\\\",\\\"TCP\\\"]"
             },
             "maxLength": 1024,
-            "enum": ["UDP", "TCP"],
+            "enum": [
+              "UDP",
+              "TCP"
+            ],
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "general",
@@ -20792,7 +21954,17 @@
               "ves.io.schema.rules.string.in": "[\\\"A\\\",\\\"AAAA\\\",\\\"CNAME\\\",\\\"MX\\\",\\\"NS\\\",\\\"PTR\\\",\\\"TXT\\\",\\\"SOA\\\",\\\"SRV\\\"]"
             },
             "maxLength": 1024,
-            "enum": ["A", "AAAA", "CNAME", "MX", "NS", "PTR", "TXT", "SOA", "SRV"],
+            "enum": [
+              "A",
+              "AAAA",
+              "CNAME",
+              "MX",
+              "NS",
+              "PTR",
+              "TXT",
+              "SOA",
+              "SRV"
+            ],
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "general",
@@ -20868,7 +22040,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -20945,7 +22119,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -21279,7 +22455,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -21380,7 +22558,9 @@
         "x-f5xc-description-short": "Custom nameserver to execute the monitor against.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for v1_dns_monitorNameServer",
-          "required_fields": ["name_server"],
+          "required_fields": [
+            "name_server"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for v1_dns_monitorNameServer\nmetadata:\n  name: example\n  namespace: default\nspec:\n  name_server: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"name_server\": \"value\"\n  }\n}"
@@ -21388,7 +22568,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -21462,7 +22644,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -21515,7 +22699,9 @@
             "type": "string",
             "x-f5xc-concurrency-token": {
               "server_assigned": true,
-              "echo_on_operations": ["replace"]
+              "echo_on_operations": [
+                "replace"
+              ]
             }
           }
         },
@@ -21529,7 +22715,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -21556,7 +22744,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -21998,7 +23188,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["on_failure_to_any"]
+            "x-f5xc-conflicts-with": [
+              "on_failure_to_any"
+            ]
           },
           "on_failure_to_any": {
             "allOf": [
@@ -22013,7 +23205,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["on_failure_to_all"]
+            "x-f5xc-conflicts-with": [
+              "on_failure_to_all"
+            ]
           },
           "protocol": {
             "type": "string",
@@ -22031,7 +23225,10 @@
               "ves.io.schema.rules.string.in": "[\\\"UDP\\\",\\\"TCP\\\"]"
             },
             "maxLength": 1024,
-            "enum": ["UDP", "TCP"],
+            "enum": [
+              "UDP",
+              "TCP"
+            ],
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "general",
@@ -22099,7 +23296,17 @@
               "ves.io.schema.rules.string.in": "[\\\"A\\\",\\\"AAAA\\\",\\\"CNAME\\\",\\\"MX\\\",\\\"NS\\\",\\\"PTR\\\",\\\"TXT\\\",\\\"SOA\\\",\\\"SRV\\\"]"
             },
             "maxLength": 1024,
-            "enum": ["A", "AAAA", "CNAME", "MX", "NS", "PTR", "TXT", "SOA", "SRV"],
+            "enum": [
+              "A",
+              "AAAA",
+              "CNAME",
+              "MX",
+              "NS",
+              "PTR",
+              "TXT",
+              "SOA",
+              "SRV"
+            ],
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "general",
@@ -22174,7 +23381,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -22220,7 +23429,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -22298,7 +23509,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -22358,7 +23571,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -22429,7 +23644,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -22464,7 +23681,14 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["get", "head", "options", "patch", "post", "put"]
+            "x-f5xc-conflicts-with": [
+              "get",
+              "head",
+              "options",
+              "patch",
+              "post",
+              "put"
+            ]
           },
           "external_sources": {
             "type": "array",
@@ -22535,7 +23759,14 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["delete", "head", "options", "patch", "post", "put"]
+            "x-f5xc-conflicts-with": [
+              "delete",
+              "head",
+              "options",
+              "patch",
+              "post",
+              "put"
+            ]
           },
           "head": {
             "allOf": [
@@ -22549,7 +23780,14 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["delete", "get", "options", "patch", "post", "put"]
+            "x-f5xc-conflicts-with": [
+              "delete",
+              "get",
+              "options",
+              "patch",
+              "post",
+              "put"
+            ]
           },
           "health_policy": {
             "allOf": [
@@ -22845,7 +24083,14 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["delete", "get", "head", "patch", "post", "put"]
+            "x-f5xc-conflicts-with": [
+              "delete",
+              "get",
+              "head",
+              "patch",
+              "post",
+              "put"
+            ]
           },
           "patch": {
             "allOf": [
@@ -22859,7 +24104,14 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["delete", "get", "head", "options", "post", "put"]
+            "x-f5xc-conflicts-with": [
+              "delete",
+              "get",
+              "head",
+              "options",
+              "post",
+              "put"
+            ]
           },
           "post": {
             "allOf": [
@@ -22873,7 +24125,14 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["delete", "get", "head", "options", "patch", "put"]
+            "x-f5xc-conflicts-with": [
+              "delete",
+              "get",
+              "head",
+              "options",
+              "patch",
+              "put"
+            ]
           },
           "put": {
             "allOf": [
@@ -22887,7 +24146,14 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["delete", "get", "head", "options", "patch", "post"]
+            "x-f5xc-conflicts-with": [
+              "delete",
+              "get",
+              "head",
+              "options",
+              "patch",
+              "post"
+            ]
           },
           "receive": {
             "type": "string",
@@ -23158,7 +24424,9 @@
         },
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -23293,7 +24561,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -23371,7 +24641,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -23535,7 +24807,9 @@
             "type": "string",
             "x-f5xc-concurrency-token": {
               "server_assigned": true,
-              "echo_on_operations": ["replace"]
+              "echo_on_operations": [
+                "replace"
+              ]
             }
           }
         },
@@ -23549,7 +24823,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -23584,7 +24860,14 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["get", "head", "options", "patch", "post", "put"]
+            "x-f5xc-conflicts-with": [
+              "get",
+              "head",
+              "options",
+              "patch",
+              "post",
+              "put"
+            ]
           },
           "external_sources": {
             "type": "array",
@@ -23655,7 +24938,14 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["delete", "head", "options", "patch", "post", "put"]
+            "x-f5xc-conflicts-with": [
+              "delete",
+              "head",
+              "options",
+              "patch",
+              "post",
+              "put"
+            ]
           },
           "head": {
             "allOf": [
@@ -23669,7 +24959,14 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["delete", "get", "options", "patch", "post", "put"]
+            "x-f5xc-conflicts-with": [
+              "delete",
+              "get",
+              "options",
+              "patch",
+              "post",
+              "put"
+            ]
           },
           "health_policy": {
             "allOf": [
@@ -23965,7 +25262,14 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["delete", "get", "head", "patch", "post", "put"]
+            "x-f5xc-conflicts-with": [
+              "delete",
+              "get",
+              "head",
+              "patch",
+              "post",
+              "put"
+            ]
           },
           "patch": {
             "allOf": [
@@ -23979,7 +25283,14 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["delete", "get", "head", "options", "post", "put"]
+            "x-f5xc-conflicts-with": [
+              "delete",
+              "get",
+              "head",
+              "options",
+              "post",
+              "put"
+            ]
           },
           "post": {
             "allOf": [
@@ -23993,7 +25304,14 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["delete", "get", "head", "options", "patch", "put"]
+            "x-f5xc-conflicts-with": [
+              "delete",
+              "get",
+              "head",
+              "options",
+              "patch",
+              "put"
+            ]
           },
           "put": {
             "allOf": [
@@ -24007,7 +25325,14 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["delete", "get", "head", "options", "patch", "post"]
+            "x-f5xc-conflicts-with": [
+              "delete",
+              "get",
+              "head",
+              "options",
+              "patch",
+              "post"
+            ]
           },
           "receive": {
             "type": "string",
@@ -24271,7 +25596,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -24306,7 +25633,14 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["get", "head", "options", "patch", "post", "put"]
+            "x-f5xc-conflicts-with": [
+              "get",
+              "head",
+              "options",
+              "patch",
+              "post",
+              "put"
+            ]
           },
           "external_sources": {
             "type": "array",
@@ -24379,7 +25713,14 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["delete", "head", "options", "patch", "post", "put"]
+            "x-f5xc-conflicts-with": [
+              "delete",
+              "head",
+              "options",
+              "patch",
+              "post",
+              "put"
+            ]
           },
           "head": {
             "allOf": [
@@ -24393,7 +25734,14 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["delete", "get", "options", "patch", "post", "put"]
+            "x-f5xc-conflicts-with": [
+              "delete",
+              "get",
+              "options",
+              "patch",
+              "post",
+              "put"
+            ]
           },
           "health_policy": {
             "allOf": [
@@ -24691,7 +26039,14 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["delete", "get", "head", "patch", "post", "put"]
+            "x-f5xc-conflicts-with": [
+              "delete",
+              "get",
+              "head",
+              "patch",
+              "post",
+              "put"
+            ]
           },
           "patch": {
             "allOf": [
@@ -24705,7 +26060,14 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["delete", "get", "head", "options", "post", "put"]
+            "x-f5xc-conflicts-with": [
+              "delete",
+              "get",
+              "head",
+              "options",
+              "post",
+              "put"
+            ]
           },
           "post": {
             "allOf": [
@@ -24719,7 +26081,14 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["delete", "get", "head", "options", "patch", "put"]
+            "x-f5xc-conflicts-with": [
+              "delete",
+              "get",
+              "head",
+              "options",
+              "patch",
+              "put"
+            ]
           },
           "put": {
             "allOf": [
@@ -24733,7 +26102,14 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["delete", "get", "head", "options", "patch", "post"]
+            "x-f5xc-conflicts-with": [
+              "delete",
+              "get",
+              "head",
+              "options",
+              "patch",
+              "post"
+            ]
           },
           "receive": {
             "type": "string",
@@ -25004,7 +26380,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -25100,7 +26478,9 @@
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for v1_http_monitorHTTPMonitorHeader",
-          "required_fields": ["key"],
+          "required_fields": [
+            "key"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for v1_http_monitorHTTPMonitorHeader\nmetadata:\n  name: example\n  namespace: default\nspec:\n  key: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"key\": \"value\"\n  }\n}"
@@ -25108,7 +26488,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -25185,7 +26567,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -25519,7 +26903,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -25593,7 +26979,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -25646,7 +27034,9 @@
             "type": "string",
             "x-f5xc-concurrency-token": {
               "server_assigned": true,
-              "echo_on_operations": ["replace"]
+              "echo_on_operations": [
+                "replace"
+              ]
             }
           }
         },
@@ -25660,7 +27050,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -25687,7 +27079,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -25722,7 +27116,14 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["get", "head", "options", "patch", "post", "put"]
+            "x-f5xc-conflicts-with": [
+              "get",
+              "head",
+              "options",
+              "patch",
+              "post",
+              "put"
+            ]
           },
           "external_sources": {
             "type": "array",
@@ -25793,7 +27194,14 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["delete", "head", "options", "patch", "post", "put"]
+            "x-f5xc-conflicts-with": [
+              "delete",
+              "head",
+              "options",
+              "patch",
+              "post",
+              "put"
+            ]
           },
           "head": {
             "allOf": [
@@ -25807,7 +27215,14 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["delete", "get", "options", "patch", "post", "put"]
+            "x-f5xc-conflicts-with": [
+              "delete",
+              "get",
+              "options",
+              "patch",
+              "post",
+              "put"
+            ]
           },
           "health_policy": {
             "allOf": [
@@ -26103,7 +27518,14 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["delete", "get", "head", "patch", "post", "put"]
+            "x-f5xc-conflicts-with": [
+              "delete",
+              "get",
+              "head",
+              "patch",
+              "post",
+              "put"
+            ]
           },
           "patch": {
             "allOf": [
@@ -26117,7 +27539,14 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["delete", "get", "head", "options", "post", "put"]
+            "x-f5xc-conflicts-with": [
+              "delete",
+              "get",
+              "head",
+              "options",
+              "post",
+              "put"
+            ]
           },
           "post": {
             "allOf": [
@@ -26131,7 +27560,14 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["delete", "get", "head", "options", "patch", "put"]
+            "x-f5xc-conflicts-with": [
+              "delete",
+              "get",
+              "head",
+              "options",
+              "patch",
+              "put"
+            ]
           },
           "put": {
             "allOf": [
@@ -26145,7 +27581,14 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["delete", "get", "head", "options", "patch", "post"]
+            "x-f5xc-conflicts-with": [
+              "delete",
+              "get",
+              "head",
+              "options",
+              "patch",
+              "post"
+            ]
           },
           "receive": {
             "type": "string",
@@ -26409,7 +27852,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -26472,7 +27917,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -26518,7 +27965,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -26596,7 +28045,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -26782,7 +28233,11 @@
         "x-f5xc-cli-domain": "statistics",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -27058,7 +28513,11 @@
         "x-f5xc-cli-domain": "statistics",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -27244,7 +28703,11 @@
         "x-f5xc-cli-domain": "statistics",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -27519,7 +28982,11 @@
         "x-f5xc-cli-domain": "statistics",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -27705,7 +29172,11 @@
         "x-f5xc-cli-domain": "statistics",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -27981,7 +29452,11 @@
         "x-f5xc-cli-domain": "statistics",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -28192,7 +29667,11 @@
         "x-f5xc-cli-domain": "statistics",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -28493,7 +29972,11 @@
         "x-f5xc-cli-domain": "statistics",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -28704,7 +30187,11 @@
         "x-f5xc-cli-domain": "statistics",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -29005,7 +30492,11 @@
         "x-f5xc-cli-domain": "statistics",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -29080,7 +30571,11 @@
         "x-f5xc-cli-domain": "statistics",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -29216,7 +30711,11 @@
         "x-f5xc-cli-domain": "statistics",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -29322,7 +30821,11 @@
         "x-f5xc-cli-domain": "statistics",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -29508,7 +31011,11 @@
         "x-f5xc-cli-domain": "statistics",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -29798,7 +31305,11 @@
         "x-f5xc-cli-domain": "statistics",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -29874,7 +31385,11 @@
         "x-f5xc-cli-domain": "statistics",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -30060,7 +31575,11 @@
         "x-f5xc-cli-domain": "statistics",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -30337,7 +31856,11 @@
         "x-f5xc-cli-domain": "statistics",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -30523,7 +32046,11 @@
         "x-f5xc-cli-domain": "statistics",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -30799,7 +32326,11 @@
         "x-f5xc-cli-domain": "statistics",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -30817,7 +32348,10 @@
         "type": "string",
         "description": "Sort algorithm\n\nSort in descending order\nSort in ascending order.",
         "title": "SortOrder",
-        "enum": ["DESCENDING", "ASCENDING"],
+        "enum": [
+          "DESCENDING",
+          "ASCENDING"
+        ],
         "default": "DESCENDING",
         "x-displayname": "Sort Order.",
         "x-ves-proto-enum": "ves.io.schema.SortOrder",
@@ -30832,7 +32366,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -30880,7 +32418,9 @@
         "x-f5xc-cli-domain": "billing_and_usage",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -30911,7 +32451,9 @@
         "x-f5xc-cli-domain": "billing_and_usage",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -30942,7 +32484,9 @@
         "x-f5xc-cli-domain": "billing_and_usage",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -30990,7 +32534,9 @@
         "x-f5xc-cli-domain": "billing_and_usage",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -31021,7 +32567,9 @@
         "x-f5xc-cli-domain": "billing_and_usage",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -31051,7 +32599,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -31135,7 +32687,11 @@
         "x-f5xc-cli-domain": "observability",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -31344,7 +32900,11 @@
         "x-f5xc-cli-domain": "certificates",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -31806,7 +33366,11 @@
         "x-f5xc-cli-domain": "observability",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -31824,7 +33388,13 @@
         "type": "string",
         "description": "Supported functions of metric query metric.",
         "title": "Function",
-        "enum": ["MEAN", "MIN", "MAX", "SUM", "DIFFERENCE"],
+        "enum": [
+          "MEAN",
+          "MIN",
+          "MAX",
+          "SUM",
+          "DIFFERENCE"
+        ],
         "default": "MEAN",
         "x-displayname": "Function",
         "x-ves-proto-enum": "ves.io.schema.observability.synthetic_monitor.Function",
@@ -31839,7 +33409,11 @@
         "x-f5xc-cli-domain": "observability",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -31901,7 +33475,11 @@
         "x-f5xc-cli-domain": "observability",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -31950,7 +33528,11 @@
         "x-f5xc-cli-domain": "certificates",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -32057,7 +33639,11 @@
         "x-f5xc-cli-domain": "observability",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -32157,7 +33743,11 @@
         "x-f5xc-cli-domain": "observability",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -32219,7 +33809,11 @@
         "x-f5xc-cli-domain": "observability",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -32403,7 +33997,11 @@
         "x-f5xc-cli-domain": "observability",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -32464,7 +34062,11 @@
         "x-f5xc-cli-domain": "observability",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -32542,7 +34144,11 @@
         "x-f5xc-cli-domain": "observability",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -32604,7 +34210,11 @@
         "x-f5xc-cli-domain": "observability",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -32711,7 +34321,11 @@
         "x-f5xc-cli-domain": "observability",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -32811,7 +34425,11 @@
         "x-f5xc-cli-domain": "observability",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -32873,7 +34491,11 @@
         "x-f5xc-cli-domain": "observability",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -33107,7 +34729,11 @@
         "x-f5xc-cli-domain": "observability",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -33277,7 +34903,11 @@
         "x-f5xc-cli-domain": "observability",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -33325,7 +34955,11 @@
         "x-f5xc-cli-domain": "observability",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -33375,7 +35009,11 @@
         "x-f5xc-cli-domain": "observability",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -33478,7 +35116,11 @@
         "x-f5xc-cli-domain": "observability",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -33529,7 +35171,11 @@
         "x-f5xc-cli-domain": "observability",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -33660,7 +35306,11 @@
         "x-f5xc-cli-domain": "network_security",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -33722,7 +35372,11 @@
         "x-f5xc-cli-domain": "observability",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -33773,7 +35427,11 @@
         "x-f5xc-cli-domain": "observability",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -33830,7 +35488,11 @@
         "x-f5xc-cli-domain": "observability",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -33956,7 +35618,11 @@
         "x-f5xc-cli-domain": "observability",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -34017,7 +35683,11 @@
         "x-f5xc-cli-domain": "observability",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -34557,7 +36227,11 @@
         "x-f5xc-cli-domain": "observability",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -34619,7 +36293,11 @@
         "x-f5xc-cli-domain": "observability",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -34743,7 +36421,11 @@
         "x-f5xc-cli-domain": "observability",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -34816,7 +36498,11 @@
         "x-f5xc-cli-domain": "observability",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -35024,7 +36710,9 @@
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for synthetic_monitorMonitorEvents",
-          "required_fields": ["monitor_type"],
+          "required_fields": [
+            "monitor_type"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for synthetic_monitorMonitorEvents\nmetadata:\n  name: example\n  namespace: default\nspec:\n  monitor_type: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"monitor_type\": \"value\"\n  }\n}"
@@ -35032,7 +36720,11 @@
         "x-f5xc-cli-domain": "observability",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -35093,7 +36785,9 @@
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for synthetic_monitorMonitorRegionCoordinates",
-          "required_fields": ["longitude"],
+          "required_fields": [
+            "longitude"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for synthetic_monitorMonitorRegionCoordinates\nmetadata:\n  name: example\n  namespace: default\nspec:\n  longitude: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"longitude\": \"value\"\n  }\n}"
@@ -35101,7 +36795,11 @@
         "x-f5xc-cli-domain": "observability",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -35183,7 +36881,11 @@
         "x-f5xc-cli-domain": "observability",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -35333,7 +37035,11 @@
         "x-f5xc-cli-domain": "observability",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -35351,7 +37057,16 @@
         "type": "string",
         "description": "Protocol name of HTTP monitor\n\n- SSLv2: SSLv2\n\n- SSLv3: SSLv3\n\n- TLS1: TLS1\n\n- TLS1_1: TLS1_1\n\n- TLS1_2: TLS1_2\n\n- TLS1_3: TLS1_3\n\n- NPN: NPN\n\n- ALPN: ALPN.",
         "title": "Protocol",
-        "enum": ["SSLv2", "SSLv3", "TLS1", "TLS1_1", "TLS1_2", "TLS1_3", "NPN", "ALPN"],
+        "enum": [
+          "SSLv2",
+          "SSLv3",
+          "TLS1",
+          "TLS1_1",
+          "TLS1_2",
+          "TLS1_3",
+          "NPN",
+          "ALPN"
+        ],
         "default": "SSLv2",
         "x-displayname": "Protocol",
         "x-ves-proto-enum": "ves.io.schema.observability.synthetic_monitor.Protocol",
@@ -35368,7 +37083,11 @@
         "x-f5xc-cli-domain": "observability",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -35433,7 +37152,11 @@
         "x-f5xc-cli-domain": "observability",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -35516,7 +37239,11 @@
         "x-f5xc-cli-domain": "observability",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -35732,7 +37459,11 @@
         "x-f5xc-cli-domain": "observability",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -35867,7 +37598,11 @@
         "x-f5xc-cli-domain": "observability",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -36024,7 +37759,11 @@
         "x-f5xc-cli-domain": "observability",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -36084,7 +37823,11 @@
         "x-f5xc-cli-domain": "observability",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -36174,7 +37917,11 @@
         "x-f5xc-cli-domain": "observability",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -36254,7 +38001,11 @@
         "x-f5xc-cli-domain": "observability",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -36331,7 +38082,11 @@
         "x-f5xc-cli-domain": "observability",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
