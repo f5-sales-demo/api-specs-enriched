@@ -33,6 +33,10 @@ from .extension_constants import (
 
 # Precompiled regex pattern for performance (used in hot paths)
 _CAMELCASE_TO_SNAKE_PATTERN = re.compile(r"(?<!^)(?=[A-Z])")
+_SENSITIVE_FIELD_PATTERN = re.compile(
+    r"(?:^|_)(?:api_?key|credential|password|private_?key|secret|token)(?:$|_)",
+    re.IGNORECASE,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -231,6 +235,7 @@ class MinimumConfigurationEnricher:
         # must not depend on which schema happened to be visited first.
         for schema in schemas.values():
             self._add_auto_generated_field_requirements(schema)
+            self._sanitize_sensitive_examples(schema)
         for schema_name, schema in schemas.items():
             self._enrich_schema(schema_name, schema)
 
@@ -444,6 +449,7 @@ class MinimumConfigurationEnricher:
         self,
         schema: dict[str, Any],
         *,
+        field_name: str | None = None,
         required_fields: frozenset[str] = frozenset(),
         active_refs: frozenset[str] = frozenset(),
     ) -> Any:
@@ -458,26 +464,33 @@ class MinimumConfigurationEnricher:
             member = variants[0]
             if not isinstance(member, dict):
                 raise _ExampleUnavailableError("The selected oneOf member is not a schema object.")
-            return self._schema_example(member, active_refs=refs)
+            return self._schema_example(member, field_name=field_name, active_refs=refs)
 
-        schema_type = resolved.get("type")
+        schema_type_value = resolved.get("type")
+        schema_type = schema_type_value if isinstance(schema_type_value, str) else None
         if schema_type is None and isinstance(resolved.get("properties"), dict):
             schema_type = "object"
-        expected_types = {
-            "object": dict,
-            "array": list,
-            "string": str,
-            "integer": int,
-            "number": (int, float),
-            "boolean": bool,
-        }
-        for key in ("example", "x-f5xc-example", "x-f5xc-recommended-value", "default"):
-            value = resolved.get(key)
-            expected = expected_types.get(schema_type)
-            if value is not None and (expected is None or isinstance(value, expected)):
-                if schema_type in {"integer", "number"} and isinstance(value, bool):
-                    continue
-                return value
+        if not (field_name and _SENSITIVE_FIELD_PATTERN.search(field_name)):
+            for key in ("example", "x-f5xc-example", "x-f5xc-recommended-value", "default"):
+                value = resolved.get(key)
+                valid_type = schema_type is None or (
+                    schema_type == "object"
+                    and isinstance(value, dict)
+                    or schema_type == "array"
+                    and isinstance(value, list)
+                    or schema_type == "string"
+                    and isinstance(value, str)
+                    or schema_type == "integer"
+                    and isinstance(value, int)
+                    or schema_type == "number"
+                    and isinstance(value, (int, float))
+                    or schema_type == "boolean"
+                    and isinstance(value, bool)
+                )
+                if value is not None and valid_type:
+                    if schema_type in {"integer", "number"} and isinstance(value, bool):
+                        continue
+                    return value
         enum = resolved.get("enum")
         if isinstance(enum, list) and enum:
             return enum[0]
@@ -508,7 +521,12 @@ class MinimumConfigurationEnricher:
                     for field in required_fields
                     if field.startswith(f"{name}.")
                 )
-                result[name] = self._schema_example(child, required_fields=nested, active_refs=refs)
+                result[name] = self._schema_example(
+                    child,
+                    field_name=name,
+                    required_fields=nested,
+                    active_refs=refs,
+                )
             return result
         if schema_type == "array":
             items = resolved.get("items")
@@ -530,12 +548,41 @@ class MinimumConfigurationEnricher:
             "integer": int(numeric_minimum),
             "number": numeric_minimum,
             "boolean": False,
-            "string": "value",
+            "string": self._safe_string_placeholder(resolved, field_name),
             None: "value",
         }
         if schema_type in scalar_defaults:
             return scalar_defaults[schema_type]
         raise MinimumConfigurationContractError(f"unsupported schema type {schema_type!r}")
+
+    @staticmethod
+    def _safe_string_placeholder(schema: dict[str, Any], field_name: str | None) -> str:
+        """Return a deterministic low-entropy placeholder that cannot resemble a credential."""
+        value = "example" if field_name and _SENSITIVE_FIELD_PATTERN.search(field_name) else "value"
+        minimum_length = schema.get("minLength", 0)
+        if isinstance(minimum_length, int) and minimum_length > len(value):
+            value += "x" * (minimum_length - len(value))
+        return value
+
+    @staticmethod
+    def _sanitize_sensitive_examples(schema: dict[str, Any]) -> None:
+        """Remove credential-shaped example values while retaining useful field metadata."""
+        for field_name, field_schema in (schema.get("properties", {}) or {}).items():
+            if not isinstance(field_schema, dict):
+                continue
+            if _SENSITIVE_FIELD_PATTERN.search(field_name):
+                for key in ("example", "x-f5xc-example", "x-f5xc-recommended-value", "default"):
+                    if isinstance(field_schema.get(key), str):
+                        field_schema[key] = MinimumConfigurationEnricher._safe_string_placeholder(
+                            field_schema, field_name
+                        )
+            MinimumConfigurationEnricher._sanitize_sensitive_examples(field_schema)
+            items = field_schema.get("items")
+            if isinstance(items, dict):
+                MinimumConfigurationEnricher._sanitize_sensitive_examples(items)
+            for member in field_schema.get("allOf", []):
+                if isinstance(member, dict):
+                    MinimumConfigurationEnricher._sanitize_sensitive_examples(member)
 
     def _extract_required_fields_from_schema(self, schema: dict[str, Any]) -> list[str]:
         """Extract required fields from explicit API-contract markers.

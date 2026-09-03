@@ -276,6 +276,33 @@ class TestExampleGeneration:
         assert json.loads(minimum["example_json"]) == expected
         assert yaml.safe_load(minimum["example_yaml"]) == expected
 
+    def test_sensitive_required_field_uses_safe_placeholder(self):
+        """Credential-shaped upstream examples must not reach generated artifacts."""
+        spec = {
+            "components": {
+                "schemas": {
+                    "CredentialRequest": {
+                        "type": "object",
+                        "required": ["password"],
+                        "properties": {
+                            "password": {
+                                "type": "string",
+                                "x-f5xc-example": "myPassw0rd123",
+                            }
+                        },
+                    }
+                }
+            }
+        }
+
+        result = MinimumConfigurationEnricher().enrich_spec(spec)["components"]["schemas"][
+            "CredentialRequest"
+        ]
+        minimum = result[X_F5XC_MINIMUM_CONFIGURATION]
+        assert result["properties"]["password"]["x-f5xc-example"] == "example"
+        assert json.loads(minimum["example_json"]) == {"password": "example"}
+        assert yaml.safe_load(minimum["example_yaml"]) == {"password": "example"}
+
     def test_required_ambiguous_oneof_publishes_diagnostic_without_example(self):
         enricher = MinimumConfigurationEnricher()
         spec = {
@@ -1073,6 +1100,32 @@ class TestSubSchemaNotConfigEnriched:
         schema = enricher.enrich_spec(spec)["components"]["schemas"]["UnknownCreateRequest"]
         assert json.loads(schema[X_F5XC_MINIMUM_CONFIGURATION]["example_json"]) == {
             "metadata": {"name": "value"}
+        }
+
+    def test_sensitive_examples_are_replaced_with_non_secret_placeholders(self):
+        enricher = MinimumConfigurationEnricher()
+        spec = {
+            "components": {
+                "schemas": {
+                    "CredentialCreateRequest": {
+                        "type": "object",
+                        "required": ["password"],
+                        "properties": {
+                            "password": {
+                                "type": "string",
+                                "minLength": 10,
+                                "x-f5xc-example": "secret-looking-token-1234",
+                            }
+                        },
+                    }
+                }
+            }
+        }
+
+        schema = enricher.enrich_spec(spec)["components"]["schemas"]["CredentialCreateRequest"]
+        assert schema["properties"]["password"]["x-f5xc-example"] == "examplexxx"
+        assert json.loads(schema[X_F5XC_MINIMUM_CONFIGURATION]["example_json"]) == {
+            "password": "examplexxx"
         }
 
     def test_is_resource_schema_recognizes_suffixes(self):

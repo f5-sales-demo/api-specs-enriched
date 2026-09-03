@@ -1084,7 +1084,7 @@ def compile_catalog(openapi: dict[str, Any]) -> dict[str, Any]:
     components = openapi.get("components")
     groups = group_paths_by_resource(paths)
 
-    categories = []
+    categories: list[dict[str, Any]] = []
     for category_name in sorted(groups.keys()):
         operations = _build_category_operations(groups[category_name], components)
         if operations:
@@ -1110,7 +1110,7 @@ def compile_catalog(openapi: dict[str, Any]) -> dict[str, Any]:
         if method.lower() in _HTTP_METHODS and isinstance(operation, dict)
     )
     browsable = sorted(
-        (operation["operationId"], operation["method"], operation["path"])
+        (str(operation["operationId"]), str(operation["method"]), str(operation["path"]))
         for category in categories
         for operation in category["operations"]
     )
