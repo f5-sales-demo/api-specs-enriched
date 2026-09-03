@@ -102,6 +102,18 @@ def test_v3_contract_defines_exact_runtime_mappings_without_freshness_claims(
     assert runtime["bgp_peers"]["response_mappings"]["state_changed_at"] == (
         "ver[].peer[].up_down_timestamp"
     )
+    assert runtime["bgp_routes"]["response_mappings"] == {
+        "nodes": "ver[]",
+        "node": "ver[].name",
+        "routing_instances": "ver[].ri_table[]",
+        "route_tables": "ver[].ri_table[].rt_table[]",
+        "imported_routes": "ver[].ri_table[].rt_table[].imported[]",
+        "exported_routes": "ver[].ri_table[].rt_table[].exported[]",
+        "route_prefixes": [
+            "ver[].ri_table[].rt_table[].imported[].subnet",
+            "ver[].ri_table[].rt_table[].exported[].subnet",
+        ],
+    }
     assert runtime["simplified_routes"]["semantics"] == "observational_read_only"
     assert runtime["simplified_routes"]["request_mappings"]["roles"] == ["slo", "sli"]
     assert "autonomous_system_numbers" in aws["authorities"]["aws"]

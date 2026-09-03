@@ -127,8 +127,14 @@ AWS_V3_RUNTIME = {
         "response_mappings": {
             "nodes": "ver[]",
             "node": "ver[].name",
-            "route_tables": "ver[].ri_table[]",
-            "routes": "ver[].ri_table[].route[]",
+            "routing_instances": "ver[].ri_table[]",
+            "route_tables": "ver[].ri_table[].rt_table[]",
+            "imported_routes": "ver[].ri_table[].rt_table[].imported[]",
+            "exported_routes": "ver[].ri_table[].rt_table[].exported[]",
+            "route_prefixes": [
+                "ver[].ri_table[].rt_table[].imported[].subnet",
+                "ver[].ri_table[].rt_table[].exported[].subnet",
+            ],
         },
         "correlation": ["node"],
     },

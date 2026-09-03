@@ -81,6 +81,12 @@ def test_validates_stable_receipted_release(tmp_path: Path) -> None:
     assert aws["runtime"]["bgp_peers"]["response_mappings"]["state_changed_at"] == (
         "ver[].peer[].up_down_timestamp"
     )
+    route_mappings = aws["runtime"]["bgp_routes"]["response_mappings"]
+    assert route_mappings["route_tables"] == "ver[].ri_table[].rt_table[]"
+    assert route_mappings["route_prefixes"] == [
+        "ver[].ri_table[].rt_table[].imported[].subnet",
+        "ver[].ri_table[].rt_table[].exported[].subnet",
+    ]
     assert aws["runtime"]["simplified_routes"]["semantics"] == "observational_read_only"
     assert "observed_at" not in repr(contract)
 
