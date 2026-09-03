@@ -64,11 +64,7 @@
             "name": "Create API Token",
             "description": "In Administration > Personal Management > Credentials, click Add Credentials, set Credential Type to API Token, enter a Credential Name and Expiry Date, then Generate",
             "resource": "api_credential",
-            "required_fields": [
-              "credential_name",
-              "credential_type",
-              "expiry_date"
-            ],
+            "required_fields": ["credential_name", "credential_type", "expiry_date"],
             "tips": [
               "Set Credential Type to API Token. The default is API Certificate, which produces a P12 file, not a bearer token.",
               "The token string is shown only once on the reveal panel. Capture it immediately, before dismissing the panel."
@@ -79,33 +75,23 @@
             "action": "capture_token",
             "name": "Capture the Generated Token",
             "description": "Read the one-time token value from the reveal panel",
-            "depends_on": [
-              1
-            ],
-            "verification": [
-              "Token value captured before the reveal panel is dismissed"
-            ]
+            "depends_on": [1],
+            "verification": ["Token value captured before the reveal panel is dismissed"]
           },
           {
             "order": 3,
             "action": "call_api_with_token",
             "name": "Call the F5 XC API with the Token",
             "description": "Use the captured token in an XC-API call with header Authorization APIToken to confirm it works, for example list namespaces",
-            "depends_on": [
-              2
-            ],
-            "verification": [
-              "XC-API GET /api/web/namespaces returns HTTP 200 with the tenant namespaces"
-            ]
+            "depends_on": [2],
+            "verification": ["XC-API GET /api/web/namespaces returns HTTP 200 with the tenant namespaces"]
           }
         ]
       }
     ],
     "x-f5xc-namespace-profile": {
       "constraint": {
-        "allowed": [
-          "system"
-        ],
+        "allowed": ["system"],
         "enforced": false
       },
       "recommendation": {
@@ -131,19 +117,12 @@
         "console_url": {
           "default": "console.ves.volterra.io",
           "description": "Console URL base (e.g., console.ves.volterra.io for production, staging.volterra.us for staging)",
-          "enum": [
-            "console.ves.volterra.io",
-            "staging.volterra.us"
-          ]
+          "enum": ["console.ves.volterra.io", "staging.volterra.us"]
         },
         "environment": {
           "default": "production",
           "description": "Environment designation (production, staging, development)",
-          "enum": [
-            "production",
-            "staging",
-            "development"
-          ]
+          "enum": ["production", "staging", "development"]
         },
         "domain_prefix": {
           "default": "api",
@@ -291,30 +270,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/tenant_and_identity/"
         },
         "x-ves-proto-rpc": "ves.io.schema.api_credential.CustomAPI.BulkRevoke",
-        "tags": [
-          "web"
-        ],
+        "tags": ["web"],
         "x-f5xc-operation-metadata": {
           "purpose": "API credential for programmatic access",
-          "required_fields": [
-            "metadata.name",
-            "metadata.namespace"
-          ],
+          "required_fields": ["metadata.name", "metadata.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": [
-              "Api-credential resource created",
-              "Resource assigned unique identifier"
-            ]
+            "prerequisites": ["Active namespace"],
+            "postconditions": ["Api-credential resource created", "Resource assigned unique identifier"]
           },
           "side_effects": {
-            "creates": [
-              "api-credential"
-            ]
+            "creates": ["api-credential"]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -355,15 +322,10 @@
             "resource_usage": "high"
           }
         },
-        "x-f5xc-required-fields": [
-          "metadata.name",
-          "metadata.namespace"
-        ],
+        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace"],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": [
-            "api-credential"
-          ]
+          "creates": ["api-credential"]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -497,30 +459,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/tenant_and_identity/"
         },
         "x-ves-proto-rpc": "ves.io.schema.api_credential.CustomAPI.BulkRevokeServiceCredentials",
-        "tags": [
-          "web"
-        ],
+        "tags": ["web"],
         "x-f5xc-operation-metadata": {
           "purpose": "Service credential for API authentication",
-          "required_fields": [
-            "metadata.name",
-            "metadata.namespace"
-          ],
+          "required_fields": ["metadata.name", "metadata.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": [
-              "Service-credential resource created",
-              "Resource assigned unique identifier"
-            ]
+            "prerequisites": ["Active namespace"],
+            "postconditions": ["Service-credential resource created", "Resource assigned unique identifier"]
           },
           "side_effects": {
-            "creates": [
-              "service-credential"
-            ]
+            "creates": ["service-credential"]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -561,15 +511,10 @@
             "resource_usage": "high"
           }
         },
-        "x-f5xc-required-fields": [
-          "metadata.name",
-          "metadata.namespace"
-        ],
+        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace"],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": [
-            "service-credential"
-          ]
+          "creates": ["service-credential"]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -716,31 +661,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/tenant_and_identity/"
         },
         "x-ves-proto-rpc": "ves.io.schema.api_credential.CustomAPI.Activate",
-        "tags": [
-          "web"
-        ],
+        "tags": ["web"],
         "x-f5xc-operation-metadata": {
           "purpose": "API credential for programmatic access",
-          "required_fields": [
-            "metadata.name",
-            "metadata.namespace",
-            "path.namespace"
-          ],
+          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": [
-              "Api-credential resource created",
-              "Resource assigned unique identifier"
-            ]
+            "prerequisites": ["Active namespace"],
+            "postconditions": ["Api-credential resource created", "Resource assigned unique identifier"]
           },
           "side_effects": {
-            "creates": [
-              "api-credential"
-            ]
+            "creates": ["api-credential"]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -781,16 +713,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": [
-          "metadata.name",
-          "metadata.namespace",
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace"],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": [
-            "api-credential"
-          ]
+          "creates": ["api-credential"]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -937,31 +863,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/tenant_and_identity/"
         },
         "x-ves-proto-rpc": "ves.io.schema.api_credential.CustomAPI.ActivateServiceCredentials",
-        "tags": [
-          "web"
-        ],
+        "tags": ["web"],
         "x-f5xc-operation-metadata": {
           "purpose": "Service credential for API authentication",
-          "required_fields": [
-            "metadata.name",
-            "metadata.namespace",
-            "path.namespace"
-          ],
+          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": [
-              "Service-credential resource created",
-              "Resource assigned unique identifier"
-            ]
+            "prerequisites": ["Active namespace"],
+            "postconditions": ["Service-credential resource created", "Resource assigned unique identifier"]
           },
           "side_effects": {
-            "creates": [
-              "service-credential"
-            ]
+            "creates": ["service-credential"]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -1002,16 +915,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": [
-          "metadata.name",
-          "metadata.namespace",
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace"],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": [
-            "service-credential"
-          ]
+          "creates": ["service-credential"]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -1148,20 +1055,14 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/tenant_and_identity/"
         },
         "x-ves-proto-rpc": "ves.io.schema.api_credential.CustomAPI.List",
-        "tags": [
-          "web"
-        ],
+        "tags": ["web"],
         "x-f5xc-operation-metadata": {
           "purpose": "API credential for programmatic access",
-          "required_fields": [
-            "path.namespace"
-          ],
+          "required_fields": ["path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
+            "prerequisites": ["Active namespace"],
             "postconditions": []
           },
           "side_effects": {},
@@ -1204,9 +1105,7 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": [
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["path.namespace"],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -1348,31 +1247,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/tenant_and_identity/"
         },
         "x-ves-proto-rpc": "ves.io.schema.api_credential.CustomAPI.Create",
-        "tags": [
-          "web"
-        ],
+        "tags": ["web"],
         "x-f5xc-operation-metadata": {
           "purpose": "API credential for programmatic access",
-          "required_fields": [
-            "metadata.name",
-            "metadata.namespace",
-            "path.namespace"
-          ],
+          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": [
-              "Api-credential resource created",
-              "Resource assigned unique identifier"
-            ]
+            "prerequisites": ["Active namespace"],
+            "postconditions": ["Api-credential resource created", "Resource assigned unique identifier"]
           },
           "side_effects": {
-            "creates": [
-              "api-credential"
-            ]
+            "creates": ["api-credential"]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -1413,16 +1299,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": [
-          "metadata.name",
-          "metadata.namespace",
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace"],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": [
-            "api-credential"
-          ]
+          "creates": ["api-credential"]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -1570,21 +1450,14 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/tenant_and_identity/"
         },
         "x-ves-proto-rpc": "ves.io.schema.api_credential.CustomAPI.Get",
-        "tags": [
-          "web"
-        ],
+        "tags": ["web"],
         "x-f5xc-operation-metadata": {
           "purpose": "API credential for programmatic access",
-          "required_fields": [
-            "path.name",
-            "path.namespace"
-          ],
+          "required_fields": ["path.name", "path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
+            "prerequisites": ["Active namespace"],
             "postconditions": []
           },
           "side_effects": {},
@@ -1627,10 +1500,7 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": [
-          "path.name",
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["path.name", "path.namespace"],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -1777,31 +1647,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/tenant_and_identity/"
         },
         "x-ves-proto-rpc": "ves.io.schema.api_credential.CustomAPI.Renew",
-        "tags": [
-          "web"
-        ],
+        "tags": ["web"],
         "x-f5xc-operation-metadata": {
           "purpose": "API credential for programmatic access",
-          "required_fields": [
-            "metadata.name",
-            "metadata.namespace",
-            "path.namespace"
-          ],
+          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": [
-              "Api-credential resource created",
-              "Resource assigned unique identifier"
-            ]
+            "prerequisites": ["Active namespace"],
+            "postconditions": ["Api-credential resource created", "Resource assigned unique identifier"]
           },
           "side_effects": {
-            "creates": [
-              "api-credential"
-            ]
+            "creates": ["api-credential"]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -1842,16 +1699,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": [
-          "metadata.name",
-          "metadata.namespace",
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace"],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": [
-            "api-credential"
-          ]
+          "creates": ["api-credential"]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -1998,31 +1849,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/tenant_and_identity/"
         },
         "x-ves-proto-rpc": "ves.io.schema.api_credential.CustomAPI.RenewServiceCredentials",
-        "tags": [
-          "web"
-        ],
+        "tags": ["web"],
         "x-f5xc-operation-metadata": {
           "purpose": "Service credential for API authentication",
-          "required_fields": [
-            "metadata.name",
-            "metadata.namespace",
-            "path.namespace"
-          ],
+          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": [
-              "Service-credential resource created",
-              "Resource assigned unique identifier"
-            ]
+            "prerequisites": ["Active namespace"],
+            "postconditions": ["Service-credential resource created", "Resource assigned unique identifier"]
           },
           "side_effects": {
-            "creates": [
-              "service-credential"
-            ]
+            "creates": ["service-credential"]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -2063,16 +1901,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": [
-          "metadata.name",
-          "metadata.namespace",
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace"],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": [
-            "service-credential"
-          ]
+          "creates": ["service-credential"]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -2219,31 +2051,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/tenant_and_identity/"
         },
         "x-ves-proto-rpc": "ves.io.schema.api_credential.CustomAPI.Revoke",
-        "tags": [
-          "web"
-        ],
+        "tags": ["web"],
         "x-f5xc-operation-metadata": {
           "purpose": "API credential for programmatic access",
-          "required_fields": [
-            "metadata.name",
-            "metadata.namespace",
-            "path.namespace"
-          ],
+          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": [
-              "Api-credential resource created",
-              "Resource assigned unique identifier"
-            ]
+            "prerequisites": ["Active namespace"],
+            "postconditions": ["Api-credential resource created", "Resource assigned unique identifier"]
           },
           "side_effects": {
-            "creates": [
-              "api-credential"
-            ]
+            "creates": ["api-credential"]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -2284,16 +2103,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": [
-          "metadata.name",
-          "metadata.namespace",
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace"],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": [
-            "api-credential"
-          ]
+          "creates": ["api-credential"]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -2440,31 +2253,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/tenant_and_identity/"
         },
         "x-ves-proto-rpc": "ves.io.schema.api_credential.CustomAPI.RevokeScimToken",
-        "tags": [
-          "web"
-        ],
+        "tags": ["web"],
         "x-f5xc-operation-metadata": {
           "purpose": "Authentication credential for access control",
-          "required_fields": [
-            "metadata.name",
-            "metadata.namespace",
-            "path.namespace"
-          ],
+          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": [
-              "Scim-token resource created",
-              "Resource assigned unique identifier"
-            ]
+            "prerequisites": ["Active namespace"],
+            "postconditions": ["Scim-token resource created", "Resource assigned unique identifier"]
           },
           "side_effects": {
-            "creates": [
-              "scim-token"
-            ]
+            "creates": ["scim-token"]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -2505,16 +2305,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": [
-          "metadata.name",
-          "metadata.namespace",
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace"],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": [
-            "scim-token"
-          ]
+          "creates": ["scim-token"]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -2661,31 +2455,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/tenant_and_identity/"
         },
         "x-ves-proto-rpc": "ves.io.schema.api_credential.CustomAPI.RevokeServiceCredentials",
-        "tags": [
-          "web"
-        ],
+        "tags": ["web"],
         "x-f5xc-operation-metadata": {
           "purpose": "Service credential for API authentication",
-          "required_fields": [
-            "metadata.name",
-            "metadata.namespace",
-            "path.namespace"
-          ],
+          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": [
-              "Service-credential resource created",
-              "Resource assigned unique identifier"
-            ]
+            "prerequisites": ["Active namespace"],
+            "postconditions": ["Service-credential resource created", "Resource assigned unique identifier"]
           },
           "side_effects": {
-            "creates": [
-              "service-credential"
-            ]
+            "creates": ["service-credential"]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -2726,16 +2507,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": [
-          "metadata.name",
-          "metadata.namespace",
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace"],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": [
-            "service-credential"
-          ]
+          "creates": ["service-credential"]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -2872,20 +2647,14 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/tenant_and_identity/"
         },
         "x-ves-proto-rpc": "ves.io.schema.api_credential.CustomAPI.GetScimToken",
-        "tags": [
-          "web"
-        ],
+        "tags": ["web"],
         "x-f5xc-operation-metadata": {
           "purpose": "Authentication credential for access control",
-          "required_fields": [
-            "path.namespace"
-          ],
+          "required_fields": ["path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
+            "prerequisites": ["Active namespace"],
             "postconditions": []
           },
           "side_effects": {},
@@ -2928,9 +2697,7 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": [
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["path.namespace"],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -3072,31 +2839,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/tenant_and_identity/"
         },
         "x-ves-proto-rpc": "ves.io.schema.api_credential.CustomAPI.RecreateScimToken",
-        "tags": [
-          "web"
-        ],
+        "tags": ["web"],
         "x-f5xc-operation-metadata": {
           "purpose": "Authentication credential for access control",
-          "required_fields": [
-            "metadata.name",
-            "metadata.namespace",
-            "path.namespace"
-          ],
+          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": [
-              "Scim-token resource created",
-              "Resource assigned unique identifier"
-            ]
+            "prerequisites": ["Active namespace"],
+            "postconditions": ["Scim-token resource created", "Resource assigned unique identifier"]
           },
           "side_effects": {
-            "creates": [
-              "scim-token"
-            ]
+            "creates": ["scim-token"]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -3137,16 +2891,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": [
-          "metadata.name",
-          "metadata.namespace",
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace"],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": [
-            "scim-token"
-          ]
+          "creates": ["scim-token"]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -3283,20 +3031,14 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/tenant_and_identity/"
         },
         "x-ves-proto-rpc": "ves.io.schema.api_credential.CustomAPI.ListServiceCredentials",
-        "tags": [
-          "web"
-        ],
+        "tags": ["web"],
         "x-f5xc-operation-metadata": {
           "purpose": "Service credential for API authentication",
-          "required_fields": [
-            "path.namespace"
-          ],
+          "required_fields": ["path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
+            "prerequisites": ["Active namespace"],
             "postconditions": []
           },
           "side_effects": {},
@@ -3339,9 +3081,7 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": [
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["path.namespace"],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -3483,31 +3223,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/tenant_and_identity/"
         },
         "x-ves-proto-rpc": "ves.io.schema.api_credential.CustomAPI.CreateServiceCredentials",
-        "tags": [
-          "web"
-        ],
+        "tags": ["web"],
         "x-f5xc-operation-metadata": {
           "purpose": "Service credential for API authentication",
-          "required_fields": [
-            "metadata.name",
-            "metadata.namespace",
-            "path.namespace"
-          ],
+          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": [
-              "Service-credential resource created",
-              "Resource assigned unique identifier"
-            ]
+            "prerequisites": ["Active namespace"],
+            "postconditions": ["Service-credential resource created", "Resource assigned unique identifier"]
           },
           "side_effects": {
-            "creates": [
-              "service-credential"
-            ]
+            "creates": ["service-credential"]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -3548,16 +3275,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": [
-          "metadata.name",
-          "metadata.namespace",
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace"],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": [
-            "service-credential"
-          ]
+          "creates": ["service-credential"]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -3705,21 +3426,14 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/tenant_and_identity/"
         },
         "x-ves-proto-rpc": "ves.io.schema.api_credential.CustomAPI.GetServiceCredentials",
-        "tags": [
-          "web"
-        ],
+        "tags": ["web"],
         "x-f5xc-operation-metadata": {
           "purpose": "Service credential for API authentication",
-          "required_fields": [
-            "path.name",
-            "path.namespace"
-          ],
+          "required_fields": ["path.name", "path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
+            "prerequisites": ["Active namespace"],
             "postconditions": []
           },
           "side_effects": {},
@@ -3762,10 +3476,7 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": [
-          "path.name",
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["path.name", "path.namespace"],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -3918,29 +3629,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/tenant_and_identity/"
         },
         "x-ves-proto-rpc": "ves.io.schema.api_credential.CustomAPI.ReplaceServiceCredentials",
-        "tags": [
-          "web"
-        ],
+        "tags": ["web"],
         "x-f5xc-operation-metadata": {
           "purpose": "Service credential for API authentication",
-          "required_fields": [
-            "path.name",
-            "path.namespace"
-          ],
+          "required_fields": ["path.name", "path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": [
-              "Resource updated with new values"
-            ]
+            "prerequisites": ["Active namespace"],
+            "postconditions": ["Resource updated with new values"]
           },
           "side_effects": {
-            "modifies": [
-              "service-credential"
-            ]
+            "modifies": ["service-credential"]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -3981,15 +3681,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": [
-          "path.name",
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["path.name", "path.namespace"],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "modifies": [
-            "service-credential"
-          ]
+          "modifies": ["service-credential"]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 800,
@@ -4050,9 +3745,7 @@
         "x-f5xc-cli-domain": "api",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -4108,7 +3801,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4121,9 +3814,7 @@
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for api_credentialApiCertificateType",
-          "required_fields": [
-            "password"
-          ],
+          "required_fields": ["password"],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for api_credentialApiCertificateType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  password: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"password\": \"value\"\n  }\n}"
@@ -4131,9 +3822,7 @@
         "x-f5xc-cli-domain": "certificates",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -4168,9 +3857,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "name_selector"
-            ]
+            "x-f5xc-conflicts-with": ["name_selector"]
           },
           "name_selector": {
             "allOf": [
@@ -4185,9 +3872,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "expired_selector"
-            ]
+            "x-f5xc-conflicts-with": ["expired_selector"]
           }
         },
         "x-f5xc-description-short": "Request format for revoking multiple API credentials.",
@@ -4201,9 +3886,7 @@
         "x-f5xc-cli-domain": "api",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -4270,7 +3953,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4292,9 +3975,7 @@
         "x-f5xc-cli-domain": "api",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -4362,7 +4043,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               },
               "deterministic": true
             },
@@ -4374,7 +4055,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00",
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace": {
@@ -4406,7 +4087,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               },
               "deterministic": true
             },
@@ -4418,7 +4099,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00",
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "spec": {
@@ -4447,9 +4128,7 @@
         "x-f5xc-cli-domain": "api",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -4500,7 +4179,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4524,7 +4203,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4560,7 +4239,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               },
               "deterministic": true
             },
@@ -4572,7 +4251,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00",
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           }
         },
@@ -4587,9 +4266,7 @@
         "x-f5xc-cli-domain": "api",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -4623,11 +4300,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "api_token",
-              "site_kubeconfig",
-              "vk8s_kubeconfig"
-            ]
+            "x-f5xc-conflicts-with": ["api_token", "site_kubeconfig", "vk8s_kubeconfig"]
           },
           "api_token": {
             "allOf": [
@@ -4641,11 +4314,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "api_certificate",
-              "site_kubeconfig",
-              "vk8s_kubeconfig"
-            ]
+            "x-f5xc-conflicts-with": ["api_certificate", "site_kubeconfig", "vk8s_kubeconfig"]
           },
           "expiration_days": {
             "type": "integer",
@@ -4693,7 +4362,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               },
               "deterministic": true
             },
@@ -4705,7 +4374,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00",
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace": {
@@ -4737,7 +4406,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               },
               "deterministic": true
             },
@@ -4749,7 +4418,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00",
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace_roles": {
@@ -4794,7 +4463,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4816,11 +4485,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "api_certificate",
-              "api_token",
-              "vk8s_kubeconfig"
-            ]
+            "x-f5xc-conflicts-with": ["api_certificate", "api_token", "vk8s_kubeconfig"]
           },
           "type": {
             "allOf": [
@@ -4869,7 +4534,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4895,7 +4560,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4917,19 +4582,13 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "api_certificate",
-              "api_token",
-              "site_kubeconfig"
-            ]
+            "x-f5xc-conflicts-with": ["api_certificate", "api_token", "site_kubeconfig"]
           }
         },
         "x-f5xc-description-short": "CreateServiceCredentialsRequest is the request format for creating service credentials.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for api_credentialCreateServiceCredentialsRequest",
-          "required_fields": [
-            "password"
-          ],
+          "required_fields": ["password"],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for api_credentialCreateServiceCredentialsRequest\nmetadata:\n  name: example\n  namespace: default\nspec:\n  password: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"password\": \"value\"\n  }\n}"
@@ -4937,9 +4596,7 @@
         "x-f5xc-cli-domain": "api",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -4985,7 +4642,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5024,7 +4681,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5050,7 +4707,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5063,9 +4720,7 @@
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for api_credentialCustomCreateSpecType",
-          "required_fields": [
-            "password"
-          ],
+          "required_fields": ["password"],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for api_credentialCustomCreateSpecType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  password: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"password\": \"value\"\n  }\n}"
@@ -5076,9 +4731,7 @@
         },
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -5112,9 +4765,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "credential_type"
-            ]
+            "x-f5xc-conflicts-with": ["credential_type"]
           },
           "credential_type": {
             "allOf": [
@@ -5128,9 +4779,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "all"
-            ]
+            "x-f5xc-conflicts-with": ["all"]
           }
         },
         "x-f5xc-description-short": "It specifies which expired credentials needs to be deleted.",
@@ -5144,9 +4793,7 @@
         "x-f5xc-cli-domain": "api",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -5203,7 +4850,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               },
               "deterministic": true
             },
@@ -5215,7 +4862,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00",
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace": {
@@ -5254,7 +4901,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               },
               "deterministic": true
             },
@@ -5266,17 +4913,14 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00",
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           }
         },
         "x-f5xc-description-short": "GET credential object with a given name.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for api_credentialGetRequest",
-          "required_fields": [
-            "name",
-            "namespace"
-          ],
+          "required_fields": ["name", "namespace"],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for api_credentialGetRequest\nmetadata:\n  name: example\n  namespace: default\nspec:\n  name: value\n  namespace: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"name\": \"value\",\n    \"namespace\": \"value\"\n  }\n}"
@@ -5284,9 +4928,7 @@
         "x-f5xc-cli-domain": "api",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -5332,9 +4974,7 @@
         "x-f5xc-cli-domain": "api",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -5386,7 +5026,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5411,7 +5051,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5450,7 +5090,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               },
               "deterministic": true
             },
@@ -5462,7 +5102,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00",
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace": {
@@ -5494,7 +5134,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               },
               "deterministic": true
             },
@@ -5506,7 +5146,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00",
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace_access": {
@@ -5551,7 +5191,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5564,7 +5204,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00"
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00"
           },
           "user_email": {
             "type": "string",
@@ -5582,7 +5222,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5622,9 +5262,7 @@
         "x-f5xc-cli-domain": "api",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -5681,7 +5319,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5706,7 +5344,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5729,7 +5367,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5754,7 +5392,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5779,7 +5417,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5826,7 +5464,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5850,7 +5488,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5874,7 +5512,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5896,9 +5534,7 @@
         "x-f5xc-cli-domain": "api",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -5937,7 +5573,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.7,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5959,9 +5595,7 @@
         "x-f5xc-cli-domain": "api",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -6013,7 +5647,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6038,7 +5672,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6077,7 +5711,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               },
               "deterministic": true
             },
@@ -6089,7 +5723,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00",
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace": {
@@ -6121,7 +5755,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               },
               "deterministic": true
             },
@@ -6133,7 +5767,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00",
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "type": {
@@ -6164,7 +5798,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6177,7 +5811,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00"
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00"
           },
           "user_email": {
             "type": "string",
@@ -6195,7 +5829,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6216,9 +5850,7 @@
         "x-f5xc-cli-domain": "api",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -6257,7 +5889,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.7,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6279,9 +5911,7 @@
         "x-f5xc-cli-domain": "api",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -6333,7 +5963,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6358,7 +5988,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6397,7 +6027,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               },
               "deterministic": true
             },
@@ -6409,7 +6039,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00",
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace": {
@@ -6441,7 +6071,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               },
               "deterministic": true
             },
@@ -6453,7 +6083,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00",
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace_access": {
@@ -6498,7 +6128,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6511,7 +6141,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00"
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00"
           },
           "user_email": {
             "type": "string",
@@ -6529,7 +6159,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6569,9 +6199,7 @@
         "x-f5xc-cli-domain": "api",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -6627,7 +6255,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6640,9 +6268,7 @@
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for api_credentialNameSelector",
-          "required_fields": [
-            "names"
-          ],
+          "required_fields": ["names"],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for api_credentialNameSelector\nmetadata:\n  name: example\n  namespace: default\nspec:\n  names: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"names\": \"value\"\n  }\n}"
@@ -6650,9 +6276,7 @@
         "x-f5xc-cli-domain": "api",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -6727,9 +6351,7 @@
         "x-f5xc-cli-domain": "api",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -6777,7 +6399,7 @@
               "metadata": {
                 "source": "api-probed",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6816,7 +6438,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               },
               "deterministic": true
             },
@@ -6828,7 +6450,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00",
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           }
         },
@@ -6843,9 +6465,7 @@
         "x-f5xc-cli-domain": "api",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -6918,7 +6538,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               },
               "deterministic": true
             },
@@ -6930,7 +6550,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00",
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace": {
@@ -6969,7 +6589,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               },
               "deterministic": true
             },
@@ -6981,16 +6601,13 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00",
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           }
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for api_credentialRenewRequest",
-          "required_fields": [
-            "name",
-            "namespace"
-          ],
+          "required_fields": ["name", "namespace"],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for api_credentialRenewRequest\nmetadata:\n  name: example\n  namespace: default\nspec:\n  name: value\n  namespace: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"name\": \"value\",\n    \"namespace\": \"value\"\n  }\n}"
@@ -6998,9 +6615,7 @@
         "x-f5xc-cli-domain": "api",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -7057,7 +6672,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               },
               "deterministic": true
             },
@@ -7069,7 +6684,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00",
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace": {
@@ -7102,7 +6717,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               },
               "deterministic": true
             },
@@ -7114,7 +6729,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00",
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace_access": {
@@ -7153,9 +6768,7 @@
         "x-f5xc-description-short": "Request format for replacing service credentials.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for api_credentialReplaceServiceCredentialsRequest",
-          "required_fields": [
-            "name"
-          ],
+          "required_fields": ["name"],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for api_credentialReplaceServiceCredentialsRequest\nmetadata:\n  name: example\n  namespace: default\nspec:\n  name: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"name\": \"value\"\n  }\n}"
@@ -7163,9 +6776,7 @@
         "x-f5xc-cli-domain": "api",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -7217,7 +6828,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7256,7 +6867,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               },
               "deterministic": true
             },
@@ -7268,7 +6879,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00",
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           }
         },
@@ -7283,9 +6894,7 @@
         "x-f5xc-cli-domain": "api",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -7342,7 +6951,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               },
               "deterministic": true
             },
@@ -7354,16 +6963,14 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00",
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           }
         },
         "x-f5xc-description-short": "ScimTokenRequest is used for fetching or revoking scim token.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for api_credentialScimTokenRequest",
-          "required_fields": [
-            "namespace"
-          ],
+          "required_fields": ["namespace"],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for api_credentialScimTokenRequest\nmetadata:\n  name: example\n  namespace: default\nspec:\n  namespace: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"namespace\": \"value\"\n  }\n}"
@@ -7371,9 +6978,7 @@
         "x-f5xc-cli-domain": "api",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -7428,7 +7033,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7441,9 +7046,7 @@
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for api_credentialSiteKubeconfigType",
-          "required_fields": [
-            "site"
-          ],
+          "required_fields": ["site"],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for api_credentialSiteKubeconfigType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  site: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"site\": \"value\"\n  }\n}"
@@ -7451,9 +7054,7 @@
         "x-f5xc-cli-domain": "api",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -7499,9 +7100,7 @@
         "x-f5xc-cli-domain": "api",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -7539,7 +7138,7 @@
             "maxLength": 17,
             "minLength": 17,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00"
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00"
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -7552,9 +7151,7 @@
         "x-f5xc-cli-domain": "api",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -7599,7 +7196,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7635,7 +7232,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7657,9 +7254,7 @@
         "x-f5xc-cli-domain": "api",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -7689,9 +7284,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -7741,7 +7334,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               },
               "deterministic": true
             },
@@ -7753,7 +7346,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00",
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           }
         },
@@ -7768,9 +7361,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -7833,9 +7424,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -7883,9 +7472,7 @@
         "x-f5xc-description-short": "Access info in the namespaces for the entity.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for schemaNamespaceAccessType",
-          "required_fields": [
-            "namespace_role_map"
-          ],
+          "required_fields": ["namespace_role_map"],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for schemaNamespaceAccessType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  namespace_role_map: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"namespace_role_map\": \"value\"\n  }\n}"
@@ -7893,9 +7480,7 @@
         "x-f5xc-cli-domain": "tenant_and_identity",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -7955,7 +7540,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               },
               "deterministic": true
             },
@@ -7967,7 +7552,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00",
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "role": {
@@ -7999,7 +7584,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8013,10 +7598,7 @@
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for schemaNamespaceRoleType",
-          "required_fields": [
-            "namespace",
-            "role"
-          ],
+          "required_fields": ["namespace", "role"],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for schemaNamespaceRoleType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  namespace: value\n  role: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"namespace\": \"value\",\n    \"role\": \"value\"\n  }\n}"
@@ -8024,9 +7606,7 @@
         "x-f5xc-cli-domain": "tenant_and_identity",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -8104,7 +7684,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               },
               "byteLength": {
                 "max": 1200
@@ -8119,7 +7699,7 @@
             },
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00"
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00"
           },
           "disable": {
             "type": "boolean",
@@ -8194,7 +7774,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               },
               "deterministic": true
             },
@@ -8206,7 +7786,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00",
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace": {
@@ -8240,7 +7820,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               },
               "deterministic": true
             },
@@ -8252,7 +7832,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00",
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "uid": {
@@ -8272,7 +7852,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8286,16 +7866,14 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00"
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00"
           }
         },
         "x-f5xc-description-short": "ObjectMetaType is metadata(common attributes) of an object that all configuration objects will have.",
         "x-f5xc-description-medium": "ObjectMetaType is metadata(common attributes) of an object that all configuration objects will have. The information in this type can be specified by user during create and replace APIs.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for schemaObjectMetaType",
-          "required_fields": [
-            "name"
-          ],
+          "required_fields": ["name"],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for schemaObjectMetaType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  name: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"name\": \"value\"\n  }\n}"
@@ -8303,9 +7881,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -8343,7 +7919,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8355,7 +7931,7 @@
             "readOnly": true,
             "minLength": 12,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00"
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00"
           },
           "name": {
             "type": "string",
@@ -8374,7 +7950,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8385,7 +7961,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00"
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00"
           },
           "namespace": {
             "type": "string",
@@ -8418,7 +7994,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               },
               "deterministic": true
             },
@@ -8430,7 +8006,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00",
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "tenant": {
@@ -8450,7 +8026,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8463,7 +8039,7 @@
             "x-field-mutability": "read-only",
             "minLength": 12,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00"
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00"
           },
           "uid": {
             "type": "string",
@@ -8482,7 +8058,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8496,7 +8072,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00"
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00"
           }
         },
         "x-f5xc-description-short": "Type establishes a 'direct reference' from one object(the referrer) to another(the referred).",
@@ -8511,9 +8087,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -8567,7 +8141,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8578,7 +8152,7 @@
             },
             "minLength": 27,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00"
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00"
           },
           "status": {
             "type": "string",
@@ -8596,7 +8170,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8607,7 +8181,7 @@
             },
             "minLength": 17,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00"
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00"
           }
         },
         "x-f5xc-description-short": "Status is a return value for calls that don't return other objects.",
@@ -8621,9 +8195,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -8661,7 +8233,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8689,7 +8261,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8718,7 +8290,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8745,7 +8317,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8774,7 +8346,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8799,7 +8371,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8875,7 +8447,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8913,7 +8485,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8925,7 +8497,7 @@
             "maxLength": 6,
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00"
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00"
           },
           "object_index": {
             "type": "integer",
@@ -8985,7 +8557,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9029,7 +8601,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9042,7 +8614,7 @@
             "x-field-mutability": "read-only",
             "minLength": 12,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00"
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00"
           },
           "trace_info": {
             "type": "string",
@@ -9061,7 +8633,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9088,7 +8660,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9102,7 +8674,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00"
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00"
           },
           "vtrp_id": {
             "type": "string",
@@ -9117,7 +8689,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9155,9 +8727,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -9193,7 +8763,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9204,7 +8774,7 @@
             },
             "minLength": 12,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00"
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00"
           },
           "name": {
             "type": "string",
@@ -9237,7 +8807,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               },
               "deterministic": true
             },
@@ -9249,7 +8819,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00",
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace": {
@@ -9283,7 +8853,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               },
               "deterministic": true
             },
@@ -9295,7 +8865,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00",
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "uid": {
@@ -9313,7 +8883,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9326,7 +8896,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00"
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00"
           }
         },
         "x-f5xc-description-short": "ViewRefType represents a reference to a view.",
@@ -9340,9 +8910,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
