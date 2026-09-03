@@ -850,6 +850,9 @@ def _normalize_domain_names(
 _EMBEDDED_EXAMPLE_PATTERN = re.compile(
     r"(?im)(\bx-example:\s*)(?P<value>[^\r\n]+)",
 )
+_OPAQUE_TOKEN_EXAMPLE_PATTERN = re.compile(
+    r"^[0-9a-fA-F]{100,}:[0-9a-fA-F]{40,}\.?$",
+)
 
 
 def _sanitize_documentation_examples(
@@ -864,7 +867,26 @@ def _sanitize_documentation_examples(
     """
     result = transformer.transform_spec(spec, ["x-f5xc-example"])
     result, _ = _normalize_domain_names(result, ["x-f5xc-example"])
+    result = _sanitize_opaque_example_values(result)
     return sanitize_emails(_sanitize_embedded_examples(result, transformer))
+
+
+def _sanitize_opaque_example_values(value: Any) -> Any:
+    """Replace token-shaped examples that can embed decoded infrastructure IDs."""
+    if isinstance(value, dict):
+        return {
+            key: (
+                "example-token-value"
+                if key in {"x-ves-example", "x-f5xc-example"}
+                and isinstance(item, str)
+                and _OPAQUE_TOKEN_EXAMPLE_PATTERN.fullmatch(item)
+                else _sanitize_opaque_example_values(item)
+            )
+            for key, item in value.items()
+        }
+    if isinstance(value, list):
+        return [_sanitize_opaque_example_values(item) for item in value]
+    return value
 
 
 def _sanitize_embedded_examples(

@@ -59,6 +59,28 @@ def test_example_metadata_uses_reserved_values() -> None:
     assert result["properties"]["email"]["x-f5xc-example"] == "dana@example.com"
 
 
+def test_opaque_token_examples_do_not_publish_embedded_identity() -> None:
+    encoded_identity = ("61" * 60) + ":" + ("62" * 32)
+    spec = {
+        "components": {
+            "schemas": {
+                "Example": {
+                    "properties": {
+                        "token": {
+                            "x-ves-example": encoded_identity + ".",
+                            "x-f5xc-example": encoded_identity,
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    token = _sanitize(spec)["components"]["schemas"]["Example"]["properties"]["token"]
+    assert token["x-ves-example"] == "example-token-value"
+    assert token["x-f5xc-example"] == "example-token-value"
+
+
 def test_embedded_example_is_sanitized_without_rewriting_title_prose() -> None:
     title = (
         'Company name\nx-displayName: "Company"\nx-example: "Acme Ltd."\n'
