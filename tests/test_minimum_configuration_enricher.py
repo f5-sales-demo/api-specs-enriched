@@ -7,7 +7,11 @@ Tests the enrichment of OpenAPI specs with minimum configuration metadata
 for AI-assisted resource creation.
 """
 
+import json
+from pathlib import Path
+
 import pytest
+import yaml
 
 from scripts.utils.extension_constants import (
     X_F5XC_CLI_DOMAIN,
@@ -237,6 +241,87 @@ class TestExampleGeneration:
             example_json = resource_config.get("example_json", "")
             assert example_json, f"No example_json for {resource}"
             assert "metadata" in example_json, f"Invalid JSON structure for {resource}"
+
+    def test_auto_example_is_schema_shaped_and_json_yaml_share_one_object(self):
+        enricher = MinimumConfigurationEnricher()
+        spec = {
+            "components": {
+                "schemas": {
+                    "Envelope": {
+                        "type": "object",
+                        "required": ["count", "items"],
+                        "properties": {
+                            "count": {"type": "integer", "minimum": 2},
+                            "items": {
+                                "type": "array",
+                                "items": {"$ref": "#/components/schemas/Item"},
+                            },
+                        },
+                    },
+                    "Item": {
+                        "allOf": [
+                            {
+                                "type": "object",
+                                "required": ["enabled"],
+                                "properties": {"enabled": {"type": "boolean"}},
+                            }
+                        ]
+                    },
+                }
+            }
+        }
+        result = enricher.enrich_spec(spec)["components"]["schemas"]["Envelope"]
+        minimum = result[X_F5XC_MINIMUM_CONFIGURATION]
+        expected = {"count": 2, "items": [{"enabled": False}]}
+        assert json.loads(minimum["example_json"]) == expected
+        assert yaml.safe_load(minimum["example_yaml"]) == expected
+
+    def test_required_ambiguous_oneof_publishes_diagnostic_without_example(self):
+        enricher = MinimumConfigurationEnricher()
+        spec = {
+            "components": {
+                "schemas": {
+                    "ChoiceRequest": {
+                        "type": "object",
+                        "required": ["choice"],
+                        "properties": {
+                            "choice": {"oneOf": [{"type": "string"}, {"type": "integer"}]}
+                        },
+                    }
+                }
+            }
+        }
+        result = enricher.enrich_spec(spec)["components"]["schemas"]["ChoiceRequest"]
+        minimum = result[X_F5XC_MINIMUM_CONFIGURATION]
+        assert "example_json" not in minimum
+        assert "example_yaml" not in minimum
+        assert minimum["diagnostic"]["reasonCode"] == "unresolved-oneof"
+
+    def test_rrset_uses_flat_txt_example_and_marks_rrset_required(self):
+        source = json.loads(Path("docs/specifications/api/openapi.json").read_text())
+        schema = source["components"]["schemas"]["rrsetCreateRequest"]
+        spec = {
+            "components": {
+                "schemas": {"rrsetCreateRequest": schema, **source["components"]["schemas"]}
+            }
+        }
+        result = MinimumConfigurationEnricher().enrich_spec(spec)["components"]["schemas"][
+            "rrsetCreateRequest"
+        ]
+        minimum = result[X_F5XC_MINIMUM_CONFIGURATION]
+        assert json.loads(minimum["example_json"]) == {
+            "dns_zone_name": "example.com",
+            "group_name": "github-pages-verification",
+            "rrset": {
+                "ttl": 300,
+                "txt_record": {
+                    "name": "_github-pages-challenge-example",
+                    "values": ["verification-value"],
+                },
+            },
+        }
+        assert result["properties"]["rrset"][X_F5XC_REQUIRED_FOR]["minimum_config"] is True
+        assert result["properties"]["rrset"][X_F5XC_REQUIRED_FOR]["create"] is True
 
 
 class TestDomainMapping:
@@ -895,13 +980,13 @@ class TestSubSchemaNotConfigEnriched:
         )
         assert "spec.origin_servers" not in rf
 
-    def test_resource_schema_still_gets_config(self):
-        """A CreateSpecType schema should still get config-driven enrichment."""
+    def test_canonical_request_schema_gets_config(self):
+        """A canonical CreateRequest gets its resource's supplied example."""
         enricher = MinimumConfigurationEnricher()
         spec = {
             "components": {
                 "schemas": {
-                    "viewsorigin_poolCreateSpecType": {
+                    "viewsorigin_poolCreateRequest": {
                         "type": "object",
                         "properties": {
                             "metadata": {"type": "object"},
@@ -912,11 +997,83 @@ class TestSubSchemaNotConfigEnriched:
             },
         }
         enriched = enricher.enrich_spec(spec)
-        schema = enriched["components"]["schemas"]["viewsorigin_poolCreateSpecType"]
+        schema = enriched["components"]["schemas"]["viewsorigin_poolCreateRequest"]
         min_config = schema.get("x-f5xc-minimum-configuration", {})
         rf = min_config.get("required_fields", [])
         # Should have origin_pool's config required_fields
         assert "metadata.name" in rf
+
+    def test_custom_request_does_not_inherit_crud_example(self):
+        enricher = MinimumConfigurationEnricher()
+        spec = {
+            "components": {
+                "schemas": {
+                    "dns_zoneImportBINDCreateRequest": {
+                        "type": "object",
+                        "required": ["file"],
+                        "properties": {"file": {"type": "string"}},
+                    },
+                },
+            },
+        }
+        schema = enricher.enrich_spec(spec)["components"]["schemas"][
+            "dns_zoneImportBINDCreateRequest"
+        ]
+        assert json.loads(schema[X_F5XC_MINIMUM_CONFIGURATION]["example_json"]) == {"file": "value"}
+
+    def test_compound_resource_does_not_inherit_suffix_resource_example(self):
+        assert not MinimumConfigurationEnricher._is_configured_request_schema(
+            "protocol_policerCreateRequest", "policer"
+        )
+
+    def test_replace_request_gets_schema_shaped_example(self):
+        enricher = MinimumConfigurationEnricher()
+        spec = {
+            "components": {
+                "schemas": {
+                    "rrsetReplaceRequest": {
+                        "type": "object",
+                        "required": ["record_name", "type"],
+                        "properties": {
+                            "dns_zone_name": {"type": "string"},
+                            "group_name": {"type": "string"},
+                            "record_name": {"type": "string"},
+                            "rrset": {"type": "object", "properties": {}},
+                            "type": {"type": "string", "enum": ["TXT"]},
+                        },
+                    },
+                },
+            },
+        }
+        schema = enricher.enrich_spec(spec)["components"]["schemas"]["rrsetReplaceRequest"]
+        assert json.loads(schema[X_F5XC_MINIMUM_CONFIGURATION]["example_json"]) == {
+            "record_name": "value",
+            "type": "TXT",
+        }
+
+    def test_reference_requiredness_is_independent_of_schema_order(self):
+        enricher = MinimumConfigurationEnricher()
+        request = {
+            "type": "object",
+            "required": ["metadata"],
+            "properties": {"metadata": {"$ref": "#/components/schemas/LaterMetadata"}},
+        }
+        metadata = {
+            "type": "object",
+            "properties": {"name": {"type": "string", "x-ves-required": "true"}},
+        }
+        spec = {
+            "components": {
+                "schemas": {
+                    "UnknownCreateRequest": request,
+                    "LaterMetadata": metadata,
+                }
+            }
+        }
+        schema = enricher.enrich_spec(spec)["components"]["schemas"]["UnknownCreateRequest"]
+        assert json.loads(schema[X_F5XC_MINIMUM_CONFIGURATION]["example_json"]) == {
+            "metadata": {"name": "value"}
+        }
 
     def test_is_resource_schema_recognizes_suffixes(self):
         """_is_resource_schema correctly identifies resource vs sub schemas."""
@@ -988,14 +1145,13 @@ class TestPrefixStrippingFix:
         assert result == "service_policy"
 
 
-class TestSpecKeyAlwaysPresent:
-    """Test that auto-generated min configs always include spec: {} (#344)."""
+class TestOptionalSpecIsNotInvented:
+    """Auto-generated examples contain only configured or required properties."""
 
     def _make_spec_with_schema(self, schema_name, schema):
         return {"components": {"schemas": {schema_name: schema}}}
 
-    def test_json_includes_spec_key_when_no_spec_fields(self):
-        """Auto-generated JSON should include 'spec': {} even with no required spec fields."""
+    def test_json_omits_optional_spec_when_no_spec_fields(self):
         enricher = MinimumConfigurationEnricher()
         schema = {
             "type": "object",
@@ -1008,12 +1164,9 @@ class TestSpecKeyAlwaysPresent:
         enriched = enricher.enrich_spec(spec)
         mc = enriched["components"]["schemas"]["UnknownResourceCreateRequest"]
         example_json = mc.get("x-f5xc-minimum-configuration", {}).get("example_json", "")
-        assert '"spec": {}' in example_json or '"spec": {' in example_json, (
-            f"spec key must be present in auto-generated JSON, got: {example_json}"
-        )
+        assert json.loads(example_json) == {}
 
-    def test_yaml_includes_spec_key_when_no_spec_fields(self):
-        """Auto-generated YAML should include 'spec: {}' even with no required spec fields."""
+    def test_yaml_omits_optional_spec_when_no_spec_fields(self):
         enricher = MinimumConfigurationEnricher()
         schema = {
             "type": "object",
@@ -1026,9 +1179,26 @@ class TestSpecKeyAlwaysPresent:
         enriched = enricher.enrich_spec(spec)
         mc = enriched["components"]["schemas"]["UnknownResourceCreateRequest"]
         example_yaml = mc.get("x-f5xc-minimum-configuration", {}).get("example_yaml", "")
-        assert "spec: {}" in example_yaml or "spec:" in example_yaml, (
-            f"spec key must be present in auto-generated YAML, got: {example_yaml}"
+        assert yaml.safe_load(example_yaml) == {}
+
+    def test_auto_example_uses_normalized_requiredness(self):
+        enricher = MinimumConfigurationEnricher()
+        schema = {
+            "type": "object",
+            "properties": {
+                "page_size": {
+                    "type": "integer",
+                    "x-ves-validation-rules": {"ves.io.schema.rules.uint32.gte": "1"},
+                }
+            },
+        }
+        enriched = enricher.enrich_spec(
+            self._make_spec_with_schema("ListAffectedUsersRequest", schema)
         )
+        config = enriched["components"]["schemas"]["ListAffectedUsersRequest"][
+            X_F5XC_MINIMUM_CONFIGURATION
+        ]
+        assert json.loads(config["example_json"]) == {"page_size": 1}
 
 
 if __name__ == "__main__":

@@ -194,6 +194,25 @@ resources:
     relationship_hints:
       - "dns_load_balancer: Geographic or weighted DNS routing"
 
+  rrset:
+    description: "Resource-record set within an authoritative DNS zone"
+    description_short: "DNS record set"
+    tier: "Standard"
+    icon: "🌐"
+    category: "DNS"
+    supports_logs: false
+    supports_metrics: false
+    dependencies:
+      required:
+        - dns_zone
+      optional: []
+    relationship_hints:
+      - "dns_zone: Parent authoritative zone"
+    schema_components: ["rrset"]
+    api_paths:
+      - "/api/config/dns/namespaces/system/dns_zones/{dns_zone_name}/rrsets/{group_name}"
+      - "/api/config/dns/namespaces/system/dns_zones/{dns_zone_name}/rrsets/{group_name}/{record_name}/{type}"
+
   dns_domain:
     description: "DNS domain delegation and configuration settings"
     description_short: "DNS domain"
