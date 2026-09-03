@@ -72,11 +72,7 @@
     },
     "x-f5xc-namespace-profile": {
       "constraint": {
-        "allowed": [
-          "custom",
-          "default",
-          "shared"
-        ],
+        "allowed": ["custom", "default", "shared"],
         "enforced": true
       },
       "recommendation": {
@@ -102,19 +98,12 @@
         "console_url": {
           "default": "console.ves.volterra.io",
           "description": "Console URL base (e.g., console.ves.volterra.io for production, staging.volterra.us for staging)",
-          "enum": [
-            "console.ves.volterra.io",
-            "staging.volterra.us"
-          ]
+          "enum": ["console.ves.volterra.io", "staging.volterra.us"]
         },
         "environment": {
           "default": "production",
           "description": "Environment designation (production, staging, development)",
-          "enum": [
-            "production",
-            "staging",
-            "development"
-          ]
+          "enum": ["production", "staging", "development"]
         },
         "domain_prefix": {
           "default": "api",
@@ -275,31 +264,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/rate_limiting/"
         },
         "x-ves-proto-rpc": "ves.io.schema.policer.API.Create",
-        "tags": [
-          "config"
-        ],
+        "tags": ["config"],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": [
-            "metadata.name",
-            "metadata.namespace",
-            "path.metadata.namespace"
-          ],
+          "required_fields": ["metadata.name", "metadata.namespace", "path.metadata.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": [
-              "Policer resource created",
-              "Resource assigned unique identifier"
-            ]
+            "prerequisites": ["Active namespace"],
+            "postconditions": ["Policer resource created", "Resource assigned unique identifier"]
           },
           "side_effects": {
-            "creates": [
-              "policer"
-            ]
+            "creates": ["policer"]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -340,16 +316,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": [
-          "metadata.name",
-          "metadata.namespace",
-          "path.metadata.namespace"
-        ],
+        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.metadata.namespace"],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": [
-            "policer"
-          ]
+          "creates": ["policer"]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -507,29 +477,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/rate_limiting/"
         },
         "x-ves-proto-rpc": "ves.io.schema.policer.API.Replace",
-        "tags": [
-          "config"
-        ],
+        "tags": ["config"],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource replacement operation",
-          "required_fields": [
-            "path.metadata.name",
-            "path.metadata.namespace"
-          ],
+          "required_fields": ["path.metadata.name", "path.metadata.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": [
-              "Resource updated with new values"
-            ]
+            "prerequisites": ["Active namespace"],
+            "postconditions": ["Resource updated with new values"]
           },
           "side_effects": {
-            "modifies": [
-              "policer"
-            ]
+            "modifies": ["policer"]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -570,15 +529,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": [
-          "path.metadata.name",
-          "path.metadata.namespace"
-        ],
+        "x-f5xc-required-fields": ["path.metadata.name", "path.metadata.namespace"],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "modifies": [
-            "policer"
-          ]
+          "modifies": ["policer"]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 800,
@@ -754,20 +708,14 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/rate_limiting/"
         },
         "x-ves-proto-rpc": "ves.io.schema.policer.API.List",
-        "tags": [
-          "config"
-        ],
+        "tags": ["config"],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": [
-            "path.namespace"
-          ],
+          "required_fields": ["path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
+            "prerequisites": ["Active namespace"],
             "postconditions": []
           },
           "side_effects": {},
@@ -810,9 +758,7 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": [
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["path.namespace"],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -980,21 +926,14 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/rate_limiting/"
         },
         "x-ves-proto-rpc": "ves.io.schema.policer.API.Get",
-        "tags": [
-          "config"
-        ],
+        "tags": ["config"],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": [
-            "path.name",
-            "path.namespace"
-          ],
+          "required_fields": ["path.name", "path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
+            "prerequisites": ["Active namespace"],
             "postconditions": []
           },
           "side_effects": {},
@@ -1037,10 +976,7 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": [
-          "path.name",
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["path.name", "path.namespace"],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -1191,31 +1127,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/rate_limiting/"
         },
         "x-ves-proto-rpc": "ves.io.schema.policer.API.Delete",
-        "tags": [
-          "config"
-        ],
+        "tags": ["config"],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource deletion operation",
-          "required_fields": [
-            "path.name",
-            "path.namespace"
-          ],
+          "required_fields": ["path.name", "path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": [
-              "Resource removed from system",
-              "Associated resources may be affected"
-            ]
+            "prerequisites": ["Active namespace"],
+            "postconditions": ["Resource removed from system", "Associated resources may be affected"]
           },
           "side_effects": {
-            "deletes": [
-              "policer",
-              "contained_resources"
-            ]
+            "deletes": ["policer", "contained_resources"]
           },
           "danger_level": "high",
           "confirmation_required": true,
@@ -1256,17 +1179,11 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": [
-          "path.name",
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["path.name", "path.namespace"],
         "x-f5xc-danger-level": "high",
         "x-f5xc-confirmation-required": true,
         "x-f5xc-side-effects": {
-          "deletes": [
-            "policer",
-            "contained_resources"
-          ]
+          "deletes": ["policer", "contained_resources"]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 500,
@@ -1413,31 +1330,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/rate_limiting/"
         },
         "x-ves-proto-rpc": "ves.io.schema.protocol_policer.API.Create",
-        "tags": [
-          "config"
-        ],
+        "tags": ["config"],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": [
-            "metadata.name",
-            "metadata.namespace",
-            "path.metadata.namespace"
-          ],
+          "required_fields": ["metadata.name", "metadata.namespace", "path.metadata.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": [
-              "Protocol-policer resource created",
-              "Resource assigned unique identifier"
-            ]
+            "prerequisites": ["Active namespace"],
+            "postconditions": ["Protocol-policer resource created", "Resource assigned unique identifier"]
           },
           "side_effects": {
-            "creates": [
-              "protocol-policer"
-            ]
+            "creates": ["protocol-policer"]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -1478,16 +1382,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": [
-          "metadata.name",
-          "metadata.namespace",
-          "path.metadata.namespace"
-        ],
+        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.metadata.namespace"],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": [
-            "protocol-policer"
-          ]
+          "creates": ["protocol-policer"]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -1645,29 +1543,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/rate_limiting/"
         },
         "x-ves-proto-rpc": "ves.io.schema.protocol_policer.API.Replace",
-        "tags": [
-          "config"
-        ],
+        "tags": ["config"],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource replacement operation",
-          "required_fields": [
-            "path.metadata.name",
-            "path.metadata.namespace"
-          ],
+          "required_fields": ["path.metadata.name", "path.metadata.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": [
-              "Resource updated with new values"
-            ]
+            "prerequisites": ["Active namespace"],
+            "postconditions": ["Resource updated with new values"]
           },
           "side_effects": {
-            "modifies": [
-              "protocol-policer"
-            ]
+            "modifies": ["protocol-policer"]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -1708,15 +1595,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": [
-          "path.metadata.name",
-          "path.metadata.namespace"
-        ],
+        "x-f5xc-required-fields": ["path.metadata.name", "path.metadata.namespace"],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "modifies": [
-            "protocol-policer"
-          ]
+          "modifies": ["protocol-policer"]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 800,
@@ -1892,20 +1774,14 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/rate_limiting/"
         },
         "x-ves-proto-rpc": "ves.io.schema.protocol_policer.API.List",
-        "tags": [
-          "config"
-        ],
+        "tags": ["config"],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": [
-            "path.namespace"
-          ],
+          "required_fields": ["path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
+            "prerequisites": ["Active namespace"],
             "postconditions": []
           },
           "side_effects": {},
@@ -1948,9 +1824,7 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": [
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["path.namespace"],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -2118,21 +1992,14 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/rate_limiting/"
         },
         "x-ves-proto-rpc": "ves.io.schema.protocol_policer.API.Get",
-        "tags": [
-          "config"
-        ],
+        "tags": ["config"],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": [
-            "path.name",
-            "path.namespace"
-          ],
+          "required_fields": ["path.name", "path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
+            "prerequisites": ["Active namespace"],
             "postconditions": []
           },
           "side_effects": {},
@@ -2175,10 +2042,7 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": [
-          "path.name",
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["path.name", "path.namespace"],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -2329,31 +2193,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/rate_limiting/"
         },
         "x-ves-proto-rpc": "ves.io.schema.protocol_policer.API.Delete",
-        "tags": [
-          "config"
-        ],
+        "tags": ["config"],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource deletion operation",
-          "required_fields": [
-            "path.name",
-            "path.namespace"
-          ],
+          "required_fields": ["path.name", "path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": [
-              "Resource removed from system",
-              "Associated resources may be affected"
-            ]
+            "prerequisites": ["Active namespace"],
+            "postconditions": ["Resource removed from system", "Associated resources may be affected"]
           },
           "side_effects": {
-            "deletes": [
-              "protocol-policer",
-              "contained_resources"
-            ]
+            "deletes": ["protocol-policer", "contained_resources"]
           },
           "danger_level": "high",
           "confirmation_required": true,
@@ -2394,17 +2245,11 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": [
-          "path.name",
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["path.name", "path.namespace"],
         "x-f5xc-danger-level": "high",
         "x-f5xc-confirmation-required": true,
         "x-f5xc-side-effects": {
-          "deletes": [
-            "protocol-policer",
-            "contained_resources"
-          ]
+          "deletes": ["protocol-policer", "contained_resources"]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 500,
@@ -2551,31 +2396,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/rate_limiting/"
         },
         "x-ves-proto-rpc": "ves.io.schema.rate_limiter.API.Create",
-        "tags": [
-          "config"
-        ],
+        "tags": ["config"],
         "x-f5xc-operation-metadata": {
           "purpose": "Request rate limiting for traffic control",
-          "required_fields": [
-            "metadata.name",
-            "metadata.namespace",
-            "path.metadata.namespace"
-          ],
+          "required_fields": ["metadata.name", "metadata.namespace", "path.metadata.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": [
-              "Rate-limiter resource created",
-              "Resource assigned unique identifier"
-            ]
+            "prerequisites": ["Active namespace"],
+            "postconditions": ["Rate-limiter resource created", "Resource assigned unique identifier"]
           },
           "side_effects": {
-            "creates": [
-              "rate-limiter"
-            ]
+            "creates": ["rate-limiter"]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -2616,16 +2448,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": [
-          "metadata.name",
-          "metadata.namespace",
-          "path.metadata.namespace"
-        ],
+        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.metadata.namespace"],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": [
-            "rate-limiter"
-          ]
+          "creates": ["rate-limiter"]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -2783,29 +2609,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/rate_limiting/"
         },
         "x-ves-proto-rpc": "ves.io.schema.rate_limiter.API.Replace",
-        "tags": [
-          "config"
-        ],
+        "tags": ["config"],
         "x-f5xc-operation-metadata": {
           "purpose": "Request rate limiting for traffic control",
-          "required_fields": [
-            "path.metadata.name",
-            "path.metadata.namespace"
-          ],
+          "required_fields": ["path.metadata.name", "path.metadata.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": [
-              "Resource updated with new values"
-            ]
+            "prerequisites": ["Active namespace"],
+            "postconditions": ["Resource updated with new values"]
           },
           "side_effects": {
-            "modifies": [
-              "rate-limiter"
-            ]
+            "modifies": ["rate-limiter"]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -2846,15 +2661,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": [
-          "path.metadata.name",
-          "path.metadata.namespace"
-        ],
+        "x-f5xc-required-fields": ["path.metadata.name", "path.metadata.namespace"],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "modifies": [
-            "rate-limiter"
-          ]
+          "modifies": ["rate-limiter"]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 800,
@@ -3030,20 +2840,14 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/rate_limiting/"
         },
         "x-ves-proto-rpc": "ves.io.schema.rate_limiter.API.List",
-        "tags": [
-          "config"
-        ],
+        "tags": ["config"],
         "x-f5xc-operation-metadata": {
           "purpose": "Request rate limiting for traffic control",
-          "required_fields": [
-            "path.namespace"
-          ],
+          "required_fields": ["path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
+            "prerequisites": ["Active namespace"],
             "postconditions": []
           },
           "side_effects": {},
@@ -3086,9 +2890,7 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": [
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["path.namespace"],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -3256,21 +3058,14 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/rate_limiting/"
         },
         "x-ves-proto-rpc": "ves.io.schema.rate_limiter.API.Get",
-        "tags": [
-          "config"
-        ],
+        "tags": ["config"],
         "x-f5xc-operation-metadata": {
           "purpose": "Request rate limiting for traffic control",
-          "required_fields": [
-            "path.name",
-            "path.namespace"
-          ],
+          "required_fields": ["path.name", "path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
+            "prerequisites": ["Active namespace"],
             "postconditions": []
           },
           "side_effects": {},
@@ -3313,10 +3108,7 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": [
-          "path.name",
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["path.name", "path.namespace"],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -3467,31 +3259,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/rate_limiting/"
         },
         "x-ves-proto-rpc": "ves.io.schema.rate_limiter.API.Delete",
-        "tags": [
-          "config"
-        ],
+        "tags": ["config"],
         "x-f5xc-operation-metadata": {
           "purpose": "Request rate limiting for traffic control",
-          "required_fields": [
-            "path.name",
-            "path.namespace"
-          ],
+          "required_fields": ["path.name", "path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": [
-              "Resource removed from system",
-              "Associated resources may be affected"
-            ]
+            "prerequisites": ["Active namespace"],
+            "postconditions": ["Resource removed from system", "Associated resources may be affected"]
           },
           "side_effects": {
-            "deletes": [
-              "rate-limiter",
-              "contained_resources"
-            ]
+            "deletes": ["rate-limiter", "contained_resources"]
           },
           "danger_level": "high",
           "confirmation_required": true,
@@ -3532,17 +3311,11 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": [
-          "path.name",
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["path.name", "path.namespace"],
         "x-f5xc-danger-level": "high",
         "x-f5xc-confirmation-required": true,
         "x-f5xc-side-effects": {
-          "deletes": [
-            "rate-limiter",
-            "contained_resources"
-          ]
+          "deletes": ["rate-limiter", "contained_resources"]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 500,
@@ -3624,11 +3397,7 @@
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -3699,11 +3468,7 @@
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -3750,7 +3515,7 @@
               "metadata": {
                 "source": "api-probed",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -3789,7 +3554,7 @@
               "metadata": {
                 "source": "api-probed",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -3854,11 +3619,7 @@
         },
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -3922,7 +3683,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               },
               "deterministic": true
             },
@@ -3934,7 +3695,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00",
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace": {
@@ -3967,7 +3728,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               },
               "deterministic": true
             },
@@ -3979,7 +3740,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00",
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           }
         },
@@ -3993,11 +3754,7 @@
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -4141,7 +3898,7 @@
             "maxLength": 17,
             "minLength": 17,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00"
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00"
           },
           "system_metadata": {
             "allOf": [
@@ -4161,9 +3918,7 @@
             "type": "string",
             "x-f5xc-concurrency-token": {
               "server_assigned": true,
-              "echo_on_operations": [
-                "replace"
-              ]
+              "echo_on_operations": ["replace"]
             }
           }
         },
@@ -4177,11 +3932,7 @@
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -4228,7 +3979,7 @@
               "metadata": {
                 "source": "api-probed",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4267,7 +4018,7 @@
               "metadata": {
                 "source": "api-probed",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4327,11 +4078,7 @@
         },
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -4387,7 +4134,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.7,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4408,11 +4155,7 @@
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -4464,7 +4207,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.8,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4475,7 +4218,7 @@
             },
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00"
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00"
           },
           "disabled": {
             "type": "boolean",
@@ -4562,7 +4305,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               },
               "deterministic": true
             },
@@ -4574,7 +4317,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00",
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace": {
@@ -4606,7 +4349,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               },
               "deterministic": true
             },
@@ -4618,7 +4361,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00",
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "owner_view": {
@@ -4688,7 +4431,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4700,7 +4443,7 @@
             "x-field-mutability": "read-only",
             "minLength": 12,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00"
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00"
           },
           "uid": {
             "type": "string",
@@ -4717,7 +4460,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4730,7 +4473,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00"
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00"
           }
         },
         "x-f5xc-description-short": "By default a summary of policer is returned in 'List'. By setting 'report_fields' in the ListRequest more details of each item can be got.",
@@ -4745,11 +4488,7 @@
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -4767,10 +4506,7 @@
         "type": "string",
         "description": "- POLICER_MODE_NOT_SHARED: Not Shared\n\nA separate policer instance is created for each reference to the policer\n- POLICER_MODE_SHARED: Shared\n\nA common policer instance is used for for all references to the policer.",
         "title": "PolicerMode",
-        "enum": [
-          "POLICER_MODE_NOT_SHARED",
-          "POLICER_MODE_SHARED"
-        ],
+        "enum": ["POLICER_MODE_NOT_SHARED", "POLICER_MODE_SHARED"],
         "default": "POLICER_MODE_NOT_SHARED",
         "x-displayname": "Policer Mode.",
         "x-ves-proto-enum": "ves.io.schema.policer.PolicerMode",
@@ -4786,11 +4522,7 @@
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -4808,9 +4540,7 @@
         "type": "string",
         "description": "Specifies the type of Policer\n\nBasic Single-Rate Two-Color Policer.",
         "title": "PolicerType",
-        "enum": [
-          "POLICER_SINGLE_RATE_TWO_COLOR"
-        ],
+        "enum": ["POLICER_SINGLE_RATE_TWO_COLOR"],
         "default": "POLICER_SINGLE_RATE_TWO_COLOR",
         "x-displayname": "Policer Type.",
         "x-ves-proto-enum": "ves.io.schema.policer.PolicerType",
@@ -4825,11 +4555,7 @@
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -4882,9 +4608,7 @@
             "type": "string",
             "x-f5xc-concurrency-token": {
               "server_assigned": true,
-              "echo_on_operations": [
-                "replace"
-              ]
+              "echo_on_operations": ["replace"]
             }
           }
         },
@@ -4903,11 +4627,7 @@
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -4934,11 +4654,7 @@
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -4985,7 +4701,7 @@
               "metadata": {
                 "source": "api-probed",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5024,7 +4740,7 @@
               "metadata": {
                 "source": "api-probed",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5085,11 +4801,7 @@
         },
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -5168,11 +4880,7 @@
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -5203,7 +4911,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5226,7 +4934,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5237,7 +4945,7 @@
             },
             "minLength": 3,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00"
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00"
           }
         },
         "x-f5xc-description-short": "Contains an arbitrary serialized protocol buffer message along with a URL that describes the type of the serialized message.",
@@ -5252,11 +4960,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -5298,7 +5002,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.95,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               },
               "deterministic": true
             },
@@ -5326,7 +5030,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5352,7 +5056,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5363,7 +5067,7 @@
             },
             "minLength": 27,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00"
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00"
           },
           "service_name": {
             "type": "string",
@@ -5380,7 +5084,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5406,15 +5110,7 @@
             "x-f5xc-description-short": "Status of the condition \"Success\" Validation has succeeded.",
             "x-f5xc-description-medium": "Status of the condition \"Success\" Validation has succeeded. Requested operation was successful. \"Failed\" Validation has failed. \"Incomplete\" Validation of configuration has failed due to missing configuration. \"Installed\" Validation has passed and configuration has been installed in data path or...",
             "maxLength": 1024,
-            "enum": [
-              "Success",
-              "Failed",
-              "Incomplete",
-              "Installed",
-              "Down",
-              "Disabled",
-              "NotApplicable"
-            ],
+            "enum": ["Success", "Failed", "Incomplete", "Installed", "Down", "Disabled", "NotApplicable"],
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "general",
@@ -5422,7 +5118,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5433,7 +5129,7 @@
             },
             "minLength": 17,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00"
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00"
           },
           "type": {
             "type": "string",
@@ -5451,10 +5147,7 @@
             "x-f5xc-description-short": "Type of the condition \"Validation\" represents validation user given configuration object \"Operational\" represents operational status of a given...",
             "x-f5xc-description-medium": "Type of the condition \"Validation\" represents validation user given configuration object \"Operational\" represents operational status of a given configuration object.",
             "maxLength": 1024,
-            "enum": [
-              "Validation",
-              "Operational"
-            ],
+            "enum": ["Validation", "Operational"],
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "general",
@@ -5462,7 +5155,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5485,11 +5178,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -5533,11 +5222,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -5599,7 +5284,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5621,11 +5306,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -5675,7 +5356,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               },
               "deterministic": true
             },
@@ -5687,7 +5368,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00",
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           }
         },
@@ -5702,11 +5383,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -5769,11 +5446,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -5847,7 +5520,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               },
               "byteLength": {
                 "max": 1200
@@ -5862,7 +5535,7 @@
             },
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00"
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00"
           },
           "disable": {
             "type": "boolean",
@@ -5932,7 +5605,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               },
               "deterministic": true
             },
@@ -5944,7 +5617,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00",
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace": {
@@ -5978,7 +5651,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               },
               "deterministic": true
             },
@@ -5990,16 +5663,14 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00",
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           }
         },
         "x-f5xc-description-short": "ObjectCreateMetaType is metadata that can be specified in Create request of an object.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for schemaObjectCreateMetaType",
-          "required_fields": [
-            "name"
-          ],
+          "required_fields": ["name"],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for schemaObjectCreateMetaType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  name: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"name\": \"value\"\n  }\n}"
@@ -6007,11 +5678,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -6086,7 +5753,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               },
               "byteLength": {
                 "max": 1200
@@ -6101,7 +5768,7 @@
             },
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00"
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00"
           },
           "disable": {
             "type": "boolean",
@@ -6173,7 +5840,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               },
               "deterministic": true
             },
@@ -6185,7 +5852,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00",
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace": {
@@ -6219,7 +5886,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               },
               "deterministic": true
             },
@@ -6231,16 +5898,14 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00",
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           }
         },
         "x-f5xc-description-short": "ObjectGetMetaType is metadata that can be specified in GET/Create response of an object.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for schemaObjectGetMetaType",
-          "required_fields": [
-            "name"
-          ],
+          "required_fields": ["name"],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for schemaObjectGetMetaType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  name: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"name\": \"value\"\n  }\n}"
@@ -6248,11 +5913,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -6290,7 +5951,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6302,7 +5963,7 @@
             "readOnly": true,
             "minLength": 12,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00"
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00"
           },
           "name": {
             "type": "string",
@@ -6321,7 +5982,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6332,7 +5993,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00"
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00"
           },
           "namespace": {
             "type": "string",
@@ -6365,7 +6026,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               },
               "deterministic": true
             },
@@ -6377,7 +6038,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00",
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "tenant": {
@@ -6397,7 +6058,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6410,7 +6071,7 @@
             "x-field-mutability": "read-only",
             "minLength": 12,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00"
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00"
           },
           "uid": {
             "type": "string",
@@ -6429,7 +6090,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6443,7 +6104,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00"
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00"
           }
         },
         "x-f5xc-description-short": "Type establishes a 'direct reference' from one object(the referrer) to another(the referred).",
@@ -6458,11 +6119,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -6537,7 +6194,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               },
               "byteLength": {
                 "max": 1200
@@ -6552,7 +6209,7 @@
             },
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00"
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00"
           },
           "disable": {
             "type": "boolean",
@@ -6622,7 +6279,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               },
               "deterministic": true
             },
@@ -6634,7 +6291,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00",
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace": {
@@ -6668,7 +6325,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               },
               "deterministic": true
             },
@@ -6680,7 +6337,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00",
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           }
         },
@@ -6695,11 +6352,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -6737,7 +6390,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6765,7 +6418,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6793,7 +6446,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6832,7 +6485,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6859,7 +6512,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6872,7 +6525,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00"
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00"
           },
           "vtrp_id": {
             "type": "string",
@@ -6888,7 +6541,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6925,11 +6578,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -6947,10 +6596,7 @@
         "type": "string",
         "description": "StatusPublishType is all possible publish operations on a StatusObject\n\n- STATUS_DO_NOT_PUBLISH: Do Not Publish\n\nDo not propagate this status to user. This could be because status is only informational\n- STATUS_PUBLISH: Publish\n\nPropagate this status up to user as it might be actionable.",
         "title": "StatusPublishType",
-        "enum": [
-          "STATUS_DO_NOT_PUBLISH",
-          "STATUS_PUBLISH"
-        ],
+        "enum": ["STATUS_DO_NOT_PUBLISH", "STATUS_PUBLISH"],
         "default": "STATUS_DO_NOT_PUBLISH",
         "x-displayname": "Status Publish Type.",
         "x-ves-proto-enum": "ves.io.schema.StatusPublishType",
@@ -6966,11 +6612,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -7024,7 +6666,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7035,7 +6677,7 @@
             },
             "minLength": 27,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00"
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00"
           },
           "status": {
             "type": "string",
@@ -7053,7 +6695,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7064,7 +6706,7 @@
             },
             "minLength": 17,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00"
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00"
           }
         },
         "x-f5xc-description-short": "Status is a return value for calls that don't return other objects.",
@@ -7078,11 +6720,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -7120,7 +6758,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7147,7 +6785,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7174,7 +6812,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7202,7 +6840,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7278,7 +6916,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7346,7 +6984,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7358,7 +6996,7 @@
             "x-field-mutability": "read-only",
             "minLength": 12,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00"
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00"
           },
           "uid": {
             "type": "string",
@@ -7377,7 +7015,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7390,7 +7028,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00"
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00"
           }
         },
         "x-f5xc-description-short": "SystemObjectGetMetaType is metadata generated or populated by the system for all persisted objects and cannot be updated directly by users.",
@@ -7405,11 +7043,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -7445,7 +7079,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7456,7 +7090,7 @@
             },
             "minLength": 12,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00"
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00"
           },
           "name": {
             "type": "string",
@@ -7489,7 +7123,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               },
               "deterministic": true
             },
@@ -7501,7 +7135,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00",
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace": {
@@ -7535,7 +7169,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               },
               "deterministic": true
             },
@@ -7547,7 +7181,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00",
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "uid": {
@@ -7565,7 +7199,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7578,7 +7212,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00"
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00"
           }
         },
         "x-f5xc-description-short": "ViewRefType represents a reference to a view.",
@@ -7592,11 +7226,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -7661,9 +7291,7 @@
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": true
           },
           "recommendation": {
@@ -7734,9 +7362,7 @@
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": true
           },
           "recommendation": {
@@ -7784,7 +7410,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7819,9 +7445,7 @@
         },
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": true
           },
           "recommendation": {
@@ -7885,7 +7509,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               },
               "deterministic": true
             },
@@ -7897,7 +7521,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00",
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace": {
@@ -7930,7 +7554,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               },
               "deterministic": true
             },
@@ -7942,7 +7566,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00",
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           }
         },
@@ -7956,9 +7580,7 @@
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": true
           },
           "recommendation": {
@@ -7989,9 +7611,7 @@
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": true
           },
           "recommendation": {
@@ -8135,7 +7755,7 @@
             "maxLength": 17,
             "minLength": 17,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00"
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00"
           },
           "system_metadata": {
             "allOf": [
@@ -8155,9 +7775,7 @@
             "type": "string",
             "x-f5xc-concurrency-token": {
               "server_assigned": true,
-              "echo_on_operations": [
-                "replace"
-              ]
+              "echo_on_operations": ["replace"]
             }
           }
         },
@@ -8171,9 +7789,7 @@
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": true
           },
           "recommendation": {
@@ -8221,7 +7837,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8252,9 +7868,7 @@
         },
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": true
           },
           "recommendation": {
@@ -8272,11 +7886,7 @@
         "type": "string",
         "description": "ICMP echo request packet which is sent by originator of Ping packet\nICMP echo reply packet which is sent in response to ICMP echo request packet\nAll ICMP packet types including TTL exceeded, destination\nunreachable and source quench etc.",
         "title": "ICMP Message types",
-        "enum": [
-          "ECHO_REPLY",
-          "ECHO_REQUEST",
-          "ALL_ICMP_MSG"
-        ],
+        "enum": ["ECHO_REPLY", "ECHO_REQUEST", "ALL_ICMP_MSG"],
         "default": "ECHO_REPLY",
         "x-displayname": "ICMP Message Types.",
         "x-ves-proto-enum": "ves.io.schema.protocol_policer.IcmpMsgType",
@@ -8292,9 +7902,7 @@
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": true
           },
           "recommendation": {
@@ -8342,9 +7950,7 @@
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": true
           },
           "recommendation": {
@@ -8400,7 +8006,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.7,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8421,9 +8027,7 @@
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": true
           },
           "recommendation": {
@@ -8476,7 +8080,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.8,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8487,7 +8091,7 @@
             },
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00"
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00"
           },
           "disabled": {
             "type": "boolean",
@@ -8574,7 +8178,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               },
               "deterministic": true
             },
@@ -8586,7 +8190,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00",
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace": {
@@ -8618,7 +8222,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               },
               "deterministic": true
             },
@@ -8630,7 +8234,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00",
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "owner_view": {
@@ -8700,7 +8304,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8712,7 +8316,7 @@
             "x-field-mutability": "read-only",
             "minLength": 12,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00"
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00"
           },
           "uid": {
             "type": "string",
@@ -8730,7 +8334,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8743,7 +8347,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00"
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00"
           }
         },
         "x-f5xc-description-short": "By default a summary of protocol_policer is returned in 'List'. By setting 'report_fields' in the ListRequest more details of each item can be got.",
@@ -8758,9 +8362,7 @@
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": true
           },
           "recommendation": {
@@ -8812,7 +8414,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8840,9 +8442,7 @@
         "x-f5xc-description-medium": "Protocol policer has set or network protocol fields and flags to be match on a layer 4 packet and corresponding rate limit to be applied, this would be useful in specifying * Ratelimiting TCP sessions accepted from in a given duration * Ratelimiting various ICMP message type packets *...",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for protocol_policerProtocolPolicerType",
-          "required_fields": [
-            "policer"
-          ],
+          "required_fields": ["policer"],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for protocol_policerProtocolPolicerType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  policer: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"policer\": \"value\"\n  }\n}"
@@ -8850,9 +8450,7 @@
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": true
           },
           "recommendation": {
@@ -8886,11 +8484,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "icmp",
-              "tcp",
-              "udp"
-            ]
+            "x-f5xc-conflicts-with": ["icmp", "tcp", "udp"]
           },
           "icmp": {
             "allOf": [
@@ -8904,11 +8498,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "dns",
-              "tcp",
-              "udp"
-            ]
+            "x-f5xc-conflicts-with": ["dns", "tcp", "udp"]
           },
           "tcp": {
             "allOf": [
@@ -8922,11 +8512,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "dns",
-              "icmp",
-              "udp"
-            ]
+            "x-f5xc-conflicts-with": ["dns", "icmp", "udp"]
           },
           "udp": {
             "allOf": [
@@ -8940,11 +8526,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "dns",
-              "icmp",
-              "tcp"
-            ]
+            "x-f5xc-conflicts-with": ["dns", "icmp", "tcp"]
           }
         },
         "x-f5xc-description-short": "Protocol and protocol specific flags to be matched in packet.",
@@ -8958,9 +8540,7 @@
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": true
           },
           "recommendation": {
@@ -9013,9 +8593,7 @@
             "type": "string",
             "x-f5xc-concurrency-token": {
               "server_assigned": true,
-              "echo_on_operations": [
-                "replace"
-              ]
+              "echo_on_operations": ["replace"]
             }
           }
         },
@@ -9034,9 +8612,7 @@
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": true
           },
           "recommendation": {
@@ -9063,9 +8639,7 @@
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": true
           },
           "recommendation": {
@@ -9113,7 +8687,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9144,9 +8718,7 @@
         },
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": true
           },
           "recommendation": {
@@ -9225,9 +8797,7 @@
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": true
           },
           "recommendation": {
@@ -9245,16 +8815,7 @@
         "type": "string",
         "description": "TCP flags indicate a particular connection state\n\nFIN flag which indicates that there is no more data from the sender, used in the last packet sent from the sender\nSYN flag set in the first packet from sender and receiver while establishing three way handshake between two hosts\nRST flag that resets a connection when the host receives an unexpected packet\nPSH flag that tells the receiver to process packets as they are received, instead of buffering them\nACK flag that acknowledges successful receipt of a packet\nURG flag that notifies the receiver about urgent packets that need to processed before other packets\nKeepalive flag tracks the keepalive packets for TCP connection liveness\nMatch any TCP Flag - FIN / SYN / RST / PSH / ACK / URG / KEEPALIVE.",
         "title": "TCP Flags",
-        "enum": [
-          "FIN",
-          "SYN",
-          "RST",
-          "PSH",
-          "ACK",
-          "URG",
-          "ALL_TCP_FLAGS",
-          "KEEPALIVE"
-        ],
+        "enum": ["FIN", "SYN", "RST", "PSH", "ACK", "URG", "ALL_TCP_FLAGS", "KEEPALIVE"],
         "default": "FIN",
         "x-displayname": "TCP Flags",
         "x-ves-proto-enum": "ves.io.schema.protocol_policer.TcpFlags",
@@ -9270,9 +8831,7 @@
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": true
           },
           "recommendation": {
@@ -9320,9 +8879,7 @@
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": true
           },
           "recommendation": {
@@ -9352,9 +8909,7 @@
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": true
           },
           "recommendation": {
@@ -9384,11 +8939,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -9448,11 +8999,7 @@
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -9523,11 +9070,7 @@
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -9575,7 +9118,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9609,7 +9152,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9626,9 +9169,7 @@
         "x-f5xc-description-short": "Create rate_limiter creates a new object in the storage backend for metadata.namespace.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for rate_limiterCreateSpecType",
-          "required_fields": [
-            "limits"
-          ],
+          "required_fields": ["limits"],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for rate_limiterCreateSpecType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  limits: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"limits\": \"value\"\n  }\n}"
@@ -9639,11 +9180,7 @@
         },
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -9707,7 +9244,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               },
               "deterministic": true
             },
@@ -9719,7 +9256,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00",
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace": {
@@ -9752,7 +9289,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               },
               "deterministic": true
             },
@@ -9764,7 +9301,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00",
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           }
         },
@@ -9778,11 +9315,7 @@
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -9926,7 +9459,7 @@
             "maxLength": 17,
             "minLength": 17,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00"
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00"
           },
           "system_metadata": {
             "allOf": [
@@ -9946,9 +9479,7 @@
             "type": "string",
             "x-f5xc-concurrency-token": {
               "server_assigned": true,
-              "echo_on_operations": [
-                "replace"
-              ]
+              "echo_on_operations": ["replace"]
             }
           }
         },
@@ -9962,11 +9493,7 @@
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -10014,7 +9541,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -10048,7 +9575,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -10065,9 +9592,7 @@
         "x-f5xc-description-short": "GET rate_limiter reads a given object from storage backend for metadata.namespace.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for rate_limiterGetSpecType",
-          "required_fields": [
-            "limits"
-          ],
+          "required_fields": ["limits"],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for rate_limiterGetSpecType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  limits: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"limits\": \"value\"\n  }\n}"
@@ -10075,11 +9600,7 @@
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -10123,7 +9644,7 @@
               "metadata": {
                 "source": "api-probed",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -10144,11 +9665,7 @@
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -10192,7 +9709,7 @@
               "metadata": {
                 "source": "api-probed",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -10213,11 +9730,7 @@
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -10261,7 +9774,7 @@
               "metadata": {
                 "source": "api-probed",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -10282,11 +9795,7 @@
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -10317,11 +9826,7 @@
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -10377,7 +9882,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.7,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -10398,11 +9903,7 @@
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -10455,7 +9956,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.8,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -10466,7 +9967,7 @@
             },
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00"
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00"
           },
           "disabled": {
             "type": "boolean",
@@ -10553,7 +10054,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               },
               "deterministic": true
             },
@@ -10565,7 +10066,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00",
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace": {
@@ -10597,7 +10098,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               },
               "deterministic": true
             },
@@ -10609,7 +10110,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00",
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "owner_view": {
@@ -10679,7 +10180,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -10691,7 +10192,7 @@
             "x-field-mutability": "read-only",
             "minLength": 12,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00"
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00"
           },
           "uid": {
             "type": "string",
@@ -10708,7 +10209,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -10721,7 +10222,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-08-20T09:12:47+00:00"
+            "x-reconciled-at": "2026-09-03T15:40:08+00:00"
           }
         },
         "x-f5xc-description-short": "By default a summary of rate_limiter is returned in 'List'. By setting 'report_fields' in the ListRequest more details of each item can be got.",
@@ -10736,11 +10237,7 @@
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -10774,10 +10271,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "minutes",
-              "seconds"
-            ]
+            "x-f5xc-conflicts-with": ["minutes", "seconds"]
           },
           "minutes": {
             "allOf": [
@@ -10791,10 +10285,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "hours",
-              "seconds"
-            ]
+            "x-f5xc-conflicts-with": ["hours", "seconds"]
           },
           "seconds": {
             "allOf": [
@@ -10808,10 +10299,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "hours",
-              "minutes"
-            ]
+            "x-f5xc-conflicts-with": ["hours", "minutes"]
           }
         },
         "x-f5xc-description-short": "Action where a user is blocked from making further requests after exceeding rate limit threshold.",
@@ -10825,11 +10313,7 @@
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -10847,11 +10331,7 @@
         "type": "string",
         "description": "Unit for the period per which the rate limit is applied.\n\n- SECOND: Second\n\nRate limit period unit is seconds\n- MINUTE: Minute\n\nRate limit period unit is minutes\n- HOUR: Hour\n\nRate limit period unit is hours\n- DAY: Day\n\nRate limit period unit is days.",
         "title": "RateLimitPeriodUnit",
-        "enum": [
-          "SECOND",
-          "MINUTE",
-          "HOUR"
-        ],
+        "enum": ["SECOND", "MINUTE", "HOUR"],
         "default": "SECOND",
         "x-displayname": "Rate Limit Period Unit.",
         "x-ves-proto-enum": "ves.io.schema.rate_limiter.RateLimitPeriodUnit",
@@ -10867,11 +10347,7 @@
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -10907,9 +10383,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "disabled"
-            ]
+            "x-f5xc-conflicts-with": ["disabled"]
           },
           "burst_multiplier": {
             "type": "integer",
@@ -10937,7 +10411,7 @@
               "metadata": {
                 "source": "api-probed",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -10960,9 +10434,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "action_block"
-            ]
+            "x-f5xc-conflicts-with": ["action_block"]
           },
           "leaky_bucket": {
             "allOf": [
@@ -10977,9 +10449,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "token_bucket"
-            ]
+            "x-f5xc-conflicts-with": ["token_bucket"]
           },
           "period_multiplier": {
             "type": "integer",
@@ -11004,7 +10474,7 @@
               "metadata": {
                 "source": "api-probed",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11027,9 +10497,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "leaky_bucket"
-            ]
+            "x-f5xc-conflicts-with": ["leaky_bucket"]
           },
           "total_number": {
             "type": "integer",
@@ -11060,7 +10528,7 @@
               "metadata": {
                 "source": "api-probed",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11088,9 +10556,7 @@
         "x-f5xc-description-medium": "Tuple consisting of a rate limit period unit and the total number of allowed requests for that period.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for rate_limiterRateLimitValue",
-          "required_fields": [
-            "total_number"
-          ],
+          "required_fields": ["total_number"],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for rate_limiterRateLimitValue\nmetadata:\n  name: example\n  namespace: default\nspec:\n  total_number: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"total_number\": \"value\"\n  }\n}"
@@ -11098,11 +10564,7 @@
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -11155,9 +10617,7 @@
             "type": "string",
             "x-f5xc-concurrency-token": {
               "server_assigned": true,
-              "echo_on_operations": [
-                "replace"
-              ]
+              "echo_on_operations": ["replace"]
             }
           }
         },
@@ -11171,11 +10631,7 @@
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -11202,11 +10658,7 @@
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -11254,7 +10706,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11288,7 +10740,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-08-20T09:12:47+00:00"
+                "validatedAt": "2026-09-03T15:40:08+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11305,9 +10757,7 @@
         "x-f5xc-description-short": "Replace rate_limiter replaces an existing object in the storage backend for metadata.namespace.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for rate_limiterReplaceSpecType",
-          "required_fields": [
-            "limits"
-          ],
+          "required_fields": ["limits"],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for rate_limiterReplaceSpecType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  limits: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"limits\": \"value\"\n  }\n}"
@@ -11315,11 +10765,7 @@
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -11397,11 +10843,7 @@
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -11432,11 +10874,7 @@
         "x-f5xc-cli-domain": "users",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
