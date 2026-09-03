@@ -3,7 +3,7 @@
   "info": {
     "title": "Cloud Infrastructure",
     "description": "Hyperscaler integration supporting Amazon Web Services, Microsoft Azure, and Google Cloud Platform environments. Virtual network attachment workflows enable elastic compute provisioning with automatic reattachment capabilities. Edge authentication secrets for provider access. Segment telemetry and cross-region link reapplication for distributed deployments. Autonomous path synchronization across peered networks with real-time topology updates.",
-    "version": "6.0.1",
+    "version": "6.0.2",
     "contact": {
       "name": "F5 Distributed Cloud",
       "url": "https://docs.cloud.f5.com"
@@ -72,7 +72,11 @@
     },
     "x-f5xc-namespace-profile": {
       "constraint": {
-        "allowed": ["custom", "default", "shared"],
+        "allowed": [
+          "custom",
+          "default",
+          "shared"
+        ],
         "enforced": false
       },
       "recommendation": {
@@ -98,12 +102,19 @@
         "console_url": {
           "default": "console.ves.volterra.io",
           "description": "Console URL base (e.g., console.ves.volterra.io for production, staging.volterra.us for staging)",
-          "enum": ["console.ves.volterra.io", "staging.volterra.us"]
+          "enum": [
+            "console.ves.volterra.io",
+            "staging.volterra.us"
+          ]
         },
         "environment": {
           "default": "production",
           "description": "Environment designation (production, staging, development)",
-          "enum": ["production", "staging", "development"]
+          "enum": [
+            "production",
+            "staging",
+            "development"
+          ]
         },
         "domain_prefix": {
           "default": "api",
@@ -299,14 +310,20 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/cloud_infrastructure/"
         },
         "x-ves-proto-rpc": "ves.io.schema.certified_hardware.API.List",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "TLS/SSL certificate management",
-          "required_fields": ["path.namespace"],
+          "required_fields": [
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -349,7 +366,9 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-discovered-response-time-ms": 164.25,
         "x-discovered-sample-size": 1,
@@ -518,14 +537,21 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/cloud_infrastructure/"
         },
         "x-ves-proto-rpc": "ves.io.schema.certified_hardware.API.Get",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "TLS/SSL certificate management",
-          "required_fields": ["path.name", "path.namespace"],
+          "required_fields": [
+            "path.name",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -568,7 +594,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["path.name", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.name",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -702,21 +731,30 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/cloud_infrastructure/"
         },
         "x-ves-proto-rpc": "ves.io.schema.cloud_connect.CloudDataCustomAPI.ReApplyVPCAttachment",
-        "tags": ["sync-cloud-data"],
+        "tags": [
+          "sync-cloud-data"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": [
               "Cloud-connect-reapply-vpc-attachment resource created",
               "Resource assigned unique identifier"
             ]
           },
           "side_effects": {
-            "creates": ["cloud-connect-reapply-vpc-attachment"]
+            "creates": [
+              "cloud-connect-reapply-vpc-attachment"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -757,10 +795,15 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["cloud-connect-reapply-vpc-attachment"]
+          "creates": [
+            "cloud-connect-reapply-vpc-attachment"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -894,18 +937,30 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/cloud_infrastructure/"
         },
         "x-ves-proto-rpc": "ves.io.schema.cloud_connect.CustomAPI.ListMetrics",
-        "tags": ["data"],
+        "tags": [
+          "data"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Metric resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Metric resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["metric"]
+            "creates": [
+              "metric"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -946,10 +1001,15 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["metric"]
+          "creates": [
+            "metric"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -1083,18 +1143,30 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/cloud_infrastructure/"
         },
         "x-ves-proto-rpc": "ves.io.schema.cloud_connect.CustomAPI.ListSegmentMetrics",
-        "tags": ["data"],
+        "tags": [
+          "data"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Segment-metric resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Segment-metric resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["segment-metric"]
+            "creates": [
+              "segment-metric"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -1135,10 +1207,15 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["segment-metric"]
+          "creates": [
+            "segment-metric"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -1285,18 +1362,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/cloud_infrastructure/"
         },
         "x-ves-proto-rpc": "ves.io.schema.cloud_connect.CustomAPI.GetMetrics",
-        "tags": ["data"],
+        "tags": [
+          "data"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.name"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.name"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Metric resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Metric resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["metric"]
+            "creates": [
+              "metric"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -1337,10 +1427,16 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.name"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.name"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["metric"]
+          "creates": [
+            "metric"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -1474,18 +1570,30 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/cloud_infrastructure/"
         },
         "x-ves-proto-rpc": "ves.io.schema.cloud_connect.CloudDataCustomAPI.DiscoverVPC",
-        "tags": ["sync-cloud-data"],
+        "tags": [
+          "sync-cloud-data"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Discover-vpc resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Discover-vpc resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["discover-vpc"]
+            "creates": [
+              "discover-vpc"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -1526,10 +1634,15 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["discover-vpc"]
+          "creates": [
+            "discover-vpc"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -1663,18 +1776,30 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/cloud_infrastructure/"
         },
         "x-ves-proto-rpc": "ves.io.schema.cloud_connect.ConfigCustomAPI.EdgeCredentials",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Authentication credential for access control",
-          "required_fields": ["metadata.name", "metadata.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Edge-credential resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Edge-credential resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["edge-credential"]
+            "creates": [
+              "edge-credential"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -1715,10 +1840,15 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["edge-credential"]
+          "creates": [
+            "edge-credential"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -1842,14 +1972,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/cloud_infrastructure/"
         },
         "x-ves-proto-rpc": "ves.io.schema.cloud_connect.ConfigCustomAPI.EdgeList",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
           "required_fields": [],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -2025,18 +2159,30 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/cloud_infrastructure/"
         },
         "x-ves-proto-rpc": "ves.io.schema.cloud_connect.CustomAPI.TopCloudConnect",
-        "tags": ["data"],
+        "tags": [
+          "data"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Cloud-connect resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Cloud-connect resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["cloud-connect"]
+            "creates": [
+              "cloud-connect"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -2077,10 +2223,15 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["cloud-connect"]
+          "creates": [
+            "cloud-connect"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -2227,18 +2378,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/cloud_infrastructure/"
         },
         "x-ves-proto-rpc": "ves.io.schema.cloud_connect.API.Create",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.metadata.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.metadata.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Cloud-connect resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Cloud-connect resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["cloud-connect"]
+            "creates": [
+              "cloud-connect"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -2279,10 +2443,16 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.metadata.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.metadata.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["cloud-connect"]
+          "creates": [
+            "cloud-connect"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -2440,18 +2610,29 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/cloud_infrastructure/"
         },
         "x-ves-proto-rpc": "ves.io.schema.cloud_connect.API.Replace",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource replacement operation",
-          "required_fields": ["path.metadata.name", "path.metadata.namespace"],
+          "required_fields": [
+            "path.metadata.name",
+            "path.metadata.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Resource updated with new values"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Resource updated with new values"
+            ]
           },
           "side_effects": {
-            "modifies": ["cloud-connect"]
+            "modifies": [
+              "cloud-connect"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -2492,10 +2673,15 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["path.metadata.name", "path.metadata.namespace"],
+        "x-f5xc-required-fields": [
+          "path.metadata.name",
+          "path.metadata.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "modifies": ["cloud-connect"]
+          "modifies": [
+            "cloud-connect"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 800,
@@ -2671,14 +2857,20 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/cloud_infrastructure/"
         },
         "x-ves-proto-rpc": "ves.io.schema.cloud_connect.API.List",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": ["path.namespace"],
+          "required_fields": [
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -2721,7 +2913,9 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -2889,14 +3083,21 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/cloud_infrastructure/"
         },
         "x-ves-proto-rpc": "ves.io.schema.cloud_connect.API.Get",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": ["path.name", "path.namespace"],
+          "required_fields": [
+            "path.name",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -2939,7 +3140,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["path.name", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.name",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -3090,18 +3294,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/cloud_infrastructure/"
         },
         "x-ves-proto-rpc": "ves.io.schema.cloud_connect.API.Delete",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource deletion operation",
-          "required_fields": ["path.name", "path.namespace"],
+          "required_fields": [
+            "path.name",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Resource removed from system", "Associated resources may be affected"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Resource removed from system",
+              "Associated resources may be affected"
+            ]
           },
           "side_effects": {
-            "deletes": ["cloud-connect", "contained_resources"]
+            "deletes": [
+              "cloud-connect",
+              "contained_resources"
+            ]
           },
           "danger_level": "high",
           "confirmation_required": true,
@@ -3142,11 +3359,17 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.name", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.name",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "high",
         "x-f5xc-confirmation-required": true,
         "x-f5xc-side-effects": {
-          "deletes": ["cloud-connect", "contained_resources"]
+          "deletes": [
+            "cloud-connect",
+            "contained_resources"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 500,
@@ -3293,18 +3516,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/cloud_infrastructure/"
         },
         "x-ves-proto-rpc": "ves.io.schema.cloud_credentials.API.Create",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Authentication credential for access control",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.metadata.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.metadata.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Cloud-credentials resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Cloud-credentials resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["cloud-credentials"]
+            "creates": [
+              "cloud-credentials"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -3345,10 +3581,16 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.metadata.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.metadata.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["cloud-credentials"]
+          "creates": [
+            "cloud-credentials"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -3506,18 +3748,29 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/cloud_infrastructure/"
         },
         "x-ves-proto-rpc": "ves.io.schema.cloud_credentials.API.Replace",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Authentication credential for access control",
-          "required_fields": ["path.metadata.name", "path.metadata.namespace"],
+          "required_fields": [
+            "path.metadata.name",
+            "path.metadata.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Resource updated with new values"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Resource updated with new values"
+            ]
           },
           "side_effects": {
-            "modifies": ["cloud-credentials"]
+            "modifies": [
+              "cloud-credentials"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -3558,10 +3811,15 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["path.metadata.name", "path.metadata.namespace"],
+        "x-f5xc-required-fields": [
+          "path.metadata.name",
+          "path.metadata.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "modifies": ["cloud-credentials"]
+          "modifies": [
+            "cloud-credentials"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 800,
@@ -3737,14 +3995,20 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/cloud_infrastructure/"
         },
         "x-ves-proto-rpc": "ves.io.schema.cloud_credentials.API.List",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Authentication credential for access control",
-          "required_fields": ["path.namespace"],
+          "required_fields": [
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -3787,7 +4051,9 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-discovered-response-time-ms": 176.41,
         "x-discovered-sample-size": 1,
@@ -3958,14 +4224,21 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/cloud_infrastructure/"
         },
         "x-ves-proto-rpc": "ves.io.schema.cloud_credentials.API.Get",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Authentication credential for access control",
-          "required_fields": ["path.name", "path.namespace"],
+          "required_fields": [
+            "path.name",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -4008,7 +4281,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["path.name", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.name",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -4159,18 +4435,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/cloud_infrastructure/"
         },
         "x-ves-proto-rpc": "ves.io.schema.cloud_credentials.API.Delete",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Authentication credential for access control",
-          "required_fields": ["path.name", "path.namespace"],
+          "required_fields": [
+            "path.name",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Resource removed from system", "Associated resources may be affected"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Resource removed from system",
+              "Associated resources may be affected"
+            ]
           },
           "side_effects": {
-            "deletes": ["cloud-credentials", "contained_resources"]
+            "deletes": [
+              "cloud-credentials",
+              "contained_resources"
+            ]
           },
           "danger_level": "high",
           "confirmation_required": true,
@@ -4211,11 +4500,17 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.name", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.name",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "high",
         "x-f5xc-confirmation-required": true,
         "x-f5xc-side-effects": {
-          "deletes": ["cloud-credentials", "contained_resources"]
+          "deletes": [
+            "cloud-credentials",
+            "contained_resources"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 500,
@@ -4362,18 +4657,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/cloud_infrastructure/"
         },
         "x-ves-proto-rpc": "ves.io.schema.cloud_elastic_ip.CustomAPI.ForceDeleteCloudElasticIP",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.name"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.name"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Force-delete resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Force-delete resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["force-delete"]
+            "creates": [
+              "force-delete"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -4414,10 +4722,16 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.name"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.name"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["force-delete"]
+          "creates": [
+            "force-delete"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -4564,18 +4878,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/cloud_infrastructure/"
         },
         "x-ves-proto-rpc": "ves.io.schema.cloud_elastic_ip.API.Create",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.metadata.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.metadata.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Cloud-elastic-ip resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Cloud-elastic-ip resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["cloud-elastic-ip"]
+            "creates": [
+              "cloud-elastic-ip"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -4616,10 +4943,16 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.metadata.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.metadata.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["cloud-elastic-ip"]
+          "creates": [
+            "cloud-elastic-ip"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -4777,18 +5110,29 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/cloud_infrastructure/"
         },
         "x-ves-proto-rpc": "ves.io.schema.cloud_elastic_ip.API.Replace",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource replacement operation",
-          "required_fields": ["path.metadata.name", "path.metadata.namespace"],
+          "required_fields": [
+            "path.metadata.name",
+            "path.metadata.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Resource updated with new values"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Resource updated with new values"
+            ]
           },
           "side_effects": {
-            "modifies": ["cloud-elastic-ip"]
+            "modifies": [
+              "cloud-elastic-ip"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -4829,10 +5173,15 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["path.metadata.name", "path.metadata.namespace"],
+        "x-f5xc-required-fields": [
+          "path.metadata.name",
+          "path.metadata.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "modifies": ["cloud-elastic-ip"]
+          "modifies": [
+            "cloud-elastic-ip"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 800,
@@ -5008,14 +5357,20 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/cloud_infrastructure/"
         },
         "x-ves-proto-rpc": "ves.io.schema.cloud_elastic_ip.API.List",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": ["path.namespace"],
+          "required_fields": [
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -5058,7 +5413,9 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -5226,14 +5583,21 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/cloud_infrastructure/"
         },
         "x-ves-proto-rpc": "ves.io.schema.cloud_elastic_ip.API.Get",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": ["path.name", "path.namespace"],
+          "required_fields": [
+            "path.name",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -5276,7 +5640,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["path.name", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.name",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -5427,18 +5794,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/cloud_infrastructure/"
         },
         "x-ves-proto-rpc": "ves.io.schema.cloud_elastic_ip.API.Delete",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource deletion operation",
-          "required_fields": ["path.name", "path.namespace"],
+          "required_fields": [
+            "path.name",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Resource removed from system", "Associated resources may be affected"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Resource removed from system",
+              "Associated resources may be affected"
+            ]
           },
           "side_effects": {
-            "deletes": ["cloud-elastic-ip", "contained_resources"]
+            "deletes": [
+              "cloud-elastic-ip",
+              "contained_resources"
+            ]
           },
           "danger_level": "high",
           "confirmation_required": true,
@@ -5479,11 +5859,17 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.name", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.name",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "high",
         "x-f5xc-confirmation-required": true,
         "x-f5xc-side-effects": {
-          "deletes": ["cloud-elastic-ip", "contained_resources"]
+          "deletes": [
+            "cloud-elastic-ip",
+            "contained_resources"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 500,
@@ -5641,18 +6027,29 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/cloud_infrastructure/"
         },
         "x-ves-proto-rpc": "ves.io.schema.cloud_region.API.Replace",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource replacement operation",
-          "required_fields": ["path.metadata.name", "path.metadata.namespace"],
+          "required_fields": [
+            "path.metadata.name",
+            "path.metadata.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Resource updated with new values"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Resource updated with new values"
+            ]
           },
           "side_effects": {
-            "modifies": ["cloud-region"]
+            "modifies": [
+              "cloud-region"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -5693,10 +6090,15 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["path.metadata.name", "path.metadata.namespace"],
+        "x-f5xc-required-fields": [
+          "path.metadata.name",
+          "path.metadata.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "modifies": ["cloud-region"]
+          "modifies": [
+            "cloud-region"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 800,
@@ -5872,14 +6274,20 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/cloud_infrastructure/"
         },
         "x-ves-proto-rpc": "ves.io.schema.cloud_region.API.List",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": ["path.namespace"],
+          "required_fields": [
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -5922,7 +6330,9 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -6089,14 +6499,21 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/cloud_infrastructure/"
         },
         "x-ves-proto-rpc": "ves.io.schema.cloud_region.API.Get",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": ["path.name", "path.namespace"],
+          "required_fields": [
+            "path.name",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -6139,7 +6556,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["path.name", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.name",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -6286,18 +6706,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/cloud_infrastructure/"
         },
         "x-ves-proto-rpc": "ves.io.schema.cloud_link.CustomDataAPI.ReapplyConfig",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.name"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.name"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Reapply-config resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Reapply-config resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["reapply-config"]
+            "creates": [
+              "reapply-config"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -6338,10 +6771,16 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.name"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.name"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["reapply-config"]
+          "creates": [
+            "reapply-config"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -6488,18 +6927,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/cloud_infrastructure/"
         },
         "x-ves-proto-rpc": "ves.io.schema.cloud_link.API.Create",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.metadata.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.metadata.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Cloud-link resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Cloud-link resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["cloud-link"]
+            "creates": [
+              "cloud-link"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -6540,10 +6992,16 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.metadata.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.metadata.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["cloud-link"]
+          "creates": [
+            "cloud-link"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -6701,18 +7159,29 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/cloud_infrastructure/"
         },
         "x-ves-proto-rpc": "ves.io.schema.cloud_link.API.Replace",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource replacement operation",
-          "required_fields": ["path.metadata.name", "path.metadata.namespace"],
+          "required_fields": [
+            "path.metadata.name",
+            "path.metadata.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Resource updated with new values"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Resource updated with new values"
+            ]
           },
           "side_effects": {
-            "modifies": ["cloud-link"]
+            "modifies": [
+              "cloud-link"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -6753,10 +7222,15 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["path.metadata.name", "path.metadata.namespace"],
+        "x-f5xc-required-fields": [
+          "path.metadata.name",
+          "path.metadata.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "modifies": ["cloud-link"]
+          "modifies": [
+            "cloud-link"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 800,
@@ -6932,14 +7406,20 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/cloud_infrastructure/"
         },
         "x-ves-proto-rpc": "ves.io.schema.cloud_link.API.List",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": ["path.namespace"],
+          "required_fields": [
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -6982,7 +7462,9 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -7150,14 +7632,21 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/cloud_infrastructure/"
         },
         "x-ves-proto-rpc": "ves.io.schema.cloud_link.API.Get",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": ["path.name", "path.namespace"],
+          "required_fields": [
+            "path.name",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -7200,7 +7689,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["path.name", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.name",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -7351,18 +7843,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/cloud_infrastructure/"
         },
         "x-ves-proto-rpc": "ves.io.schema.cloud_link.API.Delete",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource deletion operation",
-          "required_fields": ["path.name", "path.namespace"],
+          "required_fields": [
+            "path.name",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Resource removed from system", "Associated resources may be affected"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Resource removed from system",
+              "Associated resources may be affected"
+            ]
           },
           "side_effects": {
-            "deletes": ["cloud-link", "contained_resources"]
+            "deletes": [
+              "cloud-link",
+              "contained_resources"
+            ]
           },
           "danger_level": "high",
           "confirmation_required": true,
@@ -7403,11 +7908,17 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.name", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.name",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "high",
         "x-f5xc-confirmation-required": true,
         "x-f5xc-side-effects": {
-          "deletes": ["cloud-link", "contained_resources"]
+          "deletes": [
+            "cloud-link",
+            "contained_resources"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 500,
@@ -7471,7 +7982,11 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -7548,7 +8063,11 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -7583,7 +8102,9 @@
               "read": false
             },
             "x-field-mutability": "read-only",
-            "x-f5xc-conflicts-with": ["marketplace"]
+            "x-f5xc-conflicts-with": [
+              "marketplace"
+            ]
           },
           "marketplace": {
             "allOf": [
@@ -7598,7 +8119,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["image_id"]
+            "x-f5xc-conflicts-with": [
+              "image_id"
+            ]
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -7611,7 +8134,11 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -7664,7 +8191,11 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -7720,7 +8251,11 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -7871,7 +8406,11 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -7918,7 +8457,11 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -7971,7 +8514,11 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -8114,7 +8661,11 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -8161,7 +8712,11 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -8203,7 +8758,11 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -8221,7 +8780,11 @@
         "type": "string",
         "description": "Different type of certified HW for billing rate.",
         "title": "Certified Hardware Types",
-        "enum": ["VOLTMESH", "VOLTSTACK_COMBO", "CLOUD_MARKET_PLACE"],
+        "enum": [
+          "VOLTMESH",
+          "VOLTSTACK_COMBO",
+          "CLOUD_MARKET_PLACE"
+        ],
         "default": "VOLTMESH",
         "x-displayname": "Certified Hardware Types.",
         "x-ves-proto-enum": "ves.io.schema.certified_hardware.HardwareType",
@@ -8236,7 +8799,11 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -8317,7 +8884,11 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -8351,7 +8922,10 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["azure", "gcp"]
+            "x-f5xc-conflicts-with": [
+              "azure",
+              "gcp"
+            ]
           },
           "azure": {
             "allOf": [
@@ -8365,7 +8939,10 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["aws", "gcp"]
+            "x-f5xc-conflicts-with": [
+              "aws",
+              "gcp"
+            ]
           },
           "gcp": {
             "allOf": [
@@ -8379,7 +8956,10 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["aws", "azure"]
+            "x-f5xc-conflicts-with": [
+              "aws",
+              "azure"
+            ]
           },
           "name": {
             "type": "string",
@@ -8466,7 +9046,11 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -8543,7 +9127,11 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -8878,7 +9466,11 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -9049,7 +9641,11 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -9088,7 +9684,11 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -9152,7 +9752,11 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -9248,7 +9852,11 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -9454,7 +10062,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -9534,7 +10146,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -9684,7 +10300,15 @@
             "x-f5xc-description-short": "Status of the condition \"Success\" Validation has succeeded.",
             "x-f5xc-description-medium": "Status of the condition \"Success\" Validation has succeeded. Requested operation was successful. \"Failed\" Validation has failed. \"Incomplete\" Validation of configuration has failed due to missing configuration. \"Installed\" Validation has passed and configuration has been installed in data path or...",
             "maxLength": 1024,
-            "enum": ["Success", "Failed", "Incomplete", "Installed", "Down", "Disabled", "NotApplicable"],
+            "enum": [
+              "Success",
+              "Failed",
+              "Incomplete",
+              "Installed",
+              "Down",
+              "Disabled",
+              "NotApplicable"
+            ],
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "general",
@@ -9721,7 +10345,10 @@
             "x-f5xc-description-short": "Type of the condition \"Validation\" represents validation user given configuration object \"Operational\" represents operational status of a given...",
             "x-f5xc-description-medium": "Type of the condition \"Validation\" represents validation user given configuration object \"Operational\" represents operational status of a given configuration object.",
             "maxLength": 1024,
-            "enum": ["Validation", "Operational"],
+            "enum": [
+              "Validation",
+              "Operational"
+            ],
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "general",
@@ -9752,7 +10379,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -9796,7 +10427,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -9880,7 +10515,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -9957,7 +10596,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -10020,7 +10663,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -10247,7 +10894,9 @@
         "x-f5xc-description-short": "ObjectGetMetaType is metadata that can be specified in GET/Create response of an object.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for schemaObjectGetMetaType",
-          "required_fields": ["name"],
+          "required_fields": [
+            "name"
+          ],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"name\": \"example-corp-web\"\n}",
           "example_yaml": "name: example-corp-web"
@@ -10255,7 +10904,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -10481,7 +11134,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -10499,7 +11156,10 @@
         "type": "string",
         "description": "StatusPublishType is all possible publish operations on a StatusObject\n\n- STATUS_DO_NOT_PUBLISH: Do Not Publish\n\nDo not propagate this status to user. This could be because status is only informational\n- STATUS_PUBLISH: Publish\n\nPropagate this status up to user as it might be actionable.",
         "title": "StatusPublishType",
-        "enum": ["STATUS_DO_NOT_PUBLISH", "STATUS_PUBLISH"],
+        "enum": [
+          "STATUS_DO_NOT_PUBLISH",
+          "STATUS_PUBLISH"
+        ],
         "default": "STATUS_DO_NOT_PUBLISH",
         "x-displayname": "Status Publish Type.",
         "x-ves-proto-enum": "ves.io.schema.StatusPublishType",
@@ -10515,7 +11175,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -10623,7 +11287,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -10946,7 +11614,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -11129,7 +11801,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -11295,7 +11971,11 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -11481,7 +12161,9 @@
         "x-f5xc-cli-domain": "ce_management",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -11585,7 +12267,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -11925,7 +12609,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -12247,7 +12933,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -12478,7 +13166,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -12550,7 +13240,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -12584,7 +13276,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["securemesh_site_v2"]
+            "x-f5xc-conflicts-with": [
+              "securemesh_site_v2"
+            ]
           },
           "securemesh_site_v2": {
             "allOf": [
@@ -12598,7 +13292,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["aws_tgw_site"]
+            "x-f5xc-conflicts-with": [
+              "aws_tgw_site"
+            ]
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -12611,7 +13307,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -12678,7 +13376,9 @@
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for cloud_connectAWSRouteTableListType",
-          "required_fields": ["route_tables"],
+          "required_fields": [
+            "route_tables"
+          ],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"route_tables\": [\n    {\n      \"static_routes\": [\n        \"value\"\n      ]\n    }\n  ]\n}",
           "example_yaml": "route_tables:\n- static_routes:\n  - value"
@@ -12686,7 +13386,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -12793,7 +13495,9 @@
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for cloud_connectAWSRouteTableType",
-          "required_fields": ["static_routes"],
+          "required_fields": [
+            "static_routes"
+          ],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"static_routes\": [\n    \"value\"\n  ]\n}",
           "example_yaml": "static_routes:\n- value"
@@ -12801,7 +13505,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -12903,7 +13609,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -13010,7 +13718,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -13155,7 +13865,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -13376,7 +14088,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -13573,7 +14287,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -13678,7 +14394,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -14002,7 +14720,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -14066,7 +14786,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -14100,7 +14822,10 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["default_route", "manual_routing"]
+            "x-f5xc-conflicts-with": [
+              "default_route",
+              "manual_routing"
+            ]
           },
           "default_route": {
             "allOf": [
@@ -14115,7 +14840,10 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["custom_routing", "manual_routing"]
+            "x-f5xc-conflicts-with": [
+              "custom_routing",
+              "manual_routing"
+            ]
           },
           "labels": {
             "type": "object",
@@ -14146,7 +14874,10 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["custom_routing", "default_route"]
+            "x-f5xc-conflicts-with": [
+              "custom_routing",
+              "default_route"
+            ]
           },
           "vpc_id": {
             "type": "string",
@@ -14191,7 +14922,9 @@
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for cloud_connectAWSVPCAttachmentType",
-          "required_fields": ["vpc_id"],
+          "required_fields": [
+            "vpc_id"
+          ],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"vpc_id\": \"vpc-12345678901234567\"\n}",
           "example_yaml": "vpc_id: vpc-12345678901234567"
@@ -14199,7 +14932,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -14247,7 +14982,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -14590,7 +15327,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -14625,7 +15364,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["selective_route_tables"]
+            "x-f5xc-conflicts-with": [
+              "selective_route_tables"
+            ]
           },
           "selective_route_tables": {
             "allOf": [
@@ -14640,7 +15381,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["all_route_tables"]
+            "x-f5xc-conflicts-with": [
+              "all_route_tables"
+            ]
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -14653,7 +15396,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -14761,7 +15506,9 @@
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for cloud_connectAzureRouteTableWithStaticRoute",
-          "required_fields": ["static_routes"],
+          "required_fields": [
+            "static_routes"
+          ],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"static_routes\": [\n    \"value\"\n  ]\n}",
           "example_yaml": "static_routes:\n- value"
@@ -14769,7 +15516,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -14837,7 +15586,9 @@
         "x-f5xc-description-short": "List Azure Route Table with Static Route.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for cloud_connectAzureRouteTableWithStaticRouteListType",
-          "required_fields": ["route_tables"],
+          "required_fields": [
+            "route_tables"
+          ],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"route_tables\": [\n    {\n      \"static_routes\": [\n        \"value\"\n      ]\n    }\n  ]\n}",
           "example_yaml": "route_tables:\n- static_routes:\n  - value"
@@ -14845,7 +15596,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -14916,7 +15669,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -14950,7 +15705,10 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["default_route", "manual_routing"]
+            "x-f5xc-conflicts-with": [
+              "default_route",
+              "manual_routing"
+            ]
           },
           "default_route": {
             "allOf": [
@@ -14965,7 +15723,10 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["custom_routing", "manual_routing"]
+            "x-f5xc-conflicts-with": [
+              "custom_routing",
+              "manual_routing"
+            ]
           },
           "labels": {
             "type": "object",
@@ -14996,7 +15757,10 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["custom_routing", "default_route"]
+            "x-f5xc-conflicts-with": [
+              "custom_routing",
+              "default_route"
+            ]
           },
           "subscription_id": {
             "type": "string",
@@ -15071,7 +15835,10 @@
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for cloud_connectAzureVNETAttachmentType",
-          "required_fields": ["subscription_id", "vnet_id"],
+          "required_fields": [
+            "subscription_id",
+            "vnet_id"
+          ],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"subscription_id\": \"value\",\n  \"vnet_id\": \"value\"\n}",
           "example_yaml": "subscription_id: value\nvnet_id: value"
@@ -15079,7 +15846,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -15147,7 +15916,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -15211,7 +15982,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -15274,7 +16047,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -15292,7 +16067,11 @@
         "type": "string",
         "description": "Cloud Connect Provider Type\n\n- AWS: AWS\n\nCloud connects backed by AWS cloud\n- Azure: Azure\n\nCloud connects backed by Azure cloud\n- GCP: GCP\n\nCloud connects backed by GCP cloud.",
         "title": "Cloud Connect Provider",
-        "enum": ["AWS", "AZURE", "GCP"],
+        "enum": [
+          "AWS",
+          "AZURE",
+          "GCP"
+        ],
         "default": "AWS",
         "x-displayname": "Cloud Connect Provider.",
         "x-ves-proto-enum": "ves.io.schema.cloud_connect.CloudConnectProviderType",
@@ -15308,7 +16087,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -15326,7 +16107,11 @@
         "type": "string",
         "description": "State of the CloudConnect connections\n\n- DOWN: Down\n\nCloudConnect and their corresponding VPC attachments are down\n- DEGRADED: Degraded\n\nSome of VPC attachments with the CloudConnect are down\n- UP: Up\n\nCloudConnect and their corresponding VPC attachments are available and healthy.",
         "title": "CloudConnect State",
-        "enum": ["DOWN", "DEGRADED", "UP"],
+        "enum": [
+          "DOWN",
+          "DEGRADED",
+          "UP"
+        ],
         "default": "DOWN",
         "x-displayname": "CloudConnect State.",
         "x-ves-proto-enum": "ves.io.schema.cloud_connect.CloudConnectState",
@@ -15342,7 +16127,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -15376,7 +16163,10 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["cloud_connect_aws_site", "cloud_connect_azure_site"]
+            "x-f5xc-conflicts-with": [
+              "cloud_connect_aws_site",
+              "cloud_connect_azure_site"
+            ]
           },
           "cloud_connect_aws_site": {
             "allOf": [
@@ -15390,7 +16180,10 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["cloud_connect_aws_securemesh_site", "cloud_connect_azure_site"]
+            "x-f5xc-conflicts-with": [
+              "cloud_connect_aws_securemesh_site",
+              "cloud_connect_azure_site"
+            ]
           },
           "cloud_connect_azure_site": {
             "allOf": [
@@ -15404,7 +16197,10 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["cloud_connect_aws_securemesh_site", "cloud_connect_aws_site"]
+            "x-f5xc-conflicts-with": [
+              "cloud_connect_aws_securemesh_site",
+              "cloud_connect_aws_site"
+            ]
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -15417,7 +16213,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -15435,7 +16233,14 @@
         "type": "string",
         "description": "Cloud Connect VPC State Type\n\n- AVAILABLE: Available\n\nCloud Connect VPC attachment is in available state.\n- PENDING: Pending\n\nCloud Connect VPC attachment is in flight.\n- FAILED: Failed\n\nCloud Connect VPC attachment has failed.\n- DELETED: Deleted\n\nCloud Connect VPC attachment has been deleted.\n- DELETING: Deleting\n\nCloud Connect VPC attachment is being deleted.\n- INITIATED: Initiated\n\nCloud Connect VPC attachment process has been initiated.",
         "title": "Cloud Connect VPC State",
-        "enum": ["AVAILABLE", "PENDING", "FAILED", "DELETED", "DELETING", "INITIATED"],
+        "enum": [
+          "AVAILABLE",
+          "PENDING",
+          "FAILED",
+          "DELETED",
+          "DELETING",
+          "INITIATED"
+        ],
         "default": "AVAILABLE",
         "x-displayname": "Cloud Connect VPC State.",
         "x-ves-proto-enum": "ves.io.schema.cloud_connect.CloudConnectVPCStateType",
@@ -15451,7 +16256,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -15497,7 +16304,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -15587,7 +16396,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -15647,7 +16458,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -15718,7 +16531,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -15768,7 +16583,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -15816,7 +16633,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -15893,7 +16712,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -15928,7 +16749,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["selective_route_tables"]
+            "x-f5xc-conflicts-with": [
+              "selective_route_tables"
+            ]
           },
           "selective_route_tables": {
             "allOf": [
@@ -15943,7 +16766,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["all_route_tables"]
+            "x-f5xc-conflicts-with": [
+              "all_route_tables"
+            ]
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -15956,7 +16781,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -16091,7 +16918,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -16209,7 +17038,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -16257,7 +17088,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -16400,7 +17233,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -16461,7 +17296,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -16509,7 +17346,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -16618,7 +17457,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -16703,7 +17544,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -16721,7 +17564,12 @@
         "type": "string",
         "description": "FieldSelector specifies the metrics that can be queried for cloud connect.\n\nIndicates field not being set\nx-unit: \"bytes per second (bps)\"\nThroughput of incoming traffic\nx-unit: \"bytes per second (bps)\"\nThroughput of outgoing traffic\nx-unit: \"bytes per second (bps)\"\nThroughput of outgoing traffic.",
         "title": "Cloud Connect Metric Type",
-        "enum": ["METRIC_TYPE_NONE", "METRIC_TYPE_IN_BYTES", "METRIC_TYPE_OUT_BYTES", "METRIC_TYPE_TOTAL_BYTES"],
+        "enum": [
+          "METRIC_TYPE_NONE",
+          "METRIC_TYPE_IN_BYTES",
+          "METRIC_TYPE_OUT_BYTES",
+          "METRIC_TYPE_TOTAL_BYTES"
+        ],
         "default": "METRIC_TYPE_NONE",
         "x-displayname": "Cloud Connect Metric Type.",
         "x-ves-proto-enum": "ves.io.schema.cloud_connect.FieldSelector",
@@ -16737,7 +17585,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -16962,7 +17812,9 @@
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for cloud_connectGetMetricsRequest",
-          "required_fields": ["name"],
+          "required_fields": [
+            "name"
+          ],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"name\": \"cloud_connect-1\"\n}",
           "example_yaml": "name: cloud_connect-1"
@@ -16970,7 +17822,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -17052,7 +17906,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -17216,7 +18072,9 @@
             "type": "string",
             "x-f5xc-concurrency-token": {
               "server_assigned": true,
-              "echo_on_operations": ["replace"]
+              "echo_on_operations": [
+                "replace"
+              ]
             }
           }
         },
@@ -17230,7 +18088,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -17318,7 +18178,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -17488,7 +18350,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -17571,7 +18435,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -17648,7 +18514,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -17982,7 +18850,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -18200,7 +19070,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -18296,7 +19168,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -18371,7 +19245,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -18489,7 +19365,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -18586,7 +19464,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -18617,7 +19497,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -18663,7 +19545,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -18709,7 +19593,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -18755,7 +19641,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -18808,7 +19696,9 @@
             "type": "string",
             "x-f5xc-concurrency-token": {
               "server_assigned": true,
-              "echo_on_operations": ["replace"]
+              "echo_on_operations": [
+                "replace"
+              ]
             }
           }
         },
@@ -18822,7 +19712,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -18849,7 +19741,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -18912,7 +19806,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -18930,7 +19826,12 @@
         "type": "string",
         "description": "Enumerates Status of CloudConnect\n\n- STATUS_UNKNOWN: Unknown\n\n- STATUS_DOWN: Down\n\n- STATUS_DEGRADED: Degraded\n\n- STATUS_UP: Up.",
         "title": "Status",
-        "enum": ["STATUS_UNKNOWN", "STATUS_DOWN", "STATUS_DEGRADED", "STATUS_UP"],
+        "enum": [
+          "STATUS_UNKNOWN",
+          "STATUS_DOWN",
+          "STATUS_DEGRADED",
+          "STATUS_UP"
+        ],
         "default": "STATUS_UNKNOWN",
         "x-displayname": "Status",
         "x-ves-proto-enum": "ves.io.schema.cloud_connect.Status",
@@ -18946,7 +19847,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -19037,7 +19940,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -19213,7 +20118,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -19275,7 +20182,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -19467,7 +20376,9 @@
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for cloud_connectTopCloudConnectRequest",
-          "required_fields": ["limit"],
+          "required_fields": [
+            "limit"
+          ],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"limit\": 0\n}",
           "example_yaml": "limit: 0"
@@ -19475,7 +20386,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -19556,7 +20469,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -19595,7 +20510,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -19705,7 +20622,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -19735,7 +20656,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -19772,7 +20697,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["ipv6"]
+            "x-f5xc-conflicts-with": [
+              "ipv6"
+            ]
           },
           "ipv6": {
             "allOf": [
@@ -19788,7 +20715,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["ipv4"]
+            "x-f5xc-conflicts-with": [
+              "ipv4"
+            ]
           }
         },
         "x-f5xc-description-short": "IP Address used to specify an IPv4 or IPv6 address.",
@@ -19802,7 +20731,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -19868,7 +20801,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -19935,7 +20872,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -19953,7 +20894,10 @@
         "type": "string",
         "description": "The operator to use when filtering metrics based on label values.",
         "title": "Metric Label Operator",
-        "enum": ["EQ", "NEQ"],
+        "enum": [
+          "EQ",
+          "NEQ"
+        ],
         "default": "EQ",
         "x-displayname": "Metric Label Operator.",
         "x-ves-proto-enum": "ves.io.schema.MetricLabelOp",
@@ -19968,7 +20912,11 @@
         "x-f5xc-cli-domain": "label",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -20058,7 +21006,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -20282,7 +21234,9 @@
         "x-f5xc-description-short": "ObjectCreateMetaType is metadata that can be specified in Create request of an object.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for schemaObjectCreateMetaType",
-          "required_fields": ["name"],
+          "required_fields": [
+            "name"
+          ],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"name\": \"example-corp-web\"\n}",
           "example_yaml": "name: example-corp-web"
@@ -20290,7 +21244,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -20515,7 +21473,9 @@
         "x-f5xc-description-short": "ObjectReplaceMetaType is metadata that can be specified in Replace request of an object.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for schemaObjectReplaceMetaType",
-          "required_fields": ["name"],
+          "required_fields": [
+            "name"
+          ],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"name\": \"example-corp-web\"\n}",
           "example_yaml": "name: example-corp-web"
@@ -20523,7 +21483,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -20541,7 +21505,11 @@
         "type": "string",
         "description": "Trend sentiment\n\nIndicates trend sentiment is positive\nIndicates trend sentiment is negative.",
         "title": "Trend Sentiment",
-        "enum": ["TREND_SENTIMENT_NONE", "TREND_SENTIMENT_POSITIVE", "TREND_SENTIMENT_NEGATIVE"],
+        "enum": [
+          "TREND_SENTIMENT_NONE",
+          "TREND_SENTIMENT_POSITIVE",
+          "TREND_SENTIMENT_NEGATIVE"
+        ],
         "default": "TREND_SENTIMENT_NONE",
         "x-displayname": "Trend Sentiment.",
         "x-ves-proto-enum": "ves.io.schema.TrendSentiment",
@@ -20556,7 +21524,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -20690,7 +21662,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -20751,7 +21727,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -20786,7 +21766,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["azure_vnet_site"]
+            "x-f5xc-conflicts-with": [
+              "azure_vnet_site"
+            ]
           },
           "azure_vnet_site": {
             "allOf": [
@@ -20800,7 +21782,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["aws_provider"]
+            "x-f5xc-conflicts-with": [
+              "aws_provider"
+            ]
           },
           "segment": {
             "allOf": [
@@ -20836,7 +21820,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -20871,7 +21857,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["azure_vnet_site"]
+            "x-f5xc-conflicts-with": [
+              "azure_vnet_site"
+            ]
           },
           "azure_vnet_site": {
             "allOf": [
@@ -20885,7 +21873,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["aws_provider"]
+            "x-f5xc-conflicts-with": [
+              "aws_provider"
+            ]
           },
           "segment": {
             "allOf": [
@@ -20935,7 +21925,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -20953,7 +21945,11 @@
         "type": "string",
         "description": "Metrics used to construct the cloud connect dara are tagged with these labels and therefore\nthe metrics can be sliced and diced based on one or more labels.\n\nIndicates the field not being set\nIdentifies a customer edge\nIdentifies a cloud connect.",
         "title": "Label",
-        "enum": ["LABEL_NONE", "LABEL_CUSTOMER_EDGE", "LABEL_CLOUD_CONNECT"],
+        "enum": [
+          "LABEL_NONE",
+          "LABEL_CUSTOMER_EDGE",
+          "LABEL_CLOUD_CONNECT"
+        ],
         "default": "LABEL_NONE",
         "x-displayname": "Label",
         "x-ves-proto-enum": "ves.io.schema.cloud_connect.Label",
@@ -20969,7 +21965,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -21004,7 +22002,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["azure_vnet_site"]
+            "x-f5xc-conflicts-with": [
+              "azure_vnet_site"
+            ]
           },
           "azure_vnet_site": {
             "allOf": [
@@ -21018,7 +22018,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["aws_provider"]
+            "x-f5xc-conflicts-with": [
+              "aws_provider"
+            ]
           }
         },
         "x-f5xc-description-short": "Shape of the Cloud Connect specification.",
@@ -21032,7 +22034,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -21200,7 +22204,9 @@
         "x-f5xc-description-medium": "Type establishes a direct reference from one object(the referrer) to another(the referred). Such a reference is in form of tenant/namespace/name.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for schemaviewsObjectRefType",
-          "required_fields": ["name"],
+          "required_fields": [
+            "name"
+          ],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"name\": \"contacts-route\"\n}",
           "example_yaml": "name: contacts-route"
@@ -21208,7 +22214,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -21268,7 +22278,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -21326,7 +22338,10 @@
               "read": false
             },
             "x-field-mutability": "read-only",
-            "x-f5xc-conflicts-with": ["external_id_is_optional", "external_id_is_tenant_id"]
+            "x-f5xc-conflicts-with": [
+              "external_id_is_optional",
+              "external_id_is_tenant_id"
+            ]
           },
           "duration_seconds": {
             "type": "integer",
@@ -21378,7 +22393,10 @@
               "read": false
             },
             "x-field-mutability": "read-only",
-            "x-f5xc-conflicts-with": ["custom_external_id", "external_id_is_tenant_id"]
+            "x-f5xc-conflicts-with": [
+              "custom_external_id",
+              "external_id_is_tenant_id"
+            ]
           },
           "external_id_is_tenant_id": {
             "allOf": [
@@ -21393,7 +22411,10 @@
               "read": false
             },
             "x-field-mutability": "read-only",
-            "x-f5xc-conflicts-with": ["custom_external_id", "external_id_is_optional"]
+            "x-f5xc-conflicts-with": [
+              "custom_external_id",
+              "external_id_is_optional"
+            ]
           },
           "role_arn": {
             "type": "string",
@@ -21510,7 +22531,11 @@
         "x-f5xc-description-short": "AWS Assume Role to Handle Delegated Access.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for cloud_credentialsAWSAssumeRoleType",
-          "required_fields": ["duration_seconds", "role_arn", "session_name"],
+          "required_fields": [
+            "duration_seconds",
+            "role_arn",
+            "session_name"
+          ],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"duration_seconds\": 3600,\n  \"role_arn\": \"arn:aws:iam::121212121212:role/aws-iam-role-arn\",\n  \"session_name\": \"cloud-f5xc-deployment\"\n}",
           "example_yaml": "duration_seconds: 3600\nrole_arn: arn:aws:iam::121212121212:role/aws-iam-role-arn\nsession_name: cloud-f5xc-deployment"
@@ -21518,7 +22543,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -21592,7 +22619,9 @@
         "x-f5xc-description-short": "AWS Programmatic Access Credentials type.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for cloud_credentialsAWSSecretType",
-          "required_fields": ["access_key"],
+          "required_fields": [
+            "access_key"
+          ],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"access_key\": \"value\"\n}",
           "example_yaml": "access_key: value"
@@ -21600,7 +22629,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -21791,7 +22822,12 @@
         "x-f5xc-description-short": "Azure Credentials Client Certificate type.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for cloud_credentialsAzurePfxType",
-          "required_fields": ["certificate_url", "client_id", "subscription_id", "tenant_id"],
+          "required_fields": [
+            "certificate_url",
+            "client_id",
+            "subscription_id",
+            "tenant_id"
+          ],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"certificate_url\": \"value\",\n  \"client_id\": \"value\",\n  \"subscription_id\": \"value\",\n  \"tenant_id\": \"value\"\n}",
           "example_yaml": "certificate_url: value\nclient_id: value\nsubscription_id: value\ntenant_id: value"
@@ -21799,7 +22835,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -21949,7 +22987,11 @@
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for cloud_credentialsAzureSecretType",
-          "required_fields": ["client_id", "subscription_id", "tenant_id"],
+          "required_fields": [
+            "client_id",
+            "subscription_id",
+            "tenant_id"
+          ],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"client_id\": \"value\",\n  \"subscription_id\": \"value\",\n  \"tenant_id\": \"value\"\n}",
           "example_yaml": "client_id: value\nsubscription_id: value\ntenant_id: value"
@@ -21957,7 +22999,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -22017,7 +23061,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -22088,7 +23134,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -22123,7 +23171,12 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["aws_secret_key", "azure_client_secret", "azure_pfx_certificate", "gcp_cred_file"]
+            "x-f5xc-conflicts-with": [
+              "aws_secret_key",
+              "azure_client_secret",
+              "azure_pfx_certificate",
+              "gcp_cred_file"
+            ]
           },
           "aws_secret_key": {
             "allOf": [
@@ -22157,7 +23210,12 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["aws_assume_role", "aws_secret_key", "azure_pfx_certificate", "gcp_cred_file"]
+            "x-f5xc-conflicts-with": [
+              "aws_assume_role",
+              "aws_secret_key",
+              "azure_pfx_certificate",
+              "gcp_cred_file"
+            ]
           },
           "azure_pfx_certificate": {
             "allOf": [
@@ -22172,7 +23230,12 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["aws_assume_role", "aws_secret_key", "azure_client_secret", "gcp_cred_file"]
+            "x-f5xc-conflicts-with": [
+              "aws_assume_role",
+              "aws_secret_key",
+              "azure_client_secret",
+              "gcp_cred_file"
+            ]
           },
           "gcp_cred_file": {
             "allOf": [
@@ -22205,7 +23268,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -22340,7 +23405,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -22386,7 +23453,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -22550,7 +23619,9 @@
             "type": "string",
             "x-f5xc-concurrency-token": {
               "server_assigned": true,
-              "echo_on_operations": ["replace"]
+              "echo_on_operations": [
+                "replace"
+              ]
             }
           }
         },
@@ -22564,7 +23635,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -22599,7 +23672,12 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["aws_secret_key", "azure_client_secret", "azure_pfx_certificate", "gcp_cred_file"]
+            "x-f5xc-conflicts-with": [
+              "aws_secret_key",
+              "azure_client_secret",
+              "azure_pfx_certificate",
+              "gcp_cred_file"
+            ]
           },
           "aws_secret_key": {
             "allOf": [
@@ -22633,7 +23711,12 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["aws_assume_role", "aws_secret_key", "azure_pfx_certificate", "gcp_cred_file"]
+            "x-f5xc-conflicts-with": [
+              "aws_assume_role",
+              "aws_secret_key",
+              "azure_pfx_certificate",
+              "gcp_cred_file"
+            ]
           },
           "azure_pfx_certificate": {
             "allOf": [
@@ -22648,7 +23731,12 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["aws_assume_role", "aws_secret_key", "azure_client_secret", "gcp_cred_file"]
+            "x-f5xc-conflicts-with": [
+              "aws_assume_role",
+              "aws_secret_key",
+              "azure_client_secret",
+              "gcp_cred_file"
+            ]
           },
           "gcp_cred_file": {
             "allOf": [
@@ -22681,7 +23769,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -22758,7 +23848,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -23093,7 +24185,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -23146,7 +24240,9 @@
             "type": "string",
             "x-f5xc-concurrency-token": {
               "server_assigned": true,
-              "echo_on_operations": ["replace"]
+              "echo_on_operations": [
+                "replace"
+              ]
             }
           }
         },
@@ -23160,7 +24256,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -23187,7 +24285,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -23222,7 +24322,12 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["aws_secret_key", "azure_client_secret", "azure_pfx_certificate", "gcp_cred_file"]
+            "x-f5xc-conflicts-with": [
+              "aws_secret_key",
+              "azure_client_secret",
+              "azure_pfx_certificate",
+              "gcp_cred_file"
+            ]
           },
           "aws_secret_key": {
             "allOf": [
@@ -23256,7 +24361,12 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["aws_assume_role", "aws_secret_key", "azure_pfx_certificate", "gcp_cred_file"]
+            "x-f5xc-conflicts-with": [
+              "aws_assume_role",
+              "aws_secret_key",
+              "azure_pfx_certificate",
+              "gcp_cred_file"
+            ]
           },
           "azure_pfx_certificate": {
             "allOf": [
@@ -23271,7 +24381,12 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["aws_assume_role", "aws_secret_key", "azure_client_secret", "gcp_cred_file"]
+            "x-f5xc-conflicts-with": [
+              "aws_assume_role",
+              "aws_secret_key",
+              "azure_client_secret",
+              "gcp_cred_file"
+            ]
           },
           "gcp_cred_file": {
             "allOf": [
@@ -23305,7 +24420,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -23382,7 +24499,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -23507,7 +24626,9 @@
         "x-f5xc-description-short": "BlindfoldSecretInfoType specifies information about the Secret managed by F5XC Secret Management.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for schemaBlindfoldSecretInfoType",
-          "required_fields": ["location"],
+          "required_fields": [
+            "location"
+          ],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"location\": \"string:///U2VjcmV0SW5mb3JtYXRpb24=\"\n}",
           "example_yaml": "location: string:///U2VjcmV0SW5mb3JtYXRpb24="
@@ -23515,7 +24636,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -23622,7 +24745,9 @@
         "x-f5xc-description-short": "ClearSecretInfoType specifies information about the Secret that is not encrypted.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for schemaClearSecretInfoType",
-          "required_fields": ["url"],
+          "required_fields": [
+            "url"
+          ],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"url\": \"string:///U2VjcmV0SW5mb3JtYXRpb24=\"\n}",
           "example_yaml": "url: string:///U2VjcmV0SW5mb3JtYXRpb24="
@@ -23630,7 +24755,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -23836,7 +24965,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -23870,7 +25003,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["clear_secret_info"]
+            "x-f5xc-conflicts-with": [
+              "clear_secret_info"
+            ]
           },
           "clear_secret_info": {
             "allOf": [
@@ -23884,7 +25019,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["blindfold_secret_info"]
+            "x-f5xc-conflicts-with": [
+              "blindfold_secret_info"
+            ]
           }
         },
         "x-f5xc-description-short": "SecretType is used in an object to indicate a sensitive/confidential field.",
@@ -23898,7 +25035,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -23958,7 +25097,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -24029,7 +25170,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -24126,7 +25269,10 @@
         "x-f5xc-description-short": "Create Cloud Elastic IP creates Cloud Elastic IP object Object is attached to a site.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for cloud_elastic_ipCreateSpecType",
-          "required_fields": ["count", "site_ref"],
+          "required_fields": [
+            "count",
+            "site_ref"
+          ],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"count\": 1,\n  \"site_ref\": [\n    {}\n  ]\n}",
           "example_yaml": "count: 1\nsite_ref:\n- {}"
@@ -24134,7 +25280,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -24269,7 +25417,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -24397,7 +25547,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -24488,7 +25640,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -24565,7 +25719,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -24595,7 +25751,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -24759,7 +25917,9 @@
             "type": "string",
             "x-f5xc-concurrency-token": {
               "server_assigned": true,
-              "echo_on_operations": ["replace"]
+              "echo_on_operations": [
+                "replace"
+              ]
             }
           }
         },
@@ -24773,7 +25933,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -24870,7 +26032,10 @@
         "x-f5xc-description-short": "GET cloud elastic IP will GET the object from the storage backend for namespace metadata.namespace.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for cloud_elastic_ipGetSpecType",
-          "required_fields": ["count", "site_ref"],
+          "required_fields": [
+            "count",
+            "site_ref"
+          ],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"count\": 1,\n  \"site_ref\": [\n    {}\n  ]\n}",
           "example_yaml": "count: 1\nsite_ref:\n- {}"
@@ -24878,7 +26043,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -24955,7 +26122,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -25290,7 +26459,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -25343,7 +26514,9 @@
             "type": "string",
             "x-f5xc-concurrency-token": {
               "server_assigned": true,
-              "echo_on_operations": ["replace"]
+              "echo_on_operations": [
+                "replace"
+              ]
             }
           }
         },
@@ -25357,7 +26530,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -25384,7 +26559,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -25481,7 +26658,10 @@
         "x-f5xc-description-short": "Replace cloud elastic IP will replace cloud elastic IP object with new object.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for cloud_elastic_ipReplaceSpecType",
-          "required_fields": ["count", "site_ref"],
+          "required_fields": [
+            "count",
+            "site_ref"
+          ],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"count\": 1,\n  \"site_ref\": [\n    {}\n  ]\n}",
           "example_yaml": "count: 1\nsite_ref:\n- {}"
@@ -25489,7 +26669,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -25582,7 +26764,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -25732,7 +26916,9 @@
             "type": "string",
             "x-f5xc-concurrency-token": {
               "server_assigned": true,
-              "echo_on_operations": ["replace"]
+              "echo_on_operations": [
+                "replace"
+              ]
             }
           }
         },
@@ -25746,7 +26932,11 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -25781,7 +26971,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["policy_group"]
+            "x-f5xc-conflicts-with": [
+              "policy_group"
+            ]
           },
           "policy_group": {
             "allOf": [
@@ -25796,7 +26988,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["default_policy_group"],
+            "x-f5xc-conflicts-with": [
+              "default_policy_group"
+            ],
             "x-f5xc-references": [
               {
                 "resource_kind": null,
@@ -25820,7 +27014,11 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -25897,7 +27095,11 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -26231,7 +27433,11 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -26284,7 +27490,9 @@
             "type": "string",
             "x-f5xc-concurrency-token": {
               "server_assigned": true,
-              "echo_on_operations": ["replace"]
+              "echo_on_operations": [
+                "replace"
+              ]
             }
           }
         },
@@ -26298,7 +27506,11 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -26325,7 +27537,11 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -26360,7 +27576,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["policy_group"]
+            "x-f5xc-conflicts-with": [
+              "policy_group"
+            ]
           },
           "policy_group": {
             "allOf": [
@@ -26375,7 +27593,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["default_policy_group"],
+            "x-f5xc-conflicts-with": [
+              "default_policy_group"
+            ],
             "x-f5xc-references": [
               {
                 "resource_kind": null,
@@ -26399,7 +27619,11 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -26477,7 +27701,11 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -26543,7 +27771,9 @@
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for cloud_linkAWSBYOCListType",
-          "required_fields": ["connections"],
+          "required_fields": [
+            "connections"
+          ],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"connections\": [\n    {\n      \"bgp_asn\": 1,\n      \"connection_id\": \"dxcon-a2h48678\",\n      \"region\": \"us-east-1\",\n      \"vlan\": 1\n    }\n  ]\n}",
           "example_yaml": "connections:\n- bgp_asn: 1\n  connection_id: dxcon-a2h48678\n  region: us-east-1\n  vlan: 1"
@@ -26551,7 +27781,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -26766,7 +27998,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["user_assigned_name"]
+            "x-f5xc-conflicts-with": [
+              "user_assigned_name"
+            ]
           },
           "tags": {
             "type": "object",
@@ -26829,7 +28063,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["system_generated_name"]
+            "x-f5xc-conflicts-with": [
+              "system_generated_name"
+            ]
           },
           "virtual_interface_type": {
             "allOf": [
@@ -26888,7 +28124,12 @@
         "x-f5xc-description-short": "AWS Bring You Own Connection. F5XC supports Virtual interfaces from the same AWS cloud account.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for cloud_linkAWSBYOCType",
-          "required_fields": ["bgp_asn", "connection_id", "region", "vlan"],
+          "required_fields": [
+            "bgp_asn",
+            "connection_id",
+            "region",
+            "vlan"
+          ],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"bgp_asn\": 1,\n  \"connection_id\": \"dxcon-a2h48678\",\n  \"region\": \"us-east-1\",\n  \"vlan\": 1\n}",
           "example_yaml": "bgp_asn: 1\nconnection_id: dxcon-a2h48678\nregion: us-east-1\nvlan: 1"
@@ -26896,7 +28137,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -27023,7 +28266,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -27125,7 +28370,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -27156,7 +28403,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -27190,7 +28439,10 @@
             },
             "x-f5xc-description-short": "The address family setup for the BGP peer.",
             "maxLength": 1024,
-            "enum": ["ipv4", "ipv6"],
+            "enum": [
+              "ipv4",
+              "ipv6"
+            ],
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "general",
@@ -27258,7 +28510,13 @@
               "ves.io.schema.rules.string.in": "[\\\"verifying\\\",\\\"pending\\\",\\\"available\\\",\\\"deleting\\\",\\\"deleted\\\"]"
             },
             "maxLength": 1024,
-            "enum": ["verifying", "pending", "available", "deleting", "deleted"],
+            "enum": [
+              "verifying",
+              "pending",
+              "available",
+              "deleting",
+              "deleted"
+            ],
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "general",
@@ -27288,7 +28546,11 @@
               "ves.io.schema.rules.string.in": "[\\\"up\\\",\\\"down\\\",\\\"unknown\\\"]"
             },
             "maxLength": 1024,
-            "enum": ["up", "down", "unknown"],
+            "enum": [
+              "up",
+              "down",
+              "unknown"
+            ],
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "general",
@@ -27365,7 +28627,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -27383,7 +28647,14 @@
         "type": "string",
         "description": "Status of the CloudLink deployment\n\n- IN_PROGRESS: In-Progress\n\nCloudLink provisioning is in-progress\n- ERROR: Error\n\nAn error occurred while deploying CloudLink. Check the error description and suggested action\n- READY: Ready\n\nCloudLink is ready for use\n- DELETING: Deleting\n\nCloudLink deleting in progress\n- CUSTOMER_DEPLOYED: Customer Deployed\n\nCustomer deploys the CloudLink\n- NOT_APPLICABLE: NotApplicable\n\nDeployment status not applicable.",
         "title": "CloudLink Status",
-        "enum": ["IN_PROGRESS", "ERROR", "READY", "DELETING", "CUSTOMER_DEPLOYED", "NOT_APPLICABLE"],
+        "enum": [
+          "IN_PROGRESS",
+          "ERROR",
+          "READY",
+          "DELETING",
+          "CUSTOMER_DEPLOYED",
+          "NOT_APPLICABLE"
+        ],
         "default": "IN_PROGRESS",
         "x-displayname": "Status",
         "x-ves-proto-enum": "ves.io.schema.cloud_link.CloudLinkDeploymentStatus",
@@ -27399,7 +28670,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -27459,7 +28732,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -27530,7 +28805,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -27665,7 +28942,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -27849,7 +29128,11 @@
             },
             "x-f5xc-description-short": "Whether the connection supports a secondary BGP peer in the same address family (IPv4/IPv6).",
             "maxLength": 1024,
-            "enum": ["unknown", "yes", "no"],
+            "enum": [
+              "unknown",
+              "yes",
+              "no"
+            ],
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "general",
@@ -28062,7 +29345,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -28194,7 +29479,12 @@
             },
             "x-f5xc-description-short": "The state of the Direct Connect gateway.",
             "maxLength": 1024,
-            "enum": ["pending", "available", "deleting", "deleted"],
+            "enum": [
+              "pending",
+              "available",
+              "deleting",
+              "deleted"
+            ],
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "general",
@@ -28273,7 +29563,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -28339,7 +29631,9 @@
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for cloud_linkGCPBYOCListType",
-          "required_fields": ["connections"],
+          "required_fields": [
+            "connections"
+          ],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"connections\": [\n    {\n      \"interconnect_attachment_name\": \"example-resource\",\n      \"region\": \"us-west-2\"\n    }\n  ]\n}",
           "example_yaml": "connections:\n- interconnect_attachment_name: example-resource\n  region: us-west-2"
@@ -28347,7 +29641,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -28456,7 +29752,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["same_as_credential"]
+            "x-f5xc-conflicts-with": [
+              "same_as_credential"
+            ]
           },
           "region": {
             "type": "string",
@@ -28546,12 +29844,17 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["project"]
+            "x-f5xc-conflicts-with": [
+              "project"
+            ]
           }
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for cloud_linkGCPBYOCType",
-          "required_fields": ["interconnect_attachment_name", "region"],
+          "required_fields": [
+            "interconnect_attachment_name",
+            "region"
+          ],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"interconnect_attachment_name\": \"example-resource\",\n  \"region\": \"us-west-2\"\n}",
           "example_yaml": "interconnect_attachment_name: example-resource\nregion: us-west-2"
@@ -28559,7 +29862,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -28772,7 +30077,10 @@
             },
             "x-f5xc-description-short": "Encryption type for this GCP Cloud Interconnect attachment.",
             "maxLength": 1024,
-            "enum": ["NONE", "IPSEC"],
+            "enum": [
+              "NONE",
+              "IPSEC"
+            ],
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "general",
@@ -29093,7 +30401,11 @@
             },
             "x-f5xc-description-short": "Type of GCP Cloud Interconnect attachment.",
             "maxLength": 1024,
-            "enum": ["DEDICATED", "PARTNER", "PARTNER_PROVIDER"],
+            "enum": [
+              "DEDICATED",
+              "PARTNER",
+              "PARTNER_PROVIDER"
+            ],
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "general",
@@ -29175,7 +30487,10 @@
         "x-f5xc-description-medium": "Status reported by Google Cloud Platform (GCP) Cloud Interconnect attachment related to this Cloud Link.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for cloud_linkGCPCloudInterconnectAttachmentStatusType",
-          "required_fields": ["type", "vlan"],
+          "required_fields": [
+            "type",
+            "vlan"
+          ],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"type\": \"DEDICATED\",\n  \"vlan\": 1\n}",
           "example_yaml": "type: DEDICATED\nvlan: 1"
@@ -29183,7 +30498,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -29309,7 +30626,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -29372,7 +30691,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -29440,7 +30761,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -29604,7 +30927,9 @@
             "type": "string",
             "x-f5xc-concurrency-token": {
               "server_assigned": true,
-              "echo_on_operations": ["replace"]
+              "echo_on_operations": [
+                "replace"
+              ]
             }
           }
         },
@@ -29618,7 +30943,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -29721,7 +31048,10 @@
         "x-f5xc-description-short": "Configure BGP IPv4 peering for endpoints.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for cloud_linkIpv4Type",
-          "required_fields": ["aws_router_peer_address", "router_peer_address"],
+          "required_fields": [
+            "aws_router_peer_address",
+            "router_peer_address"
+          ],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"aws_router_peer_address\": \"192.0.2.0/24\",\n  \"router_peer_address\": \"192.0.2.0/24\"\n}",
           "example_yaml": "aws_router_peer_address: 192.0.2.0/24\nrouter_peer_address: 192.0.2.0/24"
@@ -29729,7 +31059,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -29806,7 +31138,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -30140,7 +31474,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -30216,7 +31552,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -30246,7 +31584,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -30299,7 +31639,9 @@
             "type": "string",
             "x-f5xc-concurrency-token": {
               "server_assigned": true,
-              "echo_on_operations": ["replace"]
+              "echo_on_operations": [
+                "replace"
+              ]
             }
           }
         },
@@ -30313,7 +31655,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -30340,7 +31684,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -30375,7 +31721,10 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["azure_status", "gcp_status"]
+            "x-f5xc-conflicts-with": [
+              "azure_status",
+              "gcp_status"
+            ]
           },
           "azure_status": {
             "allOf": [
@@ -30389,7 +31738,10 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["aws_status", "gcp_status"]
+            "x-f5xc-conflicts-with": [
+              "aws_status",
+              "gcp_status"
+            ]
           },
           "conditions": {
             "type": "array",
@@ -30419,7 +31771,10 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["aws_status", "azure_status"]
+            "x-f5xc-conflicts-with": [
+              "aws_status",
+              "azure_status"
+            ]
           },
           "metadata": {
             "allOf": [
@@ -30462,7 +31817,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -30496,7 +31853,10 @@
             },
             "x-f5xc-description-short": "The address family setup for the BGP peer.",
             "maxLength": 1024,
-            "enum": ["ipv4", "ipv6"],
+            "enum": [
+              "ipv4",
+              "ipv6"
+            ],
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "general",
@@ -30679,7 +32039,12 @@
               "ves.io.schema.rules.string.in": "[\\\"attaching\\\",\\\"attached\\\",\\\"detaching\\\",\\\"detached\\\"]"
             },
             "maxLength": 1024,
-            "enum": ["attaching", "attached", "detaching", "detached"],
+            "enum": [
+              "attaching",
+              "attached",
+              "detaching",
+              "detached"
+            ],
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "general",
@@ -30965,7 +32330,11 @@
               "ves.io.schema.rules.string.in": "[\\\"private\\\",\\\"public\\\",\\\"transit\\\"]"
             },
             "maxLength": 1024,
-            "enum": ["private", "public", "transit"],
+            "enum": [
+              "private",
+              "public",
+              "transit"
+            ],
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "general",
@@ -31011,7 +32380,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -31029,7 +32400,9 @@
         "type": "string",
         "description": "Defines the type of virtual interface that needs to be configured on AWS\n\n- PRIVATE: Private\n\nA private virtual interface should be used to access an Amazon VPC using private IP addresses.\n- TRANSIT: Transit\n\nA transit virtual interface is a VLAN that transports traffic from a Direct Connect gateway to one or more transit gateways.",
         "title": "Virtual Interface Type",
-        "enum": ["PRIVATE"],
+        "enum": [
+          "PRIVATE"
+        ],
         "default": "PRIVATE",
         "x-displayname": "Virtual Interface Type.",
         "x-ves-proto-enum": "ves.io.schema.cloud_link.VirtualInterfaceType",
@@ -31045,7 +32418,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -31063,7 +32438,12 @@
         "type": "string",
         "description": "State of the CloudLink connections\n\n- UP: Up\n\nCloudLink and their corresponding Direct Connect connections are up and healthy\n- DOWN: Down\n\nCloudLink and their corresponding Direct Connect connections are down\n- DEGRADED: Degraded\n\nSome of Direct Connect connections with the CloudLink are down\n- NOT_APPLICABLE: NotApplicable\n\nCloudLinkState not applicable.",
         "title": "CloudLink State",
-        "enum": ["UP", "DOWN", "DEGRADED", "NOT_APPLICABLE"],
+        "enum": [
+          "UP",
+          "DOWN",
+          "DEGRADED",
+          "NOT_APPLICABLE"
+        ],
         "default": "UP",
         "x-displayname": "CloudLink State.",
         "x-ves-proto-enum": "ves.io.schema.CloudLinkState",
@@ -31079,7 +32459,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -31198,7 +32580,9 @@
         "x-f5xc-description-medium": "MessageMetaType is metadata (common attributes) of a message that only certain messages have. This information is propagated to the metadata of a child object that gets created from the containing message during view processing. The information in this type can be specified by user during create...",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for schemaMessageMetaType",
-          "required_fields": ["name"],
+          "required_fields": [
+            "name"
+          ],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"name\": \"example-corp-web\"\n}",
           "example_yaml": "name: example-corp-web"
@@ -31206,7 +32590,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -31241,7 +32629,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["gcp"]
+            "x-f5xc-conflicts-with": [
+              "gcp"
+            ]
           },
           "disabled": {
             "allOf": [
@@ -31256,7 +32646,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["enabled"]
+            "x-f5xc-conflicts-with": [
+              "enabled"
+            ]
           },
           "enabled": {
             "allOf": [
@@ -31271,7 +32663,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["disabled"]
+            "x-f5xc-conflicts-with": [
+              "disabled"
+            ]
           },
           "gcp": {
             "allOf": [
@@ -31285,7 +32679,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["aws"]
+            "x-f5xc-conflicts-with": [
+              "aws"
+            ]
           }
         },
         "x-f5xc-description-short": "Creates a new CloudLink with configured parameters.",
@@ -31299,7 +32695,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -31334,7 +32732,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["gcp"]
+            "x-f5xc-conflicts-with": [
+              "gcp"
+            ]
           },
           "cloud_link_state": {
             "allOf": [
@@ -31363,7 +32763,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["enabled"]
+            "x-f5xc-conflicts-with": [
+              "enabled"
+            ]
           },
           "enabled": {
             "allOf": [
@@ -31378,7 +32780,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["disabled"]
+            "x-f5xc-conflicts-with": [
+              "disabled"
+            ]
           },
           "gcp": {
             "allOf": [
@@ -31392,7 +32796,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["aws"]
+            "x-f5xc-conflicts-with": [
+              "aws"
+            ]
           },
           "sites": {
             "type": "integer",
@@ -31453,7 +32859,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -31488,7 +32896,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["gcp"]
+            "x-f5xc-conflicts-with": [
+              "gcp"
+            ]
           },
           "disabled": {
             "allOf": [
@@ -31503,7 +32913,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["enabled"]
+            "x-f5xc-conflicts-with": [
+              "enabled"
+            ]
           },
           "enabled": {
             "allOf": [
@@ -31518,7 +32930,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["disabled"]
+            "x-f5xc-conflicts-with": [
+              "disabled"
+            ]
           },
           "gcp": {
             "allOf": [
@@ -31532,7 +32946,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["aws"]
+            "x-f5xc-conflicts-with": [
+              "aws"
+            ]
           }
         },
         "x-f5xc-description-short": "Replaces configured CloudLink with new set of parameters.",
@@ -31546,7 +32962,9 @@
         "x-f5xc-cli-domain": "cloud_infrastructure",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -31609,7 +33027,9 @@
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for viewsCloudLinkADNType",
-          "required_fields": ["cloudlink_network_name"],
+          "required_fields": [
+            "cloudlink_network_name"
+          ],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"cloudlink_network_name\": \"private-cloud-ntw\"\n}",
           "example_yaml": "cloudlink_network_name: private-cloud-ntw"
@@ -31617,7 +33037,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
