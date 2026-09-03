@@ -14,9 +14,9 @@ from .extension_constants import X_F5XC_CE_AUTOMATION_CONTRACT
 
 CONFIG_PATH = Path(__file__).parent.parent.parent / "config" / "interface_contracts.yaml"
 SUPPORTED_ROLES = frozenset({"slo", "external", "sli"})
-CONFIG_VERSION = "5.0.0"
-CONTRACT_VERSION = "5.0.0"
-CONTRACT_ID = "f5xc-ce-automation/v2"
+CONFIG_VERSION = "6.0.0"
+CONTRACT_VERSION = "6.0.0"
+CONTRACT_ID = "f5xc-ce-automation/v3"
 CAPABILITY_STATES = frozenset({"available", "unavailable"})
 STABLE_IDENTITY_FIELDS = frozenset(
     {
@@ -28,48 +28,109 @@ STABLE_IDENTITY_FIELDS = frozenset(
         "control_plane_interface_reference",
     }
 )
-AWS_TELEMETRY_SCHEMA_ID = "f5xc-smsv2-aws-tgw-telemetry/v1"
+AWS_TELEMETRY_SCHEMA_ID = "f5xc-smsv2-aws-tgw-telemetry/v2"
 AWS_REQUIRED_TELEMETRY_FACTS = frozenset(
     {"runtime", "gre", "bgp", "mtu", "route", "bgp_inside_cidr_block"}
 )
-AWS_V2_CAPABILITIES = {
+AWS_V3_CAPABILITIES = {
     "aws_ce_create": "available",
     "runtime_status": "available",
     "tgw_connect": "available",
 }
-AWS_V2_INTERFACE_IDENTITY = {
-    "field": "ethernet_interface.mac",
-    "guest_device": "observational_only",
-    "known_macs": "non_empty_unique_per_node",
+AWS_V3_INTERFACE_IDENTITY = {
+    "fields": ["node", "ethernet_interface.mac"],
+    "node": {
+        "input_field": "node",
+        "configuration_path": "spec.aws.not_managed.node_list[].hostname",
+        "nullable": False,
+        "normalization": "trim",
+    },
+    "mac": {
+        "input_field": "mac",
+        "configuration_path": (
+            "spec.aws.not_managed.node_list[].interface_list[].ethernet_interface.mac"
+        ),
+        "nullable": False,
+        "normalization": "ieee802_lowercase_colon",
+    },
+    "uniqueness_scope": "node",
+    "guest_device": "rejected",
+    "known_value_policy": "reject_null_incomplete_malformed_ambiguous_or_inconsistent",
+    "unknown_value_policy": "defer",
 }
-AWS_V2_ROLES = [
+AWS_V3_ROLES = [
     {"name": "slo", "network_option": "site_local_network"},
     {"name": "sli", "network_option": "site_local_inside_network"},
 ]
-AWS_V2_RUNTIME = {
+AWS_V3_RUNTIME = {
     "configuration": {
         "method": "GET",
         "path": "/api/config/namespaces/{namespace}/securemesh_site_v2s/{site}",
         "operation_id": "ves.io.schema.views.securemesh_site_v2.API.Get",
         "response_schema": "securemesh_site_v2GetResponse",
+        "authority": "f5xc",
+        "semantics": "configuration",
+        "response_mappings": {
+            "nodes": "spec.aws.not_managed.node_list[]",
+            "node": "hostname",
+            "interfaces": "interface_list[]",
+            "mac": "ethernet_interface.mac",
+            "role": "network_option",
+            "mtu": "mtu",
+            "public_ip": "public_ip",
+        },
+        "nullability": {"public_ip": "nullable", "all_identity_fields": "non_null"},
+        "normalization": {
+            "node": "trim",
+            "mac": "ieee802_lowercase_colon",
+            "role": "slo_or_sli",
+        },
+        "correlation": ["node", "normalized_mac"],
     },
     "health": {
         "method": "GET",
         "path": "/api/operate/namespaces/system/sites/{site}/vpm/debug/global/health",
         "operation_id": "ves.io.schema.operate.debug.CustomPublicAPI.HealthPublic",
         "response_schema": "debugHealthResponse",
+        "authority": "f5xc",
+        "semantics": "observational_read_only",
+        "response_mappings": {"node": "hostname", "health": "state"},
+        "correlation": ["node"],
     },
     "bgp_peers": {
         "method": "GET",
         "path": "/api/operate/namespaces/{namespace}/sites/{site}/ver/bgp_peers",
         "operation_id": "ves.io.schema.operate.bgp.CustomPublicAPI.ShowBGPPeers",
         "response_schema": "bgpBGPPeersResponse",
+        "authority": "f5xc",
+        "semantics": "observational_read_only",
+        "response_mappings": {
+            "nodes": "ver[]",
+            "node": "ver[].name",
+            "peers": "ver[].peer[]",
+            "interface_name": "ver[].peer[].interface_name",
+            "peer_address": "ver[].peer[].peer_address",
+            "state": "ver[].peer[].protocol_status",
+            "received_prefix_count": "ver[].peer[].received_prefix_count",
+            "advertised_prefix_count": "ver[].peer[].advertised_prefix_count",
+            "state_changed_at": "ver[].peer[].up_down_timestamp",
+        },
+        "correlation": ["node", "peer_address"],
     },
     "bgp_routes": {
         "method": "GET",
         "path": "/api/operate/namespaces/{namespace}/sites/{site}/ver/bgp_routes",
         "operation_id": "ves.io.schema.operate.bgp.CustomPublicAPI.ShowBGPRoutes",
         "response_schema": "bgpBGPRoutesResponse",
+        "authority": "f5xc",
+        "semantics": "observational_read_only",
+        "response_mappings": {
+            "nodes": "ver[]",
+            "node": "ver[].name",
+            "route_tables": "ver[].ri_table[]",
+            "routes": "ver[].ri_table[].route[]",
+        },
+        "correlation": ["node"],
     },
     "simplified_routes": {
         "method": "POST",
@@ -77,9 +138,18 @@ AWS_V2_RUNTIME = {
         "operation_id": "ves.io.schema.operate.route.CustomPublicAPI.ShowSimplifiedRoutes",
         "request_schema": "routeSimplifiedRouteRequest",
         "response_schema": "routeSimplifiedRouteResponse",
+        "authority": "f5xc",
+        "semantics": "observational_read_only",
+        "request_mappings": {"node_scope": "all_nodes", "roles": ["slo", "sli"]},
+        "response_mappings": {
+            "nodes": "ver_routes[]",
+            "node": "ver_routes[].node",
+            "routes": "ver_routes[].route[]",
+        },
+        "correlation": ["node", "role"],
     },
 }
-AWS_V2_AUTHORITIES = {
+AWS_V3_AUTHORITIES = {
     "f5xc": [
         "smsv2_configuration",
         "runtime_health",
@@ -93,6 +163,7 @@ AWS_V2_AUTHORITIES = {
         "transit_gateway_connect",
         "gre_endpoints",
         "bgp_inside_cidrs",
+        "autonomous_system_numbers",
     ],
 }
 
@@ -145,19 +216,19 @@ def validate_aws_telemetry_intake(intake: object) -> bool:
     return complete
 
 
-def validate_aws_v2_contract(profile: object) -> None:
+def validate_aws_v3_contract(profile: object) -> None:
     """Validate the exact clean-break MAC-bound AWS SMSv2 contract."""
     if not isinstance(profile, dict):
-        raise InterfaceContractValidationError("AWS v2 profile must be an object")
-    if profile.get("interface_identity") != AWS_V2_INTERFACE_IDENTITY:
-        raise InterfaceContractValidationError("AWS interface identity must be MAC-bound")
-    if profile.get("roles") != AWS_V2_ROLES:
+        raise InterfaceContractValidationError("AWS v3 profile must be an object")
+    if profile.get("interface_identity") != AWS_V3_INTERFACE_IDENTITY:
+        raise InterfaceContractValidationError("AWS interface identity must be node/MAC-bound")
+    if profile.get("roles") != AWS_V3_ROLES:
         raise InterfaceContractValidationError("AWS runtime roles must be exactly slo and sli")
-    if profile.get("runtime") != AWS_V2_RUNTIME:
+    if profile.get("runtime") != AWS_V3_RUNTIME:
         raise InterfaceContractValidationError(
             "AWS runtime endpoints or schemas are incomplete or legacy"
         )
-    if profile.get("authorities") != AWS_V2_AUTHORITIES:
+    if profile.get("authorities") != AWS_V3_AUTHORITIES:
         raise InterfaceContractValidationError("AWS and F5 authority declarations are invalid")
 
 
@@ -301,7 +372,7 @@ class InterfaceContractEnricher:
                 f"{resource}: AWS telemetry intake must be an object"
             )
         telemetry_complete = validate_aws_telemetry_intake(telemetry_intake)
-        validate_aws_v2_contract(profile)
+        validate_aws_v3_contract(profile)
         if availability == "schema_only":
             if not capabilities or set(capabilities.values()) != {"unavailable"}:
                 raise InterfaceContractValidationError(
@@ -311,13 +382,13 @@ class InterfaceContractEnricher:
                 raise InterfaceContractValidationError(
                     f"{resource}: schema-only AWS telemetry must fail closed"
                 )
-        elif capabilities != AWS_V2_CAPABILITIES:
+        elif capabilities != AWS_V3_CAPABILITIES:
             raise InterfaceContractValidationError(
-                f"{resource}: AWS v2 capability model is incomplete or unavailable"
+                f"{resource}: AWS v3 capability model is incomplete or unavailable"
             )
         elif not telemetry_complete:
             raise InterfaceContractValidationError(
-                f"{resource}: AWS v2 requires completed telemetry intake"
+                f"{resource}: AWS v3 requires completed telemetry intake"
             )
 
         if profile.get("prohibited_legacy_apis") != ["aws_vpc_site", "aws_tgw_site"]:
@@ -352,11 +423,11 @@ class InterfaceContractEnricher:
             raise InterfaceContractValidationError(
                 f"{resource}: AWS evidence provenance is required"
             )
-        if not isinstance(evidence.get("observed_at"), str) or not evidence["observed_at"].endswith(
+        if not isinstance(evidence.get("recorded_at"), str) or not evidence["recorded_at"].endswith(
             "Z"
         ):
             raise InterfaceContractValidationError(
-                f"{resource}: AWS evidence timestamp is required"
+                f"{resource}: AWS evidence record timestamp is required"
             )
         if evidence.get("profiles") != ["aws-shaped-ce-configuration"]:
             raise InterfaceContractValidationError(

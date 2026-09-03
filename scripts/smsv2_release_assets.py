@@ -13,13 +13,13 @@ from typing import Any
 import yaml
 
 from scripts.utils.interface_contract_enricher import (
-    AWS_V2_CAPABILITIES,
+    AWS_V3_CAPABILITIES,
     CONTRACT_ID,
     CONTRACT_VERSION,
     InterfaceContractEnricher,
     InterfaceContractValidationError,
     validate_aws_telemetry_intake,
-    validate_aws_v2_contract,
+    validate_aws_v3_contract,
 )
 
 CONTRACT_FILE = "smsv2-contract.json"
@@ -83,7 +83,7 @@ def _evidence(contract: dict[str, Any]) -> dict[str, Any]:
     receipt = {
         "contract_id": contract.get("contract_id"),
         "provenance": evidence.get("provenance"),
-        "observed_at": evidence.get("observed_at"),
+        "recorded_at": evidence.get("recorded_at"),
         "profiles": evidence.get("profiles"),
         "receipts": evidence.get("receipts"),
     }
@@ -216,22 +216,22 @@ def validate_release_assets(
         "prohibited_legacy_apis": ["aws_vpc_site", "aws_tgw_site"],
     }
     if any(aws.get(key) != value for key, value in expected_aws_fields.items()):
-        raise Smsv2ReleaseValidationError("AWS SMSv2 v2 capability model is incomplete")
+        raise Smsv2ReleaseValidationError("AWS SMSv2 v3 capability model is incomplete")
     try:
         telemetry_complete = validate_aws_telemetry_intake(aws.get("telemetry_intake"))
-        validate_aws_v2_contract(aws)
+        validate_aws_v3_contract(aws)
     except InterfaceContractValidationError as error:
         raise Smsv2ReleaseValidationError(str(error)) from error
     availability = aws.get("availability")
     if availability == "evidence_backed":
         if (
-            aws.get("capabilities") != AWS_V2_CAPABILITIES
+            aws.get("capabilities") != AWS_V3_CAPABILITIES
             or aws.get("unavailable_capabilities") != []
             or not telemetry_complete
         ):
-            raise Smsv2ReleaseValidationError("AWS v2 capability model is incomplete")
+            raise Smsv2ReleaseValidationError("AWS v3 capability model is incomplete")
     elif availability == "schema_only":
-        unavailable = dict.fromkeys(AWS_V2_CAPABILITIES, "unavailable")
+        unavailable = dict.fromkeys(AWS_V3_CAPABILITIES, "unavailable")
         if (
             aws.get("capabilities") != unavailable
             or set(aws.get("unavailable_capabilities", [])) != set(unavailable)

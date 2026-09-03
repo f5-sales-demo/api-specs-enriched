@@ -78,21 +78,46 @@ def test_contract_is_deterministic_and_guest_names_are_not_authoritative(
         ]
         == "observational_only"
     )
-    assert create_contract[X_F5XC_CE_AUTOMATION_CONTRACT]["contract_id"] == "f5xc-ce-automation/v2"
+    assert create_contract[X_F5XC_CE_AUTOMATION_CONTRACT]["contract_id"] == "f5xc-ce-automation/v3"
     aws = create_contract[X_F5XC_CE_AUTOMATION_CONTRACT]["providers"]["aws"]
-    assert aws["interface_identity"]["guest_device"] == "observational_only"
-    assert aws["interface_identity"]["field"] == "ethernet_interface.mac"
+    assert aws["interface_identity"]["guest_device"] == "rejected"
+    assert aws["interface_identity"]["fields"] == ["node", "ethernet_interface.mac"]
+
+
+def test_v3_contract_defines_exact_runtime_mappings_without_freshness_claims(
+    contract_config: dict[str, Any],
+) -> None:
+    aws = _contract(contract_config)["providers"]["aws"]
+    identity = aws["interface_identity"]
+    assert identity["uniqueness_scope"] == "node"
+    assert identity["mac"]["normalization"] == "ieee802_lowercase_colon"
+    assert identity["known_value_policy"] == (
+        "reject_null_incomplete_malformed_ambiguous_or_inconsistent"
+    )
+    assert identity["unknown_value_policy"] == "defer"
+
+    runtime = aws["runtime"]
+    assert runtime["configuration"]["nullability"]["public_ip"] == "nullable"
+    assert runtime["configuration"]["correlation"] == ["node", "normalized_mac"]
+    assert runtime["bgp_peers"]["response_mappings"]["state_changed_at"] == (
+        "ver[].peer[].up_down_timestamp"
+    )
+    assert runtime["simplified_routes"]["semantics"] == "observational_read_only"
+    assert runtime["simplified_routes"]["request_mappings"]["roles"] == ["slo", "sli"]
+    assert "autonomous_system_numbers" in aws["authorities"]["aws"]
+    assert "observed_at" not in repr(aws)
+    assert aws["evidence"]["recorded_at"].endswith("Z")
 
 
 def test_contract_defines_stable_identity_and_role_invariants() -> None:
     enricher = InterfaceContractEnricher()
     contract = enricher.contracts[0][1]
     azure = contract["providers"]["azure"]
-    assert contract["contract_id"] == "f5xc-ce-automation/v2"
+    assert contract["contract_id"] == "f5xc-ce-automation/v3"
     assert contract["api"]["namespace"] == "system"
     assert contract["api"]["operations"] == ["create", "read", "replace", "delete"]
     assert contract["providers"]["aws"]["availability"] == "schema_only"
-    assert contract["version"] == "5.0.0"
+    assert contract["version"] == "6.0.0"
     assert contract["providers"]["aws"]["capabilities"] == {
         "aws_ce_create": "unavailable",
         "runtime_status": "unavailable",
@@ -194,12 +219,12 @@ def test_accepts_additive_current_contract_fields(
 
     enricher = InterfaceContractEnricher(_write_config(tmp_path, compatible))
 
-    assert enricher.contracts[0][1]["version"] == "5.0.0"
+    assert enricher.contracts[0][1]["version"] == "6.0.0"
     assert enricher.contracts[0][1]["providers"]["gcp"]["availability"] == "schema_only"
 
 
 @pytest.mark.parametrize(
-    "version", ["2", "2.1", "02.1.0", "5.0.0-dev", "2.1.0", "3.0.0", "4.9.9", "5.0.1", "6.0.0"]
+    "version", ["2", "2.1", "02.1.0", "6.0.0-dev", "2.1.0", "3.0.0", "4.9.9", "5.0.1", "7.0.0"]
 )
 def test_rejects_malformed_or_incompatible_schema_versions(
     tmp_path: Path, contract_config: dict[str, Any], version: str
@@ -221,7 +246,7 @@ def test_rejects_unknown_contract_identity_major(
         InterfaceContractEnricher(_write_config(tmp_path, incompatible))
 
 
-@pytest.mark.parametrize("version", [None, "3.0.0", "4.9.9", "5.0.1", "6.0.0"])
+@pytest.mark.parametrize("version", [None, "3.0.0", "4.9.9", "5.0.1", "7.0.0"])
 def test_rejects_noncurrent_configuration_version(
     tmp_path: Path, contract_config: dict[str, Any], version: object
 ) -> None:
@@ -309,7 +334,7 @@ def test_rejects_unsanitized_aws_evidence(tmp_path: Path, contract_config: dict[
 def test_aws_evidence_receipt_has_closed_modern_shape(
     contract_config: dict[str, Any],
 ) -> None:
-    assert contract_config["version"] == "5.0.0"
+    assert contract_config["version"] == "6.0.0"
     receipt = _contract(contract_config)["providers"]["aws"]["evidence"]["receipts"][0]
     assert set(receipt) == {
         "operations",
@@ -401,9 +426,39 @@ def test_aws_telemetry_intake_fails_closed(
             lambda aws: aws["authorities"]["aws"].append("runtime_health"),
             "authority declarations",
         ),
+        (
+            lambda aws: aws["authorities"]["aws"].remove("autonomous_system_numbers"),
+            "authority declarations",
+        ),
+        (
+            lambda aws: aws["runtime"]["configuration"]["nullability"].update(
+                {"public_ip": "non_null"}
+            ),
+            "incomplete or legacy",
+        ),
+        (
+            lambda aws: aws["runtime"]["bgp_peers"]["response_mappings"].update(
+                {"state_changed_at": "ver[].peer[].observed_at"}
+            ),
+            "incomplete or legacy",
+        ),
+        (
+            lambda aws: aws["runtime"]["simplified_routes"].update(
+                {"semantics": "resource_creating"}
+            ),
+            "incomplete or legacy",
+        ),
+        (
+            lambda aws: aws["interface_identity"]["mac"].update({"nullable": True}),
+            "node/MAC-bound",
+        ),
+        (
+            lambda aws: aws["interface_identity"].update({"uniqueness_scope": "global"}),
+            "node/MAC-bound",
+        ),
     ],
 )
-def test_rejects_non_v2_runtime_identity_and_authority(
+def test_rejects_non_v3_runtime_identity_and_authority(
     tmp_path: Path,
     contract_config: dict[str, Any],
     mutation: Mutation,
