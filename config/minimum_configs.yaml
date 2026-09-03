@@ -1809,6 +1809,47 @@ resources:
       - "metadata.name MUST be a valid FQDN (400: 'must be a valid fully qualified domain name')"
       - "spec.dns_type REQUIRED oneOf (400: 'dns_type should be not nil')"
 
+  rrset:
+    description: "DNS resource-record set mutation request"
+    domain: "dns"
+    resource_type: "record_set"
+    skip_curl_test: true
+
+    required_fields:
+      - "dns_zone_name"
+      - "group_name"
+      - "rrset"
+
+    example_yaml: |
+      dns_zone_name: example.com
+      group_name: github-pages-verification
+      rrset:
+        ttl: 300
+        txt_record:
+          name: _github-pages-challenge-example
+          values:
+            - verification-value
+
+    example_json: |
+      {
+        "dns_zone_name": "example.com",
+        "group_name": "github-pages-verification",
+        "rrset": {
+          "ttl": 300,
+          "txt_record": {
+            "name": "_github-pages-challenge-example",
+            "values": ["verification-value"]
+          }
+        }
+      }
+
+    cli:
+      domain: "dns"
+      resource_name: "rrset"
+
+    notes:
+      - "TXT is the concrete minimum example, not a universal preferred record type"
+
   # ============================================================================
   # DNS - DNS Load Balancers
   # ============================================================================
@@ -1938,6 +1979,7 @@ resources:
         namespace: system
       spec:
         azure_region: eastus2
+        machine_type: Standard_D4s_v4
         resource_group: example-resource-group
         azure_cred:
           name: example-azure-cred
@@ -1963,6 +2005,7 @@ resources:
         },
         "spec": {
           "azure_region": "eastus2",
+          "machine_type": "Standard_D4s_v4",
           "resource_group": "example-resource-group",
           "azure_cred": {"name": "example-azure-cred", "namespace": "system"},
           "vnet": {"new_vnet": {"name": "example-vnet", "primary_ipv4": "10.0.0.0/16"}},
@@ -2362,13 +2405,13 @@ resources:
         namespace: system
       spec:
         email:
-          email_address: alerts@example.com
+          email: alerts@example.com
 
     example_json: |
       {
         "metadata": {"name": "example-alert-receiver", "namespace": "system"},
         "spec": {
-          "email": {"email_address": "alerts@example.com"}
+          "email": {"email": "alerts@example.com"}
         }
       }
 
