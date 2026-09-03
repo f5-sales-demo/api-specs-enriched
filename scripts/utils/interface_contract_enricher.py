@@ -37,6 +37,17 @@ AWS_V3_CAPABILITIES = {
     "runtime_status": "available",
     "tgw_connect": "available",
 }
+AWS_SUCCESS_OPERATIONS = ["create", "read", "replace", "delete"]
+AWS_SUCCESS_TOPOLOGY = {"nodes": 3, "interfaces": 6, "bgp_peers": 6}
+AWS_SUCCESS_FACTS = [
+    "mac_bound_configuration",
+    "nullable_public_ip",
+    "runtime_health",
+    "tgw_connect",
+    "established_bgp_peers",
+    "detailed_and_simplified_route_agreement",
+    "zero_action_post_apply_plan",
+]
 AWS_V3_INTERFACE_IDENTITY = {
     "fields": ["node", "ethernet_interface.mac"],
     "node": {
@@ -95,7 +106,8 @@ AWS_V3_RUNTIME = {
         "authority": "f5xc",
         "semantics": "observational_read_only",
         "response_mappings": {"node": "hostname", "health": "state"},
-        "correlation": ["node"],
+        "normalization": {"node": "configured_hostname_or_fqdn"},
+        "correlation": ["canonical_node"],
     },
     "bgp_peers": {
         "method": "GET",
@@ -109,13 +121,17 @@ AWS_V3_RUNTIME = {
             "node": "ver[].name",
             "peers": "ver[].peer[]",
             "interface_name": "ver[].peer[].interface_name",
-            "peer_address": "ver[].peer[].peer_address",
+            "peer_address": {
+                "ipv4": "ver[].peer[].peer_address.ipv4.addr",
+                "ipv6": "ver[].peer[].peer_address.ipv6.addr",
+            },
             "state": "ver[].peer[].protocol_status",
             "received_prefix_count": "ver[].peer[].received_prefix_count",
             "advertised_prefix_count": "ver[].peer[].advertised_prefix_count",
             "state_changed_at": "ver[].peer[].up_down_timestamp",
         },
-        "correlation": ["node", "peer_address"],
+        "normalization": {"node": "configured_hostname_or_fqdn"},
+        "correlation": ["canonical_node", "peer_address"],
     },
     "bgp_routes": {
         "method": "GET",
@@ -136,7 +152,8 @@ AWS_V3_RUNTIME = {
                 "ver[].ri_table[].rt_table[].exported[].subnet",
             ],
         },
-        "correlation": ["node"],
+        "normalization": {"node": "configured_hostname_or_fqdn"},
+        "correlation": ["canonical_node"],
     },
     "simplified_routes": {
         "method": "POST",
@@ -152,7 +169,12 @@ AWS_V3_RUNTIME = {
             "node": "ver_routes[].node",
             "routes": "ver_routes[].route[]",
         },
-        "correlation": ["node", "role"],
+        "normalization": {"node": "configured_hostname_or_fqdn"},
+        "correlation": ["canonical_node", "role"],
+        "convergence": {
+            "expected_aws_prefixes": "present_in_detailed_bgp_routes",
+            "exported_bgp_prefixes": "present_in_selected_role_simplified_routes",
+        },
     },
 }
 AWS_V3_AUTHORITIES = {
@@ -448,13 +470,20 @@ class InterfaceContractEnricher:
             raise InterfaceContractValidationError(f"{resource}: AWS evidence receipt is required")
         receipt = receipts[0]
         if availability == "evidence_backed":
-            expected_receipt_fields = {"operations", "sanitized", "redaction"}
-            receipt_is_valid = receipt.get("operations") == [
-                "create",
-                "read",
-                "replace",
-                "delete",
-            ]
+            expected_receipt_fields = {
+                "operations",
+                "result",
+                "topology",
+                "validated_facts",
+                "sanitized",
+                "redaction",
+            }
+            receipt_is_valid = (
+                receipt.get("operations") == AWS_SUCCESS_OPERATIONS
+                and receipt.get("result") == "accepted"
+                and receipt.get("topology") == AWS_SUCCESS_TOPOLOGY
+                and receipt.get("validated_facts") == AWS_SUCCESS_FACTS
+            )
         else:
             expected_receipt_fields = {
                 "operations",

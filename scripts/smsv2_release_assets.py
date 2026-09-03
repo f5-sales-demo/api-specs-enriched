@@ -13,6 +13,9 @@ from typing import Any
 import yaml
 
 from scripts.utils.interface_contract_enricher import (
+    AWS_SUCCESS_FACTS,
+    AWS_SUCCESS_OPERATIONS,
+    AWS_SUCCESS_TOPOLOGY,
     AWS_V3_CAPABILITIES,
     CONTRACT_ID,
     CONTRACT_VERSION,
@@ -262,7 +265,12 @@ def validate_release_assets(
             ]
         ):
             raise Smsv2ReleaseValidationError("AWS blocking evidence is incomplete")
-    elif evidence_receipt.get("operations") != ["create", "read", "replace", "delete"]:
+    elif (
+        evidence_receipt.get("operations") != AWS_SUCCESS_OPERATIONS
+        or evidence_receipt.get("result") != "accepted"
+        or evidence_receipt.get("topology") != AWS_SUCCESS_TOPOLOGY
+        or evidence_receipt.get("validated_facts") != AWS_SUCCESS_FACTS
+    ):
         raise Smsv2ReleaseValidationError("AWS success evidence is incomplete")
     if evidence.get("contract_id") != CONTRACT_ID:
         raise Smsv2ReleaseValidationError("evidence contract identity is invalid")

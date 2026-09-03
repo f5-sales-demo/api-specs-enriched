@@ -55,6 +55,26 @@ def _azure_contract(config: dict[str, Any]) -> dict[str, Any]:
     return _contract(config)["providers"]["azure"]
 
 
+def _make_schema_only_aws(aws: dict[str, Any]) -> None:
+    aws["availability"] = "schema_only"
+    aws["capabilities"] = dict.fromkeys(aws["capabilities"], "unavailable")
+    aws["unavailable_capabilities"] = list(aws["capabilities"])
+    aws["telemetry_intake"]["availability"] = "unavailable"
+    aws["telemetry_intake"]["complete"] = False
+    aws["evidence"]["receipts"] = [
+        {
+            "operations": ["replace"],
+            "result": "rejected",
+            "blocking_conditions": [
+                "mac_only_interface_rejected_by_live_api",
+                "public_ip_empty_string_null_round_trip",
+            ],
+            "sanitized": True,
+            "redaction": "no tenant response, token, bootstrap material, or resource identifier",
+        }
+    ]
+
+
 def test_emits_contract_for_only_securemesh_request_schemas(sms_spec: dict[str, Any]) -> None:
     enriched = InterfaceContractEnricher().enrich_spec(copy.deepcopy(sms_spec))
     schemas = enriched["components"]["schemas"]
@@ -102,6 +122,10 @@ def test_v3_contract_defines_exact_runtime_mappings_without_freshness_claims(
     assert runtime["bgp_peers"]["response_mappings"]["state_changed_at"] == (
         "ver[].peer[].up_down_timestamp"
     )
+    assert runtime["bgp_peers"]["response_mappings"]["peer_address"] == {
+        "ipv4": "ver[].peer[].peer_address.ipv4.addr",
+        "ipv6": "ver[].peer[].peer_address.ipv6.addr",
+    }
     assert runtime["bgp_routes"]["response_mappings"] == {
         "nodes": "ver[]",
         "node": "ver[].name",
@@ -116,6 +140,10 @@ def test_v3_contract_defines_exact_runtime_mappings_without_freshness_claims(
     }
     assert runtime["simplified_routes"]["semantics"] == "observational_read_only"
     assert runtime["simplified_routes"]["request_mappings"]["roles"] == ["slo", "sli"]
+    assert runtime["simplified_routes"]["convergence"] == {
+        "expected_aws_prefixes": "present_in_detailed_bgp_routes",
+        "exported_bgp_prefixes": "present_in_selected_role_simplified_routes",
+    }
     assert "autonomous_system_numbers" in aws["authorities"]["aws"]
     assert "observed_at" not in repr(aws)
     assert aws["evidence"]["recorded_at"].endswith("Z")
@@ -128,12 +156,12 @@ def test_contract_defines_stable_identity_and_role_invariants() -> None:
     assert contract["contract_id"] == "f5xc-ce-automation/v3"
     assert contract["api"]["namespace"] == "system"
     assert contract["api"]["operations"] == ["create", "read", "replace", "delete"]
-    assert contract["providers"]["aws"]["availability"] == "schema_only"
+    assert contract["providers"]["aws"]["availability"] == "evidence_backed"
     assert contract["version"] == "6.0.0"
     assert contract["providers"]["aws"]["capabilities"] == {
-        "aws_ce_create": "unavailable",
-        "runtime_status": "unavailable",
-        "tgw_connect": "unavailable",
+        "aws_ce_create": "available",
+        "runtime_status": "available",
+        "tgw_connect": "available",
     }
     assert [role["name"] for role in contract["providers"]["aws"]["roles"]] == ["slo", "sli"]
     assert contract["providers"]["aws"]["bootstrap"]["mode"] == "interactive_console_only"
@@ -210,7 +238,9 @@ def test_rejects_partially_available_schema_only_aws_automation(
     tmp_path: Path, contract_config: dict[str, Any]
 ) -> None:
     invalid = copy.deepcopy(contract_config)
-    _contract(invalid)["providers"]["aws"]["capabilities"]["tgw_connect"] = "available"
+    aws = _contract(invalid)["providers"]["aws"]
+    _make_schema_only_aws(aws)
+    aws["capabilities"]["tgw_connect"] = "available"
     with pytest.raises(
         InterfaceContractValidationError, match="schema-only AWS capabilities must fail closed"
     ):
@@ -277,11 +307,7 @@ def test_accepts_schema_only_aws_when_every_capability_fails_closed(
 ) -> None:
     compatible = copy.deepcopy(contract_config)
     aws = _contract(compatible)["providers"]["aws"]
-    aws["availability"] = "schema_only"
-    aws["capabilities"] = dict.fromkeys(aws["capabilities"], "unavailable")
-    aws["unavailable_capabilities"] = list(aws["capabilities"])
-    aws["telemetry_intake"]["availability"] = "unavailable"
-    aws["telemetry_intake"]["complete"] = False
+    _make_schema_only_aws(aws)
 
     InterfaceContractEnricher(_write_config(tmp_path, compatible))
 
@@ -290,7 +316,9 @@ def test_rejects_available_telemetry_for_schema_only_aws(
     tmp_path: Path, contract_config: dict[str, Any]
 ) -> None:
     invalid = copy.deepcopy(contract_config)
-    intake = _contract(invalid)["providers"]["aws"]["telemetry_intake"]
+    aws = _contract(invalid)["providers"]["aws"]
+    _make_schema_only_aws(aws)
+    intake = aws["telemetry_intake"]
     intake["availability"] = "available"
     intake["complete"] = True
 
@@ -351,15 +379,14 @@ def test_aws_evidence_receipt_has_closed_modern_shape(
     assert set(receipt) == {
         "operations",
         "result",
-        "blocking_conditions",
+        "topology",
+        "validated_facts",
         "sanitized",
         "redaction",
     }
-    assert receipt["result"] == "rejected"
-    assert receipt["blocking_conditions"] == [
-        "mac_only_interface_rejected_by_live_api",
-        "public_ip_empty_string_null_round_trip",
-    ]
+    assert receipt["result"] == "accepted"
+    assert receipt["topology"] == {"nodes": 3, "interfaces": 6, "bgp_peers": 6}
+    assert receipt["validated_facts"][-1] == "zero_action_post_apply_plan"
 
 
 def test_rejects_undeclared_aws_receipt_field(
@@ -388,7 +415,7 @@ def test_aws_telemetry_intake_accepts_complete_required_observations(
     [
         lambda intake: intake["required_facts"].remove("runtime"),
         lambda intake: intake["observed_facts"].append("runtime"),
-        lambda intake: intake.update({"complete": True}),
+        lambda intake: intake.update({"complete": False}),
         lambda intake: intake.update({"schema_id": "unknown/v1"}),
         lambda intake: intake.update(
             {
