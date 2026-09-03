@@ -80,7 +80,18 @@ jobs:
         run: python -m scripts.download --force
 
       - name: Run pytest
-        run: python -m pytest
+        run: >-
+          python -m scripts.workload_profile run --phase pytest
+          --output reports/workload/pytest.json -- python -m pytest
+
+      - name: Upload pytest workload profile
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: workload-profile-pytest
+          path: reports/workload/pytest.json
+          if-no-files-found: warn
+          retention-days: 14
 
   contract-diff:
     name: Contract-diff gate
@@ -134,7 +145,9 @@ jobs:
         # enrich workflow installs and pins biome for the release path.
         env:
           API_SPECS_SKIP_BIOME: "1"
-        run: make pipeline PYTHON=python
+        run: >-
+          python -m scripts.workload_profile run --phase enrichment
+          --output reports/workload/enrichment.json -- make pipeline PYTHON=python
 
       # #1152: the pipeline just rebuilt every spec from the freshly downloaded
       # upstream seed, so this is the cheapest possible place to answer "is the
@@ -242,7 +255,8 @@ jobs:
         id: contract_diff
         run: |
           mkdir -p reports
-          python -m scripts.contract_diff \
+          python -m scripts.workload_profile run --phase contract-diff \
+            --output reports/workload/contract-diff.json -- python -m scripts.contract_diff \
             --input specs/original \
             --output docs/specifications/api \
             --report reports/contract_diff.json \
@@ -253,7 +267,9 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: contract-diff
-          path: reports/contract_diff.*
+          path: |
+            reports/contract_diff.*
+            reports/workload/*.json
           retention-days: 14
 
       - name: Post violations to PR
