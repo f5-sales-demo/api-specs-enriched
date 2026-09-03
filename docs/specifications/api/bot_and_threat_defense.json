@@ -3,7 +3,7 @@
   "info": {
     "title": "Bot And Threat Defense",
     "description": "Behavioral fingerprinting identifies automated clients through request patterns, mouse movements, and JavaScript execution. Threat categories classify attacks by type including credential stuffing, scraping, and denial-of-service. Defense instances apply per-namespace policies with configurable sensitivity thresholds and challenge actions. Provisioning handles integration credentials for third-party threat intelligence feeds.",
-    "version": "6.0.0",
+    "version": "6.0.1",
     "contact": {
       "name": "F5 Distributed Cloud",
       "url": "https://docs.cloud.f5.com"
@@ -72,7 +72,11 @@
     },
     "x-f5xc-namespace-profile": {
       "constraint": {
-        "allowed": ["custom", "default", "shared"],
+        "allowed": [
+          "custom",
+          "default",
+          "shared"
+        ],
         "enforced": false
       },
       "recommendation": {
@@ -98,12 +102,19 @@
         "console_url": {
           "default": "console.ves.volterra.io",
           "description": "Console URL base (e.g., console.ves.volterra.io for production, staging.volterra.us for staging)",
-          "enum": ["console.ves.volterra.io", "staging.volterra.us"]
+          "enum": [
+            "console.ves.volterra.io",
+            "staging.volterra.us"
+          ]
         },
         "environment": {
           "default": "production",
           "description": "Environment designation (production, staging, development)",
-          "enum": ["production", "staging", "development"]
+          "enum": [
+            "production",
+            "staging",
+            "development"
+          ]
         },
         "domain_prefix": {
           "default": "api",
@@ -267,18 +278,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/bot_and_threat_defense/"
         },
         "x-ves-proto-rpc": "ves.io.schema.views.bot_defense_app_infrastructure.API.Create",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Bot detection and defense configuration",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.metadata.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.metadata.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Bot-defense-app-infrastructure resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Bot-defense-app-infrastructure resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["bot-defense-app-infrastructure"]
+            "creates": [
+              "bot-defense-app-infrastructure"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -319,10 +343,16 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.metadata.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.metadata.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["bot-defense-app-infrastructure"]
+          "creates": [
+            "bot-defense-app-infrastructure"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -480,18 +510,29 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/bot_and_threat_defense/"
         },
         "x-ves-proto-rpc": "ves.io.schema.views.bot_defense_app_infrastructure.API.Replace",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Bot detection and defense configuration",
-          "required_fields": ["path.metadata.name", "path.metadata.namespace"],
+          "required_fields": [
+            "path.metadata.name",
+            "path.metadata.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Resource updated with new values"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Resource updated with new values"
+            ]
           },
           "side_effects": {
-            "modifies": ["bot-defense-app-infrastructure"]
+            "modifies": [
+              "bot-defense-app-infrastructure"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -532,10 +573,15 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["path.metadata.name", "path.metadata.namespace"],
+        "x-f5xc-required-fields": [
+          "path.metadata.name",
+          "path.metadata.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "modifies": ["bot-defense-app-infrastructure"]
+          "modifies": [
+            "bot-defense-app-infrastructure"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 800,
@@ -711,14 +757,20 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/bot_and_threat_defense/"
         },
         "x-ves-proto-rpc": "ves.io.schema.views.bot_defense_app_infrastructure.API.List",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Bot detection and defense configuration",
-          "required_fields": ["path.namespace"],
+          "required_fields": [
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -761,7 +813,9 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -928,14 +982,21 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/bot_and_threat_defense/"
         },
         "x-ves-proto-rpc": "ves.io.schema.views.bot_defense_app_infrastructure.API.Get",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Bot detection and defense configuration",
-          "required_fields": ["path.name", "path.namespace"],
+          "required_fields": [
+            "path.name",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -978,7 +1039,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["path.name", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.name",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -1129,18 +1193,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/bot_and_threat_defense/"
         },
         "x-ves-proto-rpc": "ves.io.schema.views.bot_defense_app_infrastructure.API.Delete",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Bot detection and defense configuration",
-          "required_fields": ["path.name", "path.namespace"],
+          "required_fields": [
+            "path.name",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Resource removed from system", "Associated resources may be affected"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Resource removed from system",
+              "Associated resources may be affected"
+            ]
           },
           "side_effects": {
-            "deletes": ["bot-defense-app-infrastructure", "contained_resources"]
+            "deletes": [
+              "bot-defense-app-infrastructure",
+              "contained_resources"
+            ]
           },
           "danger_level": "high",
           "confirmation_required": true,
@@ -1181,11 +1258,17 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.name", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.name",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "high",
         "x-f5xc-confirmation-required": true,
         "x-f5xc-side-effects": {
-          "deletes": ["bot-defense-app-infrastructure", "contained_resources"]
+          "deletes": [
+            "bot-defense-app-infrastructure",
+            "contained_resources"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 500,
@@ -1361,14 +1444,20 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/bot_and_threat_defense/"
         },
         "x-ves-proto-rpc": "ves.io.schema.shape_bot_defense_instance.API.List",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Bot detection and defense configuration",
-          "required_fields": ["path.namespace"],
+          "required_fields": [
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -1411,7 +1500,9 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -1576,14 +1667,21 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/bot_and_threat_defense/"
         },
         "x-ves-proto-rpc": "ves.io.schema.shape_bot_defense_instance.API.Get",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Bot detection and defense configuration",
-          "required_fields": ["path.name", "path.namespace"],
+          "required_fields": [
+            "path.name",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -1626,7 +1724,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["path.name", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.name",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -1773,18 +1874,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/bot_and_threat_defense/"
         },
         "x-ves-proto-rpc": "ves.io.schema.tpm_api_key.API.Create",
-        "tags": ["tpm"],
+        "tags": [
+          "tpm"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.metadata.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.metadata.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Tpm-api-key resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Tpm-api-key resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["tpm-api-key"]
+            "creates": [
+              "tpm-api-key"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -1825,10 +1939,16 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.metadata.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.metadata.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["tpm-api-key"]
+          "creates": [
+            "tpm-api-key"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -1986,18 +2106,29 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/bot_and_threat_defense/"
         },
         "x-ves-proto-rpc": "ves.io.schema.tpm_api_key.API.Replace",
-        "tags": ["tpm"],
+        "tags": [
+          "tpm"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource replacement operation",
-          "required_fields": ["path.metadata.name", "path.metadata.namespace"],
+          "required_fields": [
+            "path.metadata.name",
+            "path.metadata.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Resource updated with new values"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Resource updated with new values"
+            ]
           },
           "side_effects": {
-            "modifies": ["tpm-api-key"]
+            "modifies": [
+              "tpm-api-key"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -2038,10 +2169,15 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["path.metadata.name", "path.metadata.namespace"],
+        "x-f5xc-required-fields": [
+          "path.metadata.name",
+          "path.metadata.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "modifies": ["tpm-api-key"]
+          "modifies": [
+            "tpm-api-key"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 800,
@@ -2217,14 +2353,20 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/bot_and_threat_defense/"
         },
         "x-ves-proto-rpc": "ves.io.schema.tpm_api_key.API.List",
-        "tags": ["tpm"],
+        "tags": [
+          "tpm"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": ["path.namespace"],
+          "required_fields": [
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -2267,7 +2409,9 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -2435,14 +2579,21 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/bot_and_threat_defense/"
         },
         "x-ves-proto-rpc": "ves.io.schema.tpm_api_key.API.Get",
-        "tags": ["tpm"],
+        "tags": [
+          "tpm"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": ["path.name", "path.namespace"],
+          "required_fields": [
+            "path.name",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -2485,7 +2636,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["path.name", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.name",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -2632,18 +2786,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/bot_and_threat_defense/"
         },
         "x-ves-proto-rpc": "ves.io.schema.tpm_category.API.Create",
-        "tags": ["tpm"],
+        "tags": [
+          "tpm"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.metadata.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.metadata.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Tpm-category resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Tpm-category resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["tpm-category"]
+            "creates": [
+              "tpm-category"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -2684,10 +2851,16 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.metadata.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.metadata.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["tpm-category"]
+          "creates": [
+            "tpm-category"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -2845,18 +3018,29 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/bot_and_threat_defense/"
         },
         "x-ves-proto-rpc": "ves.io.schema.tpm_category.API.Replace",
-        "tags": ["tpm"],
+        "tags": [
+          "tpm"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource replacement operation",
-          "required_fields": ["path.metadata.name", "path.metadata.namespace"],
+          "required_fields": [
+            "path.metadata.name",
+            "path.metadata.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Resource updated with new values"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Resource updated with new values"
+            ]
           },
           "side_effects": {
-            "modifies": ["tpm-category"]
+            "modifies": [
+              "tpm-category"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -2897,10 +3081,15 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["path.metadata.name", "path.metadata.namespace"],
+        "x-f5xc-required-fields": [
+          "path.metadata.name",
+          "path.metadata.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "modifies": ["tpm-category"]
+          "modifies": [
+            "tpm-category"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 800,
@@ -3076,14 +3265,20 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/bot_and_threat_defense/"
         },
         "x-ves-proto-rpc": "ves.io.schema.tpm_category.API.List",
-        "tags": ["tpm"],
+        "tags": [
+          "tpm"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": ["path.namespace"],
+          "required_fields": [
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -3126,7 +3321,9 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -3294,14 +3491,21 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/bot_and_threat_defense/"
         },
         "x-ves-proto-rpc": "ves.io.schema.tpm_category.API.Get",
-        "tags": ["tpm"],
+        "tags": [
+          "tpm"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": ["path.name", "path.namespace"],
+          "required_fields": [
+            "path.name",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -3344,7 +3548,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["path.name", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.name",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -3491,18 +3698,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/bot_and_threat_defense/"
         },
         "x-ves-proto-rpc": "ves.io.schema.tpm_manager.API.Create",
-        "tags": ["tpm"],
+        "tags": [
+          "tpm"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.metadata.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.metadata.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Tpm-manager resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Tpm-manager resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["tpm-manager"]
+            "creates": [
+              "tpm-manager"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -3543,10 +3763,16 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.metadata.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.metadata.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["tpm-manager"]
+          "creates": [
+            "tpm-manager"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -3722,14 +3948,20 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/bot_and_threat_defense/"
         },
         "x-ves-proto-rpc": "ves.io.schema.tpm_manager.API.List",
-        "tags": ["tpm"],
+        "tags": [
+          "tpm"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": ["path.namespace"],
+          "required_fields": [
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -3772,7 +4004,9 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -3939,14 +4173,21 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/bot_and_threat_defense/"
         },
         "x-ves-proto-rpc": "ves.io.schema.tpm_manager.API.Get",
-        "tags": ["tpm"],
+        "tags": [
+          "tpm"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": ["path.name", "path.namespace"],
+          "required_fields": [
+            "path.name",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -3989,7 +4230,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["path.name", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.name",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -4123,18 +4367,28 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/bot_and_threat_defense/"
         },
         "x-ves-proto-rpc": "ves.io.schema.tpm_provision.CustomAPI.Preauth",
-        "tags": ["tpm"],
+        "tags": [
+          "tpm"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
             "prerequisites": [],
-            "postconditions": ["Preauth resource created", "Resource assigned unique identifier"]
+            "postconditions": [
+              "Preauth resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["preauth"]
+            "creates": [
+              "preauth"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -4175,10 +4429,15 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["preauth"]
+          "creates": [
+            "preauth"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -4311,19 +4570,29 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/bot_and_threat_defense/"
         },
         "x-ves-proto-rpc": "ves.io.schema.tpm_provision.CustomAPI.Provision",
-        "tags": ["tpm"],
+        "tags": [
+          "tpm"
+        ],
         "description": "Provision provision.",
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
             "prerequisites": [],
-            "postconditions": ["Provision resource created", "Resource assigned unique identifier"]
+            "postconditions": [
+              "Provision resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["provision"]
+            "creates": [
+              "provision"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -4364,10 +4633,15 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["provision"]
+          "creates": [
+            "provision"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -4402,7 +4676,11 @@
         "type": "string",
         "description": "Defines a selection for Bot Defense Advanced region\n\n- US: US\n\nUS region\n- EU: EU\n\nEuropean Union region\n- ASIA: ASIA\n\nAsia region.",
         "title": "BotDefenseAdvancedRegion",
-        "enum": ["US", "EU", "ASIA"],
+        "enum": [
+          "US",
+          "EU",
+          "ASIA"
+        ],
         "default": "US",
         "x-displayname": "Bot Defense Advanced Region.",
         "x-ves-proto-enum": "ves.io.schema.views.bot_defense_app_infrastructure.BotDefenseAdvancedRegion",
@@ -4418,7 +4696,11 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -4478,7 +4760,11 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -4549,7 +4835,11 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -4584,7 +4874,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["data_center_hosted"]
+            "x-f5xc-conflicts-with": [
+              "data_center_hosted"
+            ]
           },
           "data_center_hosted": {
             "allOf": [
@@ -4599,7 +4891,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["cloud_hosted"]
+            "x-f5xc-conflicts-with": [
+              "cloud_hosted"
+            ]
           },
           "environment_type": {
             "allOf": [
@@ -4639,7 +4933,11 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -4774,7 +5072,11 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -4854,7 +5156,9 @@
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for bot_defense_app_infrastructureEgress",
-          "required_fields": ["ip_address"],
+          "required_fields": [
+            "ip_address"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for bot_defense_app_infrastructureEgress\nmetadata:\n  name: example\n  namespace: default\nspec:\n  ip_address: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"ip_address\": \"value\"\n  }\n}"
@@ -4862,7 +5166,11 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -4880,7 +5188,10 @@
         "type": "string",
         "description": "Environment Type\n\nProduction environment\nTesting environment.",
         "title": "EnvironmentType",
-        "enum": ["PRODUCTION", "TESTING"],
+        "enum": [
+          "PRODUCTION",
+          "TESTING"
+        ],
         "default": "PRODUCTION",
         "x-displayname": "Environment Type.",
         "x-ves-proto-enum": "ves.io.schema.views.bot_defense_app_infrastructure.EnvironmentType",
@@ -4895,7 +5206,11 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -5038,7 +5353,9 @@
             "type": "string",
             "x-f5xc-concurrency-token": {
               "server_assigned": true,
-              "echo_on_operations": ["replace"]
+              "echo_on_operations": [
+                "replace"
+              ]
             }
           }
         },
@@ -5052,7 +5369,11 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -5087,7 +5408,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["data_center_hosted"]
+            "x-f5xc-conflicts-with": [
+              "data_center_hosted"
+            ]
           },
           "data_center_hosted": {
             "allOf": [
@@ -5102,7 +5425,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["cloud_hosted"]
+            "x-f5xc-conflicts-with": [
+              "cloud_hosted"
+            ]
           },
           "environment_type": {
             "allOf": [
@@ -5142,7 +5467,11 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -5299,7 +5628,11 @@
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for bot_defense_app_infrastructureInfraF5Hosted",
-          "required_fields": ["egress", "infra_host_name", "ingress"],
+          "required_fields": [
+            "egress",
+            "infra_host_name",
+            "ingress"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for bot_defense_app_infrastructureInfraF5Hosted\nmetadata:\n  name: example\n  namespace: default\nspec:\n  egress: value\n  infra_host_name: value\n  ingress: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"egress\": \"value\",\n    \"infra_host_name\": \"value\",\n    \"ingress\": \"value\"\n  }\n}"
@@ -5307,7 +5640,11 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -5361,7 +5698,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["ip_address"]
+            "x-f5xc-conflicts-with": [
+              "ip_address"
+            ]
           },
           "ip_address": {
             "type": "string",
@@ -5398,7 +5737,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["host_name"]
+            "x-f5xc-conflicts-with": [
+              "host_name"
+            ]
           },
           "location": {
             "allOf": [
@@ -5428,7 +5769,11 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -5505,7 +5850,11 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -5825,7 +6174,11 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -5878,7 +6231,9 @@
             "type": "string",
             "x-f5xc-concurrency-token": {
               "server_assigned": true,
-              "echo_on_operations": ["replace"]
+              "echo_on_operations": [
+                "replace"
+              ]
             }
           }
         },
@@ -5892,7 +6247,11 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -5919,7 +6278,11 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -5954,7 +6317,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["data_center_hosted"]
+            "x-f5xc-conflicts-with": [
+              "data_center_hosted"
+            ]
           },
           "data_center_hosted": {
             "allOf": [
@@ -5969,7 +6334,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["cloud_hosted"]
+            "x-f5xc-conflicts-with": [
+              "cloud_hosted"
+            ]
           },
           "environment_type": {
             "allOf": [
@@ -6009,7 +6376,11 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -6027,7 +6398,10 @@
         "type": "string",
         "description": "Traffic Type\n\nWeb traffic\nMobile traffic.",
         "title": "TrafficType",
-        "enum": ["WEB", "MOBILE"],
+        "enum": [
+          "WEB",
+          "MOBILE"
+        ],
         "default": "WEB",
         "x-displayname": "Traffic Type.",
         "x-ves-proto-enum": "ves.io.schema.views.bot_defense_app_infrastructure.TrafficType",
@@ -6042,7 +6416,11 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -6248,7 +6626,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -6328,7 +6710,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -6372,7 +6758,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -6456,7 +6846,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -6533,7 +6927,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -6596,7 +6994,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -6820,7 +7222,9 @@
         "x-f5xc-description-short": "ObjectCreateMetaType is metadata that can be specified in Create request of an object.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for schemaObjectCreateMetaType",
-          "required_fields": ["name"],
+          "required_fields": [
+            "name"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for schemaObjectCreateMetaType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  name: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"name\": \"value\"\n  }\n}"
@@ -6828,7 +7232,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -7055,7 +7463,9 @@
         "x-f5xc-description-short": "ObjectGetMetaType is metadata that can be specified in GET/Create response of an object.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for schemaObjectGetMetaType",
-          "required_fields": ["name"],
+          "required_fields": [
+            "name"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for schemaObjectGetMetaType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  name: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"name\": \"value\"\n  }\n}"
@@ -7063,7 +7473,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -7296,7 +7710,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -7404,7 +7822,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -7727,7 +8149,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -7910,7 +8336,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -7982,7 +8412,11 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -8013,7 +8447,9 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -8135,7 +8571,9 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -8212,7 +8650,9 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -8532,7 +8972,9 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -8682,7 +9124,15 @@
             "x-f5xc-description-short": "Status of the condition \"Success\" Validation has succeeded.",
             "x-f5xc-description-medium": "Status of the condition \"Success\" Validation has succeeded. Requested operation was successful. \"Failed\" Validation has failed. \"Incomplete\" Validation of configuration has failed due to missing configuration. \"Installed\" Validation has passed and configuration has been installed in data path or...",
             "maxLength": 1024,
-            "enum": ["Success", "Failed", "Incomplete", "Installed", "Down", "Disabled", "NotApplicable"],
+            "enum": [
+              "Success",
+              "Failed",
+              "Incomplete",
+              "Installed",
+              "Down",
+              "Disabled",
+              "NotApplicable"
+            ],
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "general",
@@ -8719,7 +9169,10 @@
             "x-f5xc-description-short": "Type of the condition \"Validation\" represents validation user given configuration object \"Operational\" represents operational status of a given...",
             "x-f5xc-description-medium": "Type of the condition \"Validation\" represents validation user given configuration object \"Operational\" represents operational status of a given configuration object.",
             "maxLength": 1024,
-            "enum": ["Validation", "Operational"],
+            "enum": [
+              "Validation",
+              "Operational"
+            ],
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "general",
@@ -8750,7 +9203,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -8956,7 +9413,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -9182,7 +9643,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -9200,7 +9665,10 @@
         "type": "string",
         "description": "StatusPublishType is all possible publish operations on a StatusObject\n\n- STATUS_DO_NOT_PUBLISH: Do Not Publish\n\nDo not propagate this status to user. This could be because status is only informational\n- STATUS_PUBLISH: Publish\n\nPropagate this status up to user as it might be actionable.",
         "title": "StatusPublishType",
-        "enum": ["STATUS_DO_NOT_PUBLISH", "STATUS_PUBLISH"],
+        "enum": [
+          "STATUS_DO_NOT_PUBLISH",
+          "STATUS_PUBLISH"
+        ],
         "default": "STATUS_DO_NOT_PUBLISH",
         "x-displayname": "Status Publish Type.",
         "x-ves-proto-enum": "ves.io.schema.StatusPublishType",
@@ -9216,7 +9684,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -9276,7 +9748,9 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -9347,7 +9821,9 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -9431,7 +9907,9 @@
         "x-f5xc-description-medium": "APIKey object when successfully created returns actual APIKey bytes which is used by the users to call in to TPM provisioning API.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for tpm_api_keyCreateSpecType",
-          "required_fields": ["category_ref"],
+          "required_fields": [
+            "category_ref"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for tpm_api_keyCreateSpecType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  category_ref: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"category_ref\": \"value\"\n  }\n}"
@@ -9442,7 +9920,9 @@
         },
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -9606,7 +10086,9 @@
             "type": "string",
             "x-f5xc-concurrency-token": {
               "server_assigned": true,
-              "echo_on_operations": ["replace"]
+              "echo_on_operations": [
+                "replace"
+              ]
             }
           }
         },
@@ -9620,7 +10102,9 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -9772,7 +10256,9 @@
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for tpm_api_keyGetSpecType",
-          "required_fields": ["category_ref"],
+          "required_fields": [
+            "category_ref"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for tpm_api_keyGetSpecType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  category_ref: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"category_ref\": \"value\"\n  }\n}"
@@ -9780,7 +10266,9 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -9857,7 +10345,9 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -10191,7 +10681,9 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -10244,7 +10736,9 @@
             "type": "string",
             "x-f5xc-concurrency-token": {
               "server_assigned": true,
-              "echo_on_operations": ["replace"]
+              "echo_on_operations": [
+                "replace"
+              ]
             }
           }
         },
@@ -10258,7 +10752,9 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -10285,7 +10781,9 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -10389,7 +10887,9 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -10468,7 +10968,9 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -10528,7 +11030,9 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -10599,7 +11103,9 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -10683,7 +11189,9 @@
         "x-f5xc-description-short": "Create a Category object, which is a grouping of APIKeys used for TPM provisioning.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for tpm_categoryCreateSpecType",
-          "required_fields": ["tpm_manager_ref"],
+          "required_fields": [
+            "tpm_manager_ref"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for tpm_categoryCreateSpecType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  tpm_manager_ref: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"tpm_manager_ref\": \"value\"\n  }\n}"
@@ -10694,7 +11202,9 @@
         },
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -10858,7 +11368,9 @@
             "type": "string",
             "x-f5xc-concurrency-token": {
               "server_assigned": true,
-              "echo_on_operations": ["replace"]
+              "echo_on_operations": [
+                "replace"
+              ]
             }
           }
         },
@@ -10872,7 +11384,9 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -11059,7 +11573,9 @@
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for tpm_categoryGetSpecType",
-          "required_fields": ["tpm_manager_ref"],
+          "required_fields": [
+            "tpm_manager_ref"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for tpm_categoryGetSpecType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  tpm_manager_ref: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"tpm_manager_ref\": \"value\"\n  }\n}"
@@ -11067,7 +11583,9 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -11144,7 +11662,9 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -11478,7 +11998,9 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -11531,7 +12053,9 @@
             "type": "string",
             "x-f5xc-concurrency-token": {
               "server_assigned": true,
-              "echo_on_operations": ["replace"]
+              "echo_on_operations": [
+                "replace"
+              ]
             }
           }
         },
@@ -11545,7 +12069,9 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -11572,7 +12098,9 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -11624,7 +12152,9 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -11703,7 +12233,9 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -11763,7 +12295,11 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -11834,7 +12370,11 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -11864,7 +12404,11 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -12021,7 +12565,11 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -12105,7 +12653,11 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -12182,7 +12734,11 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -12516,7 +13072,11 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -12595,7 +13155,11 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -12770,7 +13334,12 @@
         "x-f5xc-description-short": "DeviceInfo defines device parameters like Serial-Number to include in the TPM provisioning data.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for tpm_provisionDeviceInfo",
-          "required_fields": ["name", "serial", "vendor", "version"],
+          "required_fields": [
+            "name",
+            "serial",
+            "vendor",
+            "version"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for tpm_provisionDeviceInfo\nmetadata:\n  name: example\n  namespace: default\nspec:\n  name: value\n  serial: value\n  vendor: value\n  version: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"name\": \"value\",\n    \"serial\": \"value\",\n    \"vendor\": \"value\",\n    \"version\": \"value\"\n  }\n}"
@@ -12778,7 +13347,11 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -12855,7 +13428,9 @@
         "x-f5xc-description-medium": "PreauthRequest defines parameters required for pre-flight auth checks before using the TPM Provisioning API key.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for tpm_provisionPreauthRequest",
-          "required_fields": ["api_key"],
+          "required_fields": [
+            "api_key"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for tpm_provisionPreauthRequest\nmetadata:\n  name: example\n  namespace: default\nspec:\n  api_key: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"api_key\": \"value\"\n  }\n}"
@@ -12863,7 +13438,11 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -12914,7 +13493,11 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -12932,7 +13515,11 @@
         "type": "string",
         "description": "This is the status code OPTIONS for Preauthorization Response\n\n- PREAUTH_RSP_SUCCESS: Preauth status - success, both api_key and device_info are valid\n- PREAUTH_RSP_INVALID_API_KEY: Preauth status - api_key is invalid\n- PREAUTH_RSP_INVALID_DEVICE_INFO: Preauth status - device info is invalid.",
         "title": "PreauthReponseStatus is the code used in PreauthResponse status",
-        "enum": ["PREAUTH_RSP_SUCCESS", "PREAUTH_RSP_INVALID_API_KEY", "PREAUTH_RSP_INVALID_DEVICE_INFO"],
+        "enum": [
+          "PREAUTH_RSP_SUCCESS",
+          "PREAUTH_RSP_INVALID_API_KEY",
+          "PREAUTH_RSP_INVALID_DEVICE_INFO"
+        ],
         "default": "PREAUTH_RSP_SUCCESS",
         "x-displayname": "Preauth Response Status.",
         "x-ves-proto-enum": "ves.io.schema.tpm_provision.PreauthResponseStatus",
@@ -12948,7 +13535,11 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -13153,7 +13744,13 @@
         "x-f5xc-description-short": "ProvisionReq defines parameters required for TPM Provisioning Request API.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for tpm_provisionProvisionRequest",
-          "required_fields": ["ak_pub_key", "api_key", "csr", "ek_cert", "ek_pub_key"],
+          "required_fields": [
+            "ak_pub_key",
+            "api_key",
+            "csr",
+            "ek_cert",
+            "ek_pub_key"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for tpm_provisionProvisionRequest\nmetadata:\n  name: example\n  namespace: default\nspec:\n  ak_pub_key: value\n  api_key: value\n  csr: value\n  ek_cert: value\n  ek_pub_key: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"ak_pub_key\": \"value\",\n    \"api_key\": \"value\",\n    \"csr\": \"value\",\n    \"ek_cert\": \"value\",\n    \"ek_pub_key\": \"value\"\n  }\n}"
@@ -13161,7 +13758,11 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -13270,7 +13871,11 @@
         "x-f5xc-cli-domain": "bot_and_threat_defense",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
