@@ -474,18 +474,12 @@ class MinimumConfigurationEnricher:
             for key in ("example", "x-f5xc-example", "x-f5xc-recommended-value", "default"):
                 value = resolved.get(key)
                 valid_type = schema_type is None or (
-                    schema_type == "object"
-                    and isinstance(value, dict)
-                    or schema_type == "array"
-                    and isinstance(value, list)
-                    or schema_type == "string"
-                    and isinstance(value, str)
-                    or schema_type == "integer"
-                    and isinstance(value, int)
-                    or schema_type == "number"
-                    and isinstance(value, (int, float))
-                    or schema_type == "boolean"
-                    and isinstance(value, bool)
+                    (schema_type == "object" and isinstance(value, dict))
+                    or (schema_type == "array" and isinstance(value, list))
+                    or (schema_type == "string" and isinstance(value, str))
+                    or (schema_type == "integer" and isinstance(value, int))
+                    or (schema_type == "number" and isinstance(value, (int, float)))
+                    or (schema_type == "boolean" and isinstance(value, bool))
                 )
                 if value is not None and valid_type:
                     if schema_type in {"integer", "number"} and isinstance(value, bool):
