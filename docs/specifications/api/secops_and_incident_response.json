@@ -3,7 +3,7 @@
   "info": {
     "title": "Secops And Incident Response",
     "description": "User threat assessment with configurable risk thresholds and mitigation rules. Detection covers high, medium, and low threat levels with corresponding actions like blocking, rate limiting, or alerting. Mitigation policies link to load balancers for real-time enforcement against identified bad actors.",
-    "version": "6.0.0",
+    "version": "6.0.1",
     "contact": {
       "name": "F5 Distributed Cloud",
       "url": "https://docs.cloud.f5.com"
@@ -72,7 +72,11 @@
     },
     "x-f5xc-namespace-profile": {
       "constraint": {
-        "allowed": ["custom", "default", "shared"],
+        "allowed": [
+          "custom",
+          "default",
+          "shared"
+        ],
         "enforced": true
       },
       "recommendation": {
@@ -98,12 +102,19 @@
         "console_url": {
           "default": "console.ves.volterra.io",
           "description": "Console URL base (e.g., console.ves.volterra.io for production, staging.volterra.us for staging)",
-          "enum": ["console.ves.volterra.io", "staging.volterra.us"]
+          "enum": [
+            "console.ves.volterra.io",
+            "staging.volterra.us"
+          ]
         },
         "environment": {
           "default": "production",
           "description": "Environment designation (production, staging, development)",
-          "enum": ["production", "staging", "development"]
+          "enum": [
+            "production",
+            "staging",
+            "development"
+          ]
         },
         "domain_prefix": {
           "default": "api",
@@ -264,18 +275,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/secops_and_incident_response/"
         },
         "x-ves-proto-rpc": "ves.io.schema.malicious_user_mitigation.API.Create",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "User account for access management",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.metadata.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.metadata.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Malicious-user-mitigation resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Malicious-user-mitigation resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["malicious-user-mitigation"]
+            "creates": [
+              "malicious-user-mitigation"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -316,10 +340,16 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.metadata.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.metadata.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["malicious-user-mitigation"]
+          "creates": [
+            "malicious-user-mitigation"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -477,18 +507,29 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/secops_and_incident_response/"
         },
         "x-ves-proto-rpc": "ves.io.schema.malicious_user_mitigation.API.Replace",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "User account for access management",
-          "required_fields": ["path.metadata.name", "path.metadata.namespace"],
+          "required_fields": [
+            "path.metadata.name",
+            "path.metadata.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Resource updated with new values"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Resource updated with new values"
+            ]
           },
           "side_effects": {
-            "modifies": ["malicious-user-mitigation"]
+            "modifies": [
+              "malicious-user-mitigation"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -529,10 +570,15 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["path.metadata.name", "path.metadata.namespace"],
+        "x-f5xc-required-fields": [
+          "path.metadata.name",
+          "path.metadata.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "modifies": ["malicious-user-mitigation"]
+          "modifies": [
+            "malicious-user-mitigation"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 800,
@@ -708,14 +754,20 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/secops_and_incident_response/"
         },
         "x-ves-proto-rpc": "ves.io.schema.malicious_user_mitigation.API.List",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "User account for access management",
-          "required_fields": ["path.namespace"],
+          "required_fields": [
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -758,7 +810,9 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -926,14 +980,21 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/secops_and_incident_response/"
         },
         "x-ves-proto-rpc": "ves.io.schema.malicious_user_mitigation.API.Get",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "User account for access management",
-          "required_fields": ["path.name", "path.namespace"],
+          "required_fields": [
+            "path.name",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -976,7 +1037,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["path.name", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.name",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -1127,18 +1191,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/secops_and_incident_response/"
         },
         "x-ves-proto-rpc": "ves.io.schema.malicious_user_mitigation.API.Delete",
-        "tags": ["config"],
+        "tags": [
+          "config"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "User account for access management",
-          "required_fields": ["path.name", "path.namespace"],
+          "required_fields": [
+            "path.name",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Resource removed from system", "Associated resources may be affected"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Resource removed from system",
+              "Associated resources may be affected"
+            ]
           },
           "side_effects": {
-            "deletes": ["malicious-user-mitigation", "contained_resources"]
+            "deletes": [
+              "malicious-user-mitigation",
+              "contained_resources"
+            ]
           },
           "danger_level": "high",
           "confirmation_required": true,
@@ -1179,11 +1256,17 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.name", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.name",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "high",
         "x-f5xc-confirmation-required": true,
         "x-f5xc-side-effects": {
-          "deletes": ["malicious-user-mitigation", "contained_resources"]
+          "deletes": [
+            "malicious-user-mitigation",
+            "contained_resources"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 500,
@@ -1230,7 +1313,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -1282,7 +1369,10 @@
         },
         "x-f5xc-minimum-configuration": {
           "description": "Malicious user mitigation configuration for challenge-based defense",
-          "required_fields": ["metadata.name", "metadata.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "apiVersion: v1\nkind: malicious_user_mitigation\nmetadata:\n  name: example-mitigation\n  namespace: default\nspec: {}\n",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example-mitigation\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}\n"
@@ -1290,7 +1380,11 @@
         "x-f5xc-cli-domain": "secops_and_incident_response",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -1361,7 +1455,11 @@
         "x-f5xc-cli-domain": "secops_and_incident_response",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -1403,7 +1501,10 @@
         "x-f5xc-description-medium": "Create malicious_user_mitigation creates a new object in the storage backend for metadata.namespace.",
         "x-f5xc-minimum-configuration": {
           "description": "Malicious user mitigation configuration for challenge-based defense",
-          "required_fields": ["metadata.name", "metadata.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "apiVersion: v1\nkind: malicious_user_mitigation\nmetadata:\n  name: example-mitigation\n  namespace: default\nspec: {}\n",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example-mitigation\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}\n"
@@ -1411,7 +1512,11 @@
         "x-f5xc-cli-domain": "secops_and_incident_response",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -1546,7 +1651,11 @@
         "x-f5xc-cli-domain": "secops_and_incident_response",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -1710,7 +1819,9 @@
             "type": "string",
             "x-f5xc-concurrency-token": {
               "server_assigned": true,
-              "echo_on_operations": ["replace"]
+              "echo_on_operations": [
+                "replace"
+              ]
             }
           }
         },
@@ -1724,7 +1835,11 @@
         "x-f5xc-cli-domain": "secops_and_incident_response",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -1765,7 +1880,10 @@
         "x-f5xc-description-short": "GET malicious_user_mitigation reads a given object from storage backend for metadata.namespace.",
         "x-f5xc-minimum-configuration": {
           "description": "Malicious user mitigation configuration for challenge-based defense",
-          "required_fields": ["metadata.name", "metadata.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "apiVersion: v1\nkind: malicious_user_mitigation\nmetadata:\n  name: example-mitigation\n  namespace: default\nspec: {}\n",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example-mitigation\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}\n"
@@ -1773,7 +1891,11 @@
         "x-f5xc-cli-domain": "secops_and_incident_response",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -1850,7 +1972,11 @@
         "x-f5xc-cli-domain": "secops_and_incident_response",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -2186,7 +2312,11 @@
         "x-f5xc-cli-domain": "secops_and_incident_response",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -2221,7 +2351,10 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["captcha_challenge", "javascript_challenge"]
+            "x-f5xc-conflicts-with": [
+              "captcha_challenge",
+              "javascript_challenge"
+            ]
           },
           "captcha_challenge": {
             "allOf": [
@@ -2236,7 +2369,10 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["block_temporarily", "javascript_challenge"]
+            "x-f5xc-conflicts-with": [
+              "block_temporarily",
+              "javascript_challenge"
+            ]
           },
           "javascript_challenge": {
             "allOf": [
@@ -2250,7 +2386,10 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["block_temporarily", "captcha_challenge"]
+            "x-f5xc-conflicts-with": [
+              "block_temporarily",
+              "captcha_challenge"
+            ]
           }
         },
         "x-f5xc-description-short": "Supported actions that can be taken to mitigate malicious activity from a user.",
@@ -2264,7 +2403,11 @@
         "x-f5xc-cli-domain": "secops_and_incident_response",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -2326,7 +2469,11 @@
         "x-f5xc-cli-domain": "secops_and_incident_response",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -2396,7 +2543,9 @@
         "x-f5xc-description-medium": "Settings that specify the actions to be taken when malicious users are determined to be at different threat levels. User's activity is monitored and continuously analyzed for malicious behavior. From this analysis, a threat-level is assigned to each user.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for malicious_user_mitigationMaliciousUserMitigationType",
-          "required_fields": ["rules"],
+          "required_fields": [
+            "rules"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for malicious_user_mitigationMaliciousUserMitigationType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  rules: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"rules\": \"value\"\n  }\n}"
@@ -2404,7 +2553,11 @@
         "x-f5xc-cli-domain": "secops_and_incident_response",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -2438,7 +2591,10 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["low", "medium"]
+            "x-f5xc-conflicts-with": [
+              "low",
+              "medium"
+            ]
           },
           "low": {
             "allOf": [
@@ -2452,7 +2608,10 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["high", "medium"]
+            "x-f5xc-conflicts-with": [
+              "high",
+              "medium"
+            ]
           },
           "medium": {
             "allOf": [
@@ -2466,7 +2625,10 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["high", "low"]
+            "x-f5xc-conflicts-with": [
+              "high",
+              "low"
+            ]
           }
         },
         "x-f5xc-description-short": "Threat level estimated for each user based on the user's activity and reputation.",
@@ -2480,7 +2642,11 @@
         "x-f5xc-cli-domain": "secops_and_incident_response",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -2533,13 +2699,18 @@
             "type": "string",
             "x-f5xc-concurrency-token": {
               "server_assigned": true,
-              "echo_on_operations": ["replace"]
+              "echo_on_operations": [
+                "replace"
+              ]
             }
           }
         },
         "x-f5xc-minimum-configuration": {
           "description": "Malicious user mitigation configuration for challenge-based defense",
-          "required_fields": ["metadata.name", "metadata.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "apiVersion: v1\nkind: malicious_user_mitigation\nmetadata:\n  name: example-mitigation\n  namespace: default\nspec: {}\n",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example-mitigation\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}\n"
@@ -2547,7 +2718,11 @@
         "x-f5xc-cli-domain": "secops_and_incident_response",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -2574,7 +2749,11 @@
         "x-f5xc-cli-domain": "secops_and_incident_response",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -2616,7 +2795,10 @@
         "x-f5xc-description-medium": "Replace malicious_user_mitigation replaces an existing object in the storage backend for metadata.namespace.",
         "x-f5xc-minimum-configuration": {
           "description": "Malicious user mitigation configuration for challenge-based defense",
-          "required_fields": ["metadata.name", "metadata.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "apiVersion: v1\nkind: malicious_user_mitigation\nmetadata:\n  name: example-mitigation\n  namespace: default\nspec: {}\n",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example-mitigation\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}\n"
@@ -2624,7 +2806,11 @@
         "x-f5xc-cli-domain": "secops_and_incident_response",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -2702,7 +2888,11 @@
         "x-f5xc-cli-domain": "secops_and_incident_response",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -2782,7 +2972,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -2932,7 +3126,15 @@
             "x-f5xc-description-short": "Status of the condition \"Success\" Validation has succeeded.",
             "x-f5xc-description-medium": "Status of the condition \"Success\" Validation has succeeded. Requested operation was successful. \"Failed\" Validation has failed. \"Incomplete\" Validation of configuration has failed due to missing configuration. \"Installed\" Validation has passed and configuration has been installed in data path or...",
             "maxLength": 1024,
-            "enum": ["Success", "Failed", "Incomplete", "Installed", "Down", "Disabled", "NotApplicable"],
+            "enum": [
+              "Success",
+              "Failed",
+              "Incomplete",
+              "Installed",
+              "Down",
+              "Disabled",
+              "NotApplicable"
+            ],
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "general",
@@ -2969,7 +3171,10 @@
             "x-f5xc-description-short": "Type of the condition \"Validation\" represents validation user given configuration object \"Operational\" represents operational status of a given...",
             "x-f5xc-description-medium": "Type of the condition \"Validation\" represents validation user given configuration object \"Operational\" represents operational status of a given configuration object.",
             "maxLength": 1024,
-            "enum": ["Validation", "Operational"],
+            "enum": [
+              "Validation",
+              "Operational"
+            ],
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "general",
@@ -3000,7 +3205,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -3044,7 +3253,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -3128,7 +3341,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -3205,7 +3422,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -3268,7 +3489,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -3492,7 +3717,9 @@
         "x-f5xc-description-short": "ObjectCreateMetaType is metadata that can be specified in Create request of an object.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for schemaObjectCreateMetaType",
-          "required_fields": ["name"],
+          "required_fields": [
+            "name"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for schemaObjectCreateMetaType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  name: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"name\": \"value\"\n  }\n}"
@@ -3500,7 +3727,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -3727,7 +3958,9 @@
         "x-f5xc-description-short": "ObjectGetMetaType is metadata that can be specified in GET/Create response of an object.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for schemaObjectGetMetaType",
-          "required_fields": ["name"],
+          "required_fields": [
+            "name"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for schemaObjectGetMetaType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  name: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"name\": \"value\"\n  }\n}"
@@ -3735,7 +3968,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -3941,7 +4178,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -4174,7 +4415,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -4400,7 +4645,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -4418,7 +4667,10 @@
         "type": "string",
         "description": "StatusPublishType is all possible publish operations on a StatusObject\n\n- STATUS_DO_NOT_PUBLISH: Do Not Publish\n\nDo not propagate this status to user. This could be because status is only informational\n- STATUS_PUBLISH: Publish\n\nPropagate this status up to user as it might be actionable.",
         "title": "StatusPublishType",
-        "enum": ["STATUS_DO_NOT_PUBLISH", "STATUS_PUBLISH"],
+        "enum": [
+          "STATUS_DO_NOT_PUBLISH",
+          "STATUS_PUBLISH"
+        ],
         "default": "STATUS_DO_NOT_PUBLISH",
         "x-displayname": "Status Publish Type.",
         "x-ves-proto-enum": "ves.io.schema.StatusPublishType",
@@ -4434,7 +4686,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -4542,7 +4798,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -4865,7 +5125,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -5048,7 +5312,11 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": true
           },
           "recommendation": {

@@ -3,7 +3,7 @@
   "info": {
     "title": "Support",
     "description": "Case management workflows including submission, commentary, and closure paths. Urgency adjustments and routing for time-sensitive incidents. Tax exemption verification requests. Site-level tcpdump operations—initiation, enumeration, and termination—for low-level network troubleshooting and protocol analysis.",
-    "version": "6.0.0",
+    "version": "6.0.1",
     "contact": {
       "name": "F5 Distributed Cloud",
       "url": "https://docs.cloud.f5.com"
@@ -72,7 +72,9 @@
     },
     "x-f5xc-namespace-profile": {
       "constraint": {
-        "allowed": ["system"],
+        "allowed": [
+          "system"
+        ],
         "enforced": false
       },
       "recommendation": {
@@ -98,12 +100,19 @@
         "console_url": {
           "default": "console.ves.volterra.io",
           "description": "Console URL base (e.g., console.ves.volterra.io for production, staging.volterra.us for staging)",
-          "enum": ["console.ves.volterra.io", "staging.volterra.us"]
+          "enum": [
+            "console.ves.volterra.io",
+            "staging.volterra.us"
+          ]
         },
         "environment": {
           "default": "production",
           "description": "Environment designation (production, staging, development)",
-          "enum": ["production", "staging", "development"]
+          "enum": [
+            "production",
+            "staging",
+            "development"
+          ]
         },
         "domain_prefix": {
           "default": "api",
@@ -278,18 +287,32 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/support/"
         },
         "x-ves-proto-rpc": "ves.io.schema.operate.crl.CustomPublicAPI.ResyncCRL",
-        "tags": ["operate"],
+        "tags": [
+          "operate"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace", "path.site"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.namespace",
+            "path.site"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Resync-crl resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Resync-crl resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["resync-crl"]
+            "creates": [
+              "resync-crl"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -330,10 +353,17 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace", "path.site"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.namespace",
+          "path.site"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["resync-crl"]
+          "creates": [
+            "resync-crl"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -467,18 +497,30 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/support/"
         },
         "x-ves-proto-rpc": "ves.io.schema.customer_support.CustomAPI.ListCTSupportTickets",
-        "tags": ["web"],
+        "tags": [
+          "web"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Support-ticket resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Support-ticket resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["support-ticket"]
+            "creates": [
+              "support-ticket"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -519,10 +561,15 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["support-ticket"]
+          "creates": [
+            "support-ticket"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -656,18 +703,30 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/support/"
         },
         "x-ves-proto-rpc": "ves.io.schema.customer_support.CustomAPI.RaiseTaxExemptVerificationSupportTicket",
-        "tags": ["web"],
+        "tags": [
+          "web"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Tax-exempt-request resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Tax-exempt-request resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["tax-exempt-request"]
+            "creates": [
+              "tax-exempt-request"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -708,10 +767,15 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["tax-exempt-request"]
+          "creates": [
+            "tax-exempt-request"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -870,14 +934,22 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/support/"
         },
         "x-ves-proto-rpc": "ves.io.schema.customer_support.CustomAPI.GetAttachment",
-        "tags": ["web"],
+        "tags": [
+          "web"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": ["path.attachment_id", "path.comment_id", "path.name"],
+          "required_fields": [
+            "path.attachment_id",
+            "path.comment_id",
+            "path.name"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -920,7 +992,11 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["path.attachment_id", "path.comment_id", "path.name"],
+        "x-f5xc-required-fields": [
+          "path.attachment_id",
+          "path.comment_id",
+          "path.name"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -1067,18 +1143,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/support/"
         },
         "x-ves-proto-rpc": "ves.io.schema.customer_support.API.Create",
-        "tags": ["web"],
+        "tags": [
+          "web"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.metadata.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.metadata.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Customer-support resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Customer-support resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["customer-support"]
+            "creates": [
+              "customer-support"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -1119,10 +1208,16 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.metadata.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.metadata.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["customer-support"]
+          "creates": [
+            "customer-support"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -1298,14 +1393,20 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/support/"
         },
         "x-ves-proto-rpc": "ves.io.schema.customer_support.CustomAPI.AdminList",
-        "tags": ["web"],
+        "tags": [
+          "web"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": ["path.namespace"],
+          "required_fields": [
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -1348,7 +1449,9 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -1506,18 +1609,32 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/support/"
         },
         "x-ves-proto-rpc": "ves.io.schema.customer_support.CustomAPI.Close",
-        "tags": ["web"],
+        "tags": [
+          "web"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.name", "path.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.name",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Close resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Close resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["close"]
+            "creates": [
+              "close"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -1558,10 +1675,17 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.name", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.name",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["close"]
+          "creates": [
+            "close"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -1719,18 +1843,32 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/support/"
         },
         "x-ves-proto-rpc": "ves.io.schema.customer_support.CustomAPI.Comment",
-        "tags": ["web"],
+        "tags": [
+          "web"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.name", "path.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.name",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Comment resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Comment resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["comment"]
+            "creates": [
+              "comment"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -1771,10 +1909,17 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.name", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.name",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["comment"]
+          "creates": [
+            "comment"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -1932,18 +2077,32 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/support/"
         },
         "x-ves-proto-rpc": "ves.io.schema.customer_support.CustomAPI.Escalate",
-        "tags": ["web"],
+        "tags": [
+          "web"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.name", "path.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.name",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Escalate resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Escalate resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["escalate"]
+            "creates": [
+              "escalate"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -1984,10 +2143,17 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.name", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.name",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["escalate"]
+          "creates": [
+            "escalate"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -2145,18 +2311,32 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/support/"
         },
         "x-ves-proto-rpc": "ves.io.schema.customer_support.CustomAPI.Priority",
-        "tags": ["web"],
+        "tags": [
+          "web"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.name", "path.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.name",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Priority resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Priority resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["priority"]
+            "creates": [
+              "priority"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -2197,10 +2377,17 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.name", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.name",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["priority"]
+          "creates": [
+            "priority"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -2358,18 +2545,32 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/support/"
         },
         "x-ves-proto-rpc": "ves.io.schema.customer_support.CustomAPI.Reopen",
-        "tags": ["web"],
+        "tags": [
+          "web"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.name", "path.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.name",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Reopen resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Reopen resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["reopen"]
+            "creates": [
+              "reopen"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -2410,10 +2611,17 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.name", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.name",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["reopen"]
+          "creates": [
+            "reopen"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -2589,14 +2797,20 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/support/"
         },
         "x-ves-proto-rpc": "ves.io.schema.customer_support.API.List",
-        "tags": ["web"],
+        "tags": [
+          "web"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": ["path.namespace"],
+          "required_fields": [
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -2639,7 +2853,9 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -2806,14 +3022,21 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/support/"
         },
         "x-ves-proto-rpc": "ves.io.schema.customer_support.API.Get",
-        "tags": ["web"],
+        "tags": [
+          "web"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": ["path.name", "path.namespace"],
+          "required_fields": [
+            "path.name",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -2856,7 +3079,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["path.name", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.name",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -3003,18 +3229,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/support/"
         },
         "x-ves-proto-rpc": "ves.io.schema.operate.debug.CustomPublicAPI.AllowF5SSH",
-        "tags": ["operate"],
+        "tags": [
+          "operate"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.site"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.site"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Allow-f5-ssh resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Allow-f5-ssh resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["allow-f5-ssh"]
+            "creates": [
+              "allow-f5-ssh"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -3055,10 +3294,16 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.site"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.site"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["allow-f5-ssh"]
+          "creates": [
+            "allow-f5-ssh"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -3195,14 +3440,20 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/support/"
         },
         "x-ves-proto-rpc": "ves.io.schema.operate.debug.CustomPublicAPI.CheckDebugInfoCollection",
-        "tags": ["operate"],
+        "tags": [
+          "operate"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": ["path.site"],
+          "required_fields": [
+            "path.site"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -3245,7 +3496,9 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.site"],
+        "x-f5xc-required-fields": [
+          "path.site"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -3393,14 +3646,20 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/support/"
         },
         "x-ves-proto-rpc": "ves.io.schema.operate.debug.CustomPublicAPI.DiagnosisPublic",
-        "tags": ["operate"],
+        "tags": [
+          "operate"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": ["path.site"],
+          "required_fields": [
+            "path.site"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -3443,7 +3702,9 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.site"],
+        "x-f5xc-required-fields": [
+          "path.site"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -3580,14 +3841,20 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/support/"
         },
         "x-ves-proto-rpc": "ves.io.schema.operate.debug.CustomPublicAPI.DownloadDebugInfoCollection",
-        "tags": ["operate"],
+        "tags": [
+          "operate"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": ["path.site"],
+          "required_fields": [
+            "path.site"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -3630,7 +3897,9 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.site"],
+        "x-f5xc-required-fields": [
+          "path.site"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -3778,14 +4047,20 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/support/"
         },
         "x-ves-proto-rpc": "ves.io.schema.operate.debug.CustomPublicAPI.HealthPublic",
-        "tags": ["operate"],
+        "tags": [
+          "operate"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Health monitoring configuration",
-          "required_fields": ["path.site"],
+          "required_fields": [
+            "path.site"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -3828,7 +4103,9 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.site"],
+        "x-f5xc-required-fields": [
+          "path.site"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -3984,18 +4261,32 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/support/"
         },
         "x-ves-proto-rpc": "ves.io.schema.operate.debug.CustomPublicAPI.ChangePasswordPublic",
-        "tags": ["operate"],
+        "tags": [
+          "operate"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.node", "path.site"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.node",
+            "path.site"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Change-password resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Change-password resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["change-password"]
+            "creates": [
+              "change-password"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -4036,10 +4327,17 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.node", "path.site"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.node",
+          "path.site"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["change-password"]
+          "creates": [
+            "change-password"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -4185,14 +4483,21 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/support/"
         },
         "x-ves-proto-rpc": "ves.io.schema.operate.debug.CustomPublicAPI.StartDebugInfoCollection",
-        "tags": ["operate"],
+        "tags": [
+          "operate"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": ["path.node", "path.site"],
+          "required_fields": [
+            "path.node",
+            "path.site"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -4235,7 +4540,10 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.node", "path.site"],
+        "x-f5xc-required-fields": [
+          "path.node",
+          "path.site"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -4383,14 +4691,21 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/support/"
         },
         "x-ves-proto-rpc": "ves.io.schema.operate.debug.CustomPublicAPI.ListVolterraServices",
-        "tags": ["operate"],
+        "tags": [
+          "operate"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": ["path.namespace", "path.site"],
+          "required_fields": [
+            "path.namespace",
+            "path.site"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -4433,7 +4748,10 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace", "path.site"],
+        "x-f5xc-required-fields": [
+          "path.namespace",
+          "path.site"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -4603,14 +4921,22 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/support/"
         },
         "x-ves-proto-rpc": "ves.io.schema.operate.debug.CustomPublicAPI.Status",
-        "tags": ["operate"],
+        "tags": [
+          "operate"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": ["path.namespace", "path.site", "path.vesnamespace"],
+          "required_fields": [
+            "path.namespace",
+            "path.site",
+            "path.vesnamespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -4653,7 +4979,11 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace", "path.site", "path.vesnamespace"],
+        "x-f5xc-required-fields": [
+          "path.namespace",
+          "path.site",
+          "path.vesnamespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -4822,18 +5152,33 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/support/"
         },
         "x-ves-proto-rpc": "ves.io.schema.operate.debug.CustomPublicAPI.Exec",
-        "tags": ["operate"],
+        "tags": [
+          "operate"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace", "path.node", "path.site"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.namespace",
+            "path.node",
+            "path.site"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Exec resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Exec resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["exec"]
+            "creates": [
+              "exec"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -4874,10 +5219,18 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace", "path.node", "path.site"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.namespace",
+          "path.node",
+          "path.site"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["exec"]
+          "creates": [
+            "exec"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -5048,14 +5401,22 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/support/"
         },
         "x-ves-proto-rpc": "ves.io.schema.operate.debug.CustomPublicAPI.ExecLog",
-        "tags": ["operate"],
+        "tags": [
+          "operate"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Logging configuration for audit and analysis",
-          "required_fields": ["path.namespace", "path.node", "path.site"],
+          "required_fields": [
+            "path.namespace",
+            "path.node",
+            "path.site"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -5098,7 +5459,11 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace", "path.node", "path.site"],
+        "x-f5xc-required-fields": [
+          "path.namespace",
+          "path.node",
+          "path.site"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -5267,18 +5632,33 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/support/"
         },
         "x-ves-proto-rpc": "ves.io.schema.operate.debug.CustomPublicAPI.ExecUser",
-        "tags": ["operate"],
+        "tags": [
+          "operate"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "User account for access management",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace", "path.node", "path.site"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.namespace",
+            "path.node",
+            "path.site"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Exec-user resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Exec-user resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["exec-user"]
+            "creates": [
+              "exec-user"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -5319,10 +5699,18 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace", "path.node", "path.site"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.namespace",
+          "path.node",
+          "path.site"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["exec-user"]
+          "creates": [
+            "exec-user"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -5491,18 +5879,33 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/support/"
         },
         "x-ves-proto-rpc": "ves.io.schema.operate.debug.CustomPublicAPI.HostPing",
-        "tags": ["operate"],
+        "tags": [
+          "operate"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace", "path.node", "path.site"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.namespace",
+            "path.node",
+            "path.site"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Host-ping resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Host-ping resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["host-ping"]
+            "creates": [
+              "host-ping"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -5543,10 +5946,18 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace", "path.node", "path.site"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.namespace",
+          "path.node",
+          "path.site"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["host-ping"]
+          "creates": [
+            "host-ping"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -5715,18 +6126,33 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/support/"
         },
         "x-ves-proto-rpc": "ves.io.schema.operate.debug.CustomPublicAPI.Reboot",
-        "tags": ["operate"],
+        "tags": [
+          "operate"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace", "path.node", "path.site"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.namespace",
+            "path.node",
+            "path.site"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Reboot resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Reboot resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["reboot"]
+            "creates": [
+              "reboot"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -5767,10 +6193,18 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace", "path.node", "path.site"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.namespace",
+          "path.node",
+          "path.site"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["reboot"]
+          "creates": [
+            "reboot"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -5952,14 +6386,23 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/support/"
         },
         "x-ves-proto-rpc": "ves.io.schema.operate.debug.CustomPublicAPI.Log",
-        "tags": ["operate"],
+        "tags": [
+          "operate"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Logging configuration for audit and analysis",
-          "required_fields": ["path.namespace", "path.node", "path.service", "path.site"],
+          "required_fields": [
+            "path.namespace",
+            "path.node",
+            "path.service",
+            "path.site"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -6002,7 +6445,12 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace", "path.node", "path.service", "path.site"],
+        "x-f5xc-required-fields": [
+          "path.namespace",
+          "path.node",
+          "path.service",
+          "path.site"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -6182,7 +6630,9 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/support/"
         },
         "x-ves-proto-rpc": "ves.io.schema.operate.debug.CustomPublicAPI.SoftRestart",
-        "tags": ["operate"],
+        "tags": [
+          "operate"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
           "required_fields": [
@@ -6196,11 +6646,18 @@
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Soft-restart resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Soft-restart resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["soft-restart"]
+            "creates": [
+              "soft-restart"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -6251,7 +6708,9 @@
         ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["soft-restart"]
+          "creates": [
+            "soft-restart"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -6399,14 +6858,21 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/support/"
         },
         "x-ves-proto-rpc": "ves.io.schema.operate.dhcp.CustomPublicAPI.ShowDhcpLeases",
-        "tags": ["operate"],
+        "tags": [
+          "operate"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": ["path.namespace", "path.site"],
+          "required_fields": [
+            "path.namespace",
+            "path.site"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -6449,7 +6915,10 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace", "path.site"],
+        "x-f5xc-required-fields": [
+          "path.namespace",
+          "path.site"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -6608,14 +7077,22 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/support/"
         },
         "x-ves-proto-rpc": "ves.io.schema.operate.lte.CustomPublicAPI.GetConfig",
-        "tags": ["operate"],
+        "tags": [
+          "operate"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": ["path.namespace", "path.node", "path.site"],
+          "required_fields": [
+            "path.namespace",
+            "path.node",
+            "path.site"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -6658,7 +7135,11 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace", "path.node", "path.site"],
+        "x-f5xc-required-fields": [
+          "path.namespace",
+          "path.node",
+          "path.site"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -6822,18 +7303,33 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/support/"
         },
         "x-ves-proto-rpc": "ves.io.schema.operate.lte.CustomPublicAPI.UpdateConfig",
-        "tags": ["operate"],
+        "tags": [
+          "operate"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace", "path.node", "path.site"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.namespace",
+            "path.node",
+            "path.site"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Config resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Config resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["config"]
+            "creates": [
+              "config"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -6874,10 +7370,18 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace", "path.node", "path.site"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.namespace",
+          "path.node",
+          "path.site"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["config"]
+          "creates": [
+            "config"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -7046,18 +7550,33 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/support/"
         },
         "x-ves-proto-rpc": "ves.io.schema.operate.lte.CustomPublicAPI.Disconnect",
-        "tags": ["operate"],
+        "tags": [
+          "operate"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace", "path.node", "path.site"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.namespace",
+            "path.node",
+            "path.site"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Disconnect resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Disconnect resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["disconnect"]
+            "creates": [
+              "disconnect"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -7098,10 +7617,18 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace", "path.node", "path.site"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.namespace",
+          "path.node",
+          "path.site"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["disconnect"]
+          "creates": [
+            "disconnect"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -7260,14 +7787,22 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/support/"
         },
         "x-ves-proto-rpc": "ves.io.schema.operate.lte.CustomPublicAPI.ShowInfo",
-        "tags": ["operate"],
+        "tags": [
+          "operate"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": ["path.namespace", "path.node", "path.site"],
+          "required_fields": [
+            "path.namespace",
+            "path.node",
+            "path.site"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -7310,7 +7845,11 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace", "path.node", "path.site"],
+        "x-f5xc-required-fields": [
+          "path.namespace",
+          "path.node",
+          "path.site"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -7464,18 +8003,32 @@
           "required": true
         },
         "x-ves-proto-rpc": "ves.io.schema.operate.ping.CustomPublicAPI.Ping",
-        "tags": ["operate"],
+        "tags": [
+          "operate"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace", "path.site"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.namespace",
+            "path.site"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Ping resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Ping resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["ping"]
+            "creates": [
+              "ping"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -7516,10 +8069,17 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace", "path.site"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.namespace",
+          "path.site"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["ping"]
+          "creates": [
+            "ping"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -7673,18 +8233,32 @@
           "required": true
         },
         "x-ves-proto-rpc": "ves.io.schema.operate.tcpdump.CustomPublicAPI.FetchDump",
-        "tags": ["operate"],
+        "tags": [
+          "operate"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace", "path.site"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.namespace",
+            "path.site"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Fetchdump resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Fetchdump resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["fetchdump"]
+            "creates": [
+              "fetchdump"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -7725,10 +8299,17 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace", "path.site"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.namespace",
+          "path.site"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["fetchdump"]
+          "creates": [
+            "fetchdump"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -7882,18 +8463,32 @@
           "required": true
         },
         "x-ves-proto-rpc": "ves.io.schema.operate.tcpdump.CustomPublicAPI.ListTcpdump",
-        "tags": ["operate"],
+        "tags": [
+          "operate"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace", "path.site"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.namespace",
+            "path.site"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["List-tcpdump resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "List-tcpdump resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["list-tcpdump"]
+            "creates": [
+              "list-tcpdump"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -7934,10 +8529,17 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace", "path.site"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.namespace",
+          "path.site"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["list-tcpdump"]
+          "creates": [
+            "list-tcpdump"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -8091,18 +8693,32 @@
           "required": true
         },
         "x-ves-proto-rpc": "ves.io.schema.operate.tcpdump.CustomPublicAPI.StopTcpdump",
-        "tags": ["operate"],
+        "tags": [
+          "operate"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace", "path.site"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.namespace",
+            "path.site"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Stop-tcpdump resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Stop-tcpdump resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["stop-tcpdump"]
+            "creates": [
+              "stop-tcpdump"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -8143,10 +8759,17 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace", "path.site"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.namespace",
+          "path.site"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["stop-tcpdump"]
+          "creates": [
+            "stop-tcpdump"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -8300,18 +8923,32 @@
           "required": true
         },
         "x-ves-proto-rpc": "ves.io.schema.operate.tcpdump.CustomPublicAPI.Tcpdump",
-        "tags": ["operate"],
+        "tags": [
+          "operate"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace", "path.site"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.namespace",
+            "path.site"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Tcpdump resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Tcpdump resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["tcpdump"]
+            "creates": [
+              "tcpdump"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -8352,10 +8989,17 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace", "path.site"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.namespace",
+          "path.site"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["tcpdump"]
+          "creates": [
+            "tcpdump"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -8489,18 +9133,30 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/support/"
         },
         "x-ves-proto-rpc": "ves.io.schema.ticket_management.ticket_tracking_system.CustomAPI.JiraProjectsIssueTypes",
-        "tags": ["web"],
+        "tags": [
+          "web"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Jira-projects-issue-type resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Jira-projects-issue-type resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["jira-projects-issue-type"]
+            "creates": [
+              "jira-projects-issue-type"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -8541,10 +9197,15 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["jira-projects-issue-type"]
+          "creates": [
+            "jira-projects-issue-type"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -8678,21 +9339,30 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/support/"
         },
         "x-ves-proto-rpc": "ves.io.schema.ticket_management.ticket_tracking_system.CustomAPI.ValidateTicketTrackingSystem",
-        "tags": ["web"],
+        "tags": [
+          "web"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": [
               "Validate-ticket-tracking-system resource created",
               "Resource assigned unique identifier"
             ]
           },
           "side_effects": {
-            "creates": ["validate-ticket-tracking-system"]
+            "creates": [
+              "validate-ticket-tracking-system"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -8733,10 +9403,15 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["validate-ticket-tracking-system"]
+          "creates": [
+            "validate-ticket-tracking-system"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -8883,18 +9558,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/support/"
         },
         "x-ves-proto-rpc": "ves.io.schema.ticket_management.ticket_tracking_system.API.Create",
-        "tags": ["web"],
+        "tags": [
+          "web"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.metadata.namespace"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.metadata.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Ticket-tracking-system resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Ticket-tracking-system resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["ticket-tracking-system"]
+            "creates": [
+              "ticket-tracking-system"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -8935,10 +9623,16 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.metadata.namespace"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.metadata.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["ticket-tracking-system"]
+          "creates": [
+            "ticket-tracking-system"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -9096,18 +9790,29 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/support/"
         },
         "x-ves-proto-rpc": "ves.io.schema.ticket_management.ticket_tracking_system.API.Replace",
-        "tags": ["web"],
+        "tags": [
+          "web"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource replacement operation",
-          "required_fields": ["path.metadata.name", "path.metadata.namespace"],
+          "required_fields": [
+            "path.metadata.name",
+            "path.metadata.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Resource updated with new values"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Resource updated with new values"
+            ]
           },
           "side_effects": {
-            "modifies": ["ticket-tracking-system"]
+            "modifies": [
+              "ticket-tracking-system"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -9148,10 +9853,15 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["path.metadata.name", "path.metadata.namespace"],
+        "x-f5xc-required-fields": [
+          "path.metadata.name",
+          "path.metadata.namespace"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "modifies": ["ticket-tracking-system"]
+          "modifies": [
+            "ticket-tracking-system"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 800,
@@ -9327,14 +10037,20 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/support/"
         },
         "x-ves-proto-rpc": "ves.io.schema.ticket_management.ticket_tracking_system.API.List",
-        "tags": ["web"],
+        "tags": [
+          "web"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": ["path.namespace"],
+          "required_fields": [
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -9377,7 +10093,9 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -9544,14 +10262,21 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/support/"
         },
         "x-ves-proto-rpc": "ves.io.schema.ticket_management.ticket_tracking_system.API.Get",
-        "tags": ["web"],
+        "tags": [
+          "web"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": ["path.name", "path.namespace"],
+          "required_fields": [
+            "path.name",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -9594,7 +10319,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["path.name", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.name",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -9745,18 +10473,31 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/support/"
         },
         "x-ves-proto-rpc": "ves.io.schema.ticket_management.ticket_tracking_system.API.Delete",
-        "tags": ["web"],
+        "tags": [
+          "web"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource deletion operation",
-          "required_fields": ["path.name", "path.namespace"],
+          "required_fields": [
+            "path.name",
+            "path.namespace"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Resource removed from system", "Associated resources may be affected"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Resource removed from system",
+              "Associated resources may be affected"
+            ]
           },
           "side_effects": {
-            "deletes": ["ticket-tracking-system", "contained_resources"]
+            "deletes": [
+              "ticket-tracking-system",
+              "contained_resources"
+            ]
           },
           "danger_level": "high",
           "confirmation_required": true,
@@ -9797,11 +10538,17 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.name", "path.namespace"],
+        "x-f5xc-required-fields": [
+          "path.name",
+          "path.namespace"
+        ],
         "x-f5xc-danger-level": "high",
         "x-f5xc-confirmation-required": true,
         "x-f5xc-side-effects": {
-          "deletes": ["ticket-tracking-system", "contained_resources"]
+          "deletes": [
+            "ticket-tracking-system",
+            "contained_resources"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 500,
@@ -9960,14 +10707,22 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/support/"
         },
         "x-ves-proto-rpc": "ves.io.schema.operate.usb.CustomPublicAPI.GetConfig",
-        "tags": ["operate"],
+        "tags": [
+          "operate"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": ["path.namespace", "path.node", "path.site"],
+          "required_fields": [
+            "path.namespace",
+            "path.node",
+            "path.site"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -10010,7 +10765,11 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace", "path.node", "path.site"],
+        "x-f5xc-required-fields": [
+          "path.namespace",
+          "path.node",
+          "path.site"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -10174,18 +10933,33 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/support/"
         },
         "x-ves-proto-rpc": "ves.io.schema.operate.usb.CustomPublicAPI.UpdateConfig",
-        "tags": ["operate"],
+        "tags": [
+          "operate"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace", "path.node", "path.site"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.namespace",
+            "path.node",
+            "path.site"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Config resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Config resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["config"]
+            "creates": [
+              "config"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -10226,10 +11000,18 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace", "path.node", "path.site"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.namespace",
+          "path.node",
+          "path.site"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["config"]
+          "creates": [
+            "config"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -10388,14 +11170,22 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/support/"
         },
         "x-ves-proto-rpc": "ves.io.schema.operate.usb.CustomPublicAPI.List",
-        "tags": ["operate"],
+        "tags": [
+          "operate"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": ["path.namespace", "path.node", "path.site"],
+          "required_fields": [
+            "path.namespace",
+            "path.node",
+            "path.site"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -10438,7 +11228,11 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace", "path.node", "path.site"],
+        "x-f5xc-required-fields": [
+          "path.namespace",
+          "path.node",
+          "path.site"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 500,
@@ -10597,14 +11391,23 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/support/"
         },
         "x-ves-proto-rpc": "ves.io.schema.operate.usb.CustomPublicAPI.ListRules",
-        "tags": ["operate"],
+        "tags": [
+          "operate"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": ["path.namespace", "path.node", "path.site"],
+          "required_fields": [
+            "path.namespace",
+            "path.node",
+            "path.site"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace", "Policy parameters defined"],
+            "prerequisites": [
+              "Active namespace",
+              "Policy parameters defined"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -10647,7 +11450,11 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace", "path.node", "path.site"],
+        "x-f5xc-required-fields": [
+          "path.namespace",
+          "path.node",
+          "path.site"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -10816,18 +11623,34 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/support/"
         },
         "x-ves-proto-rpc": "ves.io.schema.operate.usb.CustomPublicAPI.AddRules",
-        "tags": ["operate"],
+        "tags": [
+          "operate"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace", "path.node", "path.site"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.namespace",
+            "path.node",
+            "path.site"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace", "Policy parameters defined"],
-            "postconditions": ["Add resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace",
+              "Policy parameters defined"
+            ],
+            "postconditions": [
+              "Add resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["add"]
+            "creates": [
+              "add"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -10868,10 +11691,18 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace", "path.node", "path.site"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.namespace",
+          "path.node",
+          "path.site"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["add"]
+          "creates": [
+            "add"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -11040,18 +11871,34 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/support/"
         },
         "x-ves-proto-rpc": "ves.io.schema.operate.usb.CustomPublicAPI.DeleteRules",
-        "tags": ["operate"],
+        "tags": [
+          "operate"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace", "path.node", "path.site"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.namespace",
+            "path.node",
+            "path.site"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace", "Policy parameters defined"],
-            "postconditions": ["Delete resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace",
+              "Policy parameters defined"
+            ],
+            "postconditions": [
+              "Delete resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["delete"]
+            "creates": [
+              "delete"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -11092,10 +11939,18 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace", "path.node", "path.site"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.namespace",
+          "path.node",
+          "path.site"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["delete"]
+          "creates": [
+            "delete"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -11254,14 +12109,22 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/support/"
         },
         "x-ves-proto-rpc": "ves.io.schema.operate.wifi.CustomPublicAPI.GetConfig",
-        "tags": ["operate"],
+        "tags": [
+          "operate"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": ["path.namespace", "path.node", "path.site"],
+          "required_fields": [
+            "path.namespace",
+            "path.node",
+            "path.site"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -11304,7 +12167,11 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace", "path.node", "path.site"],
+        "x-f5xc-required-fields": [
+          "path.namespace",
+          "path.node",
+          "path.site"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -11468,18 +12335,33 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/support/"
         },
         "x-ves-proto-rpc": "ves.io.schema.operate.wifi.CustomPublicAPI.UpdateConfig",
-        "tags": ["operate"],
+        "tags": [
+          "operate"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace", "path.node", "path.site"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.namespace",
+            "path.node",
+            "path.site"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Config resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Config resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["config"]
+            "creates": [
+              "config"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -11520,10 +12402,18 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace", "path.node", "path.site"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.namespace",
+          "path.node",
+          "path.site"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["config"]
+          "creates": [
+            "config"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -11692,18 +12582,33 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/support/"
         },
         "x-ves-proto-rpc": "ves.io.schema.operate.wifi.CustomPublicAPI.Disconnect",
-        "tags": ["operate"],
+        "tags": [
+          "operate"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace", "path.node", "path.site"],
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.namespace",
+            "path.node",
+            "path.site"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
-            "postconditions": ["Disconnect resource created", "Resource assigned unique identifier"]
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Disconnect resource created",
+              "Resource assigned unique identifier"
+            ]
           },
           "side_effects": {
-            "creates": ["disconnect"]
+            "creates": [
+              "disconnect"
+            ]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -11744,10 +12649,18 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace", "path.node", "path.site"],
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.namespace",
+          "path.node",
+          "path.site"
+        ],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": ["disconnect"]
+          "creates": [
+            "disconnect"
+          ]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -11906,14 +12819,22 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/support/"
         },
         "x-ves-proto-rpc": "ves.io.schema.operate.wifi.CustomPublicAPI.ShowInfo",
-        "tags": ["operate"],
+        "tags": [
+          "operate"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": ["path.namespace", "path.node", "path.site"],
+          "required_fields": [
+            "path.namespace",
+            "path.node",
+            "path.site"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -11956,7 +12877,11 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace", "path.node", "path.site"],
+        "x-f5xc-required-fields": [
+          "path.namespace",
+          "path.node",
+          "path.site"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -12115,14 +13040,22 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/support/"
         },
         "x-ves-proto-rpc": "ves.io.schema.operate.wifi.CustomPublicAPI.List",
-        "tags": ["operate"],
+        "tags": [
+          "operate"
+        ],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": ["path.namespace", "path.node", "path.site"],
+          "required_fields": [
+            "path.namespace",
+            "path.node",
+            "path.site"
+          ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": ["Active namespace"],
+            "prerequisites": [
+              "Active namespace"
+            ],
             "postconditions": []
           },
           "side_effects": {},
@@ -12165,7 +13098,11 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": ["path.namespace", "path.node", "path.site"],
+        "x-f5xc-required-fields": [
+          "path.namespace",
+          "path.node",
+          "path.site"
+        ],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 500,
@@ -12247,7 +13184,9 @@
             "x-reconciled-from-discovery": true,
             "x-reconciled-at": "2026-09-03T15:40:08+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
-            "x-f5xc-conflicts-with": ["uid"]
+            "x-f5xc-conflicts-with": [
+              "uid"
+            ]
           },
           "namespace": {
             "type": "string",
@@ -12348,7 +13287,9 @@
             "format": "uuid",
             "x-reconciled-from-discovery": true,
             "x-reconciled-at": "2026-09-03T15:40:08+00:00",
-            "x-f5xc-conflicts-with": ["name"]
+            "x-f5xc-conflicts-with": [
+              "name"
+            ]
           }
         },
         "x-f5xc-description-short": "Request to trigger resync of CRL in VER.",
@@ -12362,7 +13303,11 @@
         "x-f5xc-cli-domain": "certificates",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -12422,7 +13367,11 @@
         "x-f5xc-cli-domain": "certificates",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["custom", "default", "shared"],
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -12514,7 +13463,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -12656,7 +13607,9 @@
         "x-f5xc-cli-domain": "support",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -12785,7 +13738,9 @@
         "x-f5xc-cli-domain": "support",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -12831,7 +13786,9 @@
         "x-f5xc-cli-domain": "support",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -13006,7 +13963,9 @@
         "x-f5xc-cli-domain": "support",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -13052,7 +14011,9 @@
         "x-f5xc-cli-domain": "support",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -13283,7 +14244,9 @@
         "x-f5xc-cli-domain": "support",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -13343,7 +14306,9 @@
         "x-f5xc-cli-domain": "support",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -13414,7 +14379,9 @@
         "x-f5xc-cli-domain": "support",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -13543,7 +14510,9 @@
         "x-f5xc-cli-domain": "support",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -13589,7 +14558,9 @@
         "x-f5xc-cli-domain": "support",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -13746,7 +14717,9 @@
         "x-f5xc-cli-domain": "support",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -13823,7 +14796,9 @@
         "x-f5xc-cli-domain": "support",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -14158,7 +15133,9 @@
         "x-f5xc-cli-domain": "support",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -14278,7 +15255,10 @@
         "x-f5xc-description-medium": "Input message of the 'ListCTSupportTickets' RPC. Fields can be used to control scope and filtering of collection.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for customer_supportListSupportRequest",
-          "required_fields": ["priority", "status"],
+          "required_fields": [
+            "priority",
+            "status"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for customer_supportListSupportRequest\nmetadata:\n  name: example\n  namespace: default\nspec:\n  priority: value\n  status: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"priority\": \"value\",\n    \"status\": \"value\"\n  }\n}"
@@ -14286,7 +15266,9 @@
         "x-f5xc-cli-domain": "support",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -14364,7 +15346,9 @@
         "x-f5xc-cli-domain": "support",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -14507,7 +15491,9 @@
         "x-f5xc-cli-domain": "support",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -14553,7 +15539,9 @@
         "x-f5xc-cli-domain": "support",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -14630,7 +15618,9 @@
         "x-f5xc-cli-domain": "support",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -14720,7 +15710,9 @@
         "x-f5xc-cli-domain": "support",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -14849,7 +15841,9 @@
         "x-f5xc-cli-domain": "support",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -14895,7 +15889,9 @@
         "x-f5xc-cli-domain": "support",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -14972,7 +15968,9 @@
         "x-f5xc-cli-domain": "support",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -15036,7 +16034,9 @@
         "x-f5xc-cli-domain": "support",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -15054,7 +16054,12 @@
         "type": "string",
         "description": "Support ticket priority helps understand importance of the ticket and focus\nmore on more critical issues.\n\nUnknown/empty priority\nNormal priority issue\nHigh priority issue\nUrgent priority issue.",
         "title": "SupportTicketPriority",
-        "enum": ["PRIORITY_UNKNOWN", "PRIORITY_NORMAL", "PRIORITY_HIGH", "PRIORITY_URGENT"],
+        "enum": [
+          "PRIORITY_UNKNOWN",
+          "PRIORITY_NORMAL",
+          "PRIORITY_HIGH",
+          "PRIORITY_URGENT"
+        ],
         "default": "PRIORITY_UNKNOWN",
         "x-displayname": "Priority",
         "x-ves-proto-enum": "ves.io.schema.customer_support.SupportTicketPriority",
@@ -15070,7 +16075,9 @@
         "x-f5xc-cli-domain": "support",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -15113,7 +16120,9 @@
         "x-f5xc-cli-domain": "support",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -15156,7 +16165,9 @@
         "x-f5xc-cli-domain": "support",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -15217,7 +16228,9 @@
         "x-f5xc-cli-domain": "support",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -15261,7 +16274,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -15341,7 +16356,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -15491,7 +16508,15 @@
             "x-f5xc-description-short": "Status of the condition \"Success\" Validation has succeeded.",
             "x-f5xc-description-medium": "Status of the condition \"Success\" Validation has succeeded. Requested operation was successful. \"Failed\" Validation has failed. \"Incomplete\" Validation of configuration has failed due to missing configuration. \"Installed\" Validation has passed and configuration has been installed in data path or...",
             "maxLength": 1024,
-            "enum": ["Success", "Failed", "Incomplete", "Installed", "Down", "Disabled", "NotApplicable"],
+            "enum": [
+              "Success",
+              "Failed",
+              "Incomplete",
+              "Installed",
+              "Down",
+              "Disabled",
+              "NotApplicable"
+            ],
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "general",
@@ -15528,7 +16553,10 @@
             "x-f5xc-description-short": "Type of the condition \"Validation\" represents validation user given configuration object \"Operational\" represents operational status of a given...",
             "x-f5xc-description-medium": "Type of the condition \"Validation\" represents validation user given configuration object \"Operational\" represents operational status of a given configuration object.",
             "maxLength": 1024,
-            "enum": ["Validation", "Operational"],
+            "enum": [
+              "Validation",
+              "Operational"
+            ],
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "general",
@@ -15559,7 +16587,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -15643,7 +16673,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -15720,7 +16752,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -15783,7 +16817,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -16007,7 +17043,9 @@
         "x-f5xc-description-short": "ObjectCreateMetaType is metadata that can be specified in Create request of an object.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for schemaObjectCreateMetaType",
-          "required_fields": ["name"],
+          "required_fields": [
+            "name"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for schemaObjectCreateMetaType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  name: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"name\": \"value\"\n  }\n}"
@@ -16015,7 +17053,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -16242,7 +17282,9 @@
         "x-f5xc-description-short": "ObjectGetMetaType is metadata that can be specified in GET/Create response of an object.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for schemaObjectGetMetaType",
-          "required_fields": ["name"],
+          "required_fields": [
+            "name"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for schemaObjectGetMetaType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  name: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"name\": \"value\"\n  }\n}"
@@ -16250,7 +17292,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -16456,7 +17500,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -16682,7 +17728,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -16700,7 +17748,10 @@
         "type": "string",
         "description": "StatusPublishType is all possible publish operations on a StatusObject\n\n- STATUS_DO_NOT_PUBLISH: Do Not Publish\n\nDo not propagate this status to user. This could be because status is only informational\n- STATUS_PUBLISH: Publish\n\nPropagate this status up to user as it might be actionable.",
         "title": "StatusPublishType",
-        "enum": ["STATUS_DO_NOT_PUBLISH", "STATUS_PUBLISH"],
+        "enum": [
+          "STATUS_DO_NOT_PUBLISH",
+          "STATUS_PUBLISH"
+        ],
         "default": "STATUS_DO_NOT_PUBLISH",
         "x-displayname": "Status Publish Type.",
         "x-ves-proto-enum": "ves.io.schema.StatusPublishType",
@@ -16716,7 +17767,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -16824,7 +17877,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -17147,7 +18202,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -17330,7 +18387,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -17667,7 +18726,9 @@
         "x-f5xc-cli-domain": "support",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -17685,7 +18746,14 @@
         "type": "string",
         "description": "ErrorCode is used to know the specific reason for customer support operation failures\n\n- EUNKNOWN: an unknown error occurred\n- EOK: Successful operation\n- E_NOT_CLOSED: Customer support ticket not closed\n- E_NOT_OPEN: Customer support ticket not open\n- E_NOT_ELIGIBLE: Customer is not eligible for this operation (i.e. When escalating a ticket then this indicates customer not being enterprise)\n- E_NOT_NOT_FOUND: Support ticket couldn't be found.",
         "title": "error code",
-        "enum": ["EUNKNOWN", "EOK", "E_NOT_CLOSED", "E_NOT_OPEN", "E_NOT_ELIGIBLE", "E_NOT_NOT_FOUND"],
+        "enum": [
+          "EUNKNOWN",
+          "EOK",
+          "E_NOT_CLOSED",
+          "E_NOT_OPEN",
+          "E_NOT_ELIGIBLE",
+          "E_NOT_NOT_FOUND"
+        ],
         "default": "EUNKNOWN",
         "x-displayname": "Error Code.",
         "x-ves-proto-enum": "ves.io.schema.customer_support.ErrorCode",
@@ -17701,7 +18769,9 @@
         "x-f5xc-cli-domain": "support",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -18231,7 +19301,9 @@
         "x-f5xc-cli-domain": "support",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -18338,7 +19410,9 @@
         "x-f5xc-description-medium": "Request to control F5 SSH access (vesop) on host. This API allows enabling or disabling vesop SSH access with optional timer-based auto-disable functionality.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for debugAllowF5SSHRequest",
-          "required_fields": ["enable"],
+          "required_fields": [
+            "enable"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for debugAllowF5SSHRequest\nmetadata:\n  name: example\n  namespace: default\nspec:\n  enable: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"enable\": \"value\"\n  }\n}"
@@ -18346,7 +19420,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -18376,7 +19452,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -18543,7 +19621,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -18667,7 +19747,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -18745,7 +19827,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -18800,7 +19884,9 @@
         "x-f5xc-cli-domain": "statistics",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -18970,7 +20056,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -19042,7 +20130,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -19359,7 +20449,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -19583,7 +20675,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -19789,7 +20883,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -19836,7 +20932,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -19891,7 +20989,9 @@
         "x-f5xc-cli-domain": "statistics",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -20019,7 +21119,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -20049,7 +21151,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -20179,7 +21283,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -20332,7 +21438,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -20362,7 +21470,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -20516,7 +21626,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -20568,7 +21680,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -20586,7 +21700,14 @@
         "type": "string",
         "description": "State of Site defines in which operational state site itself is.\n\nSite is waiting for input configuration.\nSite is waiting for approval.\nSite is in provisioning state.\nSite is in provisioned.\nSite is in failed state. It failed during any stage.\nSite is in factory resetting mode.",
         "title": "VpmState",
-        "enum": ["WAITING_FOR_CONFIG", "WAITING_FOR_APPROVAL", "PROVISIONING", "PROVISIONED", "FAILED", "RESETTING"],
+        "enum": [
+          "WAITING_FOR_CONFIG",
+          "WAITING_FOR_APPROVAL",
+          "PROVISIONING",
+          "PROVISIONED",
+          "FAILED",
+          "RESETTING"
+        ],
         "default": "WAITING_FOR_CONFIG",
         "x-displayname": "Site State.",
         "x-ves-proto-enum": "ves.io.schema.operate.debug.VpmState",
@@ -20602,7 +21723,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -20727,7 +21850,9 @@
         "x-f5xc-description-short": "BlindfoldSecretInfoType specifies information about the Secret managed by F5XC Secret Management.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for schemaBlindfoldSecretInfoType",
-          "required_fields": ["location"],
+          "required_fields": [
+            "location"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for schemaBlindfoldSecretInfoType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  location: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"location\": \"value\"\n  }\n}"
@@ -20735,7 +21860,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -20842,7 +21969,9 @@
         "x-f5xc-description-short": "ClearSecretInfoType specifies information about the Secret that is not encrypted.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for schemaClearSecretInfoType",
-          "required_fields": ["url"],
+          "required_fields": [
+            "url"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for schemaClearSecretInfoType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  url: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"url\": \"value\"\n  }\n}"
@@ -20850,7 +21979,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -20884,7 +22015,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["clear_secret_info"]
+            "x-f5xc-conflicts-with": [
+              "clear_secret_info"
+            ]
           },
           "clear_secret_info": {
             "allOf": [
@@ -20898,7 +22031,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["blindfold_secret_info"]
+            "x-f5xc-conflicts-with": [
+              "blindfold_secret_info"
+            ]
           }
         },
         "x-f5xc-description-short": "SecretType is used in an object to indicate a sensitive/confidential field.",
@@ -20912,7 +22047,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -21033,7 +22170,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -21217,7 +22356,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -21372,7 +22513,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -21529,7 +22672,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -21626,7 +22771,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -21732,7 +22879,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -21842,7 +22991,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -21860,7 +23011,12 @@
         "type": "string",
         "description": "Link quality determined by VER using different probes\n\nUnknown quality\nLink quality is good\nLink quality is poor\nQuality disabled.",
         "title": "Link quality",
-        "enum": ["QUALITY_UNKNOWN", "QUALITY_GOOD", "QUALITY_POOR", "QUALITY_DISABLED"],
+        "enum": [
+          "QUALITY_UNKNOWN",
+          "QUALITY_GOOD",
+          "QUALITY_POOR",
+          "QUALITY_DISABLED"
+        ],
         "default": "QUALITY_UNKNOWN",
         "x-displayname": "Link quality.",
         "x-ves-proto-enum": "ves.io.schema.site.LinkQuality",
@@ -21876,7 +23032,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -21918,7 +23076,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -22005,7 +23165,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -22220,7 +23382,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -22399,7 +23563,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -22640,7 +23806,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -22797,7 +23965,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -22988,7 +24158,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -23475,7 +24647,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -23493,7 +24667,12 @@
         "type": "string",
         "description": "Type of USB device\n\nUnknown USB device type\nInternal USB present in Certified HW\nUSB device present during node registration\nUSB device that can be matched by USB rules.",
         "title": "UsbType",
-        "enum": ["UNKNOWN_USB", "INTERNAL", "REGISTERED", "CONFIGURABLE"],
+        "enum": [
+          "UNKNOWN_USB",
+          "INTERNAL",
+          "REGISTERED",
+          "CONFIGURABLE"
+        ],
         "default": "UNKNOWN_USB",
         "x-displayname": "USB Type",
         "x-ves-proto-enum": "ves.io.schema.site.UsbType",
@@ -23509,7 +24688,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -23595,7 +24776,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -23880,7 +25063,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -23943,7 +25128,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -24051,7 +25238,9 @@
         "x-f5xc-cli-domain": "network",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -24206,7 +25395,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -24361,7 +25552,9 @@
         "x-f5xc-cli-domain": "certificates",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -24488,7 +25681,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -24518,7 +25713,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -24564,7 +25761,9 @@
         "x-f5xc-cli-domain": "certificates",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -24610,7 +25809,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -24751,7 +25952,9 @@
         "x-f5xc-cli-domain": "certificates",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -24781,7 +25984,9 @@
         "x-f5xc-cli-domain": "certificates",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -24875,7 +26080,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -24893,7 +26100,13 @@
         "type": "string",
         "description": "Current Signal Strength\n\n- UNKNOWN: UNKNOWN\n\nRSSI not received\n- EXCELLENT: EXCELLENT\n\nRSSI greater then -65\n- GOOD: GOOD\n\nRSSI between -65 and -75\n- FAIR: FAIR\n\nRSSI between -75 and -85\n- POOR: POOR\n\nRSSI lower then -85.",
         "title": "SignalStrength",
-        "enum": ["UNKNOWN", "EXCELLENT", "GOOD", "FAIR", "POOR"],
+        "enum": [
+          "UNKNOWN",
+          "EXCELLENT",
+          "GOOD",
+          "FAIR",
+          "POOR"
+        ],
         "default": "UNKNOWN",
         "x-displayname": "Signal Strength.",
         "x-ves-proto-enum": "ves.io.schema.operate.lte.SignalStrength",
@@ -24909,7 +26122,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -25031,7 +26246,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -25298,7 +26515,9 @@
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for pingPingRequest",
-          "required_fields": ["node"],
+          "required_fields": [
+            "node"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for pingPingRequest\nmetadata:\n  name: example\n  namespace: default\nspec:\n  node: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"node\": \"value\"\n  }\n}"
@@ -25306,7 +26525,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -25509,7 +26730,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -25539,7 +26762,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -25603,7 +26828,9 @@
             },
             "pattern": "^([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\\.)*[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$",
             "minLength": 1,
-            "x-f5xc-conflicts-with": ["ip"]
+            "x-f5xc-conflicts-with": [
+              "ip"
+            ]
           },
           "ip": {
             "type": "string",
@@ -25638,7 +26865,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["hostname"]
+            "x-f5xc-conflicts-with": [
+              "hostname"
+            ]
           }
         },
         "x-f5xc-description-short": "Host Identifier identifies a host, either by its DNS name (hostname) or by its IP address.",
@@ -25652,7 +26881,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -25686,7 +26917,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["intf"]
+            "x-f5xc-conflicts-with": [
+              "intf"
+            ]
           },
           "intf": {
             "type": "string",
@@ -25724,7 +26957,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["any_intf"]
+            "x-f5xc-conflicts-with": [
+              "any_intf"
+            ]
           }
         },
         "x-f5xc-description-short": "Interface Identifier identifies one or all interfaces on a node.",
@@ -25738,7 +26973,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -25782,7 +27019,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -25866,7 +27105,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -25924,7 +27165,11 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["pod", "vn", "vn_type"]
+            "x-f5xc-conflicts-with": [
+              "pod",
+              "vn",
+              "vn_type"
+            ]
           },
           "pod": {
             "type": "string",
@@ -25962,7 +27207,11 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["intf", "vn", "vn_type"]
+            "x-f5xc-conflicts-with": [
+              "intf",
+              "vn",
+              "vn_type"
+            ]
           },
           "vn": {
             "type": "string",
@@ -26000,7 +27249,11 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["intf", "pod", "vn_type"]
+            "x-f5xc-conflicts-with": [
+              "intf",
+              "pod",
+              "vn_type"
+            ]
           },
           "vn_type": {
             "allOf": [
@@ -26014,7 +27267,11 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["intf", "pod", "vn"]
+            "x-f5xc-conflicts-with": [
+              "intf",
+              "pod",
+              "vn"
+            ]
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -26027,7 +27284,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -26076,7 +27335,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": true
           },
           "recommendation": {
@@ -26226,7 +27487,9 @@
         "x-f5xc-description-short": "Request to fetch captured pcap data from an earlier Tcpdump request.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for tcpdumpFetchRequest",
-          "required_fields": ["node"],
+          "required_fields": [
+            "node"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for tcpdumpFetchRequest\nmetadata:\n  name: example\n  namespace: default\nspec:\n  node: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"node\": \"value\"\n  }\n}"
@@ -26234,7 +27497,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -26323,7 +27588,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -26460,7 +27727,9 @@
         "x-f5xc-description-short": "Request to list Tcpdump capture status on a node.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for tcpdumpListRequest",
-          "required_fields": ["node"],
+          "required_fields": [
+            "node"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for tcpdumpListRequest\nmetadata:\n  name: example\n  namespace: default\nspec:\n  node: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"node\": \"value\"\n  }\n}"
@@ -26468,7 +27737,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -26518,7 +27789,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -26548,7 +27821,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -26805,7 +28080,9 @@
         "x-f5xc-description-short": "Request to run tcpdump on a ver interface.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for tcpdumpTcpdumpRequest",
-          "required_fields": ["node"],
+          "required_fields": [
+            "node"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for tcpdumpTcpdumpRequest\nmetadata:\n  name: example\n  namespace: default\nspec:\n  node: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"node\": \"value\"\n  }\n}"
@@ -26813,7 +28090,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -26984,7 +28263,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -27002,7 +28283,12 @@
         "type": "string",
         "description": "Shows the status of tcpdump command on an interface\n\nTcpdump capture on the interface is currently running\nTcpdump capture on the interface is done\nTcpdump capture on the interface failed\nTcpdump capture on the interface has not been initiated.",
         "title": "Tcpdump Status",
-        "enum": ["RUNNING", "COMPLETED", "FAILED", "NOT_STARTED"],
+        "enum": [
+          "RUNNING",
+          "COMPLETED",
+          "FAILED",
+          "NOT_STARTED"
+        ],
         "default": "RUNNING",
         "x-displayname": "Tcpdump Status.",
         "x-ves-proto-enum": "ves.io.schema.operate.tcpdump.TcpdumpStatus",
@@ -27018,7 +28304,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -27251,7 +28539,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -27407,7 +28697,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -27555,7 +28847,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -27615,7 +28909,9 @@
         "x-f5xc-cli-domain": "support",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -27686,7 +28982,9 @@
         "x-f5xc-cli-domain": "support",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -27732,7 +29030,9 @@
         "x-f5xc-cli-domain": "support",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -27867,7 +29167,9 @@
         "x-f5xc-cli-domain": "support",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -28010,7 +29312,9 @@
             "type": "string",
             "x-f5xc-concurrency-token": {
               "server_assigned": true,
-              "echo_on_operations": ["replace"]
+              "echo_on_operations": [
+                "replace"
+              ]
             }
           }
         },
@@ -28024,7 +29328,9 @@
         "x-f5xc-cli-domain": "support",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -28071,7 +29377,9 @@
         "x-f5xc-cli-domain": "support",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -28213,7 +29521,11 @@
         "x-f5xc-description-medium": "V3 API Basic Auth for AD-hoc API Calls - https://developer.atlassian.com/cloud/jira/platform/REST/v3/ This message represents what is stored in the XC database. To see the API format, refer to the JiraAdhocRestApiConfigurationSpec message.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for ticket_tracking_systemJiraAdhocRestApiConfigurationType",
-          "required_fields": ["account_email", "api_token", "organization_domain"],
+          "required_fields": [
+            "account_email",
+            "api_token",
+            "organization_domain"
+          ],
           "mutually_exclusive_groups": [],
           "example_yaml": "# Minimal example for ticket_tracking_systemJiraAdhocRestApiConfigurationType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  account_email: value\n  api_token: value\n  organization_domain: value",
           "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"account_email\": \"value\",\n    \"api_token\": \"value\",\n    \"organization_domain\": \"value\"\n  }\n}"
@@ -28221,7 +29533,9 @@
         "x-f5xc-cli-domain": "support",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -28266,7 +29580,9 @@
         "x-f5xc-cli-domain": "support",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -28321,7 +29637,9 @@
         "x-f5xc-cli-domain": "support",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -28392,7 +29710,9 @@
         "x-f5xc-cli-domain": "support",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -28469,7 +29789,9 @@
         "x-f5xc-cli-domain": "support",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -28789,7 +30111,9 @@
         "x-f5xc-cli-domain": "support",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -28842,7 +30166,9 @@
             "type": "string",
             "x-f5xc-concurrency-token": {
               "server_assigned": true,
-              "echo_on_operations": ["replace"]
+              "echo_on_operations": [
+                "replace"
+              ]
             }
           }
         },
@@ -28856,7 +30182,9 @@
         "x-f5xc-cli-domain": "support",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -28883,7 +30211,9 @@
         "x-f5xc-cli-domain": "support",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -28930,7 +30260,9 @@
         "x-f5xc-cli-domain": "support",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -28978,7 +30310,9 @@
         "x-f5xc-cli-domain": "support",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -29029,7 +30363,9 @@
         "x-f5xc-cli-domain": "support",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -29184,7 +30520,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -29244,7 +30582,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -29291,7 +30631,9 @@
         "x-f5xc-cli-domain": "certificates",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -29446,7 +30788,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -29507,7 +30851,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -29553,7 +30899,9 @@
         "x-f5xc-cli-domain": "certificates",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -29695,7 +31043,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -29755,7 +31105,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -29896,7 +31248,9 @@
         "x-f5xc-cli-domain": "certificates",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -29926,7 +31280,9 @@
         "x-f5xc-cli-domain": "certificates",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -30112,7 +31468,9 @@
         "x-f5xc-cli-domain": "ce_management",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -30130,7 +31488,13 @@
         "type": "string",
         "description": "Current Signal Strength\n\n- UNAVAILABLE: UNAVAILABLE\n\nSignal not received\n- EXCELLENT: EXCELLENT\n\ndBm greater then -50\n- GOOD: GOOD\n\ndBm between -50 and -60\n- FAIR: FAIR\n\ndBm between -60 and -70\n- POOR: POOR\n\ndBm lower then -70.",
         "title": "SignalStrength",
-        "enum": ["UNAVAILABLE", "EXCELLENT", "GOOD", "FAIR", "POOR"],
+        "enum": [
+          "UNAVAILABLE",
+          "EXCELLENT",
+          "GOOD",
+          "FAIR",
+          "POOR"
+        ],
         "default": "UNAVAILABLE",
         "x-displayname": "Signal Strength.",
         "x-ves-proto-enum": "ves.io.schema.operate.wifi.SignalStrength",
@@ -30146,7 +31510,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -30324,7 +31690,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -30358,7 +31726,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["wpa2_personal"]
+            "x-f5xc-conflicts-with": [
+              "wpa2_personal"
+            ]
           },
           "ssid": {
             "type": "string",
@@ -30399,7 +31769,9 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": ["none"]
+            "x-f5xc-conflicts-with": [
+              "none"
+            ]
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -30412,7 +31784,9 @@
         "x-f5xc-cli-domain": "certificates",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -30539,7 +31913,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -30569,7 +31945,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -30615,7 +31993,9 @@
         "x-f5xc-cli-domain": "certificates",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -30661,7 +32041,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -30732,7 +32114,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -30780,7 +32164,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -30798,7 +32184,12 @@
         "type": "string",
         "description": "WifiSecurity mechanism of authentication\n\n- UNKNOWN: UNKNOWN\n\nUnknown mechanisms is not available to GET\n- NONE: NONE\n\nNone represent no authentication used\n- WPA2_PERSONAL: WPA2_PERSONAL\n\nWPA2 Personal (PSK) passprase should be used for wifi setup\n- WPA2_ENTERPRISE: WPA2_ENTERPRISE\n\nWPA2 Enterprise (802.1X) EAP - TLS TTLS.",
         "title": "WifiSecurity",
-        "enum": ["UNKNOWN", "NONE", "WPA2_PERSONAL", "WPA2_ENTERPRISE"],
+        "enum": [
+          "UNKNOWN",
+          "NONE",
+          "WPA2_PERSONAL",
+          "WPA2_ENTERPRISE"
+        ],
         "default": "UNKNOWN",
         "x-displayname": "Wifi Security Mechanism.",
         "x-ves-proto-enum": "ves.io.schema.operate.wifi.WifiSecurity",
@@ -30814,7 +32205,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -30844,7 +32237,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -30901,7 +32296,9 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -31042,7 +32439,9 @@
         "x-f5xc-cli-domain": "certificates",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
@@ -31072,7 +32471,9 @@
         "x-f5xc-cli-domain": "certificates",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": ["system"],
+            "allowed": [
+              "system"
+            ],
             "enforced": false
           },
           "recommendation": {
