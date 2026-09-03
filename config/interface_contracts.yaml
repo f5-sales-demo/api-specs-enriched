@@ -1,14 +1,14 @@
 # Evidence-backed interface contracts for resources whose guest interface names
 # are not stable configuration identities.
-version: "5.0.0"
+version: "6.0.0"
 
 contracts:
   securemesh_site_v2:
     schema_patterns:
       - "^viewssecuremesh_site_v2(?:Create|Replace|Get)SpecType$"
     contract:
-      version: "5.0.0"
-      contract_id: "f5xc-ce-automation/v2"
+      version: "6.0.0"
+      contract_id: "f5xc-ce-automation/v3"
       resource: "securemesh_site_v2"
       api:
         collection_path: "/api/config/namespaces/{namespace}/securemesh_site_v2s"
@@ -18,7 +18,7 @@ contracts:
       providers:
         # F5 XC owns SMSv2 configuration and runtime observations. AWS owns
         # cloud resources and TGW Connect addressing. MAC is the only shared
-        # interface identity; guest device names are observational only.
+        # interface identity; guest device names are rejected as identity inputs.
         aws:
           availability: "schema_only"
           node_list_path: "aws.not_managed.node_list[]"
@@ -28,16 +28,28 @@ contracts:
             runtime_status: "unavailable"
             tgw_connect: "unavailable"
           interface_identity:
-            field: "ethernet_interface.mac"
-            guest_device: "observational_only"
-            known_macs: "non_empty_unique_per_node"
+            fields: ["node", "ethernet_interface.mac"]
+            node:
+              input_field: "node"
+              configuration_path: "spec.aws.not_managed.node_list[].hostname"
+              nullable: false
+              normalization: "trim"
+            mac:
+              input_field: "mac"
+              configuration_path: "spec.aws.not_managed.node_list[].interface_list[].ethernet_interface.mac"
+              nullable: false
+              normalization: "ieee802_lowercase_colon"
+            uniqueness_scope: "node"
+            guest_device: "rejected"
+            known_value_policy: "reject_null_incomplete_malformed_ambiguous_or_inconsistent"
+            unknown_value_policy: "defer"
           roles:
             - name: "slo"
               network_option: "site_local_network"
             - name: "sli"
               network_option: "site_local_inside_network"
           telemetry_intake:
-            schema_id: "f5xc-smsv2-aws-tgw-telemetry/v1"
+            schema_id: "f5xc-smsv2-aws-tgw-telemetry/v2"
             availability: "unavailable"
             required_facts:
               - "runtime"
@@ -61,27 +73,87 @@ contracts:
               path: "/api/config/namespaces/{namespace}/securemesh_site_v2s/{site}"
               operation_id: "ves.io.schema.views.securemesh_site_v2.API.Get"
               response_schema: "securemesh_site_v2GetResponse"
+              authority: "f5xc"
+              semantics: "configuration"
+              response_mappings:
+                nodes: "spec.aws.not_managed.node_list[]"
+                node: "hostname"
+                interfaces: "interface_list[]"
+                mac: "ethernet_interface.mac"
+                role: "network_option"
+                mtu: "mtu"
+                public_ip: "public_ip"
+              nullability:
+                public_ip: "nullable"
+                all_identity_fields: "non_null"
+              normalization:
+                node: "trim"
+                mac: "ieee802_lowercase_colon"
+                role: "slo_or_sli"
+              correlation: ["node", "normalized_mac"]
             health:
               method: "GET"
               path: "/api/operate/namespaces/system/sites/{site}/vpm/debug/global/health"
               operation_id: "ves.io.schema.operate.debug.CustomPublicAPI.HealthPublic"
               response_schema: "debugHealthResponse"
+              authority: "f5xc"
+              semantics: "observational_read_only"
+              response_mappings:
+                node: "hostname"
+                health: "state"
+              correlation: ["node"]
             bgp_peers:
               method: "GET"
               path: "/api/operate/namespaces/{namespace}/sites/{site}/ver/bgp_peers"
               operation_id: "ves.io.schema.operate.bgp.CustomPublicAPI.ShowBGPPeers"
               response_schema: "bgpBGPPeersResponse"
+              authority: "f5xc"
+              semantics: "observational_read_only"
+              response_mappings:
+                nodes: "ver[]"
+                node: "ver[].name"
+                peers: "ver[].peer[]"
+                interface_name: "ver[].peer[].interface_name"
+                peer_address: "ver[].peer[].peer_address"
+                state: "ver[].peer[].protocol_status"
+                received_prefix_count: "ver[].peer[].received_prefix_count"
+                advertised_prefix_count: "ver[].peer[].advertised_prefix_count"
+                state_changed_at: "ver[].peer[].up_down_timestamp"
+              correlation: ["node", "peer_address"]
             bgp_routes:
               method: "GET"
               path: "/api/operate/namespaces/{namespace}/sites/{site}/ver/bgp_routes"
               operation_id: "ves.io.schema.operate.bgp.CustomPublicAPI.ShowBGPRoutes"
               response_schema: "bgpBGPRoutesResponse"
+              authority: "f5xc"
+              semantics: "observational_read_only"
+              response_mappings:
+                nodes: "ver[]"
+                node: "ver[].name"
+                routing_instances: "ver[].ri_table[]"
+                route_tables: "ver[].ri_table[].rt_table[]"
+                imported_routes: "ver[].ri_table[].rt_table[].imported[]"
+                exported_routes: "ver[].ri_table[].rt_table[].exported[]"
+                route_prefixes:
+                  - "ver[].ri_table[].rt_table[].imported[].subnet"
+                  - "ver[].ri_table[].rt_table[].exported[].subnet"
+              correlation: ["node"]
             simplified_routes:
               method: "POST"
               path: "/api/operate/namespaces/{namespace}/sites/{site}/ver/simplified_routes"
               operation_id: "ves.io.schema.operate.route.CustomPublicAPI.ShowSimplifiedRoutes"
               request_schema: "routeSimplifiedRouteRequest"
               response_schema: "routeSimplifiedRouteResponse"
+              authority: "f5xc"
+              semantics: "observational_read_only"
+              request_mappings:
+                node_scope: "all_nodes"
+                roles: ["slo", "sli"]
+              response_mappings:
+                nodes: "ver_routes[]"
+                node: "ver_routes[].node"
+                routes: "ver_routes[].route[]"
+              correlation: ["node", "role"]
           authorities:
             f5xc:
               - "smsv2_configuration"
@@ -95,6 +167,7 @@ contracts:
               - "transit_gateway_connect"
               - "gre_endpoints"
               - "bgp_inside_cidrs"
+              - "autonomous_system_numbers"
           prohibited_legacy_apis: ["aws_vpc_site", "aws_tgw_site"]
           bootstrap:
             mode: "interactive_console_only"
@@ -102,7 +175,7 @@ contracts:
             headless_checkout: "unavailable"
           evidence:
             provenance: "f5-distributed-cloud-smsv2-system-namespace"
-            observed_at: "2026-09-02T00:00:00Z"
+            recorded_at: "2026-09-02T00:00:00Z"
             profiles: ["aws-shaped-ce-configuration"]
             receipts:
               - operations: ["replace"]

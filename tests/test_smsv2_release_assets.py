@@ -27,14 +27,14 @@ def _assets(tmp_path: Path) -> dict[str, bytes]:
     return build_release_assets(
         Path(__file__).parents[1] / "config" / "interface_contracts.yaml",
         tmp_path,
-        "v2.1.222",
+        "v6.0.0",
         _COMMIT,
     )
 
 
 def _release(**overrides: object) -> dict[str, object]:
     release: dict[str, object] = {
-        "tag_name": "v2.1.222",
+        "tag_name": "v6.0.0",
         "target_commitish": _COMMIT,
         "draft": False,
         "prerelease": False,
@@ -54,7 +54,7 @@ def test_builds_deterministic_sanitized_assets(tmp_path: Path) -> None:
     second = _assets(tmp_path / "two")
     assert first == second
     manifest = json.loads(first[MANIFEST_FILE])
-    assert manifest["release"] == {"tag": "v2.1.222", "commit": _COMMIT}
+    assert manifest["release"] == {"tag": "v6.0.0", "commit": _COMMIT}
     assert digest(first[CONTRACT_FILE]) == manifest["assets"][CONTRACT_FILE]
     assert digest(first[EVIDENCE_FILE]) == manifest["assets"][EVIDENCE_FILE]
     assert b"bearer" not in first[EVIDENCE_FILE].lower()
@@ -66,13 +66,29 @@ def test_validates_stable_receipted_release(tmp_path: Path) -> None:
     contract = validate_release_assets(
         assets[MANIFEST_FILE], assets, _release(), _receipt(manifest), now=_NOW
     )
-    assert contract["version"] == "5.0.0"
+    assert contract["version"] == "6.0.0"
     assert contract["providers"]["aws"]["availability"] == "schema_only"
     assert contract["providers"]["aws"]["capabilities"] == {
         "aws_ce_create": "unavailable",
         "runtime_status": "unavailable",
         "tgw_connect": "unavailable",
     }
+    assert contract["contract_id"] == "f5xc-ce-automation/v3"
+    aws = contract["providers"]["aws"]
+    assert aws["interface_identity"]["fields"] == ["node", "ethernet_interface.mac"]
+    assert aws["interface_identity"]["uniqueness_scope"] == "node"
+    assert aws["runtime"]["configuration"]["nullability"]["public_ip"] == "nullable"
+    assert aws["runtime"]["bgp_peers"]["response_mappings"]["state_changed_at"] == (
+        "ver[].peer[].up_down_timestamp"
+    )
+    route_mappings = aws["runtime"]["bgp_routes"]["response_mappings"]
+    assert route_mappings["route_tables"] == "ver[].ri_table[].rt_table[]"
+    assert route_mappings["route_prefixes"] == [
+        "ver[].ri_table[].rt_table[].imported[].subnet",
+        "ver[].ri_table[].rt_table[].exported[].subnet",
+    ]
+    assert aws["runtime"]["simplified_routes"]["semantics"] == "observational_read_only"
+    assert "observed_at" not in repr(contract)
 
 
 @pytest.mark.parametrize(
@@ -144,7 +160,7 @@ def test_rejects_release_race_with_changed_tag(tmp_path: Path) -> None:
         validate_release_assets(
             assets[MANIFEST_FILE],
             assets,
-            _release(tag_name="v2.1.223"),
+            _release(tag_name="v6.0.1"),
             _receipt(manifest),
             now=_NOW,
         )
@@ -193,7 +209,7 @@ def _mutate_contract_asset(
         ),
     ],
 )
-def test_rejects_legacy_or_inconsistent_v2_contract_assets(
+def test_rejects_legacy_or_inconsistent_v3_contract_assets(
     tmp_path: Path, mutation: object, message: str
 ) -> None:
     assets = _assets(tmp_path)
