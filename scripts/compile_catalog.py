@@ -10,6 +10,7 @@ Usage:
 """
 
 import argparse
+import hashlib
 import json
 import os
 import re
@@ -35,6 +36,9 @@ F5XC_AUTH = {
 F5XC_DEFAULTS = {
     "namespace": {"source": "F5XC_NAMESPACE"},
 }
+
+_HTTP_METHODS = frozenset({"get", "post", "put", "patch", "delete", "options"})
+_CANONICAL_CRUD_RPCS = frozenset({"Create", "List", "Get", "Replace", "Delete"})
 
 
 def merge_spec_files(dir_path: Path) -> dict[str, Any]:
@@ -245,18 +249,48 @@ def extract_response_schema(
 
 
 def group_paths_by_resource(paths: dict[str, Any]) -> dict[str, list[tuple[str, str, dict]]]:
-    """Group (path, method, operation) tuples by category name."""
+    """Group operations without separating one canonical API's CRUD surface.
+
+    Canonical ``API.Create/List/Get/Replace/Delete`` methods are grouped by API
+    identity and their resource path.  Custom/action operations intentionally
+    remain path-grouped.
+    """
     groups: dict[str, list[tuple[str, str, dict]]] = {}
     for path, path_item in sorted(paths.items()):
         if not isinstance(path_item, dict):
             continue
-        category = extract_category_name(path)
-        if category not in groups:
-            groups[category] = []
         for method, operation in path_item.items():
-            if method.lower() in ("get", "post", "put", "patch", "delete", "options"):
-                groups[category].append((path, method.upper(), operation or {}))
+            if method.lower() not in _HTTP_METHODS or not isinstance(operation, dict):
+                continue
+            parsed = extract_api_identity(operation.get("operationId") or "")
+            if parsed and parsed[1] == "API" and parsed[2] in _CANONICAL_CRUD_RPCS:
+                category = _canonical_resource_category(path)
+            else:
+                category = extract_category_name(path)
+            groups.setdefault(category, []).append((path, method.upper(), operation))
     return groups
+
+
+def _canonical_resource_category(path: str) -> str:
+    """Derive the canonical collection category across namespace spellings."""
+    segments = [segment for segment in path.strip("/").split("/") if segment]
+    try:
+        namespace_index = segments.index("namespaces")
+    except ValueError:
+        return extract_category_name(path)
+    prefix = [
+        segment
+        for segment in segments[2:namespace_index]
+        if segment not in {"config", "web", "data", "ml"}
+    ]
+    tail_index = namespace_index + 1
+    if tail_index < len(segments) and (
+        segments[tail_index] == "system" or segments[tail_index].startswith("{")
+    ):
+        tail_index += 1
+    if tail_index >= len(segments):
+        return extract_category_name(path)
+    return "-".join([*prefix, segments[tail_index]]).replace("_", "-")
 
 
 def normalize_path_placeholders(path: str) -> str:
@@ -384,6 +418,89 @@ def _walk_schema(
         path = f"{prefix}[]" if prefix else "[]"
         nodes.extend(_walk_schema(items, components, prefix=path, active_refs=refs))
     return nodes
+
+
+def validate_payload_against_schema(
+    payload: Any,
+    schema: dict[str, Any],
+    components: dict[str, Any] | None,
+    *,
+    path: str = "$",
+    active_refs: frozenset[str] = frozenset(),
+) -> list[str]:
+    """Validate the structural contract needed for executable minimum examples."""
+    resolved, refs = _expand_schema(schema, components, active_refs)
+    errors: list[str] = []
+    variants = resolved.get("oneOf")
+    if isinstance(variants, list) and variants:
+        matches = [
+            member
+            for member in variants
+            if isinstance(member, dict)
+            and not validate_payload_against_schema(
+                payload, member, components, path=path, active_refs=refs
+            )
+        ]
+        if len(matches) != 1:
+            return [f"{path} must match exactly one oneOf member (matched {len(matches)})"]
+        resolved, refs = _expand_schema(matches[0], components, refs)
+
+    schema_type = resolved.get("type")
+    if schema_type is None and isinstance(resolved.get("properties"), dict):
+        schema_type = "object"
+    type_matches = {
+        "object": isinstance(payload, dict),
+        "array": isinstance(payload, list),
+        "string": isinstance(payload, str),
+        "integer": isinstance(payload, int) and not isinstance(payload, bool),
+        "number": isinstance(payload, (int, float)) and not isinstance(payload, bool),
+        "boolean": isinstance(payload, bool),
+    }
+    if schema_type in type_matches and not type_matches[schema_type]:
+        return [f"{path} must be {schema_type}"]
+
+    if isinstance(payload, dict):
+        properties = resolved.get("properties") or {}
+        if isinstance(properties, dict):
+            unknown = sorted(set(payload) - set(properties))
+            errors.extend(
+                f"{path}.{name} is not declared by the request schema" for name in unknown
+            )
+            required = set(resolved.get("required") or [])
+            for name, child in properties.items():
+                if isinstance(child, dict):
+                    required_for = child.get("x-f5xc-required-for") or {}
+                    if child.get("x-ves-required") == "true" or (
+                        isinstance(required_for, dict)
+                        and (
+                            required_for.get("minimum_config") is True
+                            or required_for.get("create") is True
+                        )
+                    ):
+                        required.add(name)
+            errors.extend(f"{path}.{name} is required" for name in sorted(required - set(payload)))
+            for name in sorted(set(payload) & set(properties)):
+                child = properties[name]
+                if isinstance(child, dict):
+                    errors.extend(
+                        validate_payload_against_schema(
+                            payload[name],
+                            child,
+                            components,
+                            path=f"{path}.{name}",
+                            active_refs=refs,
+                        )
+                    )
+    elif isinstance(payload, list):
+        items = resolved.get("items")
+        if isinstance(items, dict):
+            for index, item in enumerate(payload):
+                errors.extend(
+                    validate_payload_against_schema(
+                        item, items, components, path=f"{path}[{index}]", active_refs=refs
+                    )
+                )
+    return errors
 
 
 def _extract_field_metadata(
@@ -517,6 +634,7 @@ def _build_operation(
     normalized_path = normalize_path_placeholders(path)
     op: dict[str, Any] = {
         "name": op_name,
+        "operationId": operation.get("operationId") or f"{method.lower()}:{normalized_path}",
         "description": (
             operation.get("summary") or operation.get("description") or f"{method} {path}"
         ),
@@ -541,13 +659,22 @@ def _build_operation(
         if min_config and min_config.get("example_json"):
             try:
                 parsed_json = json.loads(min_config["example_json"])
+                errors = validate_payload_against_schema(parsed_json, body_schema, components)
+                if errors:
+                    operation_id = operation.get("operationId") or f"{method.upper()} {path}"
+                    raise ValueError(
+                        f"{operation_id} has an invalid minimum payload: {'; '.join(errors)}"
+                    )
                 op["minimumPayload"] = {
                     "json": parsed_json,
                     "requiredFields": min_config.get("required_fields", []),
                     "description": min_config.get("description", ""),
                 }
-            except (json.JSONDecodeError, TypeError):
-                pass  # Skip if example_json is invalid
+            except (json.JSONDecodeError, TypeError) as exc:
+                operation_id = operation.get("operationId") or f"{method.upper()} {path}"
+                raise ValueError(f"{operation_id} has invalid minimum payload JSON") from exc
+        elif min_config and isinstance(min_config.get("diagnostic"), dict):
+            op["minimumPayloadDiagnostic"] = min_config["diagnostic"]
 
     # Extract fieldMetadata from enriched properties (POST/PUT/PATCH only)
     if body_schema and method.upper() in {"POST", "PUT", "PATCH"}:
@@ -595,21 +722,33 @@ def _build_category_operations(
     for path, method, operation in sorted(entries, key=lambda e: (e[0], e[1])):
         op_name = generate_operation_name(method, path)
         if op_name in seen_op_names:
-            continue
+            identity = (
+                operation.get("operationId") or f"{method}:{normalize_path_placeholders(path)}"
+            )
+            suffix = re.sub(r"[^a-z0-9]+", "_", identity.lower()).strip("_")
+            candidate = f"{op_name}_{suffix}"
+            if candidate in seen_op_names:
+                digest = hashlib.sha256(identity.encode()).hexdigest()[:8]
+                candidate = f"{candidate}_{digest}"
+            op_name = candidate
         seen_op_names.add(op_name)
         operations.append(_build_operation(path, method, operation, op_name, components))
     return operations
 
 
 def _deduplicate_global_op_names(categories: list[dict[str, Any]]) -> None:
-    """Suffix duplicate operation names across categories with the category name."""
-    global_seen: dict[str, str] = {}
+    """Deterministically suffix duplicate names without dropping operations."""
+    global_seen: set[str] = set()
     for cat in categories:
         for op in cat["operations"]:
-            if op["name"] in global_seen:
-                op["name"] = f"{op['name']}_{cat['name'].replace('-', '_')}"
-            else:
-                global_seen[op["name"]] = cat["name"]
+            candidate = op["name"]
+            if candidate in global_seen:
+                candidate = f"{candidate}_{cat['name'].replace('-', '_')}"
+            if candidate in global_seen:
+                digest = hashlib.sha256(op["operationId"].encode()).hexdigest()[:8]
+                candidate = f"{candidate}_{digest}"
+            op["name"] = candidate
+            global_seen.add(candidate)
 
 
 DEFAULT_EXCLUSIONS_CONFIG = Path("config/api_exclusions.yaml")
@@ -945,7 +1084,7 @@ def compile_catalog(openapi: dict[str, Any]) -> dict[str, Any]:
     components = openapi.get("components")
     groups = group_paths_by_resource(paths)
 
-    categories = []
+    categories: list[dict[str, Any]] = []
     for category_name in sorted(groups.keys()):
         operations = _build_category_operations(groups[category_name], components)
         if operations:
@@ -958,6 +1097,31 @@ def compile_catalog(openapi: dict[str, Any]) -> dict[str, Any]:
             )
 
     _deduplicate_global_op_names(categories)
+
+    authoritative = sorted(
+        (
+            operation.get("operationId") or f"{method.lower()}:{normalize_path_placeholders(path)}",
+            method.upper(),
+            normalize_path_placeholders(path),
+        )
+        for path, path_item in paths.items()
+        if isinstance(path_item, dict)
+        for method, operation in path_item.items()
+        if method.lower() in _HTTP_METHODS and isinstance(operation, dict)
+    )
+    browsable = sorted(
+        (str(operation["operationId"]), str(operation["method"]), str(operation["path"]))
+        for category in categories
+        for operation in category["operations"]
+    )
+    if browsable != authoritative:
+        missing = sorted(set(authoritative) - set(browsable))[:5]
+        extra = sorted(set(browsable) - set(authoritative))[:5]
+        raise ValueError(
+            "browsable catalog inventory differs from authoritative OpenAPI inventory: "
+            f"authoritative={len(authoritative)}, browsable={len(browsable)}, "
+            f"missing={missing}, extra={extra}"
+        )
 
     env_version = os.environ.get("CATALOG_VERSION", "")
     info_version = openapi.get("info", {}).get("version", "")

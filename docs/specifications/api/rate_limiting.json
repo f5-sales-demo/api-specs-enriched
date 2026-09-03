@@ -72,11 +72,7 @@
     },
     "x-f5xc-namespace-profile": {
       "constraint": {
-        "allowed": [
-          "custom",
-          "default",
-          "shared"
-        ],
+        "allowed": ["custom", "default", "shared"],
         "enforced": true
       },
       "recommendation": {
@@ -102,19 +98,12 @@
         "console_url": {
           "default": "console.ves.volterra.io",
           "description": "Console URL base (e.g., console.ves.volterra.io for production, staging.volterra.us for staging)",
-          "enum": [
-            "console.ves.volterra.io",
-            "staging.volterra.us"
-          ]
+          "enum": ["console.ves.volterra.io", "staging.volterra.us"]
         },
         "environment": {
           "default": "production",
           "description": "Environment designation (production, staging, development)",
-          "enum": [
-            "production",
-            "staging",
-            "development"
-          ]
+          "enum": ["production", "staging", "development"]
         },
         "domain_prefix": {
           "default": "api",
@@ -275,31 +264,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/rate_limiting/"
         },
         "x-ves-proto-rpc": "ves.io.schema.policer.API.Create",
-        "tags": [
-          "config"
-        ],
+        "tags": ["config"],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": [
-            "metadata.name",
-            "metadata.namespace",
-            "path.metadata.namespace"
-          ],
+          "required_fields": ["metadata.name", "metadata.namespace", "path.metadata.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": [
-              "Policer resource created",
-              "Resource assigned unique identifier"
-            ]
+            "prerequisites": ["Active namespace"],
+            "postconditions": ["Policer resource created", "Resource assigned unique identifier"]
           },
           "side_effects": {
-            "creates": [
-              "policer"
-            ]
+            "creates": ["policer"]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -340,16 +316,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": [
-          "metadata.name",
-          "metadata.namespace",
-          "path.metadata.namespace"
-        ],
+        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.metadata.namespace"],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": [
-            "policer"
-          ]
+          "creates": ["policer"]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -507,29 +477,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/rate_limiting/"
         },
         "x-ves-proto-rpc": "ves.io.schema.policer.API.Replace",
-        "tags": [
-          "config"
-        ],
+        "tags": ["config"],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource replacement operation",
-          "required_fields": [
-            "path.metadata.name",
-            "path.metadata.namespace"
-          ],
+          "required_fields": ["path.metadata.name", "path.metadata.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": [
-              "Resource updated with new values"
-            ]
+            "prerequisites": ["Active namespace"],
+            "postconditions": ["Resource updated with new values"]
           },
           "side_effects": {
-            "modifies": [
-              "policer"
-            ]
+            "modifies": ["policer"]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -570,15 +529,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": [
-          "path.metadata.name",
-          "path.metadata.namespace"
-        ],
+        "x-f5xc-required-fields": ["path.metadata.name", "path.metadata.namespace"],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "modifies": [
-            "policer"
-          ]
+          "modifies": ["policer"]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 800,
@@ -754,20 +708,14 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/rate_limiting/"
         },
         "x-ves-proto-rpc": "ves.io.schema.policer.API.List",
-        "tags": [
-          "config"
-        ],
+        "tags": ["config"],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": [
-            "path.namespace"
-          ],
+          "required_fields": ["path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
+            "prerequisites": ["Active namespace"],
             "postconditions": []
           },
           "side_effects": {},
@@ -810,9 +758,7 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": [
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["path.namespace"],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -980,21 +926,14 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/rate_limiting/"
         },
         "x-ves-proto-rpc": "ves.io.schema.policer.API.Get",
-        "tags": [
-          "config"
-        ],
+        "tags": ["config"],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": [
-            "path.name",
-            "path.namespace"
-          ],
+          "required_fields": ["path.name", "path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
+            "prerequisites": ["Active namespace"],
             "postconditions": []
           },
           "side_effects": {},
@@ -1037,10 +976,7 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": [
-          "path.name",
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["path.name", "path.namespace"],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -1191,31 +1127,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/rate_limiting/"
         },
         "x-ves-proto-rpc": "ves.io.schema.policer.API.Delete",
-        "tags": [
-          "config"
-        ],
+        "tags": ["config"],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource deletion operation",
-          "required_fields": [
-            "path.name",
-            "path.namespace"
-          ],
+          "required_fields": ["path.name", "path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": [
-              "Resource removed from system",
-              "Associated resources may be affected"
-            ]
+            "prerequisites": ["Active namespace"],
+            "postconditions": ["Resource removed from system", "Associated resources may be affected"]
           },
           "side_effects": {
-            "deletes": [
-              "policer",
-              "contained_resources"
-            ]
+            "deletes": ["policer", "contained_resources"]
           },
           "danger_level": "high",
           "confirmation_required": true,
@@ -1256,17 +1179,11 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": [
-          "path.name",
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["path.name", "path.namespace"],
         "x-f5xc-danger-level": "high",
         "x-f5xc-confirmation-required": true,
         "x-f5xc-side-effects": {
-          "deletes": [
-            "policer",
-            "contained_resources"
-          ]
+          "deletes": ["policer", "contained_resources"]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 500,
@@ -1413,31 +1330,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/rate_limiting/"
         },
         "x-ves-proto-rpc": "ves.io.schema.protocol_policer.API.Create",
-        "tags": [
-          "config"
-        ],
+        "tags": ["config"],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": [
-            "metadata.name",
-            "metadata.namespace",
-            "path.metadata.namespace"
-          ],
+          "required_fields": ["metadata.name", "metadata.namespace", "path.metadata.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": [
-              "Protocol-policer resource created",
-              "Resource assigned unique identifier"
-            ]
+            "prerequisites": ["Active namespace"],
+            "postconditions": ["Protocol-policer resource created", "Resource assigned unique identifier"]
           },
           "side_effects": {
-            "creates": [
-              "protocol-policer"
-            ]
+            "creates": ["protocol-policer"]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -1478,16 +1382,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": [
-          "metadata.name",
-          "metadata.namespace",
-          "path.metadata.namespace"
-        ],
+        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.metadata.namespace"],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": [
-            "protocol-policer"
-          ]
+          "creates": ["protocol-policer"]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -1645,29 +1543,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/rate_limiting/"
         },
         "x-ves-proto-rpc": "ves.io.schema.protocol_policer.API.Replace",
-        "tags": [
-          "config"
-        ],
+        "tags": ["config"],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource replacement operation",
-          "required_fields": [
-            "path.metadata.name",
-            "path.metadata.namespace"
-          ],
+          "required_fields": ["path.metadata.name", "path.metadata.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": [
-              "Resource updated with new values"
-            ]
+            "prerequisites": ["Active namespace"],
+            "postconditions": ["Resource updated with new values"]
           },
           "side_effects": {
-            "modifies": [
-              "protocol-policer"
-            ]
+            "modifies": ["protocol-policer"]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -1708,15 +1595,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": [
-          "path.metadata.name",
-          "path.metadata.namespace"
-        ],
+        "x-f5xc-required-fields": ["path.metadata.name", "path.metadata.namespace"],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "modifies": [
-            "protocol-policer"
-          ]
+          "modifies": ["protocol-policer"]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 800,
@@ -1892,20 +1774,14 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/rate_limiting/"
         },
         "x-ves-proto-rpc": "ves.io.schema.protocol_policer.API.List",
-        "tags": [
-          "config"
-        ],
+        "tags": ["config"],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": [
-            "path.namespace"
-          ],
+          "required_fields": ["path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
+            "prerequisites": ["Active namespace"],
             "postconditions": []
           },
           "side_effects": {},
@@ -1948,9 +1824,7 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": [
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["path.namespace"],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -2118,21 +1992,14 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/rate_limiting/"
         },
         "x-ves-proto-rpc": "ves.io.schema.protocol_policer.API.Get",
-        "tags": [
-          "config"
-        ],
+        "tags": ["config"],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource retrieval operation",
-          "required_fields": [
-            "path.name",
-            "path.namespace"
-          ],
+          "required_fields": ["path.name", "path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
+            "prerequisites": ["Active namespace"],
             "postconditions": []
           },
           "side_effects": {},
@@ -2175,10 +2042,7 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": [
-          "path.name",
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["path.name", "path.namespace"],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -2329,31 +2193,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/rate_limiting/"
         },
         "x-ves-proto-rpc": "ves.io.schema.protocol_policer.API.Delete",
-        "tags": [
-          "config"
-        ],
+        "tags": ["config"],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource deletion operation",
-          "required_fields": [
-            "path.name",
-            "path.namespace"
-          ],
+          "required_fields": ["path.name", "path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": [
-              "Resource removed from system",
-              "Associated resources may be affected"
-            ]
+            "prerequisites": ["Active namespace"],
+            "postconditions": ["Resource removed from system", "Associated resources may be affected"]
           },
           "side_effects": {
-            "deletes": [
-              "protocol-policer",
-              "contained_resources"
-            ]
+            "deletes": ["protocol-policer", "contained_resources"]
           },
           "danger_level": "high",
           "confirmation_required": true,
@@ -2394,17 +2245,11 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": [
-          "path.name",
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["path.name", "path.namespace"],
         "x-f5xc-danger-level": "high",
         "x-f5xc-confirmation-required": true,
         "x-f5xc-side-effects": {
-          "deletes": [
-            "protocol-policer",
-            "contained_resources"
-          ]
+          "deletes": ["protocol-policer", "contained_resources"]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 500,
@@ -2551,31 +2396,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/rate_limiting/"
         },
         "x-ves-proto-rpc": "ves.io.schema.rate_limiter.API.Create",
-        "tags": [
-          "config"
-        ],
+        "tags": ["config"],
         "x-f5xc-operation-metadata": {
           "purpose": "Request rate limiting for traffic control",
-          "required_fields": [
-            "metadata.name",
-            "metadata.namespace",
-            "path.metadata.namespace"
-          ],
+          "required_fields": ["metadata.name", "metadata.namespace", "path.metadata.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": [
-              "Rate-limiter resource created",
-              "Resource assigned unique identifier"
-            ]
+            "prerequisites": ["Active namespace"],
+            "postconditions": ["Rate-limiter resource created", "Resource assigned unique identifier"]
           },
           "side_effects": {
-            "creates": [
-              "rate-limiter"
-            ]
+            "creates": ["rate-limiter"]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -2616,16 +2448,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": [
-          "metadata.name",
-          "metadata.namespace",
-          "path.metadata.namespace"
-        ],
+        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.metadata.namespace"],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": [
-            "rate-limiter"
-          ]
+          "creates": ["rate-limiter"]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -2783,29 +2609,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/rate_limiting/"
         },
         "x-ves-proto-rpc": "ves.io.schema.rate_limiter.API.Replace",
-        "tags": [
-          "config"
-        ],
+        "tags": ["config"],
         "x-f5xc-operation-metadata": {
           "purpose": "Request rate limiting for traffic control",
-          "required_fields": [
-            "path.metadata.name",
-            "path.metadata.namespace"
-          ],
+          "required_fields": ["path.metadata.name", "path.metadata.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": [
-              "Resource updated with new values"
-            ]
+            "prerequisites": ["Active namespace"],
+            "postconditions": ["Resource updated with new values"]
           },
           "side_effects": {
-            "modifies": [
-              "rate-limiter"
-            ]
+            "modifies": ["rate-limiter"]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -2846,15 +2661,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": [
-          "path.metadata.name",
-          "path.metadata.namespace"
-        ],
+        "x-f5xc-required-fields": ["path.metadata.name", "path.metadata.namespace"],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "modifies": [
-            "rate-limiter"
-          ]
+          "modifies": ["rate-limiter"]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 800,
@@ -3030,20 +2840,14 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/rate_limiting/"
         },
         "x-ves-proto-rpc": "ves.io.schema.rate_limiter.API.List",
-        "tags": [
-          "config"
-        ],
+        "tags": ["config"],
         "x-f5xc-operation-metadata": {
           "purpose": "Request rate limiting for traffic control",
-          "required_fields": [
-            "path.namespace"
-          ],
+          "required_fields": ["path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
+            "prerequisites": ["Active namespace"],
             "postconditions": []
           },
           "side_effects": {},
@@ -3086,9 +2890,7 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": [
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["path.namespace"],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -3256,21 +3058,14 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/rate_limiting/"
         },
         "x-ves-proto-rpc": "ves.io.schema.rate_limiter.API.Get",
-        "tags": [
-          "config"
-        ],
+        "tags": ["config"],
         "x-f5xc-operation-metadata": {
           "purpose": "Request rate limiting for traffic control",
-          "required_fields": [
-            "path.name",
-            "path.namespace"
-          ],
+          "required_fields": ["path.name", "path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
+            "prerequisites": ["Active namespace"],
             "postconditions": []
           },
           "side_effects": {},
@@ -3313,10 +3108,7 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": [
-          "path.name",
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["path.name", "path.namespace"],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -3467,31 +3259,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/rate_limiting/"
         },
         "x-ves-proto-rpc": "ves.io.schema.rate_limiter.API.Delete",
-        "tags": [
-          "config"
-        ],
+        "tags": ["config"],
         "x-f5xc-operation-metadata": {
           "purpose": "Request rate limiting for traffic control",
-          "required_fields": [
-            "path.name",
-            "path.namespace"
-          ],
+          "required_fields": ["path.name", "path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": [
-              "Resource removed from system",
-              "Associated resources may be affected"
-            ]
+            "prerequisites": ["Active namespace"],
+            "postconditions": ["Resource removed from system", "Associated resources may be affected"]
           },
           "side_effects": {
-            "deletes": [
-              "rate-limiter",
-              "contained_resources"
-            ]
+            "deletes": ["rate-limiter", "contained_resources"]
           },
           "danger_level": "high",
           "confirmation_required": true,
@@ -3532,17 +3311,11 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": [
-          "path.name",
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["path.name", "path.namespace"],
         "x-f5xc-danger-level": "high",
         "x-f5xc-confirmation-required": true,
         "x-f5xc-side-effects": {
-          "deletes": [
-            "rate-limiter",
-            "contained_resources"
-          ]
+          "deletes": ["rate-limiter", "contained_resources"]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 500,
@@ -3624,11 +3397,7 @@
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -3693,17 +3462,13 @@
           "description": "Minimum configuration for policerCreateResponse",
           "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for policerCreateResponse\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -3833,32 +3598,19 @@
         },
         "x-f5xc-description-short": "Create a new policer with traffic rate limits.",
         "x-f5xc-minimum-configuration": {
-          "description": "Rate limiter policy for controlling request rates to protected endpoints",
-          "required_fields": [
-            "metadata.name",
-            "metadata.namespace",
-            "spec.burst_size",
-            "spec.committed_information_rate"
-          ],
+          "description": "Minimum configuration for policerCreateSpecType",
+          "required_fields": ["burst_size", "committed_information_rate"],
           "mutually_exclusive_groups": [],
-          "example_yaml": "metadata:\n  name: example-rl\n  namespace: default\nspec:\n  burst_size: 1\n  committed_information_rate: 1\n",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example-rl\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"burst_size\": 1,\n    \"committed_information_rate\": 1\n  }\n}\n"
+          "example_json": "{\n  \"burst_size\": 1,\n  \"committed_information_rate\": 1\n}",
+          "example_yaml": "burst_size: 1\ncommitted_information_rate: 1"
         },
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-recommended-oneof-variant": {
           "server_choice": "any_server"
         },
-        "x-f5xc-field-examples": {
-          "spec.burst_size": 1,
-          "spec.committed_information_rate": 1
-        },
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -3987,17 +3739,13 @@
           "description": "Minimum configuration for policerDeleteRequest",
           "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for policerDeleteRequest\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -4161,9 +3909,7 @@
             "type": "string",
             "x-f5xc-concurrency-token": {
               "server_assigned": true,
-              "echo_on_operations": [
-                "replace"
-              ]
+              "echo_on_operations": ["replace"]
             }
           }
         },
@@ -4171,17 +3917,13 @@
           "description": "Minimum configuration for policerGetResponse",
           "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for policerGetResponse\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -4310,16 +4052,11 @@
           }
         },
         "x-f5xc-minimum-configuration": {
-          "description": "Rate limiter policy for controlling request rates to protected endpoints",
-          "required_fields": [
-            "metadata.name",
-            "metadata.namespace",
-            "spec.burst_size",
-            "spec.committed_information_rate"
-          ],
+          "description": "Minimum configuration for policerGetSpecType",
+          "required_fields": ["burst_size", "committed_information_rate"],
           "mutually_exclusive_groups": [],
-          "example_yaml": "metadata:\n  name: example-rl\n  namespace: default\nspec:\n  burst_size: 1\n  committed_information_rate: 1\n",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example-rl\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"burst_size\": 1,\n    \"committed_information_rate\": 1\n  }\n}\n"
+          "example_json": "{\n  \"burst_size\": 1,\n  \"committed_information_rate\": 1\n}",
+          "example_yaml": "burst_size: 1\ncommitted_information_rate: 1"
         },
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-recommended-oneof-variant": {
@@ -4327,11 +4064,7 @@
         },
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -4402,17 +4135,13 @@
           "description": "Minimum configuration for policerListResponse",
           "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for policerListResponse\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -4739,17 +4468,13 @@
           "description": "Minimum configuration for policerListResponseItem",
           "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for policerListResponseItem\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -4767,10 +4492,7 @@
         "type": "string",
         "description": "- POLICER_MODE_NOT_SHARED: Not Shared\n\nA separate policer instance is created for each reference to the policer\n- POLICER_MODE_SHARED: Shared\n\nA common policer instance is used for for all references to the policer.",
         "title": "PolicerMode",
-        "enum": [
-          "POLICER_MODE_NOT_SHARED",
-          "POLICER_MODE_SHARED"
-        ],
+        "enum": ["POLICER_MODE_NOT_SHARED", "POLICER_MODE_SHARED"],
         "default": "POLICER_MODE_NOT_SHARED",
         "x-displayname": "Policer Mode.",
         "x-ves-proto-enum": "ves.io.schema.policer.PolicerMode",
@@ -4780,17 +4502,13 @@
           "description": "Minimum configuration for policerPolicerMode",
           "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for policerPolicerMode\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+          "example_json": "\"POLICER_MODE_NOT_SHARED\"",
+          "example_yaml": "POLICER_MODE_NOT_SHARED\n..."
         },
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -4808,9 +4526,7 @@
         "type": "string",
         "description": "Specifies the type of Policer\n\nBasic Single-Rate Two-Color Policer.",
         "title": "PolicerType",
-        "enum": [
-          "POLICER_SINGLE_RATE_TWO_COLOR"
-        ],
+        "enum": ["POLICER_SINGLE_RATE_TWO_COLOR"],
         "default": "POLICER_SINGLE_RATE_TWO_COLOR",
         "x-displayname": "Policer Type.",
         "x-ves-proto-enum": "ves.io.schema.policer.PolicerType",
@@ -4819,17 +4535,13 @@
           "description": "Minimum configuration for policerPolicerType",
           "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for policerPolicerType\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+          "example_json": "\"POLICER_SINGLE_RATE_TWO_COLOR\"",
+          "example_yaml": "POLICER_SINGLE_RATE_TWO_COLOR\n..."
         },
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -4858,8 +4570,8 @@
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
             "x-f5xc-required-for": {
-              "minimum_config": true,
-              "create": true,
+              "minimum_config": false,
+              "create": false,
               "update": false,
               "read": false
             }
@@ -4872,8 +4584,8 @@
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
             "x-f5xc-required-for": {
-              "minimum_config": true,
-              "create": true,
+              "minimum_config": false,
+              "create": false,
               "update": false,
               "read": false
             }
@@ -4882,32 +4594,21 @@
             "type": "string",
             "x-f5xc-concurrency-token": {
               "server_assigned": true,
-              "echo_on_operations": [
-                "replace"
-              ]
+              "echo_on_operations": ["replace"]
             }
           }
         },
         "x-f5xc-minimum-configuration": {
           "description": "Rate limiter policy for controlling request rates to protected endpoints",
-          "required_fields": [
-            "metadata.name",
-            "metadata.namespace",
-            "spec.burst_size",
-            "spec.committed_information_rate"
-          ],
+          "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "metadata:\n  name: example-rl\n  namespace: default\nspec:\n  burst_size: 1\n  committed_information_rate: 1\n",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example-rl\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"burst_size\": 1,\n    \"committed_information_rate\": 1\n  }\n}\n"
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -4928,17 +4629,13 @@
           "description": "Minimum configuration for policerReplaceResponse",
           "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for policerReplaceResponse\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -5068,16 +4765,11 @@
         },
         "x-f5xc-description-short": "Replace a given policer with changed traffic rate limits.",
         "x-f5xc-minimum-configuration": {
-          "description": "Rate limiter policy for controlling request rates to protected endpoints",
-          "required_fields": [
-            "metadata.name",
-            "metadata.namespace",
-            "spec.burst_size",
-            "spec.committed_information_rate"
-          ],
+          "description": "Minimum configuration for policerReplaceSpecType",
+          "required_fields": ["burst_size", "committed_information_rate"],
           "mutually_exclusive_groups": [],
-          "example_yaml": "metadata:\n  name: example-rl\n  namespace: default\nspec:\n  burst_size: 1\n  committed_information_rate: 1\n",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example-rl\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"burst_size\": 1,\n    \"committed_information_rate\": 1\n  }\n}\n"
+          "example_json": "{\n  \"burst_size\": 1,\n  \"committed_information_rate\": 1\n}",
+          "example_yaml": "burst_size: 1\ncommitted_information_rate: 1"
         },
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-recommended-oneof-variant": {
@@ -5085,11 +4777,7 @@
         },
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -5162,17 +4850,13 @@
           "description": "Minimum configuration for policerStatusObject",
           "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for policerStatusObject\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -5246,17 +4930,13 @@
           "description": "Minimum configuration for protobufAny",
           "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for protobufAny\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -5406,15 +5086,7 @@
             "x-f5xc-description-short": "Status of the condition \"Success\" Validation has succeeded.",
             "x-f5xc-description-medium": "Status of the condition \"Success\" Validation has succeeded. Requested operation was successful. \"Failed\" Validation has failed. \"Incomplete\" Validation of configuration has failed due to missing configuration. \"Installed\" Validation has passed and configuration has been installed in data path or...",
             "maxLength": 1024,
-            "enum": [
-              "Success",
-              "Failed",
-              "Incomplete",
-              "Installed",
-              "Down",
-              "Disabled",
-              "NotApplicable"
-            ],
+            "enum": ["Success", "Failed", "Incomplete", "Installed", "Down", "Disabled", "NotApplicable"],
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "general",
@@ -5451,10 +5123,7 @@
             "x-f5xc-description-short": "Type of the condition \"Validation\" represents validation user given configuration object \"Operational\" represents operational status of a given...",
             "x-f5xc-description-medium": "Type of the condition \"Validation\" represents validation user given configuration object \"Operational\" represents operational status of a given configuration object.",
             "maxLength": 1024,
-            "enum": [
-              "Validation",
-              "Operational"
-            ],
+            "enum": ["Validation", "Operational"],
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "general",
@@ -5479,17 +5148,13 @@
           "description": "Minimum configuration for schemaConditionType",
           "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for schemaConditionType\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -5527,17 +5192,13 @@
           "description": "Minimum configuration for schemaErrorCode",
           "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for schemaErrorCode\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+          "example_json": "\"EOK\"",
+          "example_yaml": "EOK\n..."
         },
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -5615,17 +5276,13 @@
           "description": "Minimum configuration for schemaErrorType",
           "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for schemaErrorType\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -5696,17 +5353,13 @@
           "description": "Minimum configuration for schemaInitializerType",
           "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for schemaInitializerType\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -5763,17 +5416,13 @@
           "description": "Minimum configuration for schemaInitializersType",
           "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for schemaInitializersType\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -5997,21 +5646,15 @@
         "x-f5xc-description-short": "ObjectCreateMetaType is metadata that can be specified in Create request of an object.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for schemaObjectCreateMetaType",
-          "required_fields": [
-            "name"
-          ],
+          "required_fields": ["name"],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for schemaObjectCreateMetaType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  name: value",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"name\": \"value\"\n  }\n}"
+          "example_json": "{\n  \"name\": \"example-corp-web\"\n}",
+          "example_yaml": "name: example-corp-web"
         },
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -6238,21 +5881,15 @@
         "x-f5xc-description-short": "ObjectGetMetaType is metadata that can be specified in GET/Create response of an object.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for schemaObjectGetMetaType",
-          "required_fields": [
-            "name"
-          ],
+          "required_fields": ["name"],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for schemaObjectGetMetaType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  name: value",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"name\": \"value\"\n  }\n}"
+          "example_json": "{\n  \"name\": \"example-corp-web\"\n}",
+          "example_yaml": "name: example-corp-web"
         },
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -6452,17 +6089,13 @@
           "description": "Minimum configuration for schemaObjectRefType",
           "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for schemaObjectRefType\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -6687,19 +6320,15 @@
         "x-f5xc-description-short": "ObjectReplaceMetaType is metadata that can be specified in Replace request of an object.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for schemaObjectReplaceMetaType",
-          "required_fields": [],
+          "required_fields": ["name"],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for schemaObjectReplaceMetaType\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+          "example_json": "{\n  \"name\": \"example-corp-web\"\n}",
+          "example_yaml": "name: example-corp-web"
         },
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -6919,17 +6548,13 @@
           "description": "Minimum configuration for schemaStatusMetaType",
           "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for schemaStatusMetaType\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -6947,10 +6572,7 @@
         "type": "string",
         "description": "StatusPublishType is all possible publish operations on a StatusObject\n\n- STATUS_DO_NOT_PUBLISH: Do Not Publish\n\nDo not propagate this status to user. This could be because status is only informational\n- STATUS_PUBLISH: Publish\n\nPropagate this status up to user as it might be actionable.",
         "title": "StatusPublishType",
-        "enum": [
-          "STATUS_DO_NOT_PUBLISH",
-          "STATUS_PUBLISH"
-        ],
+        "enum": ["STATUS_DO_NOT_PUBLISH", "STATUS_PUBLISH"],
         "default": "STATUS_DO_NOT_PUBLISH",
         "x-displayname": "Status Publish Type.",
         "x-ves-proto-enum": "ves.io.schema.StatusPublishType",
@@ -6960,17 +6582,13 @@
           "description": "Minimum configuration for schemaStatusPublishType",
           "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for schemaStatusPublishType\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+          "example_json": "\"STATUS_DO_NOT_PUBLISH\"",
+          "example_yaml": "STATUS_DO_NOT_PUBLISH\n..."
         },
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -7072,17 +6690,13 @@
           "description": "Minimum configuration for schemaStatusType",
           "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for schemaStatusType\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -7399,17 +7013,13 @@
           "description": "Minimum configuration for schemaSystemObjectGetMetaType",
           "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for schemaSystemObjectGetMetaType\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -7586,17 +7196,13 @@
           "description": "Minimum configuration for schemaViewRefType",
           "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for schemaViewRefType\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -7625,8 +7231,8 @@
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
             "x-f5xc-required-for": {
-              "minimum_config": true,
-              "create": true,
+              "minimum_config": false,
+              "create": false,
               "update": false,
               "read": false
             }
@@ -7639,31 +7245,24 @@
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
             "x-f5xc-required-for": {
-              "minimum_config": true,
-              "create": true,
+              "minimum_config": false,
+              "create": false,
               "update": false,
               "read": false
             }
           }
         },
         "x-f5xc-minimum-configuration": {
-          "description": "Rate limiter policy for controlling request rates to protected endpoints",
-          "required_fields": [
-            "metadata.name",
-            "metadata.namespace",
-            "spec.burst_size",
-            "spec.committed_information_rate"
-          ],
+          "description": "Minimum configuration for protocol_policerCreateRequest",
+          "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "metadata:\n  name: example-rl\n  namespace: default\nspec:\n  burst_size: 1\n  committed_information_rate: 1\n",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example-rl\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"burst_size\": 1,\n    \"committed_information_rate\": 1\n  }\n}\n"
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": true
           },
           "recommendation": {
@@ -7728,15 +7327,13 @@
           "description": "Minimum configuration for protocol_policerCreateResponse",
           "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for protocol_policerCreateResponse\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": true
           },
           "recommendation": {
@@ -7798,30 +7395,19 @@
         "x-f5xc-description-short": "Create a protocol_policer object, protocol_policer object contains list of L4 protocol match condition and corresponding traffic rate limits.",
         "x-f5xc-description-medium": "Create a protocol_policer object, protocol_policer object contains list of L4 protocol match condition and corresponding traffic rate limits.",
         "x-f5xc-minimum-configuration": {
-          "description": "Rate limiter policy for controlling request rates to protected endpoints",
-          "required_fields": [
-            "metadata.name",
-            "metadata.namespace",
-            "spec.burst_size",
-            "spec.committed_information_rate"
-          ],
+          "description": "Minimum configuration for protocol_policerCreateSpecType",
+          "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "metadata:\n  name: example-rl\n  namespace: default\nspec:\n  burst_size: 1\n  committed_information_rate: 1\n",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example-rl\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"burst_size\": 1,\n    \"committed_information_rate\": 1\n  }\n}\n"
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-recommended-oneof-variant": {
           "server_choice": "any_server"
         },
-        "x-f5xc-field-examples": {
-          "spec.burst_size": 1,
-          "spec.committed_information_rate": 1
-        },
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": true
           },
           "recommendation": {
@@ -7950,15 +7536,13 @@
           "description": "Minimum configuration for protocol_policerDeleteRequest",
           "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for protocol_policerDeleteRequest\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": true
           },
           "recommendation": {
@@ -7983,15 +7567,13 @@
           "description": "Minimum configuration for protocol_policerDnsType",
           "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for protocol_policerDnsType\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": true
           },
           "recommendation": {
@@ -8155,9 +7737,7 @@
             "type": "string",
             "x-f5xc-concurrency-token": {
               "server_assigned": true,
-              "echo_on_operations": [
-                "replace"
-              ]
+              "echo_on_operations": ["replace"]
             }
           }
         },
@@ -8165,15 +7745,13 @@
           "description": "Minimum configuration for protocol_policerGetResponse",
           "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for protocol_policerGetResponse\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": true
           },
           "recommendation": {
@@ -8235,16 +7813,11 @@
         "x-f5xc-description-short": "GET specification of a protocol_policer object with L4 protocol match condition and corresponding traffic rate limits.",
         "x-f5xc-description-medium": "GET specification of a protocol_policer object with L4 protocol match condition and corresponding traffic rate limits.",
         "x-f5xc-minimum-configuration": {
-          "description": "Rate limiter policy for controlling request rates to protected endpoints",
-          "required_fields": [
-            "metadata.name",
-            "metadata.namespace",
-            "spec.burst_size",
-            "spec.committed_information_rate"
-          ],
+          "description": "Minimum configuration for protocol_policerGetSpecType",
+          "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "metadata:\n  name: example-rl\n  namespace: default\nspec:\n  burst_size: 1\n  committed_information_rate: 1\n",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example-rl\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"burst_size\": 1,\n    \"committed_information_rate\": 1\n  }\n}\n"
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-recommended-oneof-variant": {
@@ -8252,9 +7825,7 @@
         },
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": true
           },
           "recommendation": {
@@ -8272,11 +7843,7 @@
         "type": "string",
         "description": "ICMP echo request packet which is sent by originator of Ping packet\nICMP echo reply packet which is sent in response to ICMP echo request packet\nAll ICMP packet types including TTL exceeded, destination\nunreachable and source quench etc.",
         "title": "ICMP Message types",
-        "enum": [
-          "ECHO_REPLY",
-          "ECHO_REQUEST",
-          "ALL_ICMP_MSG"
-        ],
+        "enum": ["ECHO_REPLY", "ECHO_REQUEST", "ALL_ICMP_MSG"],
         "default": "ECHO_REPLY",
         "x-displayname": "ICMP Message Types.",
         "x-ves-proto-enum": "ves.io.schema.protocol_policer.IcmpMsgType",
@@ -8286,15 +7853,13 @@
           "description": "Minimum configuration for protocol_policerIcmpMsgType",
           "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for protocol_policerIcmpMsgType\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+          "example_json": "\"ECHO_REPLY\"",
+          "example_yaml": "ECHO_REPLY\n..."
         },
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": true
           },
           "recommendation": {
@@ -8336,15 +7901,13 @@
           "description": "Minimum configuration for protocol_policerIcmpType",
           "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for protocol_policerIcmpType\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": true
           },
           "recommendation": {
@@ -8415,15 +7978,13 @@
           "description": "Minimum configuration for protocol_policerListResponse",
           "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for protocol_policerListResponse\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": true
           },
           "recommendation": {
@@ -8752,15 +8313,13 @@
           "description": "Minimum configuration for protocol_policerListResponseItem",
           "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for protocol_policerListResponseItem\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": true
           },
           "recommendation": {
@@ -8840,19 +8399,15 @@
         "x-f5xc-description-medium": "Protocol policer has set or network protocol fields and flags to be match on a layer 4 packet and corresponding rate limit to be applied, this would be useful in specifying * Ratelimiting TCP sessions accepted from in a given duration * Ratelimiting various ICMP message type packets *...",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for protocol_policerProtocolPolicerType",
-          "required_fields": [
-            "policer"
-          ],
+          "required_fields": ["policer"],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for protocol_policerProtocolPolicerType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  policer: value",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"policer\": \"value\"\n  }\n}"
+          "example_json": "{\n  \"policer\": [\n    {}\n  ]\n}",
+          "example_yaml": "policer:\n- {}"
         },
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": true
           },
           "recommendation": {
@@ -8886,11 +8441,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "icmp",
-              "tcp",
-              "udp"
-            ]
+            "x-f5xc-conflicts-with": ["icmp", "tcp", "udp"]
           },
           "icmp": {
             "allOf": [
@@ -8904,11 +8455,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "dns",
-              "tcp",
-              "udp"
-            ]
+            "x-f5xc-conflicts-with": ["dns", "tcp", "udp"]
           },
           "tcp": {
             "allOf": [
@@ -8922,11 +8469,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "dns",
-              "icmp",
-              "udp"
-            ]
+            "x-f5xc-conflicts-with": ["dns", "icmp", "udp"]
           },
           "udp": {
             "allOf": [
@@ -8940,11 +8483,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "dns",
-              "icmp",
-              "tcp"
-            ]
+            "x-f5xc-conflicts-with": ["dns", "icmp", "tcp"]
           }
         },
         "x-f5xc-description-short": "Protocol and protocol specific flags to be matched in packet.",
@@ -8952,15 +8491,13 @@
           "description": "Minimum configuration for protocol_policerProtocolType",
           "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for protocol_policerProtocolType\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": true
           },
           "recommendation": {
@@ -8989,8 +8526,8 @@
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
             "x-f5xc-required-for": {
-              "minimum_config": true,
-              "create": true,
+              "minimum_config": false,
+              "create": false,
               "update": false,
               "read": false
             }
@@ -9003,8 +8540,8 @@
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
             "x-f5xc-required-for": {
-              "minimum_config": true,
-              "create": true,
+              "minimum_config": false,
+              "create": false,
               "update": false,
               "read": false
             }
@@ -9013,30 +8550,21 @@
             "type": "string",
             "x-f5xc-concurrency-token": {
               "server_assigned": true,
-              "echo_on_operations": [
-                "replace"
-              ]
+              "echo_on_operations": ["replace"]
             }
           }
         },
         "x-f5xc-minimum-configuration": {
-          "description": "Rate limiter policy for controlling request rates to protected endpoints",
-          "required_fields": [
-            "metadata.name",
-            "metadata.namespace",
-            "spec.burst_size",
-            "spec.committed_information_rate"
-          ],
+          "description": "Minimum configuration for protocol_policerReplaceRequest",
+          "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "metadata:\n  name: example-rl\n  namespace: default\nspec:\n  burst_size: 1\n  committed_information_rate: 1\n",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example-rl\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"burst_size\": 1,\n    \"committed_information_rate\": 1\n  }\n}\n"
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": true
           },
           "recommendation": {
@@ -9057,15 +8585,13 @@
           "description": "Minimum configuration for protocol_policerReplaceResponse",
           "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for protocol_policerReplaceResponse\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": true
           },
           "recommendation": {
@@ -9127,16 +8653,11 @@
         "x-f5xc-description-short": "Replace a protocol_policer object with new L4 protocol match condition and corresponding traffic rate limits.",
         "x-f5xc-description-medium": "Replace a protocol_policer object with new L4 protocol match condition and corresponding traffic rate limits.",
         "x-f5xc-minimum-configuration": {
-          "description": "Rate limiter policy for controlling request rates to protected endpoints",
-          "required_fields": [
-            "metadata.name",
-            "metadata.namespace",
-            "spec.burst_size",
-            "spec.committed_information_rate"
-          ],
+          "description": "Minimum configuration for protocol_policerReplaceSpecType",
+          "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "metadata:\n  name: example-rl\n  namespace: default\nspec:\n  burst_size: 1\n  committed_information_rate: 1\n",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example-rl\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"burst_size\": 1,\n    \"committed_information_rate\": 1\n  }\n}\n"
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-recommended-oneof-variant": {
@@ -9144,9 +8665,7 @@
         },
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": true
           },
           "recommendation": {
@@ -9219,15 +8738,13 @@
           "description": "Minimum configuration for protocol_policerStatusObject",
           "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for protocol_policerStatusObject\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": true
           },
           "recommendation": {
@@ -9245,16 +8762,7 @@
         "type": "string",
         "description": "TCP flags indicate a particular connection state\n\nFIN flag which indicates that there is no more data from the sender, used in the last packet sent from the sender\nSYN flag set in the first packet from sender and receiver while establishing three way handshake between two hosts\nRST flag that resets a connection when the host receives an unexpected packet\nPSH flag that tells the receiver to process packets as they are received, instead of buffering them\nACK flag that acknowledges successful receipt of a packet\nURG flag that notifies the receiver about urgent packets that need to processed before other packets\nKeepalive flag tracks the keepalive packets for TCP connection liveness\nMatch any TCP Flag - FIN / SYN / RST / PSH / ACK / URG / KEEPALIVE.",
         "title": "TCP Flags",
-        "enum": [
-          "FIN",
-          "SYN",
-          "RST",
-          "PSH",
-          "ACK",
-          "URG",
-          "ALL_TCP_FLAGS",
-          "KEEPALIVE"
-        ],
+        "enum": ["FIN", "SYN", "RST", "PSH", "ACK", "URG", "ALL_TCP_FLAGS", "KEEPALIVE"],
         "default": "FIN",
         "x-displayname": "TCP Flags",
         "x-ves-proto-enum": "ves.io.schema.protocol_policer.TcpFlags",
@@ -9264,15 +8772,13 @@
           "description": "Minimum configuration for protocol_policerTcpFlags",
           "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for protocol_policerTcpFlags\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+          "example_json": "\"FIN\"",
+          "example_yaml": "FIN\n..."
         },
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": true
           },
           "recommendation": {
@@ -9314,15 +8820,13 @@
           "description": "Minimum configuration for protocol_policerTcpType",
           "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for protocol_policerTcpType\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": true
           },
           "recommendation": {
@@ -9346,15 +8850,13 @@
           "description": "Minimum configuration for protocol_policerUdpType",
           "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for protocol_policerUdpType\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": true
           },
           "recommendation": {
@@ -9378,17 +8880,13 @@
           "description": "Minimum configuration for ioschemaEmpty",
           "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for ioschemaEmpty\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -9442,17 +8940,13 @@
           "description": "Minimum configuration for rate_limiterCreateRequest",
           "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for rate_limiterCreateRequest\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -9517,17 +9011,13 @@
           "description": "Minimum configuration for rate_limiterCreateResponse",
           "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for rate_limiterCreateResponse\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -9626,24 +9116,15 @@
         "x-f5xc-description-short": "Create rate_limiter creates a new object in the storage backend for metadata.namespace.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for rate_limiterCreateSpecType",
-          "required_fields": [
-            "limits"
-          ],
+          "required_fields": ["limits"],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for rate_limiterCreateSpecType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  limits: value",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"limits\": \"value\"\n  }\n}"
+          "example_json": "{\n  \"limits\": [\n    {\n      \"total_number\": 0\n    }\n  ]\n}",
+          "example_yaml": "limits:\n- total_number: 0"
         },
         "x-f5xc-cli-domain": "rate_limiting",
-        "x-f5xc-field-examples": {
-          "spec.limits": "value"
-        },
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -9772,17 +9253,13 @@
           "description": "Minimum configuration for rate_limiterDeleteRequest",
           "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for rate_limiterDeleteRequest\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -9946,9 +9423,7 @@
             "type": "string",
             "x-f5xc-concurrency-token": {
               "server_assigned": true,
-              "echo_on_operations": [
-                "replace"
-              ]
+              "echo_on_operations": ["replace"]
             }
           }
         },
@@ -9956,17 +9431,13 @@
           "description": "Minimum configuration for rate_limiterGetResponse",
           "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for rate_limiterGetResponse\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -10065,21 +9536,15 @@
         "x-f5xc-description-short": "GET rate_limiter reads a given object from storage backend for metadata.namespace.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for rate_limiterGetSpecType",
-          "required_fields": [
-            "limits"
-          ],
+          "required_fields": ["limits"],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for rate_limiterGetSpecType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  limits: value",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"limits\": \"value\"\n  }\n}"
+          "example_json": "{\n  \"limits\": [\n    {\n      \"total_number\": 0\n    }\n  ]\n}",
+          "example_yaml": "limits:\n- total_number: 0"
         },
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -10138,17 +9603,13 @@
           "description": "Minimum configuration for rate_limiterInputHours",
           "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for rate_limiterInputHours\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -10207,17 +9668,13 @@
           "description": "Minimum configuration for rate_limiterInputMinutes",
           "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for rate_limiterInputMinutes\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -10276,17 +9733,13 @@
           "description": "Minimum configuration for rate_limiterInputSeconds",
           "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for rate_limiterInputSeconds\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -10311,17 +9764,13 @@
           "description": "Minimum configuration for rate_limiterLeakyBucketRateLimiter",
           "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for rate_limiterLeakyBucketRateLimiter\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -10392,17 +9841,13 @@
           "description": "Minimum configuration for rate_limiterListResponse",
           "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for rate_limiterListResponse\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -10730,17 +10175,13 @@
           "description": "Minimum configuration for rate_limiterListResponseItem",
           "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for rate_limiterListResponseItem\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -10774,10 +10215,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "minutes",
-              "seconds"
-            ]
+            "x-f5xc-conflicts-with": ["minutes", "seconds"]
           },
           "minutes": {
             "allOf": [
@@ -10791,10 +10229,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "hours",
-              "seconds"
-            ]
+            "x-f5xc-conflicts-with": ["hours", "seconds"]
           },
           "seconds": {
             "allOf": [
@@ -10808,10 +10243,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "hours",
-              "minutes"
-            ]
+            "x-f5xc-conflicts-with": ["hours", "minutes"]
           }
         },
         "x-f5xc-description-short": "Action where a user is blocked from making further requests after exceeding rate limit threshold.",
@@ -10819,17 +10251,13 @@
           "description": "Minimum configuration for rate_limiterRateLimitBlockAction",
           "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for rate_limiterRateLimitBlockAction\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -10847,11 +10275,7 @@
         "type": "string",
         "description": "Unit for the period per which the rate limit is applied.\n\n- SECOND: Second\n\nRate limit period unit is seconds\n- MINUTE: Minute\n\nRate limit period unit is minutes\n- HOUR: Hour\n\nRate limit period unit is hours\n- DAY: Day\n\nRate limit period unit is days.",
         "title": "RateLimitPeriodUnit",
-        "enum": [
-          "SECOND",
-          "MINUTE",
-          "HOUR"
-        ],
+        "enum": ["SECOND", "MINUTE", "HOUR"],
         "default": "SECOND",
         "x-displayname": "Rate Limit Period Unit.",
         "x-ves-proto-enum": "ves.io.schema.rate_limiter.RateLimitPeriodUnit",
@@ -10861,17 +10285,13 @@
           "description": "Minimum configuration for rate_limiterRateLimitPeriodUnit",
           "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for rate_limiterRateLimitPeriodUnit\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+          "example_json": "\"SECOND\"",
+          "example_yaml": "SECOND\n..."
         },
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -10907,9 +10327,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "disabled"
-            ]
+            "x-f5xc-conflicts-with": ["disabled"]
           },
           "burst_multiplier": {
             "type": "integer",
@@ -10960,9 +10378,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "action_block"
-            ]
+            "x-f5xc-conflicts-with": ["action_block"]
           },
           "leaky_bucket": {
             "allOf": [
@@ -10977,9 +10393,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "token_bucket"
-            ]
+            "x-f5xc-conflicts-with": ["token_bucket"]
           },
           "period_multiplier": {
             "type": "integer",
@@ -11027,9 +10441,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "leaky_bucket"
-            ]
+            "x-f5xc-conflicts-with": ["leaky_bucket"]
           },
           "total_number": {
             "type": "integer",
@@ -11088,21 +10500,15 @@
         "x-f5xc-description-medium": "Tuple consisting of a rate limit period unit and the total number of allowed requests for that period.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for rate_limiterRateLimitValue",
-          "required_fields": [
-            "total_number"
-          ],
+          "required_fields": ["total_number"],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for rate_limiterRateLimitValue\nmetadata:\n  name: example\n  namespace: default\nspec:\n  total_number: value",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"total_number\": \"value\"\n  }\n}"
+          "example_json": "{\n  \"total_number\": 0\n}",
+          "example_yaml": "total_number: 0"
         },
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -11155,9 +10561,7 @@
             "type": "string",
             "x-f5xc-concurrency-token": {
               "server_assigned": true,
-              "echo_on_operations": [
-                "replace"
-              ]
+              "echo_on_operations": ["replace"]
             }
           }
         },
@@ -11165,17 +10569,13 @@
           "description": "Minimum configuration for rate_limiterReplaceRequest",
           "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for rate_limiterReplaceRequest\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -11196,17 +10596,13 @@
           "description": "Minimum configuration for rate_limiterReplaceResponse",
           "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for rate_limiterReplaceResponse\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -11305,21 +10701,15 @@
         "x-f5xc-description-short": "Replace rate_limiter replaces an existing object in the storage backend for metadata.namespace.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for rate_limiterReplaceSpecType",
-          "required_fields": [
-            "limits"
-          ],
+          "required_fields": ["limits"],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for rate_limiterReplaceSpecType\nmetadata:\n  name: example\n  namespace: default\nspec:\n  limits: value",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {\n    \"limits\": \"value\"\n  }\n}"
+          "example_json": "{\n  \"limits\": [\n    {\n      \"total_number\": 0\n    }\n  ]\n}",
+          "example_yaml": "limits:\n- total_number: 0"
         },
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -11391,17 +10781,13 @@
           "description": "Minimum configuration for rate_limiterStatusObject",
           "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for rate_limiterStatusObject\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "rate_limiting",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -11426,17 +10812,13 @@
           "description": "Minimum configuration for rate_limiterTokenBucketRateLimiter",
           "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_yaml": "# Minimal example for rate_limiterTokenBucketRateLimiter\nmetadata:\n  name: example\n  namespace: default\nspec: {}",
-          "example_json": "{\n  \"metadata\": {\n    \"name\": \"example\",\n    \"namespace\": \"default\"\n  },\n  \"spec\": {}\n}"
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "users",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {

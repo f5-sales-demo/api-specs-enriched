@@ -11,6 +11,7 @@ from pathlib import Path
 import pytest
 
 from scripts.compile_catalog import (
+    _build_operation,
     assign_danger_level,
     compile_catalog,
     extract_category_name,
@@ -20,6 +21,7 @@ from scripts.compile_catalog import (
     group_paths_by_resource,
     main,
     merge_spec_files,
+    normalize_path_placeholders,
 )
 
 
@@ -707,6 +709,13 @@ def test_build_operation_extracts_minimum_payload():
                 "application/json": {
                     "schema": {
                         "type": "object",
+                        "properties": {
+                            "metadata": {
+                                "type": "object",
+                                "properties": {"name": {"type": "string"}},
+                            },
+                            "spec": {"type": "object", "properties": {}},
+                        },
                         "x-f5xc-minimum-configuration": {
                             "description": "Minimum config for test",
                             "required_fields": ["metadata", "spec"],
@@ -740,7 +749,7 @@ def test_build_operation_skips_minimum_payload_when_absent():
     assert "minimumPayload" not in result
 
 
-def test_build_operation_skips_minimum_payload_on_invalid_json():
+def test_build_operation_rejects_minimum_payload_on_invalid_json():
     from scripts.compile_catalog import _build_operation
 
     operation = {
@@ -760,10 +769,14 @@ def test_build_operation_skips_minimum_payload_on_invalid_json():
             }
         },
     }
-    result = _build_operation(
-        "/api/config/namespaces/{namespace}/resources", "post", operation, "create_resource", None
-    )
-    assert "minimumPayload" not in result
+    with pytest.raises(ValueError, match="invalid minimum payload JSON"):
+        _build_operation(
+            "/api/config/namespaces/{namespace}/resources",
+            "post",
+            operation,
+            "create_resource",
+            None,
+        )
 
 
 # ── Fix 2: $ref wrapper extension merge ────────────────────────────────────
@@ -1168,7 +1181,11 @@ def test_post_operation_still_gets_minimum_payload():
                     "schema": {
                         "type": "object",
                         "properties": {
-                            "name": {"type": "string"},
+                            "metadata": {
+                                "type": "object",
+                                "properties": {"name": {"type": "string"}},
+                            },
+                            "spec": {"type": "object", "properties": {}},
                         },
                         "x-f5xc-minimum-configuration": {
                             "required_fields": ["name"],
@@ -1216,3 +1233,145 @@ def test_operation_aliases_are_published_on_catalog_operations():
     # The narrowed apiOperations receipt remains backward-compatible with strict
     # downstream parsers; the public alias belongs to the browsable operation.
     assert "operationAliases" not in identity["operations"][0]
+
+
+def _catalog_operations(catalog):
+    return [operation for category in catalog["categories"] for operation in category["operations"]]
+
+
+def test_canonical_crud_is_grouped_by_api_identity_across_namespace_spellings():
+    paths = {
+        "/api/config/dns/namespaces/{metadata.namespace}/dns_zones": {
+            "post": {"operationId": "ves.io.schema.dns_zone.API.Create", "responses": {}},
+        },
+        "/api/config/dns/namespaces/{namespace}/dns_zones": {
+            "get": {"operationId": "ves.io.schema.dns_zone.API.List", "responses": {}},
+        },
+        "/api/config/dns/namespaces/{metadata.namespace}/dns_zones/{metadata.name}": {
+            "put": {"operationId": "ves.io.schema.dns_zone.API.Replace", "responses": {}},
+        },
+        "/api/config/dns/namespaces/{namespace}/dns_zones/{name}": {
+            "get": {"operationId": "ves.io.schema.dns_zone.API.Get", "responses": {}},
+            "delete": {"operationId": "ves.io.schema.dns_zone.API.Delete", "responses": {}},
+        },
+        "/api/config/dns/namespaces/system/dns_zone/export": {
+            "post": {"operationId": "ves.io.schema.dns_zone.CustomAPI.Export", "responses": {}},
+        },
+        "/api/config/dns/namespaces/system/managed_zones": {
+            "post": {"operationId": "ves.io.schema.managed_zone.API.Create", "responses": {}},
+            "get": {"operationId": "ves.io.schema.managed_zone.API.List", "responses": {}},
+        },
+    }
+
+    catalog = compile_catalog({"info": {"version": "1"}, "paths": paths})
+    crud = next(
+        category for category in catalog["categories"] if category["name"] == "dns-dns-zones"
+    )
+    assert {operation["operationId"] for operation in crud["operations"]} == {
+        "ves.io.schema.dns_zone.API.Create",
+        "ves.io.schema.dns_zone.API.List",
+        "ves.io.schema.dns_zone.API.Get",
+        "ves.io.schema.dns_zone.API.Replace",
+        "ves.io.schema.dns_zone.API.Delete",
+    }
+    assert all("CustomAPI" not in operation["operationId"] for operation in crud["operations"])
+    system_crud = next(
+        category for category in catalog["categories"] if category["name"] == "dns-managed-zones"
+    )
+    assert {operation["operationId"] for operation in system_crud["operations"]} == {
+        "ves.io.schema.managed_zone.API.Create",
+        "ves.io.schema.managed_zone.API.List",
+    }
+
+
+def test_equivalent_generated_names_are_preserved_with_deterministic_unique_names():
+    spec = {
+        "info": {"version": "1"},
+        "paths": {
+            "/api/config/namespaces/{namespace}/widgets/{name}": {
+                "get": {"operationId": "ves.io.schema.widget.API.Get", "responses": {}},
+            },
+            "/api/config/namespaces/{namespace}/widgets/{id}": {
+                "get": {"operationId": "ves.io.schema.widget.CustomAPI.Get", "responses": {}},
+            },
+        },
+    }
+    first = compile_catalog(spec)
+    second = compile_catalog(dict(reversed(list(spec.items()))))
+    operations = _catalog_operations(first)
+    assert len(operations) == 2
+    assert len({operation["name"] for operation in operations}) == 2
+    assert first == second
+
+
+def test_browsable_inventory_exactly_matches_authoritative_inventory():
+    spec = json.loads(Path("docs/specifications/api/openapi.json").read_text())
+    catalog = compile_catalog(spec)
+    authoritative = {
+        (details["operationId"], method.upper(), normalize_path_placeholders(path))
+        for path, path_item in spec["paths"].items()
+        for method, details in path_item.items()
+        if method.lower() in {"get", "post", "put", "patch", "delete", "options"}
+    }
+    browsable = {
+        (operation["operationId"], operation["method"], operation["path"])
+        for operation in _catalog_operations(catalog)
+    }
+    assert browsable == authoritative
+    assert len(_catalog_operations(catalog)) == len(authoritative)
+
+
+def test_invalid_supplied_minimum_payload_is_rejected():
+    operation = {
+        "operationId": "ves.io.schema.widget.API.Create",
+        "requestBody": {
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {"name": {"type": "string"}},
+                        "required": ["name"],
+                        "x-f5xc-minimum-configuration": {
+                            "required_fields": ["name"],
+                            "example_json": '{"metadata": {"name": "wrong"}}',
+                        },
+                    },
+                },
+            },
+        },
+    }
+    with pytest.raises(ValueError, match=r"ves\.io\.schema\.widget\.API\.Create.*metadata"):
+        _build_operation(
+            "/api/config/namespaces/{namespace}/widgets", "POST", operation, "create_widget", {}
+        )
+
+
+def test_unresolved_oneof_omits_executable_payload_with_diagnostic():
+    operation = {
+        "operationId": "ves.io.schema.widget.API.Create",
+        "requestBody": {
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "choice": {"oneOf": [{"type": "string"}, {"type": "integer"}]}
+                        },
+                        "required": ["choice"],
+                        "x-f5xc-minimum-configuration": {
+                            "required_fields": ["choice"],
+                            "diagnostic": {
+                                "reasonCode": "unresolved-oneof",
+                                "message": "No concrete oneOf member was selected.",
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    }
+    result = _build_operation(
+        "/api/config/namespaces/{namespace}/widgets", "POST", operation, "create_widget", {}
+    )
+    assert "minimumPayload" not in result
+    assert result["minimumPayloadDiagnostic"]["reasonCode"] == "unresolved-oneof"

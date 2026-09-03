@@ -16,6 +16,7 @@ Issue: #292 - Migrated from x-ves-* to x-f5xc-* namespace
 import json
 import logging
 import re
+from contextlib import suppress
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -32,12 +33,20 @@ from .extension_constants import (
 
 # Precompiled regex pattern for performance (used in hot paths)
 _CAMELCASE_TO_SNAKE_PATTERN = re.compile(r"(?<!^)(?=[A-Z])")
+_SENSITIVE_FIELD_PATTERN = re.compile(
+    r"(?:^|_)(?:api_?key|credential|password|private_?key|secret|token)(?:$|_)",
+    re.IGNORECASE,
+)
 
 logger = logging.getLogger(__name__)
 
 
 class MinimumConfigurationContractError(ValueError):
     """Raised when guidance refers to a field outside the current schema graph."""
+
+
+class _ExampleUnavailableError(ValueError):
+    """Raised when a schema cannot yield one deterministic executable example."""
 
 
 def _resolve_schema(node: dict[str, Any], schemas: dict[str, Any]) -> dict[str, Any]:
@@ -183,6 +192,7 @@ class MinimumConfigurationEnricher:
         self.domain_categorizer = DomainCategorizer()
         self.config: dict[str, Any] = {}
         self.resources: dict[str, dict[str, Any]] = {}
+        self._schemas: dict[str, Any] = {}
         self.stats = MinimumConfigurationStats()
 
         self._load_config()
@@ -218,7 +228,14 @@ class MinimumConfigurationEnricher:
             return spec
 
         schemas = spec.get("components", {}).get("schemas", {})
+        self._schemas = schemas
         logger.info("Enriching %d schemas with minimum configuration metadata", len(schemas))
+        # Normalize the complete graph first. Request schemas routinely refer
+        # to components that appear later in iteration order; example output
+        # must not depend on which schema happened to be visited first.
+        for schema in schemas.values():
+            self._add_auto_generated_field_requirements(schema)
+            self._sanitize_sensitive_examples(schema)
         for schema_name, schema in schemas.items():
             self._enrich_schema(schema_name, schema)
 
@@ -249,7 +266,7 @@ class MinimumConfigurationEnricher:
             if (
                 resource_type
                 and resource_type in self.resources
-                and self._is_resource_schema(schema_name)
+                and self._is_configured_request_schema(schema_name, resource_type)
             ):
                 # Explicit configuration exists
                 resource_config = self.resources[resource_type]
@@ -295,6 +312,21 @@ class MinimumConfigurationEnricher:
             resource_config: Configuration from config file
         """
         logger.debug("Enriching %s from config (resource: %s)", schema_name, resource_type)
+        # Apply configured requiredness before generating or validating an
+        # executable payload. A supplied example describes the create shape;
+        # replace requests can have materially different path/body fields and
+        # therefore receive their own schema-shaped payload.
+        if schema_name.endswith("ReplaceRequest"):
+            minimum_config = self._auto_generate_minimum_config(schema, schema_name)
+            minimum_config["description"] = resource_config.get("description", "")
+            minimum_config["mutually_exclusive_groups"] = resource_config.get(
+                "mutually_exclusive_groups", []
+            )
+            schema[X_F5XC_MINIMUM_CONFIGURATION] = minimum_config
+            self.stats.minimum_configs_auto_generated += 1
+            return
+
+        self._add_field_requirements(schema, resource_config)
         # Add x-f5xc-minimum-configuration at schema level
         minimum_config = {
             "description": resource_config.get("description", ""),
@@ -306,9 +338,6 @@ class MinimumConfigurationEnricher:
 
         schema[X_F5XC_MINIMUM_CONFIGURATION] = minimum_config
         self.stats.minimum_configs_added += 1
-
-        # Add x-f5xc-required-for to schema properties
-        self._add_field_requirements(schema, resource_config)
 
     def _enrich_with_auto_generation(
         self,
@@ -324,43 +353,236 @@ class MinimumConfigurationEnricher:
             resource_type: Detected or inferred resource type
         """
         logger.debug("Auto-generating config for %s (resource: %s)", schema_name, resource_type)
-        # Generate sensible defaults
         auto_config = self._auto_generate_minimum_config(schema, schema_name)
 
         schema[X_F5XC_MINIMUM_CONFIGURATION] = auto_config
         self.stats.minimum_configs_auto_generated += 1
 
-        # Add basic field requirements
-        self._add_auto_generated_field_requirements(schema)
-
     def _auto_generate_minimum_config(
         self,
         schema: dict[str, Any],
         schema_name: str,
+        *,
+        required_fields: list[str] | None = None,
     ) -> dict[str, Any]:
         """Auto-generate minimum configuration from schema inspection.
 
         Args:
             schema: OpenAPI schema
             schema_name: Schema name
+            required_fields: Optional configured field paths that must be materialized
 
         Returns:
             Generated minimum configuration dictionary
         """
-        required_fields = self._extract_required_fields_from_schema(schema)
-        example_yaml = self._generate_example_yaml(schema_name, required_fields)
-        example_json = self._generate_example_json(schema_name, required_fields)
-
-        self.stats.example_yamls_generated += 1
-        self.stats.example_jsons_generated += 1
-
-        return {
+        required_fields = (
+            self._extract_required_fields_from_schema(schema)
+            if required_fields is None
+            else required_fields
+        )
+        result: dict[str, Any] = {
             "description": f"Minimum configuration for {schema_name}",
             "required_fields": required_fields,
             "mutually_exclusive_groups": [],
-            "example_yaml": example_yaml,
-            "example_json": example_json,
         }
+        try:
+            example = self._schema_example(schema, required_fields=frozenset(required_fields))
+        except (_ExampleUnavailableError, MinimumConfigurationContractError) as exc:
+            result["diagnostic"] = {
+                "reasonCode": (
+                    "unresolved-oneof"
+                    if isinstance(exc, _ExampleUnavailableError)
+                    else "schema-unresolved"
+                ),
+                "message": str(exc),
+            }
+            return result
+        result["example_json"] = json.dumps(example, indent=2)
+        result["example_yaml"] = yaml.safe_dump(example, sort_keys=False).rstrip()
+        self.stats.example_yamls_generated += 1
+        self.stats.example_jsons_generated += 1
+        return result
+
+    def _expanded_schema(
+        self, schema: dict[str, Any], active_refs: frozenset[str] = frozenset()
+    ) -> tuple[dict[str, Any], frozenset[str]]:
+        """Resolve local refs and merge every allOf layer without losing siblings."""
+        merged: dict[str, Any] = {}
+        refs = active_refs
+        reference = schema.get("$ref")
+        if isinstance(reference, str):
+            if reference in refs:
+                return {}, refs
+            prefix = "#/components/schemas/"
+            target = (
+                self._schemas.get(reference.removeprefix(prefix))
+                if reference.startswith(prefix)
+                else None
+            )
+            if not isinstance(target, dict):
+                raise MinimumConfigurationContractError(
+                    f"unresolvable schema reference {reference}"
+                )
+            refs = refs | {reference}
+            merged, refs = self._expanded_schema(target, refs)
+        for member in schema.get("allOf", []):
+            if isinstance(member, dict):
+                expanded, member_refs = self._expanded_schema(member, refs)
+                merged = self._merge_example_schema(merged, expanded)
+                refs = refs | member_refs
+        local = {key: value for key, value in schema.items() if key not in {"$ref", "allOf"}}
+        return self._merge_example_schema(merged, local), refs
+
+    @staticmethod
+    def _merge_example_schema(base: dict[str, Any], overlay: dict[str, Any]) -> dict[str, Any]:
+        merged = dict(base)
+        for key, value in overlay.items():
+            if key == "properties" and isinstance(value, dict):
+                merged[key] = {**merged.get(key, {}), **value}
+            elif key == "required" and isinstance(value, list):
+                merged[key] = list(dict.fromkeys([*merged.get(key, []), *value]))
+            else:
+                merged[key] = value
+        return merged
+
+    def _schema_example(
+        self,
+        schema: dict[str, Any],
+        *,
+        field_name: str | None = None,
+        required_fields: frozenset[str] = frozenset(),
+        active_refs: frozenset[str] = frozenset(),
+    ) -> Any:
+        """Materialize a deterministic value containing only declared properties."""
+        resolved, refs = self._expanded_schema(schema, active_refs)
+        variants = resolved.get("oneOf")
+        if isinstance(variants, list) and variants:
+            if len(variants) != 1:
+                raise _ExampleUnavailableError(
+                    "No concrete oneOf member was selected for a required field."
+                )
+            member = variants[0]
+            if not isinstance(member, dict):
+                raise _ExampleUnavailableError("The selected oneOf member is not a schema object.")
+            return self._schema_example(member, field_name=field_name, active_refs=refs)
+
+        schema_type_value = resolved.get("type")
+        schema_type = schema_type_value if isinstance(schema_type_value, str) else None
+        if schema_type is None and isinstance(resolved.get("properties"), dict):
+            schema_type = "object"
+        if not (field_name and _SENSITIVE_FIELD_PATTERN.search(field_name)):
+            for key in ("example", "x-f5xc-example", "x-f5xc-recommended-value", "default"):
+                value = resolved.get(key)
+                valid_type = schema_type is None or (
+                    schema_type == "object"
+                    and isinstance(value, dict)
+                    or schema_type == "array"
+                    and isinstance(value, list)
+                    or schema_type == "string"
+                    and isinstance(value, str)
+                    or schema_type == "integer"
+                    and isinstance(value, int)
+                    or schema_type == "number"
+                    and isinstance(value, (int, float))
+                    or schema_type == "boolean"
+                    and isinstance(value, bool)
+                )
+                if value is not None and valid_type:
+                    if schema_type in {"integer", "number"} and isinstance(value, bool):
+                        continue
+                    return value
+        enum = resolved.get("enum")
+        if isinstance(enum, list) and enum:
+            return enum[0]
+        if schema_type == "object":
+            properties = resolved.get("properties") or {}
+            required = set(resolved.get("required") or []) | set(required_fields)
+            for name, child in properties.items():
+                if not isinstance(child, dict):
+                    continue
+                required_for = child.get(X_F5XC_REQUIRED_FOR) or {}
+                if child.get("x-ves-required") == "true" or (
+                    isinstance(required_for, dict)
+                    and (
+                        required_for.get("minimum_config") is True
+                        or required_for.get("create") is True
+                    )
+                ):
+                    required.add(name)
+            result: dict[str, Any] = {}
+            for name in sorted(required):
+                child = properties.get(name)
+                if not isinstance(child, dict):
+                    raise MinimumConfigurationContractError(
+                        f"required example path {name} is not a declared property"
+                    )
+                nested = frozenset(
+                    field[len(name) + 1 :]
+                    for field in required_fields
+                    if field.startswith(f"{name}.")
+                )
+                result[name] = self._schema_example(
+                    child,
+                    field_name=name,
+                    required_fields=nested,
+                    active_refs=refs,
+                )
+            return result
+        if schema_type == "array":
+            items = resolved.get("items")
+            if not isinstance(items, dict):
+                raise MinimumConfigurationContractError("required array has no item schema")
+            return [self._schema_example(items, active_refs=refs)]
+        numeric_minimum: int | float = resolved.get("minimum", 0)
+        validation_rules = resolved.get("x-ves-validation-rules") or {}
+        if isinstance(validation_rules, dict):
+            lower_bounds = [
+                value
+                for key, value in validation_rules.items()
+                if key.endswith(".gte") and isinstance(value, (str, int, float))
+            ]
+            if lower_bounds:
+                with suppress(ValueError):
+                    numeric_minimum = max(float(value) for value in lower_bounds)
+        scalar_defaults = {
+            "integer": int(numeric_minimum),
+            "number": numeric_minimum,
+            "boolean": False,
+            "string": self._safe_string_placeholder(resolved, field_name),
+            None: "value",
+        }
+        if schema_type in scalar_defaults:
+            return scalar_defaults[schema_type]
+        raise MinimumConfigurationContractError(f"unsupported schema type {schema_type!r}")
+
+    @staticmethod
+    def _safe_string_placeholder(schema: dict[str, Any], field_name: str | None) -> str:
+        """Return a deterministic low-entropy placeholder that cannot resemble a credential."""
+        value = "example" if field_name and _SENSITIVE_FIELD_PATTERN.search(field_name) else "value"
+        minimum_length = schema.get("minLength", 0)
+        if isinstance(minimum_length, int) and minimum_length > len(value):
+            value += "x" * (minimum_length - len(value))
+        return value
+
+    @staticmethod
+    def _sanitize_sensitive_examples(schema: dict[str, Any]) -> None:
+        """Remove credential-shaped example values while retaining useful field metadata."""
+        for field_name, field_schema in (schema.get("properties", {}) or {}).items():
+            if not isinstance(field_schema, dict):
+                continue
+            if _SENSITIVE_FIELD_PATTERN.search(field_name):
+                for key in ("example", "x-f5xc-example", "x-f5xc-recommended-value", "default"):
+                    if isinstance(field_schema.get(key), str):
+                        field_schema[key] = MinimumConfigurationEnricher._safe_string_placeholder(
+                            field_schema, field_name
+                        )
+            MinimumConfigurationEnricher._sanitize_sensitive_examples(field_schema)
+            items = field_schema.get("items")
+            if isinstance(items, dict):
+                MinimumConfigurationEnricher._sanitize_sensitive_examples(items)
+            for member in field_schema.get("allOf", []):
+                if isinstance(member, dict):
+                    MinimumConfigurationEnricher._sanitize_sensitive_examples(member)
 
     def _extract_required_fields_from_schema(self, schema: dict[str, Any]) -> list[str]:
         """Extract required fields from explicit API-contract markers.
@@ -589,6 +811,26 @@ class MinimumConfigurationEnricher:
             "ReplaceRequest",
         )
         return any(schema_name.endswith(suffix) for suffix in resource_suffixes)
+
+    @staticmethod
+    def _is_configured_request_schema(schema_name: str, resource_type: str) -> bool:
+        """Return whether a supplied executable example targets this request.
+
+        Resource detection deliberately accepts partial names, but doing so for
+        examples caused a resource's CRUD envelope to leak into similarly named
+        custom/action requests. Supplied examples belong only to the canonical
+        resource Create/Replace request shapes.
+        """
+        base = schema_name
+        for suffix in ("CreateRequest", "ReplaceRequest"):
+            if base.endswith(suffix):
+                base = base[: -len(suffix)]
+                break
+        else:
+            return False
+        if base == resource_type:
+            return True
+        return any(base == f"{prefix}{resource_type}" for prefix in ("views", "api", "schema"))
 
     def _detect_resource_type(self, schema_name: str) -> str | None:
         """Detect resource type from schema name.
