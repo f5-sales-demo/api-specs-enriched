@@ -188,6 +188,7 @@ class MinimumConfigurationEnricher:
         self.domain_categorizer = DomainCategorizer()
         self.config: dict[str, Any] = {}
         self.resources: dict[str, dict[str, Any]] = {}
+        self._schemas: dict[str, Any] = {}
         self.stats = MinimumConfigurationStats()
 
         self._load_config()
