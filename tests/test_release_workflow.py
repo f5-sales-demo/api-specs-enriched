@@ -136,6 +136,20 @@ def test_tag_commit_is_exposed_and_supplied_to_dispatch() -> None:
     )
 
 
+def test_forced_release_type_is_bounded_and_defaults_to_patch() -> None:
+    """Manual contract releases can request minor without changing the default."""
+
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    release_type = workflow.split("      force_release_type:\n", maxsplit=1)[1].split(
+        "\n\n# Read-only default", maxsplit=1
+    )[0]
+
+    assert "type: choice" in release_type
+    assert "- patch" in release_type
+    assert "- minor" in release_type
+    assert "default: patch" in release_type
+
+
 def test_forced_events_always_download_fresh_upstream_specs() -> None:
     """A release-producing run must never use a stale specs/original cache."""
 

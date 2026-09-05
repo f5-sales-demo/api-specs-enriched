@@ -549,9 +549,11 @@ def test_force_release_publishes_an_unchanged_tree(tmp_path: Path) -> None:
     assert outputs["change_type"] == "forced"
 
 
-def test_workflow_versions_forced_releases_without_an_unknown_type_warning() -> None:
+def test_workflow_passes_the_explicit_forced_release_type() -> None:
     body = _VERSION_SCRIPT.read_text()
-    assert 'elif [ "$CHANGE_TYPE" = "pipeline" ] || [ "$CHANGE_TYPE" = "forced" ]; then' in body
+    workflow = _WORKFLOW.read_text()
+    assert 'elif [ "$CHANGE_TYPE" = "forced" ]; then' in body
+    assert "FORCE_RELEASE_TYPE: ${{ inputs.force_release_type || 'patch' }}" in workflow
 
 
 def test_force_release_accepts_the_numeric_form(tmp_path: Path) -> None:
