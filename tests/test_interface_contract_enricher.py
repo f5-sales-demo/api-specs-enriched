@@ -231,6 +231,12 @@ Mutation = Callable[[dict[str, Any]], Any]
             ),
             "guest interface names must be observational only",
         ),
+        (
+            lambda config: _contract(config)["providers"]["aws"]["site_upgrade"][
+                "software_upgrade"
+            ].update({"force": True}),
+            "site upgrade contract is incomplete",
+        ),
     ],
 )
 def test_rejects_unsafe_or_incomplete_contracts(
