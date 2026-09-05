@@ -8,6 +8,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
+import yaml
 
 from scripts.smsv2_release_assets import (
     CONTRACT_FILE,
@@ -20,26 +21,26 @@ from scripts.smsv2_release_assets import (
 )
 
 _COMMIT = "a" * 40
-_NOW = datetime(2026, 8, 17, tzinfo=UTC)
+_NOW = datetime(2026, 9, 6, tzinfo=UTC)
 
 
 def _assets(tmp_path: Path) -> dict[str, bytes]:
     return build_release_assets(
         Path(__file__).parents[1] / "config" / "interface_contracts.yaml",
         tmp_path,
-        "v6.0.0",
+        "v6.1.0",
         _COMMIT,
     )
 
 
 def _release(**overrides: object) -> dict[str, object]:
     release: dict[str, object] = {
-        "tag_name": "v6.0.0",
+        "tag_name": "v6.1.0",
         "target_commitish": _COMMIT,
         "draft": False,
         "prerelease": False,
         "immutable": True,
-        "published_at": "2026-08-16T00:00:00Z",
+        "published_at": "2026-09-05T01:00:00Z",
     }
     release.update(overrides)
     return release
@@ -54,7 +55,7 @@ def test_builds_deterministic_sanitized_assets(tmp_path: Path) -> None:
     second = _assets(tmp_path / "two")
     assert first == second
     manifest = json.loads(first[MANIFEST_FILE])
-    assert manifest["release"] == {"tag": "v6.0.0", "commit": _COMMIT}
+    assert manifest["release"] == {"tag": "v6.1.0", "commit": _COMMIT}
     assert digest(first[CONTRACT_FILE]) == manifest["assets"][CONTRACT_FILE]
     assert digest(first[EVIDENCE_FILE]) == manifest["assets"][EVIDENCE_FILE]
     assert b"bearer" not in first[EVIDENCE_FILE].lower()
@@ -66,11 +67,12 @@ def test_validates_stable_receipted_release(tmp_path: Path) -> None:
     contract = validate_release_assets(
         assets[MANIFEST_FILE], assets, _release(), _receipt(manifest), now=_NOW
     )
-    assert contract["version"] == "6.0.0"
+    assert contract["version"] == "6.1.0"
     assert contract["providers"]["aws"]["availability"] == "evidence_backed"
     assert contract["providers"]["aws"]["capabilities"] == {
         "aws_ce_create": "available",
         "runtime_status": "available",
+        "site_upgrade": "available",
         "tgw_connect": "available",
     }
     assert contract["contract_id"] == "f5xc-ce-automation/v3"
@@ -153,6 +155,55 @@ def test_rejects_tampered_success_evidence(tmp_path: Path) -> None:
         )
 
 
+def test_rejects_tampered_site_upgrade_evidence(tmp_path: Path) -> None:
+    assets = _assets(tmp_path)
+    evidence = json.loads(assets[EVIDENCE_FILE])
+    evidence["receipts"][1]["result"] = "rejected"
+    assets[EVIDENCE_FILE] = json.dumps(evidence, sort_keys=True, separators=(",", ":")).encode()
+    manifest = json.loads(assets[MANIFEST_FILE])
+    manifest["assets"][EVIDENCE_FILE] = digest(assets[EVIDENCE_FILE])
+    assets[MANIFEST_FILE] = json.dumps(manifest, sort_keys=True, separators=(",", ":")).encode()
+
+    with pytest.raises(Smsv2ReleaseValidationError, match="site upgrade evidence"):
+        validate_release_assets(
+            assets[MANIFEST_FILE], assets, _release(), _receipt(manifest), now=_NOW
+        )
+
+
+def test_validates_schema_only_release_with_blocking_receipt(tmp_path: Path) -> None:
+    config = yaml.safe_load(
+        (Path(__file__).parents[1] / "config" / "interface_contracts.yaml").read_text()
+    )
+    aws = config["contracts"]["securemesh_site_v2"]["contract"]["providers"]["aws"]
+    aws["availability"] = "schema_only"
+    aws["capabilities"] = dict.fromkeys(aws["capabilities"], "unavailable")
+    aws["unavailable_capabilities"] = list(aws["capabilities"])
+    aws["telemetry_intake"]["availability"] = "unavailable"
+    aws["telemetry_intake"]["complete"] = False
+    aws["evidence"]["receipts"] = [
+        {
+            "operations": ["replace"],
+            "result": "rejected",
+            "blocking_conditions": [
+                "mac_only_interface_rejected_by_live_api",
+                "public_ip_empty_string_null_round_trip",
+            ],
+            "sanitized": True,
+            "redaction": "no tenant response, token, bootstrap material, or resource identifier",
+        }
+    ]
+    config_path = tmp_path / "interface_contracts.yaml"
+    config_path.write_text(yaml.safe_dump(config, sort_keys=False))
+    assets = build_release_assets(config_path, tmp_path / "assets", "v6.1.0", _COMMIT)
+    manifest = json.loads(assets[MANIFEST_FILE])
+
+    contract = validate_release_assets(
+        assets[MANIFEST_FILE], assets, _release(), _receipt(manifest), now=_NOW
+    )
+
+    assert contract["providers"]["aws"]["availability"] == "schema_only"
+
+
 def test_rejects_release_race_with_changed_tag(tmp_path: Path) -> None:
     assets = _assets(tmp_path)
     manifest = json.loads(assets[MANIFEST_FILE])
@@ -160,7 +211,7 @@ def test_rejects_release_race_with_changed_tag(tmp_path: Path) -> None:
         validate_release_assets(
             assets[MANIFEST_FILE],
             assets,
-            _release(tag_name="v6.0.1"),
+            _release(tag_name="v6.1.1"),
             _receipt(manifest),
             now=_NOW,
         )
@@ -200,6 +251,10 @@ def _mutate_contract_asset(
                 {"path": "/api/operate/namespaces/{namespace}/sites/{site}/ver/routes"}
             ),
             "incomplete or legacy",
+        ),
+        (
+            lambda contract: contract["providers"]["aws"].pop("site_upgrade"),
+            "site upgrade contract",
         ),
         (
             lambda contract: contract["providers"]["aws"]["authorities"]["aws"].append(

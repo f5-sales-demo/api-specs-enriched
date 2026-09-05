@@ -16,6 +16,8 @@ from scripts.utils.interface_contract_enricher import (
     AWS_SUCCESS_FACTS,
     AWS_SUCCESS_OPERATIONS,
     AWS_SUCCESS_TOPOLOGY,
+    AWS_UPGRADE_SUCCESS_FACTS,
+    AWS_UPGRADE_SUCCESS_OPERATIONS,
     AWS_V3_CAPABILITIES,
     CONTRACT_ID,
     CONTRACT_VERSION,
@@ -247,9 +249,10 @@ def validate_release_assets(
     else:
         raise Smsv2ReleaseValidationError("AWS SMSv2 availability is invalid")
     evidence_receipts = evidence.get("receipts")
+    expected_receipt_count = 2 if availability == "evidence_backed" else 1
     if (
         not isinstance(evidence_receipts, list)
-        or len(evidence_receipts) != 1
+        or len(evidence_receipts) != expected_receipt_count
         or not isinstance(evidence_receipts[0], dict)
     ):
         raise Smsv2ReleaseValidationError("AWS evidence receipt is missing or malformed")
@@ -272,6 +275,17 @@ def validate_release_assets(
         or evidence_receipt.get("validated_facts") != AWS_SUCCESS_FACTS
     ):
         raise Smsv2ReleaseValidationError("AWS success evidence is incomplete")
+    if availability == "evidence_backed":
+        upgrade_receipt = evidence_receipts[1]
+        if (
+            not isinstance(upgrade_receipt, dict)
+            or upgrade_receipt.get("operations") != AWS_UPGRADE_SUCCESS_OPERATIONS
+            or upgrade_receipt.get("result") != "accepted"
+            or upgrade_receipt.get("validated_facts") != AWS_UPGRADE_SUCCESS_FACTS
+            or upgrade_receipt.get("upgrade_path")
+            != aws.get("site_upgrade", {}).get("verified_path")
+        ):
+            raise Smsv2ReleaseValidationError("AWS site upgrade evidence is incomplete")
     if evidence.get("contract_id") != CONTRACT_ID:
         raise Smsv2ReleaseValidationError("evidence contract identity is invalid")
     return contract

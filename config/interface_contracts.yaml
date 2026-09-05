@@ -1,13 +1,13 @@
 # Evidence-backed interface contracts for resources whose guest interface names
 # are not stable configuration identities.
-version: "6.0.0"
+version: "6.1.0"
 
 contracts:
   securemesh_site_v2:
     schema_patterns:
       - "^viewssecuremesh_site_v2(?:Create|Replace|Get)SpecType$"
     contract:
-      version: "6.0.0"
+      version: "6.1.0"
       contract_id: "f5xc-ce-automation/v3"
       resource: "securemesh_site_v2"
       api:
@@ -26,6 +26,7 @@ contracts:
           capabilities:
             aws_ce_create: "available"
             runtime_status: "available"
+            site_upgrade: "available"
             tgw_connect: "available"
           interface_identity:
             fields: ["node", "ethernet_interface.mac"]
@@ -167,6 +168,98 @@ contracts:
               convergence:
                 expected_aws_prefixes: "present_in_detailed_bgp_routes"
                 exported_bgp_prefixes: "present_in_selected_role_simplified_routes"
+          site_upgrade:
+            site_status:
+              method: "GET"
+              path: "/api/config/namespaces/{namespace}/sites/{site}"
+              operation_id: "ves.io.schema.site.API.Get"
+              response_schema: "siteGetResponse"
+              response_mappings:
+                site_state: "spec.site_state"
+                software_installed_version: "status[].volterra_software_status.last_installed_version"
+                software_available_version: "status[].volterra_software_status.available_version"
+                software_deployment_phase: "status[].volterra_software_status.deployment_state.phase"
+                software_deployment_result: "status[].volterra_software_status.deployment_state.result"
+                os_installed_version: "status[].operating_system_status.deployment_state.version"
+                os_available_version: "status[].operating_system_status.available_version"
+                os_deployment_phase: "status[].operating_system_status.deployment_state.phase"
+                os_deployment_result: "status[].operating_system_status.deployment_state.result"
+            target_discovery:
+              method: "GET"
+              path: "/api/maurice/upgradable_sw_versions"
+              operation_id: "ves.io.schema.upgrade_status.UpgradeStatusCustomApi.GetUpgradableSWVersions"
+              query_mappings:
+                installed_os_version: "current_os_version"
+                installed_software_version: "current_sw_version"
+              response_schema: "upgrade_statusGetUpgradableSWVersionsResponse"
+              response_mappings:
+                upgradable_software_versions: "sw_versions[]"
+            precheck:
+              method: "GET"
+              path: "/api/maurice/namespaces/{namespace}/sites/{site}/pre_upgrade_check"
+              operation_id: "ves.io.schema.upgrade_status.UpgradeStatusCustomApi.PreUpgradeCheck"
+              query_mappings:
+                software_version: "sw_version"
+              response_schema: "upgrade_statusPreUpgradeCheckResponse"
+              response_mappings:
+                checks: "checklist[]"
+                name: "checklist[].item"
+                status: "checklist[].status"
+              passing_statuses: ["CHECKLIST_PASSED", "CHECKLIST_WARNING"]
+              failure_statuses: ["CHECKLIST_FAILED", "CHECKLIST_UNKNOWN"]
+            upgrade_status:
+              method: "GET"
+              path: "/api/maurice/namespaces/{namespace}/sites/{site}/upgrade_status"
+              operation_id: "ves.io.schema.upgrade_status.UpgradeStatusCustomApi.GetUpgradeStatus"
+              response_schema: "upgrade_statusGetUpgradeStatusResponse"
+              response_mappings:
+                version: "upgrade_status.sw_upgrade_progress.version"
+                status: "upgrade_status.sw_upgrade_progress.status"
+                validation_status: "upgrade_status.sw_upgrade_progress.validation.status"
+                site_level_status: "upgrade_status.sw_upgrade_progress.site_level_upgrade.status"
+                node_level_status: "upgrade_status.sw_upgrade_progress.node_level_upgrade.status"
+                os_setup_status: "upgrade_status.sw_upgrade_progress.os_setup.status"
+            software_upgrade:
+              method: "POST"
+              path: "/api/config/namespaces/{namespace}/sites/{site}/upgrade_sw"
+              operation_id: "ves.io.schema.site.UpgradeAPI.UpgradeSW"
+              request_schema: "siteUpgradeSWRequest"
+              request_mappings:
+                site: "name"
+                software_version: "version"
+                force: "force"
+              force: false
+              semantics: "asynchronous"
+            os_upgrade:
+              method: "POST"
+              path: "/api/config/namespaces/{namespace}/sites/{site}/upgrade_os"
+              operation_id: "ves.io.schema.site.UpgradeAPI.UpgradeOS"
+              request_schema: "siteUpgradeOSRequest"
+              request_mappings:
+                site: "name"
+                os_version: "version"
+                force: "force"
+              force: false
+              semantics: "asynchronous"
+            eligibility:
+              site_state: "ONLINE"
+              software_target: "listed_in_upgradable_software_versions"
+              os_target: "equals_advertised_os_available_version"
+              software_prechecks: "all_pass_or_warning"
+            polling:
+              transient_failure_values: ["UPGRADE_FAILED", "FAILED"]
+              failure_semantics: "transient_until_bounded_timeout"
+              completion: "supplied_targets_installed_and_site_online"
+              timeout_authority: "caller"
+            redaction:
+              exported: "sanitized_status_fields_only"
+              prohibited: ["raw_api_messages", "node_identifiers", "urls"]
+            verified_path:
+              installed_software: "crt-20251002-0027"
+              installed_os: "9.2026.10"
+              target_software: "crt-20260201-0179"
+              target_os: "9.2026.17"
+              software_prechecks: "passed"
           authorities:
             f5xc:
               - "smsv2_configuration"
@@ -174,6 +267,7 @@ contracts:
               - "bgp_peers"
               - "bgp_routes"
               - "simplified_routes"
+              - "site_upgrade_observation"
             aws:
               - "eni"
               - "transit_gateway"
@@ -188,8 +282,8 @@ contracts:
             headless_checkout: "unavailable"
           evidence:
             provenance: "f5-distributed-cloud-smsv2-system-namespace"
-            recorded_at: "2026-09-03T16:15:26Z"
-            profiles: ["aws-shaped-ce-configuration"]
+            recorded_at: "2026-09-05T00:15:00Z"
+            profiles: ["aws-shaped-ce-configuration", "aws-site-upgrade"]
             receipts:
               - operations: ["create", "read", "replace", "delete"]
                 result: "accepted"
@@ -207,6 +301,23 @@ contracts:
                   - "zero_action_post_apply_plan"
                 sanitized: true
                 redaction: "no tenant response, token, bootstrap material, or resource identifier"
+              - operations: ["site_status", "target_discovery", "precheck", "software_upgrade", "os_upgrade"]
+                result: "accepted"
+                validated_facts:
+                  - "installed_and_available_versions"
+                  - "deployment_phase_and_result"
+                  - "site_state"
+                  - "software_target_advertised"
+                  - "software_prechecks_passed"
+                  - "transient_failure_observed"
+                upgrade_path:
+                  installed_software: "crt-20251002-0027"
+                  installed_os: "9.2026.10"
+                  target_software: "crt-20260201-0179"
+                  target_os: "9.2026.17"
+                  software_prechecks: "passed"
+                sanitized: true
+                redaction: "no raw response, message, node identifier, URL, token, or resource identifier"
           unavailable_capabilities: []
         azure:
           availability: "evidence_backed"
