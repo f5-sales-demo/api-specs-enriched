@@ -3,7 +3,7 @@
   "info": {
     "title": "Users",
     "description": "Token lifecycle governs automated site onboarding through cloud-init integration with configurable validity periods. Explicit category keys establish permitted classification hierarchies enforced across deployments. Inferred attributes attach automatically based on object characteristics and placement context. Namespace-scoped operations handle credential generation, revocation, and state transitions for streamlined provisioning workflows.",
-    "version": "6.1.0",
+    "version": "6.1.1",
     "contact": {
       "name": "F5 Distributed Cloud",
       "url": "https://docs.cloud.f5.com"
@@ -7959,6 +7959,19 @@
       "tokenCreateSpecType": {
         "type": "object",
         "description": "Creates new token. Token object is used to manage site admission. User must generate token before provisioning and pass this\ntoken to site during it's registration.",
+        "title": "Create token",
+        "x-displayname": "Create Token.",
+        "x-ves-proto-message": "ves.io.schema.token.CreateSpecType",
+        "x-f5xc-description-short": "Creates new token. Token object is used to manage site admission.",
+        "x-f5xc-description-medium": "Creates new token. Token object is used to manage site admission. User must generate token before provisioning and pass this token to site during it's registration.",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for tokenCreateSpecType",
+          "required_fields": [],
+          "mutually_exclusive_groups": [],
+          "example_json": "{}",
+          "example_yaml": "{}"
+        },
+        "x-f5xc-cli-domain": "users",
         "properties": {
           "type": {
             "type": "integer",
@@ -7983,19 +7996,6 @@
             "x-field-mutability": "immutable"
           }
         },
-        "title": "Create token",
-        "x-displayname": "Create Token.",
-        "x-ves-proto-message": "ves.io.schema.token.CreateSpecType",
-        "x-f5xc-description-short": "Creates new token. Token object is used to manage site admission.",
-        "x-f5xc-description-medium": "Creates new token. Token object is used to manage site admission. User must generate token before provisioning and pass this token to site during it's registration.",
-        "x-f5xc-minimum-configuration": {
-          "description": "Minimum configuration for tokenCreateSpecType",
-          "required_fields": [],
-          "mutually_exclusive_groups": [],
-          "example_json": "{}",
-          "example_yaml": "{}"
-        },
-        "x-f5xc-cli-domain": "users",
         "x-f5xc-namespace-profile": {
           "constraint": {
             "allowed": [
@@ -8405,6 +8405,20 @@
         "x-displayname": "GET Token",
         "x-ves-proto-message": "ves.io.schema.token.GetSpecType",
         "properties": {
+          "state": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/tokenState"
+              }
+            ],
+            "x-f5xc-example": "running",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
           "type": {
             "type": "integer",
             "format": "int32",
@@ -8426,20 +8440,6 @@
             "type": "string",
             "description": "Secure Mesh Site v2 name bound into a JWT token.",
             "readOnly": true
-          },
-          "state": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/tokenState"
-              }
-            ],
-            "x-f5xc-example": "running",
-            "x-f5xc-required-for": {
-              "minimum_config": false,
-              "create": false,
-              "update": false,
-              "read": false
-            }
           }
         },
         "x-f5xc-description-short": "GET token. Token object is used to manage site admission.",
@@ -8477,6 +8477,20 @@
         "x-displayname": "Specification.",
         "x-ves-proto-message": "ves.io.schema.token.GlobalSpecType",
         "properties": {
+          "state": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/tokenState"
+              }
+            ],
+            "x-f5xc-example": "running",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
           "type": {
             "type": "integer",
             "format": "int32",
@@ -8498,20 +8512,6 @@
             "type": "string",
             "description": "Secure Mesh Site v2 name bound into a JWT token.",
             "readOnly": true
-          },
-          "state": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/tokenState"
-              }
-            ],
-            "x-f5xc-example": "running",
-            "x-f5xc-required-for": {
-              "minimum_config": false,
-              "create": false,
-              "update": false,
-              "read": false
-            }
           }
         },
         "x-f5xc-minimum-configuration": {
