@@ -656,7 +656,10 @@ class InterfaceContractEnricher:
                 "sanitized",
                 "redaction",
             }
-            if set(upgrade_receipt) != expected_upgrade_fields:
+            if (
+                not isinstance(upgrade_receipt, dict)
+                or set(upgrade_receipt) != expected_upgrade_fields
+            ):
                 raise InterfaceContractValidationError(
                     f"{resource}: AWS site upgrade receipt contains unsupported fields"
                 )

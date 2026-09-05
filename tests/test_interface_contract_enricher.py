@@ -436,6 +436,19 @@ def test_rejects_undeclared_aws_receipt_field(
         InterfaceContractEnricher(_write_config(tmp_path, invalid))
 
 
+def test_rejects_malformed_aws_site_upgrade_receipt(
+    tmp_path: Path, contract_config: dict[str, Any]
+) -> None:
+    invalid = copy.deepcopy(contract_config)
+    receipts = _contract(invalid)["providers"]["aws"]["evidence"]["receipts"]
+    receipts[1] = None
+    with pytest.raises(
+        InterfaceContractValidationError,
+        match="site upgrade receipt contains unsupported fields",
+    ):
+        InterfaceContractEnricher(_write_config(tmp_path, invalid))
+
+
 def test_aws_telemetry_intake_accepts_complete_required_observations(
     contract_config: dict[str, Any],
 ) -> None:
