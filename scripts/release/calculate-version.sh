@@ -9,6 +9,7 @@ set -euo pipefail
 
 : "${GITHUB_OUTPUT:?GITHUB_OUTPUT must point at the step output file}"
 : "${CHANGE_TYPE:?CHANGE_TYPE must be source, pipeline, or forced}"
+FORCE_RELEASE_TYPE="${FORCE_RELEASE_TYPE:-patch}"
 
 INDEX_FILE="docs/specifications/api/index.json"
 LATEST_TAG="$(git describe --tags --abbrev=0 2>/dev/null || true)"
@@ -31,8 +32,8 @@ else
   UNRELEASED_MESSAGES="$(git log -1 --pretty=%B 2>/dev/null || true)"
 fi
 
-if [[ "$UNRELEASED_MESSAGES" == *"[major]"* ]] || \
-  [[ "$UNRELEASED_MESSAGES" == *"BREAKING CHANGE"* ]] || \
+if [[ "$UNRELEASED_MESSAGES" == *"[major]"* ]] ||
+  [[ "$UNRELEASED_MESSAGES" == *"BREAKING CHANGE"* ]] ||
   grep -Eq '^[a-z][a-z0-9-]*(\([^)]*\))?!:' <<<"$UNRELEASED_MESSAGES"; then
   NEW_VERSION="$((MAJOR + 1)).0.0"
   BUMP_TYPE="major"
@@ -46,10 +47,26 @@ elif [ "$CHANGE_TYPE" = "source" ]; then
     NEW_VERSION="${MAJOR}.${MINOR}.$((PATCH + 1))"
     BUMP_TYPE="patch"
   fi
-elif [ "$CHANGE_TYPE" = "pipeline" ] || [ "$CHANGE_TYPE" = "forced" ]; then
+elif [ "$CHANGE_TYPE" = "pipeline" ]; then
   NEW_VERSION="${MAJOR}.${MINOR}.$((PATCH + 1))"
   BUMP_TYPE="patch"
-  echo "::notice::${CHANGE_TYPE^} release detected - patch bump"
+  echo "::notice::Pipeline release detected - patch bump"
+elif [ "$CHANGE_TYPE" = "forced" ]; then
+  case "$FORCE_RELEASE_TYPE" in
+  patch)
+    NEW_VERSION="${MAJOR}.${MINOR}.$((PATCH + 1))"
+    BUMP_TYPE="patch"
+    ;;
+  minor)
+    NEW_VERSION="${MAJOR}.$((MINOR + 1)).0"
+    BUMP_TYPE="minor"
+    ;;
+  *)
+    echo "::error::Unknown forced release type: $FORCE_RELEASE_TYPE" >&2
+    exit 1
+    ;;
+  esac
+  echo "::notice::Forced release detected - ${BUMP_TYPE} bump"
 else
   echo "::error::Unknown change type: $CHANGE_TYPE" >&2
   exit 1

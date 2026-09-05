@@ -33,6 +33,15 @@ on:
           bundle.
         type: boolean
         default: false
+      force_release_type:
+        description: >-
+          Semantic bump for an explicitly forced release. This is ignored unless
+          force_release is true; patch preserves the existing default behavior.
+        type: choice
+        options:
+          - patch
+          - minor
+        default: patch
 
 # Read-only default; each job declares what it consumes. Traced per write:
 #   sync-and-enrich  contents: write   `gh release create` runs as GITHUB_TOKEN
@@ -295,6 +304,7 @@ jobs:
         if: steps.detect.outputs.has_changes == 'true'
         env:
           CHANGE_TYPE: ${{ steps.detect.outputs.change_type }}
+          FORCE_RELEASE_TYPE: ${{ inputs.force_release_type || 'patch' }}
         run: bash scripts/release/calculate-version.sh
 
       - name: Update version in specs

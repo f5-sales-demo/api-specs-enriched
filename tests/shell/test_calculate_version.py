@@ -21,9 +21,11 @@ def _commit(repo: Path, message: str) -> None:
     _git(repo, "commit", "-m", message)
 
 
-def _run(repo: Path, change_type: str) -> dict[str, str]:
+def _run(repo: Path, change_type: str, force_release_type: str | None = None) -> dict[str, str]:
     output = repo / "github-output"
     env = os.environ | {"CHANGE_TYPE": change_type, "GITHUB_OUTPUT": str(output)}
+    if force_release_type is not None:
+        env["FORCE_RELEASE_TYPE"] = force_release_type
     subprocess.run(
         ["bash", str(SCRIPT)], cwd=repo, env=env, check=True, capture_output=True, text=True
     )
@@ -62,6 +64,34 @@ def test_forced_release_without_breaking_signal_is_patch(tmp_path: Path) -> None
         "new_version": "2.1.226",
         "bump_type": "patch",
     }
+
+
+def test_forced_minor_release_uses_explicit_operator_choice(tmp_path: Path) -> None:
+    repo = _repo(tmp_path)
+    _commit(repo, "fix(validation): fail closed")
+
+    assert _run(repo, "forced", "minor") == {
+        "current_version": "2.1.225",
+        "new_version": "2.2.0",
+        "bump_type": "minor",
+    }
+
+
+def test_invalid_forced_release_type_fails(tmp_path: Path) -> None:
+    repo = _repo(tmp_path)
+    output = repo / "github-output"
+    env = os.environ | {
+        "CHANGE_TYPE": "forced",
+        "FORCE_RELEASE_TYPE": "major",
+        "GITHUB_OUTPUT": str(output),
+    }
+
+    result = subprocess.run(
+        ["bash", str(SCRIPT)], cwd=repo, env=env, capture_output=True, text=True, check=False
+    )
+
+    assert result.returncode == 1
+    assert "Unknown forced release type" in result.stderr
 
 
 def test_unknown_change_type_fails(tmp_path: Path) -> None:
