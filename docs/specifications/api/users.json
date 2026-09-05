@@ -7959,6 +7959,30 @@
       "tokenCreateSpecType": {
         "type": "object",
         "description": "Creates new token. Token object is used to manage site admission. User must generate token before provisioning and pass this\ntoken to site during it's registration.",
+        "properties": {
+          "type": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Token type, where 0 is NORMAL and 1 is JWT.",
+            "enum": [
+              0,
+              1
+            ],
+            "default": 0,
+            "x-field-mutability": "immutable"
+          },
+          "content": {
+            "type": "string",
+            "description": "Server-issued JWT registration credential.",
+            "readOnly": true,
+            "x-f5xc-sensitive": true
+          },
+          "site_name": {
+            "type": "string",
+            "description": "Secure Mesh Site v2 name bound into a JWT token.",
+            "x-field-mutability": "immutable"
+          }
+        },
         "title": "Create token",
         "x-displayname": "Create Token.",
         "x-ves-proto-message": "ves.io.schema.token.CreateSpecType",
@@ -8381,6 +8405,28 @@
         "x-displayname": "GET Token",
         "x-ves-proto-message": "ves.io.schema.token.GetSpecType",
         "properties": {
+          "type": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Token type, where 0 is NORMAL and 1 is JWT.",
+            "enum": [
+              0,
+              1
+            ],
+            "default": 0,
+            "readOnly": true
+          },
+          "content": {
+            "type": "string",
+            "description": "Server-issued JWT registration credential.",
+            "readOnly": true,
+            "x-f5xc-sensitive": true
+          },
+          "site_name": {
+            "type": "string",
+            "description": "Secure Mesh Site v2 name bound into a JWT token.",
+            "readOnly": true
+          },
           "state": {
             "allOf": [
               {
@@ -8431,6 +8477,28 @@
         "x-displayname": "Specification.",
         "x-ves-proto-message": "ves.io.schema.token.GlobalSpecType",
         "properties": {
+          "type": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Token type, where 0 is NORMAL and 1 is JWT.",
+            "enum": [
+              0,
+              1
+            ],
+            "default": 0,
+            "readOnly": true
+          },
+          "content": {
+            "type": "string",
+            "description": "Server-issued JWT registration credential.",
+            "readOnly": true,
+            "x-f5xc-sensitive": true
+          },
+          "site_name": {
+            "type": "string",
+            "description": "Secure Mesh Site v2 name bound into a JWT token.",
+            "readOnly": true
+          },
           "state": {
             "allOf": [
               {

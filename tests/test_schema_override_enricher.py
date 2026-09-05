@@ -147,6 +147,74 @@ class TestSchemaOverrideEnricher:
             is True
         )
 
+    def test_restores_site_bound_jwt_token_contract(self, enricher):
+        """SMSv2 JWT creation and secret readback must match the legacy wire contract."""
+        spec = {
+            "components": {
+                "schemas": {
+                    "tokenCreateSpecType": {"type": "object"},
+                    "tokenGetSpecType": {
+                        "type": "object",
+                        "properties": {"state": {"type": "string"}},
+                    },
+                    "tokenGlobalSpecType": {
+                        "type": "object",
+                        "properties": {"state": {"type": "string"}},
+                    },
+                },
+            },
+        }
+
+        schemas = enricher.enrich_spec(spec, canonical_only=True)["components"]["schemas"]
+        expected_type = {
+            "type": "integer",
+            "format": "int32",
+            "description": "Token type, where 0 is NORMAL and 1 is JWT.",
+            "enum": [0, 1],
+            "default": 0,
+            "x-field-mutability": "immutable",
+        }
+        expected_site_name = {
+            "type": "string",
+            "description": "Secure Mesh Site v2 name bound into a JWT token.",
+            "x-field-mutability": "immutable",
+        }
+
+        assert schemas["tokenCreateSpecType"]["properties"] == {
+            "type": expected_type,
+            "content": {
+                "type": "string",
+                "description": "Server-issued JWT registration credential.",
+                "readOnly": True,
+                "x-f5xc-sensitive": True,
+            },
+            "site_name": expected_site_name,
+        }
+        for schema_name in ("tokenGetSpecType", "tokenGlobalSpecType"):
+            properties = schemas[schema_name]["properties"]
+            assert properties["type"] == {
+                **{
+                    key: value
+                    for key, value in expected_type.items()
+                    if key != "x-field-mutability"
+                },
+                "readOnly": True,
+            }
+            assert properties["site_name"] == {
+                **{
+                    key: value
+                    for key, value in expected_site_name.items()
+                    if key != "x-field-mutability"
+                },
+                "readOnly": True,
+            }
+            assert properties["content"] == {
+                "type": "string",
+                "description": "Server-issued JWT registration credential.",
+                "readOnly": True,
+                "x-f5xc-sensitive": True,
+            }
+
     def test_adds_observed_securemesh_interface_read_fields(self, enricher):
         """Live GET evidence must not be lost when upstream swagger lags it."""
         spec = {
