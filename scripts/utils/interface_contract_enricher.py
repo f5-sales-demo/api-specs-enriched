@@ -663,12 +663,15 @@ class InterfaceContractEnricher:
                 raise InterfaceContractValidationError(
                     f"{resource}: AWS site upgrade receipt contains unsupported fields"
                 )
+            upgrade_identity_valid = (
+                upgrade_receipt.get("operations") == AWS_UPGRADE_SUCCESS_OPERATIONS
+                and upgrade_receipt.get("result") == "accepted"
+                and upgrade_receipt.get("validated_facts") == AWS_UPGRADE_SUCCESS_FACTS
+                and upgrade_receipt.get("upgrade_path")
+                == profile.get("site_upgrade", {}).get("verified_path")
+            )
             if (
-                upgrade_receipt.get("operations") != AWS_UPGRADE_SUCCESS_OPERATIONS
-                or upgrade_receipt.get("result") != "accepted"
-                or upgrade_receipt.get("validated_facts") != AWS_UPGRADE_SUCCESS_FACTS
-                or upgrade_receipt.get("upgrade_path")
-                != profile.get("site_upgrade", {}).get("verified_path")
+                not upgrade_identity_valid
                 or upgrade_receipt.get("sanitized") is not True
                 or not isinstance(upgrade_receipt.get("redaction"), str)
             ):
