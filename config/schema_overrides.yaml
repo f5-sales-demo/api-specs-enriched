@@ -170,6 +170,52 @@ overrides:
             x-f5xc-description-medium: >-
               Signed URL for the requested Customer Edge image MD5 checksum.
 
+  token_site_bound_jwt:
+    canonical: true
+    upstream_issue: "f5-sales-demo/api-specs-enriched#1733"
+    description: >-
+      The current upstream token schemas omit the established token type, SMSv2
+      site binding, and server-issued JWT content. Restore the fields documented
+      by the legacy token protobuf so SMSv2 providers can request a JWT bound to
+      one site and protect the returned registration credential.
+    schemas:
+      - pattern: "^tokenCreateSpecType$"
+        inject_properties:
+          type:
+            type: integer
+            format: int32
+            description: Token type, where 0 is NORMAL and 1 is JWT.
+            enum: [0, 1]
+            default: 0
+            x-field-mutability: immutable
+          content:
+            type: string
+            description: Server-issued JWT registration credential.
+            readOnly: true
+            x-f5xc-sensitive: true
+          site_name:
+            type: string
+            description: Secure Mesh Site v2 name bound into a JWT token.
+            x-field-mutability: immutable
+      - pattern: "^token(Get|Global)SpecType$"
+        inject_properties:
+          type:
+            type: integer
+            format: int32
+            description: Token type, where 0 is NORMAL and 1 is JWT.
+            enum: [0, 1]
+            default: 0
+            readOnly: true
+          content:
+            type: string
+            description: Server-issued JWT registration credential.
+            readOnly: true
+            x-f5xc-sensitive: true
+          site_name:
+            type: string
+            description: Secure Mesh Site v2 name bound into a JWT token.
+            readOnly: true
+
   token_cloud_init:
     upstream_issue: "f5-sales-demo/api-specs-enriched#1485"
     description: >-
