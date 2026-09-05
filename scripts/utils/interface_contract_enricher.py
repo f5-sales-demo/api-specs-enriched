@@ -14,8 +14,8 @@ from .extension_constants import X_F5XC_CE_AUTOMATION_CONTRACT
 
 CONFIG_PATH = Path(__file__).parent.parent.parent / "config" / "interface_contracts.yaml"
 SUPPORTED_ROLES = frozenset({"slo", "external", "sli"})
-CONFIG_VERSION = "6.0.0"
-CONTRACT_VERSION = "6.0.0"
+CONFIG_VERSION = "6.1.0"
+CONTRACT_VERSION = "6.1.0"
 CONTRACT_ID = "f5xc-ce-automation/v3"
 CAPABILITY_STATES = frozenset({"available", "unavailable"})
 STABLE_IDENTITY_FIELDS = frozenset(
@@ -35,6 +35,7 @@ AWS_REQUIRED_TELEMETRY_FACTS = frozenset(
 AWS_V3_CAPABILITIES = {
     "aws_ce_create": "available",
     "runtime_status": "available",
+    "site_upgrade": "available",
     "tgw_connect": "available",
 }
 AWS_SUCCESS_OPERATIONS = ["create", "read", "replace", "delete"]
@@ -47,6 +48,21 @@ AWS_SUCCESS_FACTS = [
     "established_bgp_peers",
     "detailed_and_simplified_route_agreement",
     "zero_action_post_apply_plan",
+]
+AWS_UPGRADE_SUCCESS_OPERATIONS = [
+    "site_status",
+    "target_discovery",
+    "precheck",
+    "software_upgrade",
+    "os_upgrade",
+]
+AWS_UPGRADE_SUCCESS_FACTS = [
+    "installed_and_available_versions",
+    "deployment_phase_and_result",
+    "site_state",
+    "software_target_advertised",
+    "software_prechecks_passed",
+    "transient_failure_observed",
 ]
 AWS_V3_INTERFACE_IDENTITY = {
     "fields": ["node", "ethernet_interface.mac"],
@@ -177,6 +193,121 @@ AWS_V3_RUNTIME = {
         },
     },
 }
+AWS_SITE_UPGRADE = {
+    "site_status": {
+        "method": "GET",
+        "path": "/api/config/namespaces/{namespace}/sites/{site}",
+        "operation_id": "ves.io.schema.site.API.Get",
+        "response_schema": "siteGetResponse",
+        "response_mappings": {
+            "site_state": "spec.site_state",
+            "software_installed_version": (
+                "status[].volterra_software_status.last_installed_version"
+            ),
+            "software_available_version": "status[].volterra_software_status.available_version",
+            "software_deployment_phase": (
+                "status[].volterra_software_status.deployment_state.phase"
+            ),
+            "software_deployment_result": (
+                "status[].volterra_software_status.deployment_state.result"
+            ),
+            "os_installed_version": ("status[].operating_system_status.deployment_state.version"),
+            "os_available_version": "status[].operating_system_status.available_version",
+            "os_deployment_phase": "status[].operating_system_status.deployment_state.phase",
+            "os_deployment_result": "status[].operating_system_status.deployment_state.result",
+        },
+    },
+    "target_discovery": {
+        "method": "GET",
+        "path": "/api/maurice/upgradable_sw_versions",
+        "operation_id": (
+            "ves.io.schema.upgrade_status.UpgradeStatusCustomApi.GetUpgradableSWVersions"
+        ),
+        "query_mappings": {
+            "installed_os_version": "current_os_version",
+            "installed_software_version": "current_sw_version",
+        },
+        "response_schema": "upgrade_statusGetUpgradableSWVersionsResponse",
+        "response_mappings": {"upgradable_software_versions": "sw_versions[]"},
+    },
+    "precheck": {
+        "method": "GET",
+        "path": "/api/maurice/namespaces/{namespace}/sites/{site}/pre_upgrade_check",
+        "operation_id": "ves.io.schema.upgrade_status.UpgradeStatusCustomApi.PreUpgradeCheck",
+        "query_mappings": {"software_version": "sw_version"},
+        "response_schema": "upgrade_statusPreUpgradeCheckResponse",
+        "response_mappings": {
+            "checks": "checklist[]",
+            "name": "checklist[].item",
+            "status": "checklist[].status",
+        },
+        "passing_statuses": ["CHECKLIST_PASSED", "CHECKLIST_WARNING"],
+        "failure_statuses": ["CHECKLIST_FAILED", "CHECKLIST_UNKNOWN"],
+    },
+    "upgrade_status": {
+        "method": "GET",
+        "path": "/api/maurice/namespaces/{namespace}/sites/{site}/upgrade_status",
+        "operation_id": "ves.io.schema.upgrade_status.UpgradeStatusCustomApi.GetUpgradeStatus",
+        "response_schema": "upgrade_statusGetUpgradeStatusResponse",
+        "response_mappings": {
+            "version": "upgrade_status.sw_upgrade_progress.version",
+            "status": "upgrade_status.sw_upgrade_progress.status",
+            "validation_status": "upgrade_status.sw_upgrade_progress.validation.status",
+            "site_level_status": "upgrade_status.sw_upgrade_progress.site_level_upgrade.status",
+            "node_level_status": "upgrade_status.sw_upgrade_progress.node_level_upgrade.status",
+            "os_setup_status": "upgrade_status.sw_upgrade_progress.os_setup.status",
+        },
+    },
+    "software_upgrade": {
+        "method": "POST",
+        "path": "/api/config/namespaces/{namespace}/sites/{site}/upgrade_sw",
+        "operation_id": "ves.io.schema.site.UpgradeAPI.UpgradeSW",
+        "request_schema": "siteUpgradeSWRequest",
+        "request_mappings": {
+            "site": "name",
+            "software_version": "version",
+            "force": "force",
+        },
+        "force": False,
+        "semantics": "asynchronous",
+    },
+    "os_upgrade": {
+        "method": "POST",
+        "path": "/api/config/namespaces/{namespace}/sites/{site}/upgrade_os",
+        "operation_id": "ves.io.schema.site.UpgradeAPI.UpgradeOS",
+        "request_schema": "siteUpgradeOSRequest",
+        "request_mappings": {
+            "site": "name",
+            "os_version": "version",
+            "force": "force",
+        },
+        "force": False,
+        "semantics": "asynchronous",
+    },
+    "eligibility": {
+        "site_state": "ONLINE",
+        "software_target": "listed_in_upgradable_software_versions",
+        "os_target": "equals_advertised_os_available_version",
+        "software_prechecks": "all_pass_or_warning",
+    },
+    "polling": {
+        "transient_failure_values": ["UPGRADE_FAILED", "FAILED"],
+        "failure_semantics": "transient_until_bounded_timeout",
+        "completion": "supplied_targets_installed_and_site_online",
+        "timeout_authority": "caller",
+    },
+    "redaction": {
+        "exported": "sanitized_status_fields_only",
+        "prohibited": ["raw_api_messages", "node_identifiers", "urls"],
+    },
+    "verified_path": {
+        "installed_software": "crt-20251002-0027",
+        "installed_os": "9.2026.10",
+        "target_software": "crt-20260201-0179",
+        "target_os": "9.2026.17",
+        "software_prechecks": "passed",
+    },
+}
 AWS_V3_AUTHORITIES = {
     "f5xc": [
         "smsv2_configuration",
@@ -184,6 +315,7 @@ AWS_V3_AUTHORITIES = {
         "bgp_peers",
         "bgp_routes",
         "simplified_routes",
+        "site_upgrade_observation",
     ],
     "aws": [
         "eni",
@@ -256,6 +388,8 @@ def validate_aws_v3_contract(profile: object) -> None:
         raise InterfaceContractValidationError(
             "AWS runtime endpoints or schemas are incomplete or legacy"
         )
+    if profile.get("site_upgrade") != AWS_SITE_UPGRADE:
+        raise InterfaceContractValidationError("AWS site upgrade contract is incomplete")
     if profile.get("authorities") != AWS_V3_AUTHORITIES:
         raise InterfaceContractValidationError("AWS and F5 authority declarations are invalid")
 
@@ -457,14 +591,15 @@ class InterfaceContractEnricher:
             raise InterfaceContractValidationError(
                 f"{resource}: AWS evidence record timestamp is required"
             )
-        if evidence.get("profiles") != ["aws-shaped-ce-configuration"]:
+        if evidence.get("profiles") != ["aws-shaped-ce-configuration", "aws-site-upgrade"]:
             raise InterfaceContractValidationError(
                 f"{resource}: AWS evidence profile is incomplete"
             )
         receipts = evidence.get("receipts")
+        expected_receipt_count = 2 if availability == "evidence_backed" else 1
         if (
             not isinstance(receipts, list)
-            or len(receipts) != 1
+            or len(receipts) != expected_receipt_count
             or not isinstance(receipts[0], dict)
         ):
             raise InterfaceContractValidationError(f"{resource}: AWS evidence receipt is required")
@@ -511,6 +646,32 @@ class InterfaceContractEnricher:
             or not isinstance(receipt.get("redaction"), str)
         ):
             raise InterfaceContractValidationError(f"{resource}: AWS evidence receipt is invalid")
+        if availability == "evidence_backed":
+            upgrade_receipt = receipts[1]
+            expected_upgrade_fields = {
+                "operations",
+                "result",
+                "validated_facts",
+                "upgrade_path",
+                "sanitized",
+                "redaction",
+            }
+            if set(upgrade_receipt) != expected_upgrade_fields:
+                raise InterfaceContractValidationError(
+                    f"{resource}: AWS site upgrade receipt contains unsupported fields"
+                )
+            if (
+                upgrade_receipt.get("operations") != AWS_UPGRADE_SUCCESS_OPERATIONS
+                or upgrade_receipt.get("result") != "accepted"
+                or upgrade_receipt.get("validated_facts") != AWS_UPGRADE_SUCCESS_FACTS
+                or upgrade_receipt.get("upgrade_path")
+                != profile.get("site_upgrade", {}).get("verified_path")
+                or upgrade_receipt.get("sanitized") is not True
+                or not isinstance(upgrade_receipt.get("redaction"), str)
+            ):
+                raise InterfaceContractValidationError(
+                    f"{resource}: AWS site upgrade receipt is invalid"
+                )
 
     def _validate_interface_profile(self, resource: str, contract: dict[str, Any]) -> None:
         if contract.get("availability") != "evidence_backed":

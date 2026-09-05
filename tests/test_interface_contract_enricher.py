@@ -157,11 +157,40 @@ def test_contract_defines_stable_identity_and_role_invariants() -> None:
     assert contract["api"]["namespace"] == "system"
     assert contract["api"]["operations"] == ["create", "read", "replace", "delete"]
     assert contract["providers"]["aws"]["availability"] == "evidence_backed"
-    assert contract["version"] == "6.0.0"
+    assert contract["version"] == "6.1.0"
     assert contract["providers"]["aws"]["capabilities"] == {
         "aws_ce_create": "available",
         "runtime_status": "available",
+        "site_upgrade": "available",
         "tgw_connect": "available",
+    }
+    upgrade = contract["providers"]["aws"]["site_upgrade"]
+    assert upgrade["site_status"]["response_mappings"] == {
+        "site_state": "spec.site_state",
+        "software_installed_version": "status[].volterra_software_status.last_installed_version",
+        "software_available_version": "status[].volterra_software_status.available_version",
+        "software_deployment_phase": "status[].volterra_software_status.deployment_state.phase",
+        "software_deployment_result": "status[].volterra_software_status.deployment_state.result",
+        "os_installed_version": "status[].operating_system_status.deployment_state.version",
+        "os_available_version": "status[].operating_system_status.available_version",
+        "os_deployment_phase": "status[].operating_system_status.deployment_state.phase",
+        "os_deployment_result": "status[].operating_system_status.deployment_state.result",
+    }
+    assert upgrade["target_discovery"]["response_mappings"] == {
+        "upgradable_software_versions": "sw_versions[]"
+    }
+    assert upgrade["precheck"]["response_mappings"] == {
+        "checks": "checklist[]",
+        "name": "checklist[].item",
+        "status": "checklist[].status",
+    }
+    assert upgrade["polling"]["transient_failure_values"] == ["UPGRADE_FAILED", "FAILED"]
+    assert upgrade["verified_path"] == {
+        "installed_software": "crt-20251002-0027",
+        "installed_os": "9.2026.10",
+        "target_software": "crt-20260201-0179",
+        "target_os": "9.2026.17",
+        "software_prechecks": "passed",
     }
     assert [role["name"] for role in contract["providers"]["aws"]["roles"]] == ["slo", "sli"]
     assert contract["providers"]["aws"]["bootstrap"]["mode"] == "interactive_console_only"
@@ -261,7 +290,7 @@ def test_accepts_additive_current_contract_fields(
 
     enricher = InterfaceContractEnricher(_write_config(tmp_path, compatible))
 
-    assert enricher.contracts[0][1]["version"] == "6.0.0"
+    assert enricher.contracts[0][1]["version"] == "6.1.0"
     assert enricher.contracts[0][1]["providers"]["gcp"]["availability"] == "schema_only"
 
 
@@ -374,7 +403,7 @@ def test_rejects_unsanitized_aws_evidence(tmp_path: Path, contract_config: dict[
 def test_aws_evidence_receipt_has_closed_modern_shape(
     contract_config: dict[str, Any],
 ) -> None:
-    assert contract_config["version"] == "6.0.0"
+    assert contract_config["version"] == "6.1.0"
     receipt = _contract(contract_config)["providers"]["aws"]["evidence"]["receipts"][0]
     assert set(receipt) == {
         "operations",
