@@ -1324,6 +1324,30 @@ def test_smsv2_addressing_preserves_current_api_round_trip(enricher):
 
 
 @pytest.mark.parametrize(
+    "schema_name",
+    ["virtual_networkStaticRouteViewType", "virtual_networkStaticV6RouteViewType"],
+)
+def test_static_route_requires_exactly_one_declared_next_hop(enricher, schema_name):
+    """XC rejects static routes whose declared next-hop choice is empty."""
+    members = ["default_gateway", "ip_address", "node_interface"]
+    spec = {
+        "components": {
+            "schemas": {
+                schema_name: {
+                    "type": "object",
+                    "properties": {member: {"type": "object"} for member in members},
+                    "x-ves-oneof-field-next_hop_choice": json.dumps(members),
+                }
+            }
+        }
+    }
+
+    schema = enricher.enrich_spec(spec, canonical_only=True)["components"]["schemas"][schema_name]
+    assert schema["x-f5xc-required-oneof-groups"] == {"next_hop_choice": members}
+    assert json.loads(schema["x-ves-oneof-field-next_hop_choice"]) == members
+
+
+@pytest.mark.parametrize(
     ("name", "field", "field_type", "group", "siblings"),
     [
         (

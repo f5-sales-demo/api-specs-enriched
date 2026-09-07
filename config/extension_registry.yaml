@@ -380,6 +380,19 @@ property_level:
     issue: "#494"
     note: "Enables downstream tools to validate conflicts at schema level rather than runtime"
 
+  x-f5xc-required-oneof-groups:
+    type: object
+    purpose: Declares OneOf groups for which consumers must select exactly one member
+    consumers: [terraform, cli, mcp, ide]
+    source: "Curated from live API validation where x-ves-oneof-field-* only declares exclusivity"
+    properties:
+      "{oneof_group}": "Ordered list of member property names"
+    example:
+      next_hop_choice: [default_gateway, ip_address, node_interface]
+    added_in: "6.1.2"
+    issue: "#1741"
+    note: "Pair with x-f5xc-conflicts-with to enforce exactly one selection"
+
   x-f5xc-references:
     type: array
     items: object

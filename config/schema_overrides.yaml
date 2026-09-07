@@ -16,6 +16,21 @@ description: >
 # not to the general /healthchecks endpoint used by HTTP load balancers.
 # See issue #294 for context.
 overrides:
+  static_route_required_next_hop:
+    canonical: true
+    upstream_issue: "f5-sales-demo/api-specs-enriched#1741"
+    description: >-
+      Sanitized live SMSv2 evidence on 2026-09-07: XC rejects IPv4 static
+      routes without a next-hop selection with `next_hop_choice should be not
+      nil`. The upstream schemas already declare the three mutually exclusive
+      members; record that exactly one member is required so consumers can
+      reject the request before sending it.
+    schemas:
+      - pattern: "^virtual_networkStatic(V6)?RouteViewType$"
+        inject_extensions:
+          x-f5xc-required-oneof-groups:
+            next_hop_choice: [default_gateway, ip_address, node_interface]
+
   securemesh_site_v2_selection_and_drain:
     canonical: true
     upstream_issue: "f5-sales-demo/api-specs-enriched#1738"
