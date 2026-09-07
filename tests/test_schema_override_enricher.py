@@ -1342,9 +1342,7 @@ def test_static_route_requires_exactly_one_declared_next_hop(enricher, schema_na
         }
     }
 
-    schema = enricher.enrich_spec(spec, canonical_only=True)["components"]["schemas"][
-        schema_name
-    ]
+    schema = enricher.enrich_spec(spec, canonical_only=True)["components"]["schemas"][schema_name]
     assert schema["x-f5xc-required-oneof-groups"] == {"next_hop_choice": members}
     assert json.loads(schema["x-ves-oneof-field-next_hop_choice"]) == members
 
