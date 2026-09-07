@@ -64,11 +64,7 @@
             "name": "Create API Token",
             "description": "In Administration > Personal Management > Credentials, click Add Credentials, set Credential Type to API Token, enter a Credential Name and Expiry Date, then Generate",
             "resource": "api_credential",
-            "required_fields": [
-              "credential_name",
-              "credential_type",
-              "expiry_date"
-            ],
+            "required_fields": ["credential_name", "credential_type", "expiry_date"],
             "tips": [
               "Set Credential Type to API Token. The default is API Certificate, which produces a P12 file, not a bearer token.",
               "The token string is shown only once on the reveal panel. Capture it immediately, before dismissing the panel."
@@ -79,33 +75,23 @@
             "action": "capture_token",
             "name": "Capture the Generated Token",
             "description": "Read the one-time token value from the reveal panel",
-            "depends_on": [
-              1
-            ],
-            "verification": [
-              "Token value captured before the reveal panel is dismissed"
-            ]
+            "depends_on": [1],
+            "verification": ["Token value captured before the reveal panel is dismissed"]
           },
           {
             "order": 3,
             "action": "call_api_with_token",
             "name": "Call the F5 XC API with the Token",
             "description": "Use the captured token in an XC-API call with header Authorization APIToken to confirm it works, for example list namespaces",
-            "depends_on": [
-              2
-            ],
-            "verification": [
-              "XC-API GET /api/web/namespaces returns HTTP 200 with the tenant namespaces"
-            ]
+            "depends_on": [2],
+            "verification": ["XC-API GET /api/web/namespaces returns HTTP 200 with the tenant namespaces"]
           }
         ]
       }
     ],
     "x-f5xc-namespace-profile": {
       "constraint": {
-        "allowed": [
-          "system"
-        ],
+        "allowed": ["system"],
         "enforced": false
       },
       "recommendation": {
@@ -131,19 +117,12 @@
         "console_url": {
           "default": "console.ves.volterra.io",
           "description": "Console URL base (e.g., console.ves.volterra.io for production, staging.volterra.us for staging)",
-          "enum": [
-            "console.ves.volterra.io",
-            "staging.volterra.us"
-          ]
+          "enum": ["console.ves.volterra.io", "staging.volterra.us"]
         },
         "environment": {
           "default": "production",
           "description": "Environment designation (production, staging, development)",
-          "enum": [
-            "production",
-            "staging",
-            "development"
-          ]
+          "enum": ["production", "staging", "development"]
         },
         "domain_prefix": {
           "default": "api",
@@ -291,30 +270,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/tenant_and_identity/"
         },
         "x-ves-proto-rpc": "ves.io.schema.api_credential.CustomAPI.BulkRevoke",
-        "tags": [
-          "web"
-        ],
+        "tags": ["web"],
         "x-f5xc-operation-metadata": {
           "purpose": "API credential for programmatic access",
-          "required_fields": [
-            "metadata.name",
-            "metadata.namespace"
-          ],
+          "required_fields": ["metadata.name", "metadata.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": [
-              "Api-credential resource created",
-              "Resource assigned unique identifier"
-            ]
+            "prerequisites": ["Active namespace"],
+            "postconditions": ["Api-credential resource created", "Resource assigned unique identifier"]
           },
           "side_effects": {
-            "creates": [
-              "api-credential"
-            ]
+            "creates": ["api-credential"]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -355,15 +322,10 @@
             "resource_usage": "high"
           }
         },
-        "x-f5xc-required-fields": [
-          "metadata.name",
-          "metadata.namespace"
-        ],
+        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace"],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": [
-            "api-credential"
-          ]
+          "creates": ["api-credential"]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -497,30 +459,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/tenant_and_identity/"
         },
         "x-ves-proto-rpc": "ves.io.schema.api_credential.CustomAPI.BulkRevokeServiceCredentials",
-        "tags": [
-          "web"
-        ],
+        "tags": ["web"],
         "x-f5xc-operation-metadata": {
           "purpose": "Service credential for API authentication",
-          "required_fields": [
-            "metadata.name",
-            "metadata.namespace"
-          ],
+          "required_fields": ["metadata.name", "metadata.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": [
-              "Service-credential resource created",
-              "Resource assigned unique identifier"
-            ]
+            "prerequisites": ["Active namespace"],
+            "postconditions": ["Service-credential resource created", "Resource assigned unique identifier"]
           },
           "side_effects": {
-            "creates": [
-              "service-credential"
-            ]
+            "creates": ["service-credential"]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -561,15 +511,10 @@
             "resource_usage": "high"
           }
         },
-        "x-f5xc-required-fields": [
-          "metadata.name",
-          "metadata.namespace"
-        ],
+        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace"],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": [
-            "service-credential"
-          ]
+          "creates": ["service-credential"]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -716,31 +661,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/tenant_and_identity/"
         },
         "x-ves-proto-rpc": "ves.io.schema.api_credential.CustomAPI.Activate",
-        "tags": [
-          "web"
-        ],
+        "tags": ["web"],
         "x-f5xc-operation-metadata": {
           "purpose": "API credential for programmatic access",
-          "required_fields": [
-            "metadata.name",
-            "metadata.namespace",
-            "path.namespace"
-          ],
+          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": [
-              "Api-credential resource created",
-              "Resource assigned unique identifier"
-            ]
+            "prerequisites": ["Active namespace"],
+            "postconditions": ["Api-credential resource created", "Resource assigned unique identifier"]
           },
           "side_effects": {
-            "creates": [
-              "api-credential"
-            ]
+            "creates": ["api-credential"]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -781,16 +713,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": [
-          "metadata.name",
-          "metadata.namespace",
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace"],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": [
-            "api-credential"
-          ]
+          "creates": ["api-credential"]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -937,31 +863,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/tenant_and_identity/"
         },
         "x-ves-proto-rpc": "ves.io.schema.api_credential.CustomAPI.ActivateServiceCredentials",
-        "tags": [
-          "web"
-        ],
+        "tags": ["web"],
         "x-f5xc-operation-metadata": {
           "purpose": "Service credential for API authentication",
-          "required_fields": [
-            "metadata.name",
-            "metadata.namespace",
-            "path.namespace"
-          ],
+          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": [
-              "Service-credential resource created",
-              "Resource assigned unique identifier"
-            ]
+            "prerequisites": ["Active namespace"],
+            "postconditions": ["Service-credential resource created", "Resource assigned unique identifier"]
           },
           "side_effects": {
-            "creates": [
-              "service-credential"
-            ]
+            "creates": ["service-credential"]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -1002,16 +915,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": [
-          "metadata.name",
-          "metadata.namespace",
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace"],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": [
-            "service-credential"
-          ]
+          "creates": ["service-credential"]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -1148,20 +1055,14 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/tenant_and_identity/"
         },
         "x-ves-proto-rpc": "ves.io.schema.api_credential.CustomAPI.List",
-        "tags": [
-          "web"
-        ],
+        "tags": ["web"],
         "x-f5xc-operation-metadata": {
           "purpose": "API credential for programmatic access",
-          "required_fields": [
-            "path.namespace"
-          ],
+          "required_fields": ["path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
+            "prerequisites": ["Active namespace"],
             "postconditions": []
           },
           "side_effects": {},
@@ -1204,9 +1105,7 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": [
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["path.namespace"],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -1348,31 +1247,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/tenant_and_identity/"
         },
         "x-ves-proto-rpc": "ves.io.schema.api_credential.CustomAPI.Create",
-        "tags": [
-          "web"
-        ],
+        "tags": ["web"],
         "x-f5xc-operation-metadata": {
           "purpose": "API credential for programmatic access",
-          "required_fields": [
-            "metadata.name",
-            "metadata.namespace",
-            "path.namespace"
-          ],
+          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": [
-              "Api-credential resource created",
-              "Resource assigned unique identifier"
-            ]
+            "prerequisites": ["Active namespace"],
+            "postconditions": ["Api-credential resource created", "Resource assigned unique identifier"]
           },
           "side_effects": {
-            "creates": [
-              "api-credential"
-            ]
+            "creates": ["api-credential"]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -1413,16 +1299,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": [
-          "metadata.name",
-          "metadata.namespace",
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace"],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": [
-            "api-credential"
-          ]
+          "creates": ["api-credential"]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -1570,21 +1450,14 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/tenant_and_identity/"
         },
         "x-ves-proto-rpc": "ves.io.schema.api_credential.CustomAPI.Get",
-        "tags": [
-          "web"
-        ],
+        "tags": ["web"],
         "x-f5xc-operation-metadata": {
           "purpose": "API credential for programmatic access",
-          "required_fields": [
-            "path.name",
-            "path.namespace"
-          ],
+          "required_fields": ["path.name", "path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
+            "prerequisites": ["Active namespace"],
             "postconditions": []
           },
           "side_effects": {},
@@ -1627,10 +1500,7 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": [
-          "path.name",
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["path.name", "path.namespace"],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -1777,31 +1647,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/tenant_and_identity/"
         },
         "x-ves-proto-rpc": "ves.io.schema.api_credential.CustomAPI.Renew",
-        "tags": [
-          "web"
-        ],
+        "tags": ["web"],
         "x-f5xc-operation-metadata": {
           "purpose": "API credential for programmatic access",
-          "required_fields": [
-            "metadata.name",
-            "metadata.namespace",
-            "path.namespace"
-          ],
+          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": [
-              "Api-credential resource created",
-              "Resource assigned unique identifier"
-            ]
+            "prerequisites": ["Active namespace"],
+            "postconditions": ["Api-credential resource created", "Resource assigned unique identifier"]
           },
           "side_effects": {
-            "creates": [
-              "api-credential"
-            ]
+            "creates": ["api-credential"]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -1842,16 +1699,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": [
-          "metadata.name",
-          "metadata.namespace",
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace"],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": [
-            "api-credential"
-          ]
+          "creates": ["api-credential"]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -1998,31 +1849,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/tenant_and_identity/"
         },
         "x-ves-proto-rpc": "ves.io.schema.api_credential.CustomAPI.RenewServiceCredentials",
-        "tags": [
-          "web"
-        ],
+        "tags": ["web"],
         "x-f5xc-operation-metadata": {
           "purpose": "Service credential for API authentication",
-          "required_fields": [
-            "metadata.name",
-            "metadata.namespace",
-            "path.namespace"
-          ],
+          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": [
-              "Service-credential resource created",
-              "Resource assigned unique identifier"
-            ]
+            "prerequisites": ["Active namespace"],
+            "postconditions": ["Service-credential resource created", "Resource assigned unique identifier"]
           },
           "side_effects": {
-            "creates": [
-              "service-credential"
-            ]
+            "creates": ["service-credential"]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -2063,16 +1901,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": [
-          "metadata.name",
-          "metadata.namespace",
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace"],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": [
-            "service-credential"
-          ]
+          "creates": ["service-credential"]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -2219,31 +2051,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/tenant_and_identity/"
         },
         "x-ves-proto-rpc": "ves.io.schema.api_credential.CustomAPI.Revoke",
-        "tags": [
-          "web"
-        ],
+        "tags": ["web"],
         "x-f5xc-operation-metadata": {
           "purpose": "API credential for programmatic access",
-          "required_fields": [
-            "metadata.name",
-            "metadata.namespace",
-            "path.namespace"
-          ],
+          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": [
-              "Api-credential resource created",
-              "Resource assigned unique identifier"
-            ]
+            "prerequisites": ["Active namespace"],
+            "postconditions": ["Api-credential resource created", "Resource assigned unique identifier"]
           },
           "side_effects": {
-            "creates": [
-              "api-credential"
-            ]
+            "creates": ["api-credential"]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -2284,16 +2103,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": [
-          "metadata.name",
-          "metadata.namespace",
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace"],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": [
-            "api-credential"
-          ]
+          "creates": ["api-credential"]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -2440,31 +2253,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/tenant_and_identity/"
         },
         "x-ves-proto-rpc": "ves.io.schema.api_credential.CustomAPI.RevokeScimToken",
-        "tags": [
-          "web"
-        ],
+        "tags": ["web"],
         "x-f5xc-operation-metadata": {
           "purpose": "Authentication credential for access control",
-          "required_fields": [
-            "metadata.name",
-            "metadata.namespace",
-            "path.namespace"
-          ],
+          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": [
-              "Scim-token resource created",
-              "Resource assigned unique identifier"
-            ]
+            "prerequisites": ["Active namespace"],
+            "postconditions": ["Scim-token resource created", "Resource assigned unique identifier"]
           },
           "side_effects": {
-            "creates": [
-              "scim-token"
-            ]
+            "creates": ["scim-token"]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -2505,16 +2305,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": [
-          "metadata.name",
-          "metadata.namespace",
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace"],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": [
-            "scim-token"
-          ]
+          "creates": ["scim-token"]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -2661,31 +2455,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/tenant_and_identity/"
         },
         "x-ves-proto-rpc": "ves.io.schema.api_credential.CustomAPI.RevokeServiceCredentials",
-        "tags": [
-          "web"
-        ],
+        "tags": ["web"],
         "x-f5xc-operation-metadata": {
           "purpose": "Service credential for API authentication",
-          "required_fields": [
-            "metadata.name",
-            "metadata.namespace",
-            "path.namespace"
-          ],
+          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": [
-              "Service-credential resource created",
-              "Resource assigned unique identifier"
-            ]
+            "prerequisites": ["Active namespace"],
+            "postconditions": ["Service-credential resource created", "Resource assigned unique identifier"]
           },
           "side_effects": {
-            "creates": [
-              "service-credential"
-            ]
+            "creates": ["service-credential"]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -2726,16 +2507,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": [
-          "metadata.name",
-          "metadata.namespace",
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace"],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": [
-            "service-credential"
-          ]
+          "creates": ["service-credential"]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -2872,20 +2647,14 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/tenant_and_identity/"
         },
         "x-ves-proto-rpc": "ves.io.schema.api_credential.CustomAPI.GetScimToken",
-        "tags": [
-          "web"
-        ],
+        "tags": ["web"],
         "x-f5xc-operation-metadata": {
           "purpose": "Authentication credential for access control",
-          "required_fields": [
-            "path.namespace"
-          ],
+          "required_fields": ["path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
+            "prerequisites": ["Active namespace"],
             "postconditions": []
           },
           "side_effects": {},
@@ -2928,9 +2697,7 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": [
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["path.namespace"],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -3072,31 +2839,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/tenant_and_identity/"
         },
         "x-ves-proto-rpc": "ves.io.schema.api_credential.CustomAPI.RecreateScimToken",
-        "tags": [
-          "web"
-        ],
+        "tags": ["web"],
         "x-f5xc-operation-metadata": {
           "purpose": "Authentication credential for access control",
-          "required_fields": [
-            "metadata.name",
-            "metadata.namespace",
-            "path.namespace"
-          ],
+          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": [
-              "Scim-token resource created",
-              "Resource assigned unique identifier"
-            ]
+            "prerequisites": ["Active namespace"],
+            "postconditions": ["Scim-token resource created", "Resource assigned unique identifier"]
           },
           "side_effects": {
-            "creates": [
-              "scim-token"
-            ]
+            "creates": ["scim-token"]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -3137,16 +2891,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": [
-          "metadata.name",
-          "metadata.namespace",
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace"],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": [
-            "scim-token"
-          ]
+          "creates": ["scim-token"]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -3283,20 +3031,14 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/tenant_and_identity/"
         },
         "x-ves-proto-rpc": "ves.io.schema.api_credential.CustomAPI.ListServiceCredentials",
-        "tags": [
-          "web"
-        ],
+        "tags": ["web"],
         "x-f5xc-operation-metadata": {
           "purpose": "Service credential for API authentication",
-          "required_fields": [
-            "path.namespace"
-          ],
+          "required_fields": ["path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
+            "prerequisites": ["Active namespace"],
             "postconditions": []
           },
           "side_effects": {},
@@ -3339,9 +3081,7 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": [
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["path.namespace"],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -3483,31 +3223,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/tenant_and_identity/"
         },
         "x-ves-proto-rpc": "ves.io.schema.api_credential.CustomAPI.CreateServiceCredentials",
-        "tags": [
-          "web"
-        ],
+        "tags": ["web"],
         "x-f5xc-operation-metadata": {
           "purpose": "Service credential for API authentication",
-          "required_fields": [
-            "metadata.name",
-            "metadata.namespace",
-            "path.namespace"
-          ],
+          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": [
-              "Service-credential resource created",
-              "Resource assigned unique identifier"
-            ]
+            "prerequisites": ["Active namespace"],
+            "postconditions": ["Service-credential resource created", "Resource assigned unique identifier"]
           },
           "side_effects": {
-            "creates": [
-              "service-credential"
-            ]
+            "creates": ["service-credential"]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -3548,16 +3275,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": [
-          "metadata.name",
-          "metadata.namespace",
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace"],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": [
-            "service-credential"
-          ]
+          "creates": ["service-credential"]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -3705,21 +3426,14 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/tenant_and_identity/"
         },
         "x-ves-proto-rpc": "ves.io.schema.api_credential.CustomAPI.GetServiceCredentials",
-        "tags": [
-          "web"
-        ],
+        "tags": ["web"],
         "x-f5xc-operation-metadata": {
           "purpose": "Service credential for API authentication",
-          "required_fields": [
-            "path.name",
-            "path.namespace"
-          ],
+          "required_fields": ["path.name", "path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
+            "prerequisites": ["Active namespace"],
             "postconditions": []
           },
           "side_effects": {},
@@ -3762,10 +3476,7 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": [
-          "path.name",
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["path.name", "path.namespace"],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -3918,29 +3629,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/tenant_and_identity/"
         },
         "x-ves-proto-rpc": "ves.io.schema.api_credential.CustomAPI.ReplaceServiceCredentials",
-        "tags": [
-          "web"
-        ],
+        "tags": ["web"],
         "x-f5xc-operation-metadata": {
           "purpose": "Service credential for API authentication",
-          "required_fields": [
-            "path.name",
-            "path.namespace"
-          ],
+          "required_fields": ["path.name", "path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": [
-              "Resource updated with new values"
-            ]
+            "prerequisites": ["Active namespace"],
+            "postconditions": ["Resource updated with new values"]
           },
           "side_effects": {
-            "modifies": [
-              "service-credential"
-            ]
+            "modifies": ["service-credential"]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -3981,15 +3681,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": [
-          "path.name",
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["path.name", "path.namespace"],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "modifies": [
-            "service-credential"
-          ]
+          "modifies": ["service-credential"]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 800,
@@ -4050,9 +3745,7 @@
         "x-f5xc-cli-domain": "api",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -4121,9 +3814,7 @@
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for api_credentialApiCertificateType",
-          "required_fields": [
-            "password"
-          ],
+          "required_fields": ["password"],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"password\": \"example\"\n}",
           "example_yaml": "password: example"
@@ -4131,9 +3822,7 @@
         "x-f5xc-cli-domain": "certificates",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -4168,9 +3857,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "name_selector"
-            ]
+            "x-f5xc-conflicts-with": ["name_selector"]
           },
           "name_selector": {
             "allOf": [
@@ -4185,9 +3872,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "expired_selector"
-            ]
+            "x-f5xc-conflicts-with": ["expired_selector"]
           }
         },
         "x-f5xc-description-short": "Request format for revoking multiple API credentials.",
@@ -4201,9 +3886,7 @@
         "x-f5xc-cli-domain": "api",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -4292,9 +3975,7 @@
         "x-f5xc-cli-domain": "api",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -4447,9 +4128,7 @@
         "x-f5xc-cli-domain": "api",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -4587,9 +4266,7 @@
         "x-f5xc-cli-domain": "api",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -4623,11 +4300,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "api_token",
-              "site_kubeconfig",
-              "vk8s_kubeconfig"
-            ]
+            "x-f5xc-conflicts-with": ["api_token", "site_kubeconfig", "vk8s_kubeconfig"]
           },
           "api_token": {
             "allOf": [
@@ -4641,11 +4314,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "api_certificate",
-              "site_kubeconfig",
-              "vk8s_kubeconfig"
-            ]
+            "x-f5xc-conflicts-with": ["api_certificate", "site_kubeconfig", "vk8s_kubeconfig"]
           },
           "expiration_days": {
             "type": "integer",
@@ -4816,11 +4485,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "api_certificate",
-              "api_token",
-              "vk8s_kubeconfig"
-            ]
+            "x-f5xc-conflicts-with": ["api_certificate", "api_token", "vk8s_kubeconfig"]
           },
           "type": {
             "allOf": [
@@ -4917,19 +4582,13 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "api_certificate",
-              "api_token",
-              "site_kubeconfig"
-            ]
+            "x-f5xc-conflicts-with": ["api_certificate", "api_token", "site_kubeconfig"]
           }
         },
         "x-f5xc-description-short": "CreateServiceCredentialsRequest is the request format for creating service credentials.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for api_credentialCreateServiceCredentialsRequest",
-          "required_fields": [
-            "password"
-          ],
+          "required_fields": ["password"],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"password\": \"example\"\n}",
           "example_yaml": "password: example"
@@ -4937,9 +4596,7 @@
         "x-f5xc-cli-domain": "api",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -5063,9 +4720,7 @@
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for api_credentialCustomCreateSpecType",
-          "required_fields": [
-            "password"
-          ],
+          "required_fields": ["password"],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"password\": \"example\"\n}",
           "example_yaml": "password: example"
@@ -5073,9 +4728,7 @@
         "x-f5xc-cli-domain": "api",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -5109,9 +4762,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "credential_type"
-            ]
+            "x-f5xc-conflicts-with": ["credential_type"]
           },
           "credential_type": {
             "allOf": [
@@ -5125,9 +4776,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "all"
-            ]
+            "x-f5xc-conflicts-with": ["all"]
           }
         },
         "x-f5xc-description-short": "It specifies which expired credentials needs to be deleted.",
@@ -5141,9 +4790,7 @@
         "x-f5xc-cli-domain": "api",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -5270,10 +4917,7 @@
         "x-f5xc-description-short": "GET credential object with a given name.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for api_credentialGetRequest",
-          "required_fields": [
-            "name",
-            "namespace"
-          ],
+          "required_fields": ["name", "namespace"],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"name\": \"value\",\n  \"namespace\": \"system\"\n}",
           "example_yaml": "name: value\nnamespace: system"
@@ -5281,9 +4925,7 @@
         "x-f5xc-cli-domain": "api",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -5329,9 +4971,7 @@
         "x-f5xc-cli-domain": "api",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -5619,9 +5259,7 @@
         "x-f5xc-cli-domain": "api",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -5893,9 +5531,7 @@
         "x-f5xc-cli-domain": "api",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -5956,9 +5592,7 @@
         "x-f5xc-cli-domain": "api",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -6213,9 +5847,7 @@
         "x-f5xc-cli-domain": "api",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -6276,9 +5908,7 @@
         "x-f5xc-cli-domain": "api",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -6566,9 +6196,7 @@
         "x-f5xc-cli-domain": "api",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -6637,9 +6265,7 @@
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for api_credentialNameSelector",
-          "required_fields": [
-            "names"
-          ],
+          "required_fields": ["names"],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"names\": [\n    \"value\"\n  ]\n}",
           "example_yaml": "names:\n- value"
@@ -6647,9 +6273,7 @@
         "x-f5xc-cli-domain": "api",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -6724,9 +6348,7 @@
         "x-f5xc-cli-domain": "api",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -6832,9 +6454,7 @@
         "x-f5xc-description-short": "RecreateScimTokenRequest is the request format for generating SCIM API credential.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for api_credentialRecreateScimTokenRequest",
-          "required_fields": [
-            "expiration_days"
-          ],
+          "required_fields": ["expiration_days"],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"expiration_days\": 1\n}",
           "example_yaml": "expiration_days: 1"
@@ -6842,9 +6462,7 @@
         "x-f5xc-cli-domain": "api",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -6986,10 +6604,7 @@
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for api_credentialRenewRequest",
-          "required_fields": [
-            "name",
-            "namespace"
-          ],
+          "required_fields": ["name", "namespace"],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"name\": \"api-cred-00000000-0000-4000-8000-c725f8541661\",\n  \"namespace\": \"system\"\n}",
           "example_yaml": "name: api-cred-00000000-0000-4000-8000-c725f8541661\nnamespace: system"
@@ -6997,9 +6612,7 @@
         "x-f5xc-cli-domain": "api",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -7152,9 +6765,7 @@
         "x-f5xc-description-short": "Request format for replacing service credentials.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for api_credentialReplaceServiceCredentialsRequest",
-          "required_fields": [
-            "name"
-          ],
+          "required_fields": ["name"],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"name\": \"api-cred-00000000-0000-4000-8000-c725f8541661\"\n}",
           "example_yaml": "name: api-cred-00000000-0000-4000-8000-c725f8541661"
@@ -7162,9 +6773,7 @@
         "x-f5xc-cli-domain": "api",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -7282,9 +6891,7 @@
         "x-f5xc-cli-domain": "api",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -7360,9 +6967,7 @@
         "x-f5xc-description-short": "ScimTokenRequest is used for fetching or revoking scim token.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for api_credentialScimTokenRequest",
-          "required_fields": [
-            "namespace"
-          ],
+          "required_fields": ["namespace"],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"namespace\": \"system\"\n}",
           "example_yaml": "namespace: system"
@@ -7370,9 +6975,7 @@
         "x-f5xc-cli-domain": "api",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -7440,9 +7043,7 @@
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for api_credentialSiteKubeconfigType",
-          "required_fields": [
-            "site"
-          ],
+          "required_fields": ["site"],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"site\": \"ce398\"\n}",
           "example_yaml": "site: ce398"
@@ -7450,9 +7051,7 @@
         "x-f5xc-cli-domain": "api",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -7498,9 +7097,7 @@
         "x-f5xc-cli-domain": "api",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -7551,9 +7148,7 @@
         "x-f5xc-cli-domain": "api",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -7656,9 +7251,7 @@
         "x-f5xc-cli-domain": "api",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -7688,9 +7281,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -7767,9 +7358,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -7832,9 +7421,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -7882,9 +7469,7 @@
         "x-f5xc-description-short": "Access info in the namespaces for the entity.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for schemaNamespaceAccessType",
-          "required_fields": [
-            "namespace_role_map"
-          ],
+          "required_fields": ["namespace_role_map"],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"namespace_role_map\": {}\n}",
           "example_yaml": "namespace_role_map: {}"
@@ -7892,9 +7477,7 @@
         "x-f5xc-cli-domain": "tenant_and_identity",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -8012,10 +7595,7 @@
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for schemaNamespaceRoleType",
-          "required_fields": [
-            "namespace",
-            "role"
-          ],
+          "required_fields": ["namespace", "role"],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"namespace\": \"ns1\",\n  \"role\": \"ves-io-monitor-role\"\n}",
           "example_yaml": "namespace: ns1\nrole: ves-io-monitor-role"
@@ -8023,9 +7603,7 @@
         "x-f5xc-cli-domain": "tenant_and_identity",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -8292,9 +7870,7 @@
         "x-f5xc-description-medium": "ObjectMetaType is metadata(common attributes) of an object that all configuration objects will have. The information in this type can be specified by user during create and replace APIs.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for schemaObjectMetaType",
-          "required_fields": [
-            "name"
-          ],
+          "required_fields": ["name"],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"name\": \"example-corp-web\"\n}",
           "example_yaml": "name: example-corp-web"
@@ -8302,9 +7878,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -8510,9 +8084,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -8620,9 +8192,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -9154,9 +8724,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -9339,9 +8907,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {

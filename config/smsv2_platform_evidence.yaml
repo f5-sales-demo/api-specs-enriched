@@ -16,14 +16,14 @@ fields:
     legacy_contract: named Segment reference
     issue: "#1053"
   spec.segment_vrf[].segment_config.nameserver_v6:
-    classification: current_platform_removal
+    classification: behavior_requires_investigation
     replace_status: 200
     returned_unchanged: false
     server_behavior: silently_removed
     restore_status: 200
     restored_canonical_configuration: true
   spec.segment_vrf[].segment_config.secondary_nameserver_v6:
-    classification: current_platform_removal
+    classification: behavior_requires_investigation
     replace_status: 200
     returned_unchanged: false
     server_behavior: silently_removed
@@ -41,3 +41,104 @@ fields:
     response_value: null
     legacy_value: empty_string
     issue: "#1684"
+  spec.rseries:
+    classification: current_platform_removal
+    proof_kind: explicit_api_rejection
+    observed_date: "2026-09-06"
+    http_status: 400
+    server_message: Rseries provider is not supported for SecureMeshSite
+    legacy_version: "0.12.2"
+    legacy_source_commit: "22f029dbf14412c99502fe1daba829f7c3261017"
+    legacy_fixture_sha256: "sha256:ede56514de1abf583c41570d6e319da1bebe8e55c22f3c2d16b6db51821010f9"
+    probe_receipt_sha256: "sha256:ba97e3738ac95c3d2281f1ee54d648b11ed693f18eff9233e2a7933c12b6f30c"
+    issue: "#1738"
+  spec.aws.not_managed.node_list[].interface_list[].static_ip.dns_server:
+    classification: current_api_round_trip
+    observed_date: "2026-09-06"
+    create_status: 200
+    get_status: 200
+    configured_fields_retained: true
+    cleanup_verified: true
+    realized_network_behavior: unverified
+    probe_receipt_sha256: "sha256:02aedb4f1f35abe769c050a3e6652bc89db0539264d0403e7053c4bc1e9a138d"
+    issue: "#1738"
+  spec.aws.not_managed.node_list[].interface_list[].dhcp_server:
+    classification: current_api_round_trip
+    observed_date: "2026-09-06"
+    create_status: 200
+    get_status: 200
+    configured_fields_retained: true
+    cleanup_verified: true
+    realized_network_behavior: unverified
+    probe_receipt_sha256: "sha256:498a2f5e6d3483fc7088c312ed8009ca44eb4d59e14507d0af46b5207e485081"
+    issue: "#1738"
+  spec.aws.not_managed.node_list[].interface_list[].ipv6_auto_config:
+    classification: current_entitlement_required
+    observed_date: "2026-09-06"
+    http_status: 400
+    required_addon: f5xc-ipv6-standard
+    server_behavior: subscription_required
+    absence_after_rejection_verified: true
+    legacy_version: "0.12.2"
+    legacy_source_commit: "22f029dbf14412c99502fe1daba829f7c3261017"
+    legacy_fixture_sha256: "sha256:82181bfff3b6e80fe90f258d67a34e11b44f6747fbe4b43d485b3d1815fc4f39"
+    probe_receipt_sha256: "sha256:a0b15dff47c974e8079d5da1ad7befd2d4556f3a5151099dd26ba92d07d0d7b7"
+    realized_network_behavior: unverified
+    issue: "#1738"
+  spec.log_receiver:
+    classification: current_api_normalization
+    observed_date: "2026-09-06"
+    current_path: spec.log_receiver_with_net.log_receiver
+    explicit_network_choice: spec.log_receiver_with_net.use_slo_sli
+    legacy_create_status: 200
+    current_create_status: 200
+    canonical_logging_configuration_equal: true
+    cleanup_verified: true
+    realized_log_delivery: unverified
+    legacy_version: "0.12.2"
+    legacy_source_commit: "22f029dbf14412c99502fe1daba829f7c3261017"
+    legacy_fixture_sha256: "sha256:8d0ae007b4466589b74a523ba8e6b00fa184d8a5625b98b035bb27bcfdbfe9ba"
+    network_fixture_sha256: "sha256:fc4a174f6710b766b9917af9b65ea81b1f0ef7540e05b50c4dc1a53f1769215e"
+    probe_receipt_sha256: "sha256:9fba67cd8a4bd06dd8cca12d1c28e68850e703bbb63ec26dcc6f9ea389d0d982"
+    issue: "#1738"
+  spec.re_select.specific_geography:
+    classification: current_api_round_trip
+    observed_date: '2026-09-06'
+    create_status: 200
+    get_status: 200
+    absence_after_probe_verified: true
+    legacy_version: 0.12.2
+    legacy_source_commit: 22f029dbf14412c99502fe1daba829f7c3261017
+    legacy_fixture_sha256: sha256:b5a55ba3fb8a0329c83bdd9a0c82aede8930bfccc17e697248f812360bd272be
+    probe_receipt_sha256: sha256:7e5a972d162e4e88db22425adb41f364d9b49c808c6035d7402fc0c628905455
+    realized_behavior: unverified
+    issue: '#1738'
+    configured_fields_retained: true
+  spec.upgrade_settings.kubernetes_upgrade_drain.enable_upgrade_drain.drain_max_unavailable_node_percentage:
+    classification: current_api_round_trip
+    observed_date: '2026-09-06'
+    create_status: 200
+    get_status: 200
+    absence_after_probe_verified: true
+    legacy_version: 0.12.2
+    legacy_source_commit: 22f029dbf14412c99502fe1daba829f7c3261017
+    legacy_fixture_sha256: sha256:6253268ebd3a0b251b07cb3032cfbf99dd5d9f7c45ee56d34b3a60b6782bdb85
+    probe_receipt_sha256: sha256:aa3f10c89e903ace9b7a024a5ff8196204425669cd4bb4c7370e51352005992b
+    realized_behavior: unverified
+    issue: '#1738'
+    configured_fields_retained: true
+    server_added_default: disable_vega_upgrade_mode
+  spec.private_adn:
+    classification: current_feature_removal
+    proof_kind: create_read_normalization
+    observed_date: '2026-09-06'
+    create_status: 200
+    get_status: 200
+    absence_after_probe_verified: true
+    legacy_version: 0.12.2
+    legacy_source_commit: 22f029dbf14412c99502fe1daba829f7c3261017
+    legacy_fixture_sha256: sha256:fd8719ddf14465f309ad520d1b1418413d518d2019c67d2dec418b8061e94521
+    probe_receipt_sha256: sha256:e9f751450ebd875ff18b5c4ca91afa11ef0e027fdef8bedfddd3df3c258db9cb
+    realized_behavior: unverified
+    issue: '#1738'
+    server_behavior: silently_removed

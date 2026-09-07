@@ -46865,7 +46865,7 @@
         "description": "Specify batch upgrade settings for worker nodes within a site.",
         "title": "Enable Node by Node Upgrade",
         "x-displayname": "Enable Node by Node Upgrade.",
-        "x-ves-oneof-field-drain_max_unavailable_choice": "[\"drain_max_unavailable_node_count\"]",
+        "x-ves-oneof-field-drain_max_unavailable_choice": "[\"drain_max_unavailable_node_count\", \"drain_max_unavailable_node_percentage\"]",
         "x-ves-oneof-field-vega_upgrade_mode_toggle_choice": "[\"disable_vega_upgrade_mode\",\"enable_vega_upgrade_mode\"]",
         "x-ves-proto-message": "ves.io.schema.views.KubernetesUpgradeDrainConfig",
         "properties": {
@@ -46919,7 +46919,10 @@
               "create": false,
               "update": false,
               "read": false
-            }
+            },
+            "x-f5xc-conflicts-with": [
+              "drain_max_unavailable_node_percentage"
+            ]
           },
           "drain_node_timeout": {
             "type": "integer",
@@ -46974,6 +46977,14 @@
             },
             "x-f5xc-conflicts-with": [
               "disable_vega_upgrade_mode"
+            ]
+          },
+          "drain_max_unavailable_node_percentage": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Maximum percentage of nodes unavailable during upgrade draining.",
+            "x-f5xc-conflicts-with": [
+              "drain_max_unavailable_node_count"
             ]
           }
         },
@@ -65277,6 +65288,10 @@
               "update": false,
               "read": false
             }
+          },
+          "exclude": {
+            "type": "boolean",
+            "description": "Exclude this address range from DHCP allocation."
           }
         },
         "x-f5xc-description-short": "DHCP pool is a range of IP addresses (start IP and end IP).",
@@ -65436,6 +65451,10 @@
               "automatic_from_end",
               "automatic_from_start"
             ]
+          },
+          "dhcp_option82_tag": {
+            "type": "string",
+            "description": "DHCP option 82 tag."
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -67062,6 +67081,10 @@
               "update": false,
               "read": false
             }
+          },
+          "dns_server": {
+            "type": "string",
+            "description": "DNS server address for the static interface configuration."
           }
         },
         "x-f5xc-description-short": "Configure Static IP parameters for a node.",
@@ -95132,7 +95155,7 @@
         "description": "Interface definition.",
         "title": "Interface",
         "x-displayname": "Interface",
-        "x-ves-oneof-field-address_choice": "[\"dhcp_client\",\"no_ipv4_address\",\"static_ip\"]",
+        "x-ves-oneof-field-address_choice": "[\"dhcp_client\", \"dhcp_server\", \"no_ipv4_address\", \"static_ip\"]",
         "x-ves-oneof-field-interface_choice": "[\"bond_interface\",\"ethernet_interface\",\"vlan_interface\"]",
         "x-ves-oneof-field-ipv6_address_choice": "[\"ipv6_auto_config\",\"no_ipv6_address\",\"static_ipv6_address\"]",
         "x-ves-oneof-field-monitoring_choice": "[\"monitor\",\"monitor_disabled\"]",
@@ -95210,6 +95233,7 @@
               "read": false
             },
             "x-f5xc-conflicts-with": [
+              "dhcp_server",
               "no_ipv4_address",
               "static_ip"
             ]
@@ -95422,6 +95446,7 @@
             },
             "x-f5xc-conflicts-with": [
               "dhcp_client",
+              "dhcp_server",
               "static_ip"
             ]
           },
@@ -95526,6 +95551,7 @@
             },
             "x-f5xc-conflicts-with": [
               "dhcp_client",
+              "dhcp_server",
               "no_ipv4_address"
             ]
           },
@@ -95562,6 +95588,19 @@
             "x-f5xc-conflicts-with": [
               "bond_interface",
               "ethernet_interface"
+            ]
+          },
+          "dhcp_server": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/network_interfaceDHCPServerParametersType"
+              }
+            ],
+            "description": "DHCP server configuration for this interface.",
+            "x-f5xc-conflicts-with": [
+              "dhcp_client",
+              "no_ipv4_address",
+              "static_ip"
             ]
           },
           "is_management": {
@@ -98011,7 +98050,7 @@
         "description": "Selection criteria to connect the site with F5 Distributed Cloud Regional Edge(s).",
         "title": "Regional Edge Selection",
         "x-displayname": "Regional Edge Selection.",
-        "x-ves-oneof-field-re_selection_choice": "[\"geo_proximity\",\"specific_re\"]",
+        "x-ves-oneof-field-re_selection_choice": "[\"geo_proximity\", \"specific_geography\", \"specific_re\"]",
         "x-ves-proto-message": "ves.io.schema.views.RegionalEdgeSelection",
         "properties": {
           "geo_proximity": {
@@ -98028,6 +98067,7 @@
               "read": false
             },
             "x-f5xc-conflicts-with": [
+              "specific_geography",
               "specific_re"
             ]
           },
@@ -98044,7 +98084,16 @@
               "read": false
             },
             "x-f5xc-conflicts-with": [
-              "geo_proximity"
+              "geo_proximity",
+              "specific_geography"
+            ]
+          },
+          "specific_geography": {
+            "type": "string",
+            "description": "Geographic selection for the site's Regional Edge connections.",
+            "x-f5xc-conflicts-with": [
+              "geo_proximity",
+              "specific_re"
             ]
           }
         },
@@ -162542,6 +162591,7 @@
                 "$ref": "#/components/schemas/schemaLabelSelectorType"
               }
             ],
+            "x-field-mutability": "immutable",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -162555,6 +162605,7 @@
                 "$ref": "#/components/schemas/siteSiteType"
               }
             ],
+            "x-field-mutability": "immutable",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,

@@ -16,6 +16,78 @@ description: >
 # not to the general /healthchecks endpoint used by HTTP load balancers.
 # See issue #294 for context.
 overrides:
+  securemesh_site_v2_selection_and_drain:
+    canonical: true
+    upstream_issue: "f5-sales-demo/api-specs-enriched#1738"
+    description: >-
+      Current XC create/read probes retain the pinned legacy request's geographic
+      RE selection and percentage-based node drain setting. Restore both choice
+      members. Persistence does not establish realized selection or upgrade behavior.
+    schemas:
+      - pattern: "^viewsRegionalEdgeSelection$"
+        oneof_group: re_selection_choice
+        complete_variants: [geo_proximity, specific_geography, specific_re]
+        inject_properties:
+          specific_geography:
+            type: string
+            description: Geographic selection for the site's Regional Edge connections.
+      - pattern: "^viewsKubernetesUpgradeDrainConfig$"
+        oneof_group: drain_max_unavailable_choice
+        complete_variants: [drain_max_unavailable_node_count, drain_max_unavailable_node_percentage]
+        inject_properties:
+          drain_max_unavailable_node_percentage:
+            type: integer
+            format: int64
+            description: Maximum percentage of nodes unavailable during upgrade draining.
+
+  securemesh_site_v2_interface_addressing:
+    canonical: true
+    upstream_issue: "f5-sales-demo/api-specs-enriched#1738"
+    description: >-
+      Current XC create/read round trips on isolated unregistered AWS SMSv2
+      objects retain static interface DNS, DHCP-server settings, option 82 and
+      excluded address pools. Restore these missing protobuf-backed properties.
+      API persistence does not establish realized DHCP service on every platform.
+    schemas:
+      - pattern: "^securemesh_site_v2Interface$"
+        oneof_group: address_choice
+        complete_variants: [dhcp_client, dhcp_server, no_ipv4_address, static_ip]
+        inject_properties:
+          dhcp_server:
+            allOf:
+              - $ref: "#/components/schemas/network_interfaceDHCPServerParametersType"
+            description: DHCP server configuration for this interface.
+      - pattern: "^network_interfaceStaticIpParametersNodeType$"
+        inject_properties:
+          dns_server:
+            type: string
+            description: DNS server address for the static interface configuration.
+      - pattern: "^network_interfaceDHCPServerParametersType$"
+        inject_properties:
+          dhcp_option82_tag:
+            type: string
+            description: DHCP option 82 tag.
+      - pattern: "^network_interfaceDHCPPoolType$"
+        inject_properties:
+          exclude:
+            type: boolean
+            description: Exclude this address range from DHCP allocation.
+
+  virtual_site_immutable_selection:
+    canonical: true
+    upstream_issue: "f5-sales-demo/api-specs-enriched#1738"
+    description: >-
+      Virtual-site ReplaceSpecType has no fields. Live selector PUT returns the
+      old selector unchanged, while CreateSpecType accepts selector and site type.
+      Consumers must recreate a virtual site to change either creation field.
+    schemas:
+      - pattern: "^schemavirtual_siteCreateSpecType$"
+        set_property_extensions:
+          site_selector:
+            x-field-mutability: immutable
+          site_type:
+            x-field-mutability: immutable
+
   service_policy_rule_required_actions:
     canonical: true
     upstream_issue: "f5-sales-demo/api-specs-enriched#1667"

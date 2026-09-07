@@ -1257,3 +1257,108 @@ class TestMapOverridesRegression:
             "additionalProperties"
             not in schemas["tenantLoginEventsMap"]["properties"]["login_events_map"]
         )
+
+
+def test_virtual_site_spec_requires_recreation(enricher):
+    """ReplaceSpecType is empty; live PUT ignored selector edits."""
+    spec = {
+        "components": {
+            "schemas": {
+                "schemavirtual_siteCreateSpecType": {
+                    "type": "object",
+                    "properties": {
+                        "site_selector": {
+                            "allOf": [{"$ref": "#/components/schemas/schemaLabelSelectorType"}]
+                        },
+                        "site_type": {"type": "string"},
+                    },
+                },
+                "schemavirtual_siteReplaceSpecType": {"type": "object"},
+            }
+        }
+    }
+    result = enricher.enrich_spec(spec)
+    schemas = result["components"]["schemas"]
+    for field in ["site_selector", "site_type"]:
+        assert (
+            schemas["schemavirtual_siteCreateSpecType"]["properties"][field].get(
+                "x-field-mutability"
+            )
+            == "immutable"
+        )
+    assert "properties" not in schemas["schemavirtual_siteReplaceSpecType"]
+
+
+def test_smsv2_addressing_preserves_current_api_round_trip(enricher):
+    spec = {
+        "components": {
+            "schemas": {
+                "securemesh_site_v2Interface": {
+                    "type": "object",
+                    "properties": {},
+                    "x-ves-oneof-field-address_choice": '["dhcp_client","no_ipv4_address","static_ip"]',
+                },
+                "network_interfaceStaticIpParametersNodeType": {"type": "object", "properties": {}},
+                "network_interfaceDHCPServerParametersType": {"type": "object", "properties": {}},
+                "network_interfaceDHCPPoolType": {"type": "object", "properties": {}},
+            }
+        }
+    }
+    schemas = enricher.enrich_spec(spec)["components"]["schemas"]
+    interface = schemas["securemesh_site_v2Interface"]
+    assert interface["properties"]["dhcp_server"]["allOf"] == [
+        {"$ref": "#/components/schemas/network_interfaceDHCPServerParametersType"}
+    ]
+    assert "dhcp_server" in json.loads(interface["x-ves-oneof-field-address_choice"])
+    assert (
+        schemas["network_interfaceStaticIpParametersNodeType"]["properties"]["dns_server"]["type"]
+        == "string"
+    )
+    assert (
+        schemas["network_interfaceDHCPServerParametersType"]["properties"]["dhcp_option82_tag"][
+            "type"
+        ]
+        == "string"
+    )
+    assert schemas["network_interfaceDHCPPoolType"]["properties"]["exclude"]["type"] == "boolean"
+
+
+@pytest.mark.parametrize(
+    ("name", "field", "field_type", "group", "siblings"),
+    [
+        (
+            "viewsRegionalEdgeSelection",
+            "specific_geography",
+            "string",
+            "re_selection_choice",
+            ["geo_proximity", "specific_re"],
+        ),
+        (
+            "viewsKubernetesUpgradeDrainConfig",
+            "drain_max_unavailable_node_percentage",
+            "integer",
+            "drain_max_unavailable_choice",
+            ["drain_max_unavailable_node_count"],
+        ),
+    ],
+)
+def test_smsv2_selection_and_drain_preserve_current_api_fields(
+    enricher, name, field, field_type, group, siblings
+):
+    choice = "x-ves-oneof-field-" + group
+    spec = {
+        "components": {
+            "schemas": {
+                name: {
+                    "type": "object",
+                    "properties": {sibling: {} for sibling in siblings},
+                    choice: json.dumps(siblings),
+                }
+            }
+        }
+    }
+    result = enricher.enrich_spec(spec)
+    schema = result["components"]["schemas"][name]
+    assert schema["properties"][field]["type"] == field_type
+    assert set(json.loads(schema[choice])) == {*siblings, field}
+    assert enricher.enrich_spec(result) == result

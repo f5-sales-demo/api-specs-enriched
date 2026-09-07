@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from pathlib import Path
 from typing import Any
 
@@ -45,6 +46,20 @@ def _platform_evidence(path: Path | None = None) -> dict[str, Any]:
     if not isinstance(fields, dict):
         raise TypeError("SMSv2 platform evidence fields must be an object")
     return fields
+
+
+def _explicit_platform_rejection(path: str, message: str) -> bool:
+    """Recognize the verified API contract, not generic validation failures."""
+    platform = re.fullmatch(r"spec\.([a-z][a-z0-9_]*)", path)
+    if not platform or not isinstance(message, str):
+        return False
+    expected = f"{platform[1]} provider is not supported for SecureMeshSite"
+    return message.strip().casefold() == expected.casefold()
+
+
+def _is_sha256_digest(value: Any) -> bool:
+    """Accept only a typed, lowercase SHA-256 evidence digest."""
+    return isinstance(value, str) and re.fullmatch(r"sha256:[0-9a-f]{64}", value) is not None
 
 
 def build_parity_manifest(
@@ -89,7 +104,9 @@ def build_parity_manifest(
                 path += "[]"
             entry: dict[str, Any] = {
                 "path": path,
-                "wire_key": wire_key,
+                "wire_key": prop.get(
+                    "x-f5xc-wire-name", prop_resolved.get("x-f5xc-wire-name", wire_key)
+                ),
                 "type": prop_type,
                 "cardinality": "list" if prop_type == "array" else "single",
                 "required": wire_key in required,
@@ -126,6 +143,45 @@ def build_parity_manifest(
         for path, conclusion in evidence.items()
         if conclusion.get("classification") == "current_platform_removal"
     )
+    removal_evidence = {}
+    for path in platform_removals:
+        conclusion = evidence[path]
+        hashes = ("legacy_fixture_sha256", "probe_receipt_sha256")
+        platform_evidence_errors = (
+            conclusion.get("proof_kind") != "explicit_api_rejection",
+            conclusion.get("http_status") not in (400, 410, 422),
+            not _explicit_platform_rejection(path, conclusion.get("server_message", "")),
+            not conclusion.get("observed_date"),
+            not all(_is_sha256_digest(conclusion.get(key)) for key in hashes),
+            any(entry["path"] == path or entry["path"].startswith(path + ".") for entry in paths),
+        )
+        if any(platform_evidence_errors):
+            raise ValueError(f"Invalid platform removal evidence for {path}")
+        removal_evidence[path] = conclusion
+
+    verified_removals = sorted(
+        path
+        for path, conclusion in evidence.items()
+        if conclusion.get("classification") == "current_feature_removal"
+    )
+    verified_removal_evidence = {}
+    for path in verified_removals:
+        conclusion = evidence[path]
+        hashes = ("legacy_fixture_sha256", "probe_receipt_sha256")
+        feature_evidence_errors = (
+            conclusion.get("proof_kind") != "create_read_normalization",
+            conclusion.get("create_status") != 200,
+            conclusion.get("get_status") != 200,
+            conclusion.get("server_behavior") != "silently_removed",
+            conclusion.get("absence_after_probe_verified") is not True,
+            not conclusion.get("observed_date"),
+            not all(_is_sha256_digest(conclusion.get(key)) for key in hashes),
+            any(entry["path"] == path or entry["path"].startswith(path + ".") for entry in paths),
+        )
+        if any(feature_evidence_errors):
+            raise ValueError(f"Invalid verified removal evidence for {path}")
+        verified_removal_evidence[path] = conclusion
+
     return {
         "version": spec.get("info", {}).get("version"),
         "resource": "securemesh_site_v2",
@@ -133,8 +189,11 @@ def build_parity_manifest(
         "path_count": len(paths),
         "paths": paths,
         "choice_groups": dict(sorted(choice_groups.items())),
-        "deprecated_exclusions": ["spec.log_receiver", "spec.private_adn", "spec.rseries"],
+        "deprecated_exclusions": [],
         "current_platform_removals": platform_removals,
+        "platform_removal_evidence": removal_evidence,
+        "verified_removals": verified_removals,
+        "verified_removal_evidence": verified_removal_evidence,
     }
 
 

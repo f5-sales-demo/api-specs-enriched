@@ -72,11 +72,7 @@
     },
     "x-f5xc-namespace-profile": {
       "constraint": {
-        "allowed": [
-          "custom",
-          "default",
-          "shared"
-        ],
+        "allowed": ["custom", "default", "shared"],
         "enforced": true
       },
       "recommendation": {
@@ -102,19 +98,12 @@
         "console_url": {
           "default": "console.ves.volterra.io",
           "description": "Console URL base (e.g., console.ves.volterra.io for production, staging.volterra.us for staging)",
-          "enum": [
-            "console.ves.volterra.io",
-            "staging.volterra.us"
-          ]
+          "enum": ["console.ves.volterra.io", "staging.volterra.us"]
         },
         "environment": {
           "default": "production",
           "description": "Environment designation (production, staging, development)",
-          "enum": [
-            "production",
-            "staging",
-            "development"
-          ]
+          "enum": ["production", "staging", "development"]
         },
         "domain_prefix": {
           "default": "api",
@@ -278,31 +267,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/container_services/"
         },
         "x-ves-proto-rpc": "ves.io.schema.virtual_k8s.API.Create",
-        "tags": [
-          "config"
-        ],
+        "tags": ["config"],
         "x-f5xc-operation-metadata": {
           "purpose": "Virtual Kubernetes cluster for workload deployment",
-          "required_fields": [
-            "metadata.name",
-            "metadata.namespace",
-            "path.metadata.namespace"
-          ],
+          "required_fields": ["metadata.name", "metadata.namespace", "path.metadata.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": [
-              "Virtual-k8s resource created",
-              "Resource assigned unique identifier"
-            ]
+            "prerequisites": ["Active namespace"],
+            "postconditions": ["Virtual-k8s resource created", "Resource assigned unique identifier"]
           },
           "side_effects": {
-            "creates": [
-              "virtual-k8s"
-            ]
+            "creates": ["virtual-k8s"]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -343,16 +319,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": [
-          "metadata.name",
-          "metadata.namespace",
-          "path.metadata.namespace"
-        ],
+        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.metadata.namespace"],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": [
-            "virtual-k8s"
-          ]
+          "creates": ["virtual-k8s"]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -510,29 +480,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/container_services/"
         },
         "x-ves-proto-rpc": "ves.io.schema.virtual_k8s.API.Replace",
-        "tags": [
-          "config"
-        ],
+        "tags": ["config"],
         "x-f5xc-operation-metadata": {
           "purpose": "Virtual Kubernetes cluster for workload deployment",
-          "required_fields": [
-            "path.metadata.name",
-            "path.metadata.namespace"
-          ],
+          "required_fields": ["path.metadata.name", "path.metadata.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": [
-              "Resource updated with new values"
-            ]
+            "prerequisites": ["Active namespace"],
+            "postconditions": ["Resource updated with new values"]
           },
           "side_effects": {
-            "modifies": [
-              "virtual-k8s"
-            ]
+            "modifies": ["virtual-k8s"]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -573,15 +532,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": [
-          "path.metadata.name",
-          "path.metadata.namespace"
-        ],
+        "x-f5xc-required-fields": ["path.metadata.name", "path.metadata.namespace"],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "modifies": [
-            "virtual-k8s"
-          ]
+          "modifies": ["virtual-k8s"]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 800,
@@ -757,20 +711,14 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/container_services/"
         },
         "x-ves-proto-rpc": "ves.io.schema.virtual_k8s.API.List",
-        "tags": [
-          "config"
-        ],
+        "tags": ["config"],
         "x-f5xc-operation-metadata": {
           "purpose": "Virtual Kubernetes cluster for workload deployment",
-          "required_fields": [
-            "path.namespace"
-          ],
+          "required_fields": ["path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
+            "prerequisites": ["Active namespace"],
             "postconditions": []
           },
           "side_effects": {},
@@ -813,9 +761,7 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": [
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["path.namespace"],
         "x-f5xc-danger-level": "low",
         "x-discovered-response-time-ms": 158.53,
         "x-discovered-sample-size": 1,
@@ -986,21 +932,14 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/container_services/"
         },
         "x-ves-proto-rpc": "ves.io.schema.virtual_k8s.API.Get",
-        "tags": [
-          "config"
-        ],
+        "tags": ["config"],
         "x-f5xc-operation-metadata": {
           "purpose": "Virtual Kubernetes cluster for workload deployment",
-          "required_fields": [
-            "path.name",
-            "path.namespace"
-          ],
+          "required_fields": ["path.name", "path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
+            "prerequisites": ["Active namespace"],
             "postconditions": []
           },
           "side_effects": {},
@@ -1043,10 +982,7 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": [
-          "path.name",
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["path.name", "path.namespace"],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -1197,31 +1133,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/container_services/"
         },
         "x-ves-proto-rpc": "ves.io.schema.virtual_k8s.API.Delete",
-        "tags": [
-          "config"
-        ],
+        "tags": ["config"],
         "x-f5xc-operation-metadata": {
           "purpose": "Virtual Kubernetes cluster for workload deployment",
-          "required_fields": [
-            "path.name",
-            "path.namespace"
-          ],
+          "required_fields": ["path.name", "path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": [
-              "Resource removed from system",
-              "Associated resources may be affected"
-            ]
+            "prerequisites": ["Active namespace"],
+            "postconditions": ["Resource removed from system", "Associated resources may be affected"]
           },
           "side_effects": {
-            "deletes": [
-              "virtual-k8s",
-              "contained_resources"
-            ]
+            "deletes": ["virtual-k8s", "contained_resources"]
           },
           "danger_level": "high",
           "confirmation_required": true,
@@ -1262,17 +1185,11 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": [
-          "path.name",
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["path.name", "path.namespace"],
         "x-f5xc-danger-level": "high",
         "x-f5xc-confirmation-required": true,
         "x-f5xc-side-effects": {
-          "deletes": [
-            "virtual-k8s",
-            "contained_resources"
-          ]
+          "deletes": ["virtual-k8s", "contained_resources"]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 500,
@@ -1419,31 +1336,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/container_services/"
         },
         "x-ves-proto-rpc": "ves.io.schema.views.workload.API.Create",
-        "tags": [
-          "config"
-        ],
+        "tags": ["config"],
         "x-f5xc-operation-metadata": {
           "purpose": "Container workload deployment configuration",
-          "required_fields": [
-            "metadata.name",
-            "metadata.namespace",
-            "path.metadata.namespace"
-          ],
+          "required_fields": ["metadata.name", "metadata.namespace", "path.metadata.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": [
-              "Workload resource created",
-              "Resource assigned unique identifier"
-            ]
+            "prerequisites": ["Active namespace"],
+            "postconditions": ["Workload resource created", "Resource assigned unique identifier"]
           },
           "side_effects": {
-            "creates": [
-              "workload"
-            ]
+            "creates": ["workload"]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -1484,16 +1388,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": [
-          "metadata.name",
-          "metadata.namespace",
-          "path.metadata.namespace"
-        ],
+        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.metadata.namespace"],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": [
-            "workload"
-          ]
+          "creates": ["workload"]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -1651,29 +1549,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/container_services/"
         },
         "x-ves-proto-rpc": "ves.io.schema.views.workload.API.Replace",
-        "tags": [
-          "config"
-        ],
+        "tags": ["config"],
         "x-f5xc-operation-metadata": {
           "purpose": "Container workload deployment configuration",
-          "required_fields": [
-            "path.metadata.name",
-            "path.metadata.namespace"
-          ],
+          "required_fields": ["path.metadata.name", "path.metadata.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": [
-              "Resource updated with new values"
-            ]
+            "prerequisites": ["Active namespace"],
+            "postconditions": ["Resource updated with new values"]
           },
           "side_effects": {
-            "modifies": [
-              "workload"
-            ]
+            "modifies": ["workload"]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -1714,15 +1601,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": [
-          "path.metadata.name",
-          "path.metadata.namespace"
-        ],
+        "x-f5xc-required-fields": ["path.metadata.name", "path.metadata.namespace"],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "modifies": [
-            "workload"
-          ]
+          "modifies": ["workload"]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 800,
@@ -1898,20 +1780,14 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/container_services/"
         },
         "x-ves-proto-rpc": "ves.io.schema.views.workload.API.List",
-        "tags": [
-          "config"
-        ],
+        "tags": ["config"],
         "x-f5xc-operation-metadata": {
           "purpose": "Container workload deployment configuration",
-          "required_fields": [
-            "path.namespace"
-          ],
+          "required_fields": ["path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
+            "prerequisites": ["Active namespace"],
             "postconditions": []
           },
           "side_effects": {},
@@ -1954,9 +1830,7 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": [
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["path.namespace"],
         "x-f5xc-danger-level": "low",
         "x-discovered-response-time-ms": 153.13,
         "x-discovered-sample-size": 1,
@@ -2106,31 +1980,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/container_services/"
         },
         "x-ves-proto-rpc": "ves.io.schema.views.workload.CustomDataAPI.Usage",
-        "tags": [
-          "data"
-        ],
+        "tags": ["data"],
         "x-f5xc-operation-metadata": {
           "purpose": "Resource creation operation",
-          "required_fields": [
-            "metadata.name",
-            "metadata.namespace",
-            "path.namespace"
-          ],
+          "required_fields": ["metadata.name", "metadata.namespace", "path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": [
-              "Usage resource created",
-              "Resource assigned unique identifier"
-            ]
+            "prerequisites": ["Active namespace"],
+            "postconditions": ["Usage resource created", "Resource assigned unique identifier"]
           },
           "side_effects": {
-            "creates": [
-              "usage"
-            ]
+            "creates": ["usage"]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -2171,16 +2032,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": [
-          "metadata.name",
-          "metadata.namespace",
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.namespace"],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": [
-            "usage"
-          ]
+          "creates": ["usage"]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -2348,21 +2203,14 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/container_services/"
         },
         "x-ves-proto-rpc": "ves.io.schema.views.workload.API.Get",
-        "tags": [
-          "config"
-        ],
+        "tags": ["config"],
         "x-f5xc-operation-metadata": {
           "purpose": "Container workload deployment configuration",
-          "required_fields": [
-            "path.name",
-            "path.namespace"
-          ],
+          "required_fields": ["path.name", "path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
+            "prerequisites": ["Active namespace"],
             "postconditions": []
           },
           "side_effects": {},
@@ -2405,10 +2253,7 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": [
-          "path.name",
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["path.name", "path.namespace"],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -2559,31 +2404,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/container_services/"
         },
         "x-ves-proto-rpc": "ves.io.schema.views.workload.API.Delete",
-        "tags": [
-          "config"
-        ],
+        "tags": ["config"],
         "x-f5xc-operation-metadata": {
           "purpose": "Container workload deployment configuration",
-          "required_fields": [
-            "path.name",
-            "path.namespace"
-          ],
+          "required_fields": ["path.name", "path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": [
-              "Resource removed from system",
-              "Associated resources may be affected"
-            ]
+            "prerequisites": ["Active namespace"],
+            "postconditions": ["Resource removed from system", "Associated resources may be affected"]
           },
           "side_effects": {
-            "deletes": [
-              "workload",
-              "contained_resources"
-            ]
+            "deletes": ["workload", "contained_resources"]
           },
           "danger_level": "high",
           "confirmation_required": true,
@@ -2624,17 +2456,11 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": [
-          "path.name",
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["path.name", "path.namespace"],
         "x-f5xc-danger-level": "high",
         "x-f5xc-confirmation-required": true,
         "x-f5xc-side-effects": {
-          "deletes": [
-            "workload",
-            "contained_resources"
-          ]
+          "deletes": ["workload", "contained_resources"]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 500,
@@ -2781,31 +2607,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/container_services/"
         },
         "x-ves-proto-rpc": "ves.io.schema.workload_flavor.API.Create",
-        "tags": [
-          "config"
-        ],
+        "tags": ["config"],
         "x-f5xc-operation-metadata": {
           "purpose": "Kubernetes workload configuration",
-          "required_fields": [
-            "metadata.name",
-            "metadata.namespace",
-            "path.metadata.namespace"
-          ],
+          "required_fields": ["metadata.name", "metadata.namespace", "path.metadata.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": [
-              "Workload-flavor resource created",
-              "Resource assigned unique identifier"
-            ]
+            "prerequisites": ["Active namespace"],
+            "postconditions": ["Workload-flavor resource created", "Resource assigned unique identifier"]
           },
           "side_effects": {
-            "creates": [
-              "workload-flavor"
-            ]
+            "creates": ["workload-flavor"]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -2846,16 +2659,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": [
-          "metadata.name",
-          "metadata.namespace",
-          "path.metadata.namespace"
-        ],
+        "x-f5xc-required-fields": ["metadata.name", "metadata.namespace", "path.metadata.namespace"],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "creates": [
-            "workload-flavor"
-          ]
+          "creates": ["workload-flavor"]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
@@ -3013,29 +2820,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/container_services/"
         },
         "x-ves-proto-rpc": "ves.io.schema.workload_flavor.API.Replace",
-        "tags": [
-          "config"
-        ],
+        "tags": ["config"],
         "x-f5xc-operation-metadata": {
           "purpose": "Kubernetes workload configuration",
-          "required_fields": [
-            "path.metadata.name",
-            "path.metadata.namespace"
-          ],
+          "required_fields": ["path.metadata.name", "path.metadata.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": [
-              "Resource updated with new values"
-            ]
+            "prerequisites": ["Active namespace"],
+            "postconditions": ["Resource updated with new values"]
           },
           "side_effects": {
-            "modifies": [
-              "workload-flavor"
-            ]
+            "modifies": ["workload-flavor"]
           },
           "danger_level": "medium",
           "confirmation_required": false,
@@ -3076,15 +2872,10 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": [
-          "path.metadata.name",
-          "path.metadata.namespace"
-        ],
+        "x-f5xc-required-fields": ["path.metadata.name", "path.metadata.namespace"],
         "x-f5xc-danger-level": "medium",
         "x-f5xc-side-effects": {
-          "modifies": [
-            "workload-flavor"
-          ]
+          "modifies": ["workload-flavor"]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 800,
@@ -3260,20 +3051,14 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/container_services/"
         },
         "x-ves-proto-rpc": "ves.io.schema.workload_flavor.API.List",
-        "tags": [
-          "config"
-        ],
+        "tags": ["config"],
         "x-f5xc-operation-metadata": {
           "purpose": "Kubernetes workload configuration",
-          "required_fields": [
-            "path.namespace"
-          ],
+          "required_fields": ["path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
+            "prerequisites": ["Active namespace"],
             "postconditions": []
           },
           "side_effects": {},
@@ -3316,9 +3101,7 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": [
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["path.namespace"],
         "x-f5xc-danger-level": "low",
         "x-discovered-response-time-ms": 155.73,
         "x-discovered-sample-size": 1,
@@ -3489,21 +3272,14 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/container_services/"
         },
         "x-ves-proto-rpc": "ves.io.schema.workload_flavor.API.Get",
-        "tags": [
-          "config"
-        ],
+        "tags": ["config"],
         "x-f5xc-operation-metadata": {
           "purpose": "Kubernetes workload configuration",
-          "required_fields": [
-            "path.name",
-            "path.namespace"
-          ],
+          "required_fields": ["path.name", "path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
+            "prerequisites": ["Active namespace"],
             "postconditions": []
           },
           "side_effects": {},
@@ -3546,10 +3322,7 @@
             "resource_usage": "low"
           }
         },
-        "x-f5xc-required-fields": [
-          "path.name",
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["path.name", "path.namespace"],
         "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 200,
@@ -3700,31 +3473,18 @@
           "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/container_services/"
         },
         "x-ves-proto-rpc": "ves.io.schema.workload_flavor.API.Delete",
-        "tags": [
-          "config"
-        ],
+        "tags": ["config"],
         "x-f5xc-operation-metadata": {
           "purpose": "Kubernetes workload configuration",
-          "required_fields": [
-            "path.name",
-            "path.namespace"
-          ],
+          "required_fields": ["path.name", "path.namespace"],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
-            "prerequisites": [
-              "Active namespace"
-            ],
-            "postconditions": [
-              "Resource removed from system",
-              "Associated resources may be affected"
-            ]
+            "prerequisites": ["Active namespace"],
+            "postconditions": ["Resource removed from system", "Associated resources may be affected"]
           },
           "side_effects": {
-            "deletes": [
-              "workload-flavor",
-              "contained_resources"
-            ]
+            "deletes": ["workload-flavor", "contained_resources"]
           },
           "danger_level": "high",
           "confirmation_required": true,
@@ -3765,17 +3525,11 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-required-fields": [
-          "path.name",
-          "path.namespace"
-        ],
+        "x-f5xc-required-fields": ["path.name", "path.namespace"],
         "x-f5xc-danger-level": "high",
         "x-f5xc-confirmation-required": true,
         "x-f5xc-side-effects": {
-          "deletes": [
-            "workload-flavor",
-            "contained_resources"
-          ]
+          "deletes": ["workload-flavor", "contained_resources"]
         },
         "x-f5xc-discovered-response-time": {
           "p50_ms": 500,
@@ -3822,11 +3576,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -4032,11 +3782,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -4116,11 +3862,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -4270,15 +4012,7 @@
             "x-f5xc-description-short": "Status of the condition \"Success\" Validation has succeeded.",
             "x-f5xc-description-medium": "Status of the condition \"Success\" Validation has succeeded. Requested operation was successful. \"Failed\" Validation has failed. \"Incomplete\" Validation of configuration has failed due to missing configuration. \"Installed\" Validation has passed and configuration has been installed in data path or...",
             "maxLength": 1024,
-            "enum": [
-              "Success",
-              "Failed",
-              "Incomplete",
-              "Installed",
-              "Down",
-              "Disabled",
-              "NotApplicable"
-            ],
+            "enum": ["Success", "Failed", "Incomplete", "Installed", "Down", "Disabled", "NotApplicable"],
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "general",
@@ -4315,10 +4049,7 @@
             "x-f5xc-description-short": "Type of the condition \"Validation\" represents validation user given configuration object \"Operational\" represents operational status of a given...",
             "x-f5xc-description-medium": "Type of the condition \"Validation\" represents validation user given configuration object \"Operational\" represents operational status of a given configuration object.",
             "maxLength": 1024,
-            "enum": [
-              "Validation",
-              "Operational"
-            ],
+            "enum": ["Validation", "Operational"],
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "general",
@@ -4349,11 +4080,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -4397,11 +4124,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -4485,11 +4208,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -4566,11 +4285,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -4633,11 +4348,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -4727,11 +4438,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -4955,9 +4662,7 @@
         "x-f5xc-description-short": "ObjectCreateMetaType is metadata that can be specified in Create request of an object.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for schemaObjectCreateMetaType",
-          "required_fields": [
-            "name"
-          ],
+          "required_fields": ["name"],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"name\": \"example-corp-web\"\n}",
           "example_yaml": "name: example-corp-web"
@@ -4965,11 +4670,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -5196,9 +4897,7 @@
         "x-f5xc-description-short": "ObjectGetMetaType is metadata that can be specified in GET/Create response of an object.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for schemaObjectGetMetaType",
-          "required_fields": [
-            "name"
-          ],
+          "required_fields": ["name"],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"name\": \"example-corp-web\"\n}",
           "example_yaml": "name: example-corp-web"
@@ -5206,11 +4905,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -5435,9 +5130,7 @@
         "x-f5xc-description-short": "ObjectReplaceMetaType is metadata that can be specified in Replace request of an object.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for schemaObjectReplaceMetaType",
-          "required_fields": [
-            "name"
-          ],
+          "required_fields": ["name"],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"name\": \"example-corp-web\"\n}",
           "example_yaml": "name: example-corp-web"
@@ -5445,11 +5138,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -5675,11 +5364,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -5697,10 +5382,7 @@
         "type": "string",
         "description": "StatusPublishType is all possible publish operations on a StatusObject\n\n- STATUS_DO_NOT_PUBLISH: Do Not Publish\n\nDo not propagate this status to user. This could be because status is only informational\n- STATUS_PUBLISH: Publish\n\nPropagate this status up to user as it might be actionable.",
         "title": "StatusPublishType",
-        "enum": [
-          "STATUS_DO_NOT_PUBLISH",
-          "STATUS_PUBLISH"
-        ],
+        "enum": ["STATUS_DO_NOT_PUBLISH", "STATUS_PUBLISH"],
         "default": "STATUS_DO_NOT_PUBLISH",
         "x-displayname": "Status Publish Type.",
         "x-ves-proto-enum": "ves.io.schema.StatusPublishType",
@@ -5716,11 +5398,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -5828,11 +5506,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -6155,11 +5829,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -6177,11 +5847,7 @@
         "type": "string",
         "description": "Trend sentiment\n\nIndicates trend sentiment is positive\nIndicates trend sentiment is negative.",
         "title": "Trend Sentiment",
-        "enum": [
-          "TREND_SENTIMENT_NONE",
-          "TREND_SENTIMENT_POSITIVE",
-          "TREND_SENTIMENT_NEGATIVE"
-        ],
+        "enum": ["TREND_SENTIMENT_NONE", "TREND_SENTIMENT_POSITIVE", "TREND_SENTIMENT_NEGATIVE"],
         "default": "TREND_SENTIMENT_NONE",
         "x-displayname": "Trend Sentiment.",
         "x-ves-proto-enum": "ves.io.schema.TrendSentiment",
@@ -6196,11 +5862,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -6334,11 +5996,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -6399,11 +6057,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -6586,11 +6240,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -6758,9 +6408,7 @@
         "x-f5xc-description-medium": "Type establishes a direct reference from one object(the referrer) to another(the referred). Such a reference is in form of tenant/namespace/name.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for schemaviewsObjectRefType",
-          "required_fields": [
-            "name"
-          ],
+          "required_fields": ["name"],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"name\": \"contacts-route\"\n}",
           "example_yaml": "name: contacts-route"
@@ -6768,11 +6416,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -6832,11 +6476,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -6907,11 +6547,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -6969,9 +6605,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "isolated"
-            ]
+            "x-f5xc-conflicts-with": ["isolated"]
           },
           "isolated": {
             "allOf": [
@@ -6985,9 +6619,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "disabled"
-            ]
+            "x-f5xc-conflicts-with": ["disabled"]
           },
           "vsite_refs": {
             "type": "array",
@@ -7035,11 +6667,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -7174,11 +6802,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -7342,9 +6966,7 @@
             "type": "string",
             "x-f5xc-concurrency-token": {
               "server_assigned": true,
-              "echo_on_operations": [
-                "replace"
-              ]
+              "echo_on_operations": ["replace"]
             }
           }
         },
@@ -7358,11 +6980,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -7420,9 +7038,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "isolated"
-            ]
+            "x-f5xc-conflicts-with": ["isolated"]
           },
           "isolated": {
             "allOf": [
@@ -7436,9 +7052,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "disabled"
-            ]
+            "x-f5xc-conflicts-with": ["disabled"]
           },
           "vsite_refs": {
             "type": "array",
@@ -7486,11 +7100,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -7567,11 +7177,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -7905,11 +7511,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -7984,11 +7586,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -8006,11 +7604,7 @@
         "type": "string",
         "description": "Labels in PVC metrics.",
         "title": "PVC Metric Label",
-        "enum": [
-          "NAMESPACE",
-          "PVC",
-          "SITE"
-        ],
+        "enum": ["NAMESPACE", "PVC", "SITE"],
         "default": "NAMESPACE",
         "x-displayname": "PVC Metric Label.",
         "x-ves-proto-enum": "ves.io.schema.virtual_k8s.PVCMetricLabel",
@@ -8024,11 +7618,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -8046,10 +7636,7 @@
         "type": "string",
         "description": "List of PVC metric types\n\nx-unit: \"bytes\"\nx-unit: \"bytes\"",
         "title": "PVC Metric Type",
-        "enum": [
-          "PVC_USAGE",
-          "PVC_CAPACITY"
-        ],
+        "enum": ["PVC_USAGE", "PVC_CAPACITY"],
         "default": "PVC_USAGE",
         "x-displayname": "PVC Metric Type.",
         "x-ves-proto-enum": "ves.io.schema.virtual_k8s.PVCMetricType",
@@ -8064,11 +7651,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -8139,11 +7722,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -8431,9 +8010,7 @@
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for virtual_k8sPVCMetricsRequest",
-          "required_fields": [
-            "field_selector"
-          ],
+          "required_fields": ["field_selector"],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"field_selector\": [\n    \"PVC_USAGE\"\n  ]\n}",
           "example_yaml": "field_selector:\n- PVC_USAGE"
@@ -8441,11 +8018,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -8527,11 +8100,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -8584,9 +8153,7 @@
             "type": "string",
             "x-f5xc-concurrency-token": {
               "server_assigned": true,
-              "echo_on_operations": [
-                "replace"
-              ]
+              "echo_on_operations": ["replace"]
             }
           }
         },
@@ -8600,11 +8167,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -8631,11 +8194,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -8693,9 +8252,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "isolated"
-            ]
+            "x-f5xc-conflicts-with": ["isolated"]
           },
           "isolated": {
             "allOf": [
@@ -8709,9 +8266,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "disabled"
-            ]
+            "x-f5xc-conflicts-with": ["disabled"]
           },
           "vsite_refs": {
             "type": "array",
@@ -8760,11 +8315,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -8841,11 +8392,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -8919,9 +8466,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "port_ranges"
-            ]
+            "x-f5xc-conflicts-with": ["port_ranges"]
           },
           "port_ranges": {
             "type": "string",
@@ -8964,9 +8509,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "port"
-            ]
+            "x-f5xc-conflicts-with": ["port"]
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -8979,11 +8522,7 @@
         "x-f5xc-cli-domain": "virtual",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -9056,11 +8595,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "default_header",
-              "pass_through",
-              "server_name"
-            ]
+            "x-f5xc-conflicts-with": ["default_header", "pass_through", "server_name"]
           },
           "coalescing_options": {
             "allOf": [
@@ -9124,11 +8659,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "append_server_name",
-              "pass_through",
-              "server_name"
-            ]
+            "x-f5xc-conflicts-with": ["append_server_name", "pass_through", "server_name"]
           },
           "default_loadbalancer": {
             "allOf": [
@@ -9143,9 +8674,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "non_default_loadbalancer"
-            ]
+            "x-f5xc-conflicts-with": ["non_default_loadbalancer"]
           },
           "disable_path_normalize": {
             "allOf": [
@@ -9159,9 +8688,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "enable_path_normalize"
-            ]
+            "x-f5xc-conflicts-with": ["enable_path_normalize"]
           },
           "enable_path_normalize": {
             "allOf": [
@@ -9175,9 +8702,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "disable_path_normalize"
-            ]
+            "x-f5xc-conflicts-with": ["disable_path_normalize"]
           },
           "http_protocol_options": {
             "allOf": [
@@ -9219,9 +8744,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "default_loadbalancer"
-            ]
+            "x-f5xc-conflicts-with": ["default_loadbalancer"]
           },
           "pass_through": {
             "allOf": [
@@ -9236,11 +8759,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "append_server_name",
-              "default_header",
-              "server_name"
-            ]
+            "x-f5xc-conflicts-with": ["append_server_name", "default_header", "server_name"]
           },
           "port": {
             "type": "integer",
@@ -9278,9 +8797,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "port_ranges"
-            ]
+            "x-f5xc-conflicts-with": ["port_ranges"]
           },
           "port_ranges": {
             "type": "string",
@@ -9323,9 +8840,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "port"
-            ]
+            "x-f5xc-conflicts-with": ["port"]
           },
           "server_name": {
             "type": "string",
@@ -9359,11 +8874,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "append_server_name",
-              "default_header",
-              "pass_through"
-            ]
+            "x-f5xc-conflicts-with": ["append_server_name", "default_header", "pass_through"]
           },
           "tls_cert_params": {
             "allOf": [
@@ -9378,9 +8889,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "tls_parameters"
-            ]
+            "x-f5xc-conflicts-with": ["tls_parameters"]
           },
           "tls_parameters": {
             "allOf": [
@@ -9395,9 +8904,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "tls_cert_params"
-            ]
+            "x-f5xc-conflicts-with": ["tls_cert_params"]
           }
         },
         "x-f5xc-description-short": "Choice for selecting HTTP proxy with bring your own certificates.",
@@ -9411,11 +8918,7 @@
         "x-f5xc-cli-domain": "virtual",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -9488,11 +8991,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "default_header",
-              "pass_through",
-              "server_name"
-            ]
+            "x-f5xc-conflicts-with": ["default_header", "pass_through", "server_name"]
           },
           "coalescing_options": {
             "allOf": [
@@ -9556,11 +9055,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "append_server_name",
-              "pass_through",
-              "server_name"
-            ]
+            "x-f5xc-conflicts-with": ["append_server_name", "pass_through", "server_name"]
           },
           "default_loadbalancer": {
             "allOf": [
@@ -9575,9 +9070,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "non_default_loadbalancer"
-            ]
+            "x-f5xc-conflicts-with": ["non_default_loadbalancer"]
           },
           "disable_path_normalize": {
             "allOf": [
@@ -9591,9 +9084,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "enable_path_normalize"
-            ]
+            "x-f5xc-conflicts-with": ["enable_path_normalize"]
           },
           "enable_path_normalize": {
             "allOf": [
@@ -9607,9 +9098,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "disable_path_normalize"
-            ]
+            "x-f5xc-conflicts-with": ["disable_path_normalize"]
           },
           "http_protocol_options": {
             "allOf": [
@@ -9650,9 +9139,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "use_mtls"
-            ]
+            "x-f5xc-conflicts-with": ["use_mtls"]
           },
           "non_default_loadbalancer": {
             "allOf": [
@@ -9667,9 +9154,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "default_loadbalancer"
-            ]
+            "x-f5xc-conflicts-with": ["default_loadbalancer"]
           },
           "pass_through": {
             "allOf": [
@@ -9684,11 +9169,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "append_server_name",
-              "default_header",
-              "server_name"
-            ]
+            "x-f5xc-conflicts-with": ["append_server_name", "default_header", "server_name"]
           },
           "port": {
             "type": "integer",
@@ -9725,9 +9206,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "port_ranges"
-            ]
+            "x-f5xc-conflicts-with": ["port_ranges"]
           },
           "port_ranges": {
             "type": "string",
@@ -9770,9 +9249,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "port"
-            ]
+            "x-f5xc-conflicts-with": ["port"]
           },
           "server_name": {
             "type": "string",
@@ -9806,11 +9283,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "append_server_name",
-              "default_header",
-              "pass_through"
-            ]
+            "x-f5xc-conflicts-with": ["append_server_name", "default_header", "pass_through"]
           },
           "tls_config": {
             "allOf": [
@@ -9837,9 +9310,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "no_mtls"
-            ]
+            "x-f5xc-conflicts-with": ["no_mtls"]
           }
         },
         "x-f5xc-description-short": "Choice for selecting HTTP proxy with bring your own certificates.",
@@ -9853,11 +9324,7 @@
         "x-f5xc-cli-domain": "virtual",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -9893,9 +9360,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "caching_inherit"
-            ]
+            "x-f5xc-conflicts-with": ["caching_inherit"]
           },
           "caching_inherit": {
             "allOf": [
@@ -9910,9 +9375,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "caching_disable"
-            ]
+            "x-f5xc-conflicts-with": ["caching_disable"]
           },
           "route_ref": {
             "allOf": [
@@ -9948,11 +9411,7 @@
         "x-f5xc-cli-domain": "virtual",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -10080,11 +9539,7 @@
         "x-f5xc-cli-domain": "virtual",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -10212,11 +9667,7 @@
         "x-f5xc-cli-domain": "virtual",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -10251,10 +9702,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "disable_host_rewrite",
-              "host_rewrite"
-            ]
+            "x-f5xc-conflicts-with": ["disable_host_rewrite", "host_rewrite"]
           },
           "disable_host_rewrite": {
             "allOf": [
@@ -10268,10 +9716,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "auto_host_rewrite",
-              "host_rewrite"
-            ]
+            "x-f5xc-conflicts-with": ["auto_host_rewrite", "host_rewrite"]
           },
           "host_rewrite": {
             "type": "string",
@@ -10307,10 +9752,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "auto_host_rewrite",
-              "disable_host_rewrite"
-            ]
+            "x-f5xc-conflicts-with": ["auto_host_rewrite", "disable_host_rewrite"]
           },
           "http_method": {
             "allOf": [
@@ -10353,11 +9795,7 @@
         "x-f5xc-cli-domain": "virtual",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -10416,10 +9854,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "presence",
-              "regex"
-            ]
+            "x-f5xc-conflicts-with": ["presence", "regex"]
           },
           "invert_match": {
             "type": "boolean",
@@ -10507,10 +9942,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "exact",
-              "regex"
-            ]
+            "x-f5xc-conflicts-with": ["exact", "regex"]
           },
           "regex": {
             "type": "string",
@@ -10550,19 +9982,14 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "exact",
-              "presence"
-            ]
+            "x-f5xc-conflicts-with": ["exact", "presence"]
           }
         },
         "x-f5xc-description-short": "Header match is done using the name of the header and its value.",
         "x-f5xc-description-medium": "Header match is done using the name of the header and its value. The value match is done using one of the following regex match on value exact match of value presence of header Header Match can also be inverse of above, which be used to check missing header or non-matching value.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for ioschemaHeaderMatcherType",
-          "required_fields": [
-            "name"
-          ],
+          "required_fields": ["name"],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"name\": \"Content-Type\"\n}",
           "example_yaml": "name: Content-Type"
@@ -10570,11 +9997,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -10633,10 +10056,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "prefix",
-              "regex"
-            ]
+            "x-f5xc-conflicts-with": ["prefix", "regex"]
           },
           "prefix": {
             "type": "string",
@@ -10672,10 +10092,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "path",
-              "regex"
-            ]
+            "x-f5xc-conflicts-with": ["path", "regex"]
           },
           "regex": {
             "type": "string",
@@ -10718,10 +10135,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "path",
-              "prefix"
-            ]
+            "x-f5xc-conflicts-with": ["path", "prefix"]
           }
         },
         "x-f5xc-description-short": "Path match of the URI can be either be, Prefix match or exact match or regular expression match.",
@@ -10735,11 +10149,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -10774,10 +10184,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "port",
-              "port_ranges"
-            ]
+            "x-f5xc-conflicts-with": ["port", "port_ranges"]
           },
           "port": {
             "type": "integer",
@@ -10815,10 +10222,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "no_port_match",
-              "port_ranges"
-            ]
+            "x-f5xc-conflicts-with": ["no_port_match", "port_ranges"]
           },
           "port_ranges": {
             "type": "string",
@@ -10858,10 +10262,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "no_port_match",
-              "port"
-            ]
+            "x-f5xc-conflicts-with": ["no_port_match", "port"]
           }
         },
         "x-f5xc-description-short": "Port match of the request can be a range or a specific port.",
@@ -10875,11 +10276,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -10979,9 +10376,7 @@
         "x-f5xc-description-short": "Send this direct response in case of route match action is direct response.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for routeRouteDirectResponse",
-          "required_fields": [
-            "response_code"
-          ],
+          "required_fields": ["response_code"],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"response_code\": 100\n}",
           "example_yaml": "response_code: 100"
@@ -10989,9 +10384,7 @@
         "x-f5xc-cli-domain": "network",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -11075,9 +10468,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "prefix_rewrite"
-            ]
+            "x-f5xc-conflicts-with": ["prefix_rewrite"]
           },
           "prefix_rewrite": {
             "type": "string",
@@ -11114,9 +10505,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "path_redirect"
-            ]
+            "x-f5xc-conflicts-with": ["path_redirect"]
           },
           "proto_redirect": {
             "type": "string",
@@ -11134,11 +10523,7 @@
             "x-f5xc-description-short": "Swap protocol part of incoming URL in redirect URL The protocol can be swapped with either HTTP or HTTPS When incoming-proto option is specified...",
             "x-f5xc-description-medium": "Swap protocol part of incoming URL in redirect URL The protocol can be swapped with either HTTP or HTTPS When incoming-proto option is specified, swapping of protocol is not done.",
             "maxLength": 1024,
-            "enum": [
-              "incoming-proto",
-              "http",
-              "https"
-            ],
+            "enum": ["incoming-proto", "http", "https"],
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "general",
@@ -11169,10 +10554,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "replace_params",
-              "retain_all_params"
-            ]
+            "x-f5xc-conflicts-with": ["replace_params", "retain_all_params"]
           },
           "replace_params": {
             "type": "string",
@@ -11208,10 +10590,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "remove_all_params",
-              "retain_all_params"
-            ]
+            "x-f5xc-conflicts-with": ["remove_all_params", "retain_all_params"]
           },
           "response_code": {
             "type": "integer",
@@ -11259,10 +10638,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "remove_all_params",
-              "replace_params"
-            ]
+            "x-f5xc-conflicts-with": ["remove_all_params", "replace_params"]
           }
         },
         "x-f5xc-description-short": "Route redirect parameters when match action is redirect.",
@@ -11276,9 +10652,7 @@
         "x-f5xc-cli-domain": "network",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -11403,9 +10777,7 @@
         "x-f5xc-description-short": "BlindfoldSecretInfoType specifies information about the Secret managed by F5XC Secret Management.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for schemaBlindfoldSecretInfoType",
-          "required_fields": [
-            "location"
-          ],
+          "required_fields": ["location"],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"location\": \"string:///U2VjcmV0SW5mb3JtYXRpb24=\"\n}",
           "example_yaml": "location: string:///U2VjcmV0SW5mb3JtYXRpb24="
@@ -11413,9 +10785,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -11522,9 +10892,7 @@
         "x-f5xc-description-short": "ClearSecretInfoType specifies information about the Secret that is not encrypted.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for schemaClearSecretInfoType",
-          "required_fields": [
-            "url"
-          ],
+          "required_fields": ["url"],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"url\": \"string:///U2VjcmV0SW5mb3JtYXRpb24=\"\n}",
           "example_yaml": "url: string:///U2VjcmV0SW5mb3JtYXRpb24="
@@ -11532,11 +10900,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -11554,11 +10918,7 @@
         "type": "string",
         "description": "Specifies the Hash Algorithm to be used\n\nInvalid hash algorithm\nsha256 hash algorithm\nsha1 hash algorithm.",
         "title": "HashAlgoritm",
-        "enum": [
-          "INVALID_HASH_ALGORITHM",
-          "SHA256",
-          "SHA1"
-        ],
+        "enum": ["INVALID_HASH_ALGORITHM", "SHA256", "SHA1"],
         "default": "INVALID_HASH_ALGORITHM",
         "x-displayname": "Hash Algorithm.",
         "x-ves-proto-enum": "ves.io.schema.HashAlgorithm",
@@ -11574,11 +10934,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -11647,9 +11003,7 @@
         "x-f5xc-description-short": "Specifies the hash algorithms to be used.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for schemaHashAlgorithms",
-          "required_fields": [
-            "hash_algorithms"
-          ],
+          "required_fields": ["hash_algorithms"],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"hash_algorithms\": [\n    \"INVALID_HASH_ALGORITHM\"\n  ]\n}",
           "example_yaml": "hash_algorithms:\n- INVALID_HASH_ALGORITHM"
@@ -11657,11 +11011,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -11698,10 +11048,7 @@
               "read": false
             },
             "description": "Use the platform's current default HTTP header transformation behavior.",
-            "x-f5xc-conflicts-with": [
-              "preserve_case_header_transformation",
-              "proper_case_header_transformation"
-            ]
+            "x-f5xc-conflicts-with": ["preserve_case_header_transformation", "proper_case_header_transformation"]
           },
           "preserve_case_header_transformation": {
             "allOf": [
@@ -11717,10 +11064,7 @@
               "read": false
             },
             "description": "Preserve HTTP header-name case when upstream case must remain unchanged.",
-            "x-f5xc-conflicts-with": [
-              "default_header_transformation",
-              "proper_case_header_transformation"
-            ]
+            "x-f5xc-conflicts-with": ["default_header_transformation", "proper_case_header_transformation"]
           },
           "proper_case_header_transformation": {
             "allOf": [
@@ -11736,10 +11080,7 @@
               "read": false
             },
             "description": "Transform HTTP header names to proper case when explicit transformation is required.",
-            "x-f5xc-conflicts-with": [
-              "default_header_transformation",
-              "preserve_case_header_transformation"
-            ]
+            "x-f5xc-conflicts-with": ["default_header_transformation", "preserve_case_header_transformation"]
           }
         },
         "x-f5xc-description-short": "Header Transformation OPTIONS for HTTP/1.1 request/response headers.",
@@ -11753,11 +11094,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -11775,19 +11112,7 @@
         "type": "string",
         "description": "Specifies the HTTP method used to access a resource.\n\nAny HTTP Method.",
         "title": "HttpMethod",
-        "enum": [
-          "ANY",
-          "GET",
-          "HEAD",
-          "POST",
-          "PUT",
-          "DELETE",
-          "CONNECT",
-          "OPTIONS",
-          "TRACE",
-          "PATCH",
-          "COPY"
-        ],
+        "enum": ["ANY", "GET", "HEAD", "POST", "PUT", "DELETE", "CONNECT", "OPTIONS", "TRACE", "PATCH", "COPY"],
         "default": "ANY",
         "x-displayname": "HTTP Method.",
         "x-ves-proto-enum": "ves.io.schema.HttpMethod",
@@ -11802,11 +11127,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -11955,11 +11276,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -11993,9 +11310,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "clear_secret_info"
-            ]
+            "x-f5xc-conflicts-with": ["clear_secret_info"]
           },
           "clear_secret_info": {
             "allOf": [
@@ -12009,9 +11324,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "blindfold_secret_info"
-            ]
+            "x-f5xc-conflicts-with": ["blindfold_secret_info"]
           }
         },
         "x-f5xc-description-short": "SecretType is used in an object to indicate a sensitive/confidential field.",
@@ -12025,9 +11338,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -12062,9 +11373,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "strict_coalescing"
-            ]
+            "x-f5xc-conflicts-with": ["strict_coalescing"]
           },
           "strict_coalescing": {
             "allOf": [
@@ -12079,9 +11388,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "default_coalescing"
-            ]
+            "x-f5xc-conflicts-with": ["default_coalescing"]
           }
         },
         "x-f5xc-description-short": "TLS connection coalescing configuration (not compatible with mTLS).",
@@ -12095,11 +11402,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -12180,10 +11483,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "disable_ocsp_stapling",
-              "use_system_defaults"
-            ]
+            "x-f5xc-conflicts-with": ["disable_ocsp_stapling", "use_system_defaults"]
           },
           "description": {
             "type": "string",
@@ -12230,10 +11530,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "custom_hash_algorithms",
-              "use_system_defaults"
-            ]
+            "x-f5xc-conflicts-with": ["custom_hash_algorithms", "use_system_defaults"]
           },
           "private_key": {
             "allOf": [
@@ -12263,17 +11560,12 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "custom_hash_algorithms",
-              "disable_ocsp_stapling"
-            ]
+            "x-f5xc-conflicts-with": ["custom_hash_algorithms", "disable_ocsp_stapling"]
           }
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for schemaTlsCertificateType",
-          "required_fields": [
-            "certificate_url"
-          ],
+          "required_fields": ["certificate_url"],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"certificate_url\": \"value\"\n}",
           "example_yaml": "certificate_url: value"
@@ -12281,11 +11573,7 @@
         "x-f5xc-cli-domain": "certificates",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -12303,13 +11591,7 @@
         "type": "string",
         "description": "TlsProtocol is enumeration of supported TLS versions\n\nF5 Distributed Cloud will choose the optimal TLS version.",
         "title": "TlsProtocol",
-        "enum": [
-          "TLS_AUTO",
-          "TLSv1_0",
-          "TLSv1_1",
-          "TLSv1_2",
-          "TLSv1_3"
-        ],
+        "enum": ["TLS_AUTO", "TLSv1_0", "TLSv1_1", "TLSv1_2", "TLSv1_3"],
         "default": "TLS_AUTO",
         "x-displayname": "TLS Protocol.",
         "x-ves-proto-enum": "ves.io.schema.TlsProtocol",
@@ -12325,11 +11607,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -12347,14 +11625,7 @@
         "type": "string",
         "description": "X-Forwarded-Client-Cert custom cookie elements\n\nThe entire client certificate in URL encoded PEM format.\nThe entire client certificate chain (including the leaf certificate) in URL encoded PEM format.\nThe Subject field of the current client certificate. The value is always double-quoted.\nThe URI type Subject Alternative Name field of the current client certificate.\nA client certificate may contain multiple URI type Subject Alternative Names,\neach will be a separate key-value pair.\nThe DNS type Subject Alternative Name field of the current client certificate.\nA client certificate may contain multiple DNS type Subject Alternative Names,\neach will be a separate key-value pair.",
         "title": "XfccElement",
-        "enum": [
-          "XFCC_NONE",
-          "XFCC_CERT",
-          "XFCC_CHAIN",
-          "XFCC_SUBJECT",
-          "XFCC_URI",
-          "XFCC_DNS"
-        ],
+        "enum": ["XFCC_NONE", "XFCC_CERT", "XFCC_CHAIN", "XFCC_SUBJECT", "XFCC_URI", "XFCC_DNS"],
         "default": "XFCC_NONE",
         "x-displayname": "XFCC Elements.",
         "x-ves-proto-enum": "ves.io.schema.XfccElement",
@@ -12370,11 +11641,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -12408,9 +11675,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "use_mtls"
-            ]
+            "x-f5xc-conflicts-with": ["use_mtls"]
           },
           "tls_certificates": {
             "type": "array",
@@ -12479,16 +11744,12 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "no_mtls"
-            ]
+            "x-f5xc-conflicts-with": ["no_mtls"]
           }
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for schemaviewsDownstreamTlsParamsType",
-          "required_fields": [
-            "tls_certificates"
-          ],
+          "required_fields": ["tls_certificates"],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"tls_certificates\": [\n    {\n      \"certificate_url\": \"value\"\n    }\n  ]\n}",
           "example_yaml": "tls_certificates:\n- certificate_url: value"
@@ -12496,11 +11757,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -12546,9 +11803,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -12640,9 +11895,7 @@
         "x-f5xc-description-short": "Defines TLS protocol config including min/max versions and allowed ciphers.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for viewsCustomCiphers",
-          "required_fields": [
-            "cipher_suites"
-          ],
+          "required_fields": ["cipher_suites"],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"cipher_suites\": [\n    \"value\"\n  ]\n}",
           "example_yaml": "cipher_suites:\n- value"
@@ -12650,11 +11903,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -12728,9 +11977,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "use_mtls"
-            ]
+            "x-f5xc-conflicts-with": ["use_mtls"]
           },
           "tls_config": {
             "allOf": [
@@ -12757,16 +12004,12 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "no_mtls"
-            ]
+            "x-f5xc-conflicts-with": ["no_mtls"]
           }
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for viewsDownstreamTLSCertsParams",
-          "required_fields": [
-            "certificates"
-          ],
+          "required_fields": ["certificates"],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"certificates\": [\n    {\n      \"name\": \"contacts-route\"\n    }\n  ]\n}",
           "example_yaml": "certificates:\n- name: contacts-route"
@@ -12774,11 +12017,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -12830,9 +12069,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "no_crl"
-            ],
+            "x-f5xc-conflicts-with": ["no_crl"],
             "x-f5xc-references": [
               {
                 "resource_kind": "crl",
@@ -12857,9 +12094,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "crl"
-            ]
+            "x-f5xc-conflicts-with": ["crl"]
           },
           "trusted_ca": {
             "allOf": [
@@ -12873,9 +12108,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "trusted_ca_url"
-            ],
+            "x-f5xc-conflicts-with": ["trusted_ca_url"],
             "x-f5xc-references": [
               {
                 "resource_kind": "certificate",
@@ -12928,9 +12161,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "trusted_ca"
-            ]
+            "x-f5xc-conflicts-with": ["trusted_ca"]
           },
           "xfcc_disabled": {
             "allOf": [
@@ -12944,9 +12175,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "xfcc_options"
-            ]
+            "x-f5xc-conflicts-with": ["xfcc_options"]
           },
           "xfcc_options": {
             "allOf": [
@@ -12961,9 +12190,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "xfcc_disabled"
-            ]
+            "x-f5xc-conflicts-with": ["xfcc_disabled"]
           }
         },
         "x-f5xc-description-short": "Validation context for downstream client TLS connections.",
@@ -12977,11 +12204,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -13023,9 +12246,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -13060,11 +12281,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "default_security",
-              "low_security",
-              "medium_security"
-            ]
+            "x-f5xc-conflicts-with": ["default_security", "low_security", "medium_security"]
           },
           "default_security": {
             "allOf": [
@@ -13078,11 +12295,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "custom_security",
-              "low_security",
-              "medium_security"
-            ]
+            "x-f5xc-conflicts-with": ["custom_security", "low_security", "medium_security"]
           },
           "low_security": {
             "allOf": [
@@ -13096,11 +12309,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "custom_security",
-              "default_security",
-              "medium_security"
-            ]
+            "x-f5xc-conflicts-with": ["custom_security", "default_security", "medium_security"]
           },
           "medium_security": {
             "allOf": [
@@ -13114,11 +12323,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "custom_security",
-              "default_security",
-              "low_security"
-            ]
+            "x-f5xc-conflicts-with": ["custom_security", "default_security", "low_security"]
           }
         },
         "x-f5xc-description-short": "Defines various OPTIONS to configure TLS configuration parameters.",
@@ -13132,11 +12337,7 @@
         "x-f5xc-cli-domain": "certificates",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -13241,11 +12442,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -13280,9 +12477,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "virtual_site"
-            ],
+            "x-f5xc-conflicts-with": ["virtual_site"],
             "x-f5xc-references": [
               {
                 "resource_kind": "site",
@@ -13307,9 +12502,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "site"
-            ],
+            "x-f5xc-conflicts-with": ["site"],
             "x-f5xc-references": [
               {
                 "resource_kind": "virtual_site",
@@ -13335,11 +12528,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -13410,11 +12599,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -13466,9 +12651,7 @@
         "x-f5xc-description-short": "X-Forwarded-Client-Cert header elements to be added to requests.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for viewsXfccHeaderKeys",
-          "required_fields": [
-            "xfcc_header_elements"
-          ],
+          "required_fields": ["xfcc_header_elements"],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"xfcc_header_elements\": [\n    \"XFCC_NONE\"\n  ]\n}",
           "example_yaml": "xfcc_header_elements:\n- XFCC_NONE"
@@ -13476,11 +12659,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -13514,11 +12693,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "service",
-              "simple_service",
-              "stateful_service"
-            ]
+            "x-f5xc-conflicts-with": ["service", "simple_service", "stateful_service"]
           },
           "service": {
             "allOf": [
@@ -13532,11 +12707,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "job",
-              "simple_service",
-              "stateful_service"
-            ]
+            "x-f5xc-conflicts-with": ["job", "simple_service", "stateful_service"]
           },
           "simple_service": {
             "allOf": [
@@ -13551,11 +12722,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "job",
-              "service",
-              "stateful_service"
-            ]
+            "x-f5xc-conflicts-with": ["job", "service", "stateful_service"]
           },
           "stateful_service": {
             "allOf": [
@@ -13570,11 +12737,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "job",
-              "service",
-              "simple_service"
-            ]
+            "x-f5xc-conflicts-with": ["job", "service", "simple_service"]
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -13587,11 +12750,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -13625,11 +12784,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "service",
-              "simple_service",
-              "stateful_service"
-            ]
+            "x-f5xc-conflicts-with": ["service", "simple_service", "stateful_service"]
           },
           "service": {
             "allOf": [
@@ -13643,11 +12798,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "job",
-              "simple_service",
-              "stateful_service"
-            ]
+            "x-f5xc-conflicts-with": ["job", "simple_service", "stateful_service"]
           },
           "simple_service": {
             "allOf": [
@@ -13662,11 +12813,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "job",
-              "service",
-              "stateful_service"
-            ]
+            "x-f5xc-conflicts-with": ["job", "service", "stateful_service"]
           },
           "stateful_service": {
             "allOf": [
@@ -13681,11 +12828,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "job",
-              "service",
-              "simple_service"
-            ]
+            "x-f5xc-conflicts-with": ["job", "service", "simple_service"]
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -13698,11 +12841,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -13720,13 +12859,7 @@
         "type": "string",
         "description": "Type of protocol\n\n- PROTOCOL_TCP: TCP\n\nTCP\n- PROTOCOL_HTTP: HTTP\n\nHTTP\n- PROTOCOL_HTTP2: HTTP2\n\nHTTP2\n- PROTOCOL_TLS_WITH_SNI: TLS with SNI\n\nTLS with SNI\n- PROTOCOL_UDP: UDP\n\nUDP.",
         "title": "Protocol Type",
-        "enum": [
-          "PROTOCOL_TCP",
-          "PROTOCOL_HTTP",
-          "PROTOCOL_HTTP2",
-          "PROTOCOL_TLS_WITH_SNI",
-          "PROTOCOL_UDP"
-        ],
+        "enum": ["PROTOCOL_TCP", "PROTOCOL_HTTP", "PROTOCOL_HTTP2", "PROTOCOL_TLS_WITH_SNI", "PROTOCOL_UDP"],
         "default": "PROTOCOL_TCP",
         "x-displayname": "Protocol Type.",
         "x-ves-proto-enum": "ves.io.schema.views.workload.ProtocolType",
@@ -13742,11 +12875,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -13780,11 +12909,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "service",
-              "simple_service",
-              "stateful_service"
-            ]
+            "x-f5xc-conflicts-with": ["service", "simple_service", "stateful_service"]
           },
           "service": {
             "allOf": [
@@ -13798,11 +12923,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "job",
-              "simple_service",
-              "stateful_service"
-            ]
+            "x-f5xc-conflicts-with": ["job", "simple_service", "stateful_service"]
           },
           "simple_service": {
             "allOf": [
@@ -13817,11 +12938,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "job",
-              "service",
-              "stateful_service"
-            ]
+            "x-f5xc-conflicts-with": ["job", "service", "stateful_service"]
           },
           "stateful_service": {
             "allOf": [
@@ -13836,11 +12953,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "job",
-              "service",
-              "simple_service"
-            ]
+            "x-f5xc-conflicts-with": ["job", "service", "simple_service"]
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -13853,11 +12966,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -13923,11 +13032,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -14062,9 +13167,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "scale_to_zero"
-            ]
+            "x-f5xc-conflicts-with": ["scale_to_zero"]
           },
           "scale_to_zero": {
             "allOf": [
@@ -14079,9 +13182,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "num_replicas"
-            ]
+            "x-f5xc-conflicts-with": ["num_replicas"]
           },
           "volumes": {
             "type": "array",
@@ -14121,9 +13222,7 @@
         "x-f5xc-description-medium": "Service does not maintain per replica state, however it can be configured to use persistent storage that is shared amongst all the replicas. Replicas of a service are fungible and do not have a stable network identity or storage. Common examples of services are web servers, application servers...",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for viewsworkloadServiceType",
-          "required_fields": [
-            "containers"
-          ],
+          "required_fields": ["containers"],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"containers\": [\n    {\n      \"name\": \"value\"\n    }\n  ]\n}",
           "example_yaml": "containers:\n- name: value"
@@ -14131,11 +13230,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -14153,12 +13248,7 @@
         "type": "string",
         "description": "List of usage types that can be queried\n\nx-unit: \"Number of cores\"\nx-unit: \"Bytes\"\nx-unit: \"Bytes per second\"\nx-unit: \"Bytes per second\"",
         "title": "Usage Type",
-        "enum": [
-          "CPU_USAGE",
-          "MEMORY_USAGE",
-          "DISK_READS",
-          "DISK_WRITES"
-        ],
+        "enum": ["CPU_USAGE", "MEMORY_USAGE", "DISK_READS", "DISK_WRITES"],
         "default": "CPU_USAGE",
         "x-displayname": "Usage Type.",
         "x-ves-proto-enum": "ves.io.schema.views.workload.UsageType",
@@ -14174,11 +13264,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -14214,10 +13300,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "http_protocol_enable_v1_v2",
-              "http_protocol_enable_v2_only"
-            ]
+            "x-f5xc-conflicts-with": ["http_protocol_enable_v1_v2", "http_protocol_enable_v2_only"]
           },
           "http_protocol_enable_v1_v2": {
             "allOf": [
@@ -14232,10 +13315,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "http_protocol_enable_v1_only",
-              "http_protocol_enable_v2_only"
-            ]
+            "x-f5xc-conflicts-with": ["http_protocol_enable_v1_only", "http_protocol_enable_v2_only"]
           },
           "http_protocol_enable_v2_only": {
             "allOf": [
@@ -14250,10 +13330,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "http_protocol_enable_v1_only",
-              "http_protocol_enable_v1_v2"
-            ]
+            "x-f5xc-conflicts-with": ["http_protocol_enable_v1_only", "http_protocol_enable_v1_v2"]
           }
         },
         "x-f5xc-description-short": "HTTP protocol configuration OPTIONS for downstream connections.",
@@ -14267,9 +13344,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "system"
-            ],
+            "allowed": ["system"],
             "enforced": false
           },
           "recommendation": {
@@ -14374,10 +13449,7 @@
         "x-f5xc-description-short": "Advertise this workload via loadbalancer on specific sites.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for workloadAdvertiseCustomType",
-          "required_fields": [
-            "advertise_where",
-            "ports"
-          ],
+          "required_fields": ["advertise_where", "ports"],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"advertise_where\": [\n    {}\n  ],\n  \"ports\": [\n    {}\n  ]\n}",
           "example_yaml": "advertise_where:\n- {}\nports:\n- {}"
@@ -14385,11 +13457,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -14423,9 +13491,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "port"
-            ]
+            "x-f5xc-conflicts-with": ["port"]
           },
           "port": {
             "allOf": [
@@ -14440,9 +13506,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "multi_ports"
-            ]
+            "x-f5xc-conflicts-with": ["multi_ports"]
           }
         },
         "x-f5xc-description-short": "Advertise the workload locally in-cluster.",
@@ -14456,11 +13520,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -14520,9 +13580,7 @@
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for workloadAdvertiseMultiPortType",
-          "required_fields": [
-            "ports"
-          ],
+          "required_fields": ["ports"],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"ports\": [\n    {}\n  ]\n}",
           "example_yaml": "ports:\n- {}"
@@ -14530,11 +13588,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -14569,11 +13623,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "advertise_in_cluster",
-              "advertise_on_public",
-              "do_not_advertise"
-            ]
+            "x-f5xc-conflicts-with": ["advertise_in_cluster", "advertise_on_public", "do_not_advertise"]
           },
           "advertise_in_cluster": {
             "allOf": [
@@ -14588,11 +13638,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "advertise_custom",
-              "advertise_on_public",
-              "do_not_advertise"
-            ]
+            "x-f5xc-conflicts-with": ["advertise_custom", "advertise_on_public", "do_not_advertise"]
           },
           "advertise_on_public": {
             "allOf": [
@@ -14607,11 +13653,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "advertise_custom",
-              "advertise_in_cluster",
-              "do_not_advertise"
-            ]
+            "x-f5xc-conflicts-with": ["advertise_custom", "advertise_in_cluster", "do_not_advertise"]
           },
           "do_not_advertise": {
             "allOf": [
@@ -14626,11 +13668,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "advertise_custom",
-              "advertise_in_cluster",
-              "advertise_on_public"
-            ]
+            "x-f5xc-conflicts-with": ["advertise_custom", "advertise_in_cluster", "advertise_on_public"]
           }
         },
         "x-f5xc-description-short": "Advertise OPTIONS are used to configure how and where to advertise the workload using load balancers.",
@@ -14645,11 +13683,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -14684,9 +13718,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "tcp_loadbalancer"
-            ]
+            "x-f5xc-conflicts-with": ["tcp_loadbalancer"]
           },
           "port": {
             "allOf": [
@@ -14715,9 +13747,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "http_loadbalancer"
-            ]
+            "x-f5xc-conflicts-with": ["http_loadbalancer"]
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -14730,11 +13760,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -14768,9 +13794,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "port"
-            ]
+            "x-f5xc-conflicts-with": ["port"]
           },
           "port": {
             "allOf": [
@@ -14785,9 +13809,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "multi_ports"
-            ]
+            "x-f5xc-conflicts-with": ["multi_ports"]
           }
         },
         "x-f5xc-description-short": "Advertise this workload via loadbalancer on Internet with default VIP.",
@@ -14801,11 +13823,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -14923,10 +13941,7 @@
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for workloadAdvertiseSimpleServiceType",
-          "required_fields": [
-            "domains",
-            "service_port"
-          ],
+          "required_fields": ["domains", "service_port"],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"domains\": [\n    \"value\"\n  ],\n  \"service_port\": 1024\n}",
           "example_yaml": "domains:\n- value\nservice_port: 1024"
@@ -14934,11 +13949,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -14973,9 +13984,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "tcp_loadbalancer"
-            ]
+            "x-f5xc-conflicts-with": ["tcp_loadbalancer"]
           },
           "port": {
             "allOf": [
@@ -15004,9 +14013,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "http_loadbalancer"
-            ]
+            "x-f5xc-conflicts-with": ["http_loadbalancer"]
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -15019,11 +14026,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -15057,10 +14060,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "virtual_site",
-              "vk8s_service"
-            ]
+            "x-f5xc-conflicts-with": ["virtual_site", "vk8s_service"]
           },
           "virtual_site": {
             "allOf": [
@@ -15074,10 +14074,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "site",
-              "vk8s_service"
-            ]
+            "x-f5xc-conflicts-with": ["site", "vk8s_service"]
           },
           "vk8s_service": {
             "allOf": [
@@ -15092,10 +14089,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "site",
-              "virtual_site"
-            ]
+            "x-f5xc-conflicts-with": ["site", "virtual_site"]
           }
         },
         "x-f5xc-description-short": "Defines various OPTIONS where a load balancer could be advertised.",
@@ -15109,11 +14103,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -15273,10 +14263,7 @@
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for workloadConfigurationFileType",
-          "required_fields": [
-            "name",
-            "volume_name"
-          ],
+          "required_fields": ["name", "volume_name"],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"name\": \"value\",\n  \"volume_name\": \"value\"\n}",
           "example_yaml": "name: value\nvolume_name: value"
@@ -15284,11 +14271,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -15322,9 +14305,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "file"
-            ]
+            "x-f5xc-conflicts-with": ["file"]
           },
           "file": {
             "allOf": [
@@ -15338,9 +14319,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "env_var"
-            ]
+            "x-f5xc-conflicts-with": ["env_var"]
           }
         },
         "x-f5xc-description-short": "Configuration parameter for the workload.",
@@ -15354,11 +14333,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -15427,11 +14402,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -15449,11 +14420,7 @@
         "type": "string",
         "description": "Container Flavor type\n\n- CONTAINER_FLAVOR_TYPE_TINY: Tiny\n\nTiny containers have limit of 0.1 vCPU and 256 MiB (mebibyte) memory\n- CONTAINER_FLAVOR_TYPE_MEDIUM: Medium\n\nMedium containers have limit of 0.25 vCPU and 512 MiB (mebibyte) memory\n- CONTAINER_FLAVOR_TYPE_LARGE: Large\n\nLarge containers have limit of 1 vCPU and 2048 MiB (mebibyte) memory.",
         "title": "ContainerFlavorType",
-        "enum": [
-          "CONTAINER_FLAVOR_TYPE_TINY",
-          "CONTAINER_FLAVOR_TYPE_MEDIUM",
-          "CONTAINER_FLAVOR_TYPE_LARGE"
-        ],
+        "enum": ["CONTAINER_FLAVOR_TYPE_TINY", "CONTAINER_FLAVOR_TYPE_MEDIUM", "CONTAINER_FLAVOR_TYPE_LARGE"],
         "default": "CONTAINER_FLAVOR_TYPE_TINY",
         "x-displayname": "Container Flavor Type.",
         "x-ves-proto-enum": "ves.io.schema.views.workload.ContainerFlavorType",
@@ -15469,11 +14436,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -15580,10 +14543,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "default_flavor",
-              "flavor"
-            ],
+            "x-f5xc-conflicts-with": ["default_flavor", "flavor"],
             "x-f5xc-references": [
               {
                 "resource_kind": "workload_flavor",
@@ -15609,10 +14569,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "custom_flavor",
-              "flavor"
-            ]
+            "x-f5xc-conflicts-with": ["custom_flavor", "flavor"]
           },
           "flavor": {
             "allOf": [
@@ -15626,10 +14583,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "custom_flavor",
-              "default_flavor"
-            ]
+            "x-f5xc-conflicts-with": ["custom_flavor", "default_flavor"]
           },
           "image": {
             "allOf": [
@@ -15743,9 +14697,7 @@
         "x-f5xc-description-short": "ContainerType configures the container information.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for workloadContainerType",
-          "required_fields": [
-            "name"
-          ],
+          "required_fields": ["name"],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"name\": \"value\"\n}",
           "example_yaml": "name: value"
@@ -15753,11 +14705,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -15817,11 +14765,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -15892,11 +14836,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -16031,11 +14971,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -16104,9 +15040,7 @@
         "x-f5xc-description-short": "Defines a way to deploy a workload on specific Customer sites.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for workloadDeployCESiteType",
-          "required_fields": [
-            "site"
-          ],
+          "required_fields": ["site"],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"site\": [\n    {\n      \"name\": \"contacts-route\"\n    }\n  ]\n}",
           "example_yaml": "site:\n- name: contacts-route"
@@ -16114,11 +15048,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -16187,9 +15117,7 @@
         "x-f5xc-description-short": "Defines a way to deploy a workload on specific Customer virtual sites.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for workloadDeployCEVirtualSiteType",
-          "required_fields": [
-            "virtual_site"
-          ],
+          "required_fields": ["virtual_site"],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"virtual_site\": [\n    {\n      \"name\": \"contacts-route\"\n    }\n  ]\n}",
           "example_yaml": "virtual_site:\n- name: contacts-route"
@@ -16197,11 +15125,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -16355,11 +15279,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -16428,9 +15348,7 @@
         "x-f5xc-description-short": "Defines a way to deploy a workload on specific Regional Edge sites.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for workloadDeployRESiteType",
-          "required_fields": [
-            "site"
-          ],
+          "required_fields": ["site"],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"site\": [\n    {\n      \"name\": \"contacts-route\"\n    }\n  ]\n}",
           "example_yaml": "site:\n- name: contacts-route"
@@ -16438,11 +15356,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -16511,9 +15425,7 @@
         "x-f5xc-description-short": "Defines a way to deploy a workload on specific Regional Edge virtual sites.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for workloadDeployREVirtualSiteType",
-          "required_fields": [
-            "virtual_site"
-          ],
+          "required_fields": ["virtual_site"],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"virtual_site\": [\n    {\n      \"name\": \"contacts-route\"\n    }\n  ]\n}",
           "example_yaml": "virtual_site:\n- name: contacts-route"
@@ -16521,11 +15433,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -16587,9 +15495,7 @@
         "x-f5xc-description-short": "Volume containing a temporary directory whose lifetime is the same as a replica of a workload.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for workloadEmptyDirectoryVolumeType",
-          "required_fields": [
-            "size_limit"
-          ],
+          "required_fields": ["size_limit"],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"size_limit\": 0\n}",
           "example_yaml": "size_limit: 0"
@@ -16597,11 +15503,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -16718,11 +15620,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -16756,9 +15654,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "host_path"
-            ]
+            "x-f5xc-conflicts-with": ["host_path"]
           },
           "host_path": {
             "allOf": [
@@ -16772,9 +15668,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "empty_dir"
-            ]
+            "x-f5xc-conflicts-with": ["empty_dir"]
           },
           "name": {
             "type": "string",
@@ -16838,11 +15732,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -16917,9 +15807,7 @@
         "x-f5xc-description-medium": "ExecHealthCheckType describes a health check based on \"run in container\" action. Exit status of 0 is treated as live/healthy and non-zero is unhealthy.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for workloadExecHealthCheckType",
-          "required_fields": [
-            "command"
-          ],
+          "required_fields": ["command"],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"command\": [\n    \"value\"\n  ]\n}",
           "example_yaml": "command:\n- value"
@@ -16927,11 +15815,7 @@
         "x-f5xc-cli-domain": "virtual",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -17095,9 +15979,7 @@
             "type": "string",
             "x-f5xc-concurrency-token": {
               "server_assigned": true,
-              "echo_on_operations": [
-                "replace"
-              ]
+              "echo_on_operations": ["replace"]
             }
           }
         },
@@ -17111,11 +15993,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -17258,9 +16136,7 @@
         "x-f5xc-description-short": "HTTPHealthCheckType describes a health check based on HTTP GET requests.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for workloadHTTPHealthCheckType",
-          "required_fields": [
-            "path"
-          ],
+          "required_fields": ["path"],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"path\": \"/\"\n}",
           "example_yaml": "path: /"
@@ -17268,11 +16144,7 @@
         "x-f5xc-cli-domain": "virtual",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -17308,9 +16180,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "specific_routes"
-            ]
+            "x-f5xc-conflicts-with": ["specific_routes"]
           },
           "domains": {
             "type": "array",
@@ -17379,10 +16249,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "https",
-              "https_auto_cert"
-            ]
+            "x-f5xc-conflicts-with": ["https", "https_auto_cert"]
           },
           "https": {
             "allOf": [
@@ -17396,10 +16263,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "http",
-              "https_auto_cert"
-            ]
+            "x-f5xc-conflicts-with": ["http", "https_auto_cert"]
           },
           "https_auto_cert": {
             "allOf": [
@@ -17414,10 +16278,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "http",
-              "https"
-            ]
+            "x-f5xc-conflicts-with": ["http", "https"]
           },
           "specific_routes": {
             "allOf": [
@@ -17431,16 +16292,12 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "default_route"
-            ]
+            "x-f5xc-conflicts-with": ["default_route"]
           }
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for workloadHTTPLoadBalancerType",
-          "required_fields": [
-            "domains"
-          ],
+          "required_fields": ["domains"],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"domains\": [\n    \"value\"\n  ]\n}",
           "example_yaml": "domains:\n- value"
@@ -17448,11 +16305,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -17487,10 +16340,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "http_health_check",
-              "tcp_health_check"
-            ]
+            "x-f5xc-conflicts-with": ["http_health_check", "tcp_health_check"]
           },
           "healthy_threshold": {
             "type": "integer",
@@ -17545,10 +16395,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "exec_health_check",
-              "tcp_health_check"
-            ]
+            "x-f5xc-conflicts-with": ["exec_health_check", "tcp_health_check"]
           },
           "initial_delay": {
             "type": "integer",
@@ -17636,10 +16483,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "exec_health_check",
-              "http_health_check"
-            ]
+            "x-f5xc-conflicts-with": ["exec_health_check", "http_health_check"]
           },
           "timeout": {
             "type": "integer",
@@ -17727,12 +16571,7 @@
         "x-f5xc-description-medium": "HealthCheckType describes a health check to be performed against a container to determine whether it has started up or is alive or ready to receive traffic.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for workloadHealthCheckType",
-          "required_fields": [
-            "healthy_threshold",
-            "interval",
-            "timeout",
-            "unhealthy_threshold"
-          ],
+          "required_fields": ["healthy_threshold", "interval", "timeout", "unhealthy_threshold"],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"healthy_threshold\": 1,\n  \"interval\": 1,\n  \"timeout\": 1,\n  \"unhealthy_threshold\": 1\n}",
           "example_yaml": "healthy_threshold: 1\ninterval: 1\ntimeout: 1\nunhealthy_threshold: 1"
@@ -17740,11 +16579,7 @@
         "x-f5xc-cli-domain": "virtual",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -17821,9 +16656,7 @@
         "x-f5xc-description-short": "Volume containing a host mapped path into the workload.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for workloadHostPathVolumeType",
-          "required_fields": [
-            "path"
-          ],
+          "required_fields": ["path"],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"path\": \"value\"\n}",
           "example_yaml": "path: value"
@@ -17831,11 +16664,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -17874,11 +16703,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -17913,9 +16738,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "public"
-            ],
+            "x-f5xc-conflicts-with": ["public"],
             "x-f5xc-references": [
               {
                 "resource_kind": "container_registry",
@@ -17995,9 +16818,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "container_registry"
-            ]
+            "x-f5xc-conflicts-with": ["container_registry"]
           },
           "pull_policy": {
             "allOf": [
@@ -18018,9 +16839,7 @@
         "x-f5xc-description-medium": "ImageType configures the image to use, how to pull the image, and the associated secrets to use if any.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for workloadImageType",
-          "required_fields": [
-            "name"
-          ],
+          "required_fields": ["name"],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"name\": \"quay.io/etcd:0.13\"\n}",
           "example_yaml": "name: quay.io/etcd:0.13"
@@ -18028,11 +16847,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -18188,9 +17003,7 @@
         "x-f5xc-description-medium": "Jobs are used for running batch processing tasks and run to completion. Jobs are generally used for tasks like report generation, billing, parallel data processing, ETL processing, etc.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for workloadJobType",
-          "required_fields": [
-            "containers"
-          ],
+          "required_fields": ["containers"],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"containers\": [\n    {\n      \"name\": \"value\"\n    }\n  ]\n}",
           "example_yaml": "containers:\n- name: value"
@@ -18198,11 +17011,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -18279,11 +17088,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -18616,11 +17421,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -18654,10 +17455,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "disable_host_rewrite",
-              "host_rewrite"
-            ]
+            "x-f5xc-conflicts-with": ["disable_host_rewrite", "host_rewrite"]
           },
           "disable_host_rewrite": {
             "allOf": [
@@ -18671,10 +17469,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "auto_host_rewrite",
-              "host_rewrite"
-            ]
+            "x-f5xc-conflicts-with": ["auto_host_rewrite", "host_rewrite"]
           },
           "host_rewrite": {
             "type": "string",
@@ -18710,10 +17505,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "auto_host_rewrite",
-              "disable_host_rewrite"
-            ]
+            "x-f5xc-conflicts-with": ["auto_host_rewrite", "disable_host_rewrite"]
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -18726,11 +17518,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -18790,9 +17578,7 @@
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for workloadMultiPortType",
-          "required_fields": [
-            "ports"
-          ],
+          "required_fields": ["ports"],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"ports\": [\n    {\n      \"name\": \"https\"\n    }\n  ]\n}",
           "example_yaml": "ports:\n- name: https"
@@ -18800,11 +17586,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -18822,11 +17604,7 @@
         "type": "string",
         "description": "Persistence storage access mode is used to configure access mode for persistent storage\n\n- ACCESS_MODE_READ_WRITE_ONCE: Read Write Once\n\nRead Write Once is used to mount persistent storage in read/write mode to exactly 1 host\n- ACCESS_MODE_READ_WRITE_MANY: Read Write Many\n\nRead Write Many is used to mount persistent storage in read/write mode to many hosts\n- ACCESS_MODE_READ_ONLY_MANY: Read Only Many\n\nRead Only Many is used to mount persistent storage in read-only mode to many hosts.",
         "title": "PersistentStorageAccessModeType",
-        "enum": [
-          "ACCESS_MODE_READ_WRITE_ONCE",
-          "ACCESS_MODE_READ_WRITE_MANY",
-          "ACCESS_MODE_READ_ONLY_MANY"
-        ],
+        "enum": ["ACCESS_MODE_READ_WRITE_ONCE", "ACCESS_MODE_READ_WRITE_MANY", "ACCESS_MODE_READ_ONLY_MANY"],
         "default": "ACCESS_MODE_READ_WRITE_ONCE",
         "x-displayname": "Persistent Storage Access Mode.",
         "x-ves-proto-enum": "ves.io.schema.views.workload.PersistentStorageAccessModeType",
@@ -18842,11 +17620,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -18914,9 +17688,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "default"
-            ]
+            "x-f5xc-conflicts-with": ["default"]
           },
           "default": {
             "allOf": [
@@ -18931,9 +17703,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "class_name"
-            ]
+            "x-f5xc-conflicts-with": ["class_name"]
           },
           "storage_size": {
             "type": "number",
@@ -18965,9 +17735,7 @@
         "x-f5xc-description-short": "Persistent storage configuration is used to configure Persistent Volume Claim (PVC).",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for workloadPersistentStorageType",
-          "required_fields": [
-            "storage_size"
-          ],
+          "required_fields": ["storage_size"],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"storage_size\": 0.004\n}",
           "example_yaml": "storage_size: 0.004"
@@ -18975,11 +17743,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -19038,11 +17802,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -19134,9 +17894,7 @@
         "x-f5xc-description-short": "Persistent storage volume configuration for the workload.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for workloadPersistentVolumeType",
-          "required_fields": [
-            "name"
-          ],
+          "required_fields": ["name"],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"name\": \"value\"\n}",
           "example_yaml": "name: value"
@@ -19144,11 +17902,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -19218,9 +17972,7 @@
             "x-reconciled-from-discovery": true,
             "x-reconciled-at": "2026-09-03T15:40:08+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
-            "x-f5xc-conflicts-with": [
-              "num"
-            ]
+            "x-f5xc-conflicts-with": ["num"]
           },
           "num": {
             "type": "integer",
@@ -19254,9 +18006,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "name"
-            ]
+            "x-f5xc-conflicts-with": ["name"]
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -19269,11 +18019,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -19362,9 +18108,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "target_port"
-            ]
+            "x-f5xc-conflicts-with": ["target_port"]
           },
           "target_port": {
             "type": "integer",
@@ -19399,16 +18143,12 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "same_as_port"
-            ]
+            "x-f5xc-conflicts-with": ["same_as_port"]
           }
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for workloadPortInfoType",
-          "required_fields": [
-            "port"
-          ],
+          "required_fields": ["port"],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"port\": 1\n}",
           "example_yaml": "port: 1"
@@ -19416,11 +18156,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -19511,9 +18247,7 @@
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for workloadPortType",
-          "required_fields": [
-            "name"
-          ],
+          "required_fields": ["name"],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"name\": \"https\"\n}",
           "example_yaml": "name: https"
@@ -19521,11 +18255,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -19578,9 +18308,7 @@
             "type": "string",
             "x-f5xc-concurrency-token": {
               "server_assigned": true,
-              "echo_on_operations": [
-                "replace"
-              ]
+              "echo_on_operations": ["replace"]
             }
           }
         },
@@ -19594,11 +18322,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -19625,11 +18349,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -19664,11 +18384,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "direct_response_route",
-              "redirect_route",
-              "simple_route"
-            ]
+            "x-f5xc-conflicts-with": ["direct_response_route", "redirect_route", "simple_route"]
           },
           "direct_response_route": {
             "allOf": [
@@ -19683,11 +18399,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "custom_route_object",
-              "redirect_route",
-              "simple_route"
-            ]
+            "x-f5xc-conflicts-with": ["custom_route_object", "redirect_route", "simple_route"]
           },
           "redirect_route": {
             "allOf": [
@@ -19702,11 +18414,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "custom_route_object",
-              "direct_response_route",
-              "simple_route"
-            ]
+            "x-f5xc-conflicts-with": ["custom_route_object", "direct_response_route", "simple_route"]
           },
           "simple_route": {
             "allOf": [
@@ -19721,11 +18429,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "custom_route_object",
-              "direct_response_route",
-              "redirect_route"
-            ]
+            "x-f5xc-conflicts-with": ["custom_route_object", "direct_response_route", "redirect_route"]
           }
         },
         "x-f5xc-description-short": "Defines various OPTIONS to define a route.",
@@ -19739,11 +18443,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -19806,9 +18506,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "enabled"
-            ]
+            "x-f5xc-conflicts-with": ["enabled"]
           },
           "do_not_advertise": {
             "allOf": [
@@ -19823,9 +18521,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "simple_advertise"
-            ]
+            "x-f5xc-conflicts-with": ["simple_advertise"]
           },
           "enabled": {
             "allOf": [
@@ -19840,9 +18536,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "disabled"
-            ]
+            "x-f5xc-conflicts-with": ["disabled"]
           },
           "scale_to_zero": {
             "type": "boolean",
@@ -19871,9 +18565,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "do_not_advertise"
-            ]
+            "x-f5xc-conflicts-with": ["do_not_advertise"]
           }
         },
         "x-f5xc-description-short": "SimpleService is a service having one container and one replica that is deployed on all Regional Edges and advertised on Internet via HTTP...",
@@ -19888,11 +18580,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -19937,11 +18625,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -20076,9 +18760,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "scale_to_zero"
-            ]
+            "x-f5xc-conflicts-with": ["scale_to_zero"]
           },
           "persistent_volumes": {
             "type": "array",
@@ -20130,9 +18812,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "num_replicas"
-            ]
+            "x-f5xc-conflicts-with": ["num_replicas"]
           },
           "volumes": {
             "type": "array",
@@ -20172,10 +18852,7 @@
         "x-f5xc-description-medium": "StatefulService maintains per replica state and each replica has its own persistent storage. Each replica has a unique network identity and stable storage. Stateful service are used for distributed stateful applications like cassandra, mongodb, redis, etc.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for workloadStatefulServiceType",
-          "required_fields": [
-            "containers",
-            "persistent_volumes"
-          ],
+          "required_fields": ["containers", "persistent_volumes"],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"containers\": [\n    {\n      \"name\": \"value\"\n    }\n  ],\n  \"persistent_volumes\": [\n    {\n      \"name\": \"value\"\n    }\n  ]\n}",
           "example_yaml": "containers:\n- name: value\npersistent_volumes:\n- name: value"
@@ -20183,11 +18860,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -20279,11 +18952,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -20317,10 +18986,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "host_path",
-              "persistent_volume"
-            ]
+            "x-f5xc-conflicts-with": ["host_path", "persistent_volume"]
           },
           "host_path": {
             "allOf": [
@@ -20334,10 +19000,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "empty_dir",
-              "persistent_volume"
-            ]
+            "x-f5xc-conflicts-with": ["empty_dir", "persistent_volume"]
           },
           "name": {
             "type": "string",
@@ -20402,10 +19065,7 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-conflicts-with": [
-              "empty_dir",
-              "host_path"
-            ]
+            "x-f5xc-conflicts-with": ["empty_dir", "host_path"]
           }
         },
         "x-f5xc-description-short": "Storage volume configuration for the workload.",
@@ -20419,11 +19079,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -20470,11 +19126,7 @@
         "x-f5xc-cli-domain": "virtual",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -20565,11 +19217,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -20644,11 +19292,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -20666,13 +19310,7 @@
         "type": "string",
         "description": "Labels in usage metric.",
         "title": "Usage Label",
-        "enum": [
-          "NAMESPACE",
-          "CONTAINER",
-          "POD",
-          "SITE",
-          "WORKLOAD"
-        ],
+        "enum": ["NAMESPACE", "CONTAINER", "POD", "SITE", "WORKLOAD"],
         "default": "NAMESPACE",
         "x-displayname": "Usage Label.",
         "x-ves-proto-enum": "ves.io.schema.views.workload.UsageLabel",
@@ -20686,11 +19324,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -20995,9 +19629,7 @@
         "x-f5xc-description-short": "Request to GET workload usage in the given namespace.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for workloadUsageRequest",
-          "required_fields": [
-            "field_selector"
-          ],
+          "required_fields": ["field_selector"],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"field_selector\": [\n    \"CPU_USAGE\"\n  ]\n}",
           "example_yaml": "field_selector:\n- CPU_USAGE"
@@ -21005,11 +19637,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -21091,11 +19719,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -21166,11 +19790,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -21188,10 +19808,7 @@
         "type": "string",
         "description": "Mode in which the volume should be mounted to the workload\n\n- VOLUME_MOUNT_READ_ONLY: ReadOnly\n\nMount the volume in read-only mode\n- VOLUME_MOUNT_READ_WRITE: Read Write\n\nMount the volume in read-write mode.",
         "title": "VolumeMountModeType",
-        "enum": [
-          "VOLUME_MOUNT_READ_ONLY",
-          "VOLUME_MOUNT_READ_WRITE"
-        ],
+        "enum": ["VOLUME_MOUNT_READ_ONLY", "VOLUME_MOUNT_READ_WRITE"],
         "default": "VOLUME_MOUNT_READ_ONLY",
         "x-displayname": "Mode",
         "x-ves-proto-enum": "ves.io.schema.views.workload.VolumeMountModeType",
@@ -21207,11 +19824,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -21322,9 +19935,7 @@
         "x-f5xc-description-short": "Volume mount describes how volume is mounted inside a workload.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for workloadVolumeMountType",
-          "required_fields": [
-            "mount_path"
-          ],
+          "required_fields": ["mount_path"],
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"mount_path\": \"value\"\n}",
           "example_yaml": "mount_path: value"
@@ -21332,11 +19943,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -21542,11 +20149,7 @@
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "custom",
-              "default",
-              "shared"
-            ],
+            "allowed": ["custom", "default", "shared"],
             "enforced": true
           },
           "recommendation": {
@@ -21606,9 +20209,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "shared"
-            ],
+            "allowed": ["shared"],
             "enforced": true
           },
           "recommendation": {
@@ -21679,9 +20280,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "shared"
-            ],
+            "allowed": ["shared"],
             "enforced": true
           },
           "recommendation": {
@@ -21802,9 +20401,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "shared"
-            ],
+            "allowed": ["shared"],
             "enforced": true
           },
           "recommendation": {
@@ -21939,9 +20536,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "shared"
-            ],
+            "allowed": ["shared"],
             "enforced": true
           },
           "recommendation": {
@@ -22105,9 +20700,7 @@
             "type": "string",
             "x-f5xc-concurrency-token": {
               "server_assigned": true,
-              "echo_on_operations": [
-                "replace"
-              ]
+              "echo_on_operations": ["replace"]
             }
           }
         },
@@ -22121,9 +20714,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "shared"
-            ],
+            "allowed": ["shared"],
             "enforced": true
           },
           "recommendation": {
@@ -22244,9 +20835,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "shared"
-            ],
+            "allowed": ["shared"],
             "enforced": true
           },
           "recommendation": {
@@ -22323,9 +20912,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "shared"
-            ],
+            "allowed": ["shared"],
             "enforced": true
           },
           "recommendation": {
@@ -22659,9 +21246,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "shared"
-            ],
+            "allowed": ["shared"],
             "enforced": true
           },
           "recommendation": {
@@ -22714,9 +21299,7 @@
             "type": "string",
             "x-f5xc-concurrency-token": {
               "server_assigned": true,
-              "echo_on_operations": [
-                "replace"
-              ]
+              "echo_on_operations": ["replace"]
             }
           }
         },
@@ -22730,9 +21313,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "shared"
-            ],
+            "allowed": ["shared"],
             "enforced": true
           },
           "recommendation": {
@@ -22759,9 +21340,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "shared"
-            ],
+            "allowed": ["shared"],
             "enforced": true
           },
           "recommendation": {
@@ -22882,9 +21461,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "shared"
-            ],
+            "allowed": ["shared"],
             "enforced": true
           },
           "recommendation": {
@@ -22962,9 +21539,7 @@
         "x-f5xc-cli-domain": "container_services",
         "x-f5xc-namespace-profile": {
           "constraint": {
-            "allowed": [
-              "shared"
-            ],
+            "allowed": ["shared"],
             "enforced": true
           },
           "recommendation": {
