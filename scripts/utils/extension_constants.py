@@ -81,6 +81,7 @@ X_F5XC_SERVER_DEFAULT = "x-f5xc-server-default"
 X_F5XC_RECOMMENDED_VALUE = "x-f5xc-recommended-value"
 X_F5XC_RECOMMENDED_ONEOF_VARIANT = "x-f5xc-recommended-oneof-variant"
 X_F5XC_CONFLICTS_WITH = "x-f5xc-conflicts-with"
+X_F5XC_REQUIRED_ONEOF_GROUPS = "x-f5xc-required-oneof-groups"
 X_F5XC_CONSTRAINTS = "x-f5xc-constraints"
 X_F5XC_REQUIRES = "x-f5xc-requires"
 X_F5XC_REFERENCES = "x-f5xc-references"
@@ -256,6 +257,7 @@ VALID_X_F5XC_EXTENSIONS = frozenset(
         X_F5XC_RECOMMENDED_VALUE,
         X_F5XC_RECOMMENDED_ONEOF_VARIANT,
         X_F5XC_CONFLICTS_WITH,
+        X_F5XC_REQUIRED_ONEOF_GROUPS,
         X_F5XC_CONSTRAINTS,
         X_F5XC_REQUIRES,
         X_F5XC_REFERENCES,

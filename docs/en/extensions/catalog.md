@@ -525,6 +525,18 @@ stubby as long as the `### x-name` header exists and the
 - **Example:** `"x-f5xc-conflicts-with": ["plaintext", "auto_cert"]`
 - **Pass-through from upstream:** no
 
+### x-f5xc-required-oneof-groups
+
+- **Applied at:** component schema
+- **Purpose:** Names OneOf groups for which exactly one member must be configured.
+- **Consumers:** terraform, cli, mcp, IDE
+- **Value type:** object
+- **Value schema:** `{"type": "object", "additionalProperties": {"type": "array", "items": {"type": "string"}}}`
+- **Injected by:** scripts/utils/schema_override_enricher.py
+- **Driven by config:** config/schema_overrides.yaml
+- **Example:** `"x-f5xc-required-oneof-groups": {"next_hop_choice": ["default_gateway", "ip_address", "node_interface"]}`
+- **Pass-through from upstream:** no
+
 ### x-f5xc-references
 
 - **Applied at:** schema property
