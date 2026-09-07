@@ -57,6 +57,11 @@ def _explicit_platform_rejection(path: str, message: str) -> bool:
     return message.strip().casefold() == expected.casefold()
 
 
+def _is_sha256_digest(value: Any) -> bool:
+    """Accept only a typed, lowercase SHA-256 evidence digest."""
+    return isinstance(value, str) and re.fullmatch(r"sha256:[0-9a-f]{64}", value) is not None
+
+
 def build_parity_manifest(
     spec: dict[str, Any], evidence_path: Path | None = None
 ) -> dict[str, Any]:
@@ -147,9 +152,7 @@ def build_parity_manifest(
             conclusion.get("http_status") not in (400, 410, 422),
             not _explicit_platform_rejection(path, conclusion.get("server_message", "")),
             not conclusion.get("observed_date"),
-            not all(
-                re.fullmatch(r"sha256:[0-9a-f]{64}", conclusion.get(key, "")) for key in hashes
-            ),
+            not all(_is_sha256_digest(conclusion.get(key)) for key in hashes),
             any(entry["path"] == path or entry["path"].startswith(path + ".") for entry in paths),
         )
         if any(platform_evidence_errors):
@@ -172,9 +175,7 @@ def build_parity_manifest(
             conclusion.get("server_behavior") != "silently_removed",
             conclusion.get("absence_after_probe_verified") is not True,
             not conclusion.get("observed_date"),
-            not all(
-                re.fullmatch(r"sha256:[0-9a-f]{64}", conclusion.get(key, "")) for key in hashes
-            ),
+            not all(_is_sha256_digest(conclusion.get(key)) for key in hashes),
             any(entry["path"] == path or entry["path"].startswith(path + ".") for entry in paths),
         )
         if any(feature_evidence_errors):

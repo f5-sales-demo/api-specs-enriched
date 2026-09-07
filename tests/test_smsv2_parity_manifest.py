@@ -193,6 +193,49 @@ def test_feature_removal_requires_complete_create_read_evidence(tmp_path: Path) 
         build_parity_manifest(spec, evidence)
 
 
+def test_removal_null_digest_fails_closed(tmp_path: Path) -> None:
+    import pytest
+
+    spec = {
+        "components": {
+            "schemas": {"securemesh_site_v2CreateRequest": {"type": "object", "properties": {}}}
+        }
+    }
+    cases = (
+        (
+            "spec.rseries",
+            {
+                "classification": "current_platform_removal",
+                "proof_kind": "explicit_api_rejection",
+                "http_status": 400,
+                "server_message": "Rseries provider is not supported for SecureMeshSite",
+                "observed_date": "2026-09-06",
+            },
+            "platform removal evidence",
+        ),
+        (
+            "spec.private_adn",
+            {
+                "classification": "current_feature_removal",
+                "proof_kind": "create_read_normalization",
+                "create_status": 200,
+                "get_status": 200,
+                "server_behavior": "silently_removed",
+                "absence_after_probe_verified": True,
+                "observed_date": "2026-09-06",
+            },
+            "verified removal evidence",
+        ),
+    )
+    for path, conclusion, error in cases:
+        evidence = tmp_path / "evidence.yaml"
+        conclusion["legacy_fixture_sha256"] = None
+        conclusion["probe_receipt_sha256"] = "sha256:" + "b" * 64
+        evidence.write_text(json.dumps({"fields": {path: conclusion}}))
+        with pytest.raises(ValueError, match=error):
+            build_parity_manifest(spec, evidence)
+
+
 def test_api_validation_and_entitlement_errors_cannot_prove_platform_removal(
     tmp_path: Path,
 ) -> None:
