@@ -1,12 +1,12 @@
 # Changelog
 
-## Version 6.1.1 (2026-09-05)
+## Version 6.1.2 (2026-09-07)
 
 ### Version Information
-- **Full Version**: 6.1.1
+- **Full Version**: 6.1.2
 - **Upstream Timestamp**: unknown
 - **Upstream ETag**: unknown
-- **Enriched Version**: 6.1.1
+- **Enriched Version**: 6.1.2
 
 ### Release Type
 - **patch** release
@@ -45,7 +45,7 @@ docs/specifications/api/
 \`\`\`
 
 ### Download
-- ZIP Package: F5xc-api-(unknown-6.1.1).zip
+- ZIP Package: F5xc-api-(unknown-6.1.2).zip
 
 ### Source
 - Source: F5 Distributed Cloud OpenAPI specifications
