@@ -235,6 +235,12 @@ def _mutate_contract_asset(
     [
         (lambda contract: contract.update({"contract_id": "f5xc-ce-automation/v1"}), "identity"),
         (
+            lambda contract: contract["providers"]["aws"]["bootstrap"][
+                "interface_configuration"
+            ].update({"mac_only_create": "available"}),
+            "bootstrap",
+        ),
+        (
             lambda contract: contract["providers"]["aws"]["bootstrap"]["token"].update(
                 {"credential_response_path": "system_metadata.uid"}
             ),
@@ -283,3 +289,19 @@ def test_rejects_legacy_or_inconsistent_v3_contract_assets(
     assets, receipt = _mutate_contract_asset(assets, mutation)
     with pytest.raises(Smsv2ReleaseValidationError, match=message):
         validate_release_assets(assets[MANIFEST_FILE], assets, _release(), receipt, now=_NOW)
+
+
+def test_preboot_interface_evidence_does_not_claim_runtime_or_azure_parity(tmp_path: Path) -> None:
+    assets = _assets(tmp_path)
+    contract = json.loads(assets[CONTRACT_FILE])
+    aws = contract["providers"]["aws"]["bootstrap"]["interface_configuration"]
+    assert aws["runtime_acceptance"] == "awaiting_configured_preboot_vm_evidence"
+    assert aws["mac_only_create"] == "rejected_by_live_api"
+    assert "interface_configuration" not in contract["providers"]["azure"]["bootstrap"]
+    body = Path(aws["receipt_path"]).read_bytes()
+    assert digest(body) == f"sha256:{aws['receipt_sha256']}"
+    receipt = json.loads(body)
+    assert receipt["sanitized"] is True
+    assert receipt["observations"]["missing_device_create_http_status"] == 400
+    assert receipt["observations"]["test_site_absence_http_status"] == 404
+    assert "configured_preboot_vm_deployment" in receipt["not_performed"]
