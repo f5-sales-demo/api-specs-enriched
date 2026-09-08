@@ -291,11 +291,13 @@ def test_rejects_legacy_or_inconsistent_v3_contract_assets(
         validate_release_assets(assets[MANIFEST_FILE], assets, _release(), receipt, now=_NOW)
 
 
-def test_preboot_interface_evidence_does_not_claim_runtime_or_azure_parity(tmp_path: Path) -> None:
+def test_preboot_interface_evidence_preserves_api_observations_and_azure_separation(
+    tmp_path: Path,
+) -> None:
     assets = _assets(tmp_path)
     contract = json.loads(assets[CONTRACT_FILE])
     aws = contract["providers"]["aws"]["bootstrap"]["interface_configuration"]
-    assert aws["runtime_acceptance"] == "awaiting_configured_preboot_vm_evidence"
+    assert aws["runtime_acceptance"] == "observed_single_node_native_preboot_registration"
     assert aws["mac_only_create"] == "rejected_by_live_api"
     assert "interface_configuration" not in contract["providers"]["azure"]["bootstrap"]
     body = Path(aws["receipt_path"]).read_bytes()
@@ -305,3 +307,33 @@ def test_preboot_interface_evidence_does_not_claim_runtime_or_azure_parity(tmp_p
     assert receipt["observations"]["missing_device_create_http_status"] == 400
     assert receipt["observations"]["test_site_absence_http_status"] == 404
     assert "configured_preboot_vm_deployment" in receipt["not_performed"]
+
+
+def test_native_preboot_receipt_limits_registration_proof_to_observed_topology(
+    tmp_path: Path,
+) -> None:
+    contract = json.loads(_assets(tmp_path)[CONTRACT_FILE])
+    evidence = contract["providers"]["aws"]["bootstrap"]["interface_configuration"][
+        "runtime_evidence"
+    ]
+    body = Path(evidence["receipt_path"]).read_bytes()
+    assert digest(body) == f"sha256:{evidence['receipt_sha256']}"
+    assert evidence["fresh_acceptance_required"] is True
+    receipt = json.loads(body)
+    # Publication compacts short arrays; retain the original indented qualification digest too.
+    original = (json.dumps(receipt, indent=2) + "\n").encode()
+    assert digest(original) == f"sha256:{evidence['qualification_receipt_sha256']}"
+    assert receipt["engine"] == "native"
+    assert receipt["topology"] == {"sites": 1, "nodes": 1, "interfaces": 2, "ha": False}
+    assert receipt["registration"]["state"] == "ONLINE"
+    assert receipt["registration"]["hardwareBindingsVerified"] is True
+    assert receipt["registration"]["configuredMtu"] == [1500, 1500]
+    assert receipt["replacement"]["enisRetained"] == 2
+    assert receipt["bootstrap"]["deployedMaterialMatchesPrivateCheckpoint"] is True
+    assert receipt["bootstrap"]["certifiedConfigYamlPreserved"] is True
+    assert receipt["productionContractPublished"] is False
+    for key in ("f5Global", "routing", "traffic", "packetMtu"):
+        assert receipt["health"][key] == "unknown"
+    assert {"three-node-ha", "terraform-replacement", "azure-runtime", "full-parity"}.issubset(
+        receipt["excludedAcceptance"]
+    )
