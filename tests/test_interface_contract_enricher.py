@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import copy
+import hashlib
+import json
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
@@ -576,6 +578,22 @@ def test_api_contract_separates_bootstrap_schema_and_platform_evidence(
     assert azure["schema_support"] == "available"
     assert azure["runtime_verification"] == "awaiting_evidence"
     assert azure["headless_checkout"] == "unavailable"
+    verification = azure["api_verification"]
+    assert verification["status"] == "verified_api_only"
+    assert verification["runtime_acceptance"] is False
+    receipt_path = Path(__file__).parent.parent / verification["receipt_path"]
+    receipt_bytes = receipt_path.read_bytes()
+    assert hashlib.sha256(receipt_bytes).hexdigest() == verification["receipt_sha256"]
+    receipt = json.loads(receipt_bytes)
+    assert receipt["scope"] == verification["scope"] == "azure_bootstrap_api_only"
+    assert receipt["schema_commit"] == verification["schema_commit"]
+    assert receipt["observed_at"] == "2026-09-08T05:55:09.357Z"
+    assert receipt["sanitized"] is True
+    assert receipt["observations"]["cloud_init_provider"] == "azure"
+    assert receipt["observations"]["token_absence_http_status"] == 404
+    assert receipt["observations"]["site_absence_http_status"] == 404
+    assert "azure_vm_deployment" in receipt["not_performed"]
+    assert "registration" in receipt["not_performed"]
 
 
 @pytest.mark.parametrize(
@@ -590,6 +608,9 @@ def test_api_contract_separates_bootstrap_schema_and_platform_evidence(
         ("aws", "material", "reject_unresolved_placeholders", False),
         ("aws", "material", "reject_unresolved_placeholders", 1),
         ("aws", "evidence", "scope", "all_clouds"),
+        ("azure", "api_verification", "runtime_acceptance", True),
+        ("azure", "api_verification", "scope", "all_clouds"),
+        ("azure", "api_verification", "receipt_sha256", "0" * 64),
         ("azure", None, "runtime_verification", "verified"),
         ("azure", None, "headless_checkout", "available"),
     ],
