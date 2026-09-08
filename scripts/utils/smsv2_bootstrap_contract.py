@@ -6,7 +6,7 @@ import json
 from typing import Any
 
 # This is a wire contract, not permission to deploy or proof of current health.
-AWS_BOOTSTRAP = {
+AWS_BOOTSTRAP: dict[str, Any] = {
     "mode": "site_bound_jwt_cloud_init",
     "reference": "deployment_bound_opaque_one_use",
     "headless_checkout": "available",
@@ -55,7 +55,7 @@ AWS_BOOTSTRAP = {
     },
 }
 
-AZURE_BOOTSTRAP = {
+AZURE_BOOTSTRAP: dict[str, Any] = {
     "schema_support": "available",
     "runtime_verification": "awaiting_evidence",
     "headless_checkout": "unavailable",
