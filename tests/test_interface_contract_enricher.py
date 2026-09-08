@@ -98,7 +98,7 @@ def test_contract_is_deterministic_and_guest_names_are_not_authoritative(
         ]
         == "observational_only"
     )
-    assert create_contract[X_F5XC_CE_AUTOMATION_CONTRACT]["contract_id"] == "f5xc-ce-automation/v3"
+    assert create_contract[X_F5XC_CE_AUTOMATION_CONTRACT]["contract_id"] == "f5xc-smsv2-api/v1"
     aws = create_contract[X_F5XC_CE_AUTOMATION_CONTRACT]["providers"]["aws"]
     assert aws["interface_identity"]["guest_device"] == "rejected"
     assert aws["interface_identity"]["fields"] == ["node", "ethernet_interface.mac"]
@@ -153,11 +153,11 @@ def test_contract_defines_stable_identity_and_role_invariants() -> None:
     enricher = InterfaceContractEnricher()
     contract = enricher.contracts[0][1]
     azure = contract["providers"]["azure"]
-    assert contract["contract_id"] == "f5xc-ce-automation/v3"
+    assert contract["contract_id"] == "f5xc-smsv2-api/v1"
     assert contract["api"]["namespace"] == "system"
     assert contract["api"]["operations"] == ["create", "read", "replace", "delete"]
     assert contract["providers"]["aws"]["availability"] == "evidence_backed"
-    assert contract["version"] == "6.1.0"
+    assert contract["version"] == "7.0.0"
     assert contract["providers"]["aws"]["capabilities"] == {
         "aws_ce_create": "available",
         "runtime_status": "available",
@@ -193,7 +193,7 @@ def test_contract_defines_stable_identity_and_role_invariants() -> None:
         "software_prechecks": "passed",
     }
     assert [role["name"] for role in contract["providers"]["aws"]["roles"]] == ["slo", "sli"]
-    assert contract["providers"]["aws"]["bootstrap"]["mode"] == "interactive_console_only"
+    assert contract["providers"]["aws"]["bootstrap"]["mode"] == "site_bound_jwt_cloud_init"
     assert azure["stable_identity"]["required_fields"]
     assert [role["name"] for role in azure["roles"]] == ["slo", "external", "sli"]
     assert azure["invariants"]["bgp_bindable_roles"] == ["slo"]
@@ -296,12 +296,13 @@ def test_accepts_additive_current_contract_fields(
 
     enricher = InterfaceContractEnricher(_write_config(tmp_path, compatible))
 
-    assert enricher.contracts[0][1]["version"] == "6.1.0"
+    assert enricher.contracts[0][1]["version"] == "7.0.0"
     assert enricher.contracts[0][1]["providers"]["gcp"]["availability"] == "schema_only"
 
 
 @pytest.mark.parametrize(
-    "version", ["2", "2.1", "02.1.0", "6.0.0-dev", "2.1.0", "3.0.0", "4.9.9", "5.0.1", "7.0.0"]
+    "version",
+    ["2", "2.1", "02.1.0", "6.0.0-dev", "2.1.0", "3.0.0", "4.9.9", "5.0.1", "6.1.0", "8.0.0"],
 )
 def test_rejects_malformed_or_incompatible_schema_versions(
     tmp_path: Path, contract_config: dict[str, Any], version: str
@@ -323,7 +324,7 @@ def test_rejects_unknown_contract_identity_major(
         InterfaceContractEnricher(_write_config(tmp_path, incompatible))
 
 
-@pytest.mark.parametrize("version", [None, "3.0.0", "4.9.9", "5.0.1", "7.0.0"])
+@pytest.mark.parametrize("version", [None, "3.0.0", "4.9.9", "5.0.1", "6.1.0", "8.0.0"])
 def test_rejects_noncurrent_configuration_version(
     tmp_path: Path, contract_config: dict[str, Any], version: object
 ) -> None:
@@ -393,9 +394,7 @@ def test_rejects_headless_aws_bootstrap_contract(
 ) -> None:
     invalid = copy.deepcopy(contract_config)
     _contract(invalid)["providers"]["aws"]["bootstrap"]["mode"] = "headless"
-    with pytest.raises(
-        InterfaceContractValidationError, match="bootstrap must remain console-only"
-    ):
+    with pytest.raises(InterfaceContractValidationError, match="bootstrap mapping"):
         InterfaceContractEnricher(_write_config(tmp_path, invalid))
 
 
@@ -409,7 +408,7 @@ def test_rejects_unsanitized_aws_evidence(tmp_path: Path, contract_config: dict[
 def test_aws_evidence_receipt_has_closed_modern_shape(
     contract_config: dict[str, Any],
 ) -> None:
-    assert contract_config["version"] == "6.1.0"
+    assert contract_config["version"] == "7.0.0"
     receipt = _contract(contract_config)["providers"]["aws"]["evidence"]["receipts"][0]
     assert set(receipt) == {
         "operations",
@@ -554,4 +553,58 @@ def test_rejects_non_v3_runtime_identity_and_authority(
     invalid = copy.deepcopy(contract_config)
     mutation(_contract(invalid)["providers"]["aws"])
     with pytest.raises(InterfaceContractValidationError, match=message):
+        InterfaceContractEnricher(_write_config(tmp_path, invalid))
+
+
+def test_api_contract_separates_bootstrap_schema_and_platform_evidence(
+    contract_config: dict[str, Any],
+) -> None:
+    contract = _contract(contract_config)
+    assert contract["contract_id"] == "f5xc-smsv2-api/v1"
+    aws = contract["providers"]["aws"]["bootstrap"]
+    assert aws["mode"] == "site_bound_jwt_cloud_init"
+    assert aws["token"]["request_fields"] == {"spec.type": 1, "spec.site_name": "site_name"}
+    assert aws["token"]["credential_response_path"] == "spec.content"
+    assert aws["cloud_init"]["method"] == "GET"
+    assert aws["cloud_init"]["operation_role"] == "issuance"
+    assert aws["cloud_init"]["response_path"] == "cloud_init_config"
+    assert aws["material"]["preserve_paths"] == ["/etc/vpm/config.yaml"]
+    assert aws["material"]["issued_path"] == "/etc/vpm/user_data"
+    assert aws["material"]["reject_unresolved_placeholders"] is True
+    assert aws["evidence"]["scope"] == "aws_only"
+    azure = contract["providers"]["azure"]["bootstrap"]
+    assert azure["schema_support"] == "available"
+    assert azure["runtime_verification"] == "awaiting_evidence"
+    assert azure["headless_checkout"] == "unavailable"
+
+
+@pytest.mark.parametrize(
+    ("provider", "section", "field", "value"),
+    [
+        ("aws", "token", "credential_response_path", "system_metadata.uid"),
+        ("aws", "token", "site_response_path", None),
+        ("aws", "token", "request_fields", {"spec.type": 0}),
+        ("aws", "cloud_init", "method", "POST"),
+        ("aws", "cloud_init", "operation_role", "query"),
+        ("aws", "material", "preserve_paths", []),
+        ("aws", "material", "reject_unresolved_placeholders", False),
+        ("aws", "material", "reject_unresolved_placeholders", 1),
+        ("aws", "evidence", "scope", "all_clouds"),
+        ("azure", None, "runtime_verification", "verified"),
+        ("azure", None, "headless_checkout", "available"),
+    ],
+)
+def test_rejects_unverified_bootstrap_contract(
+    tmp_path: Path,
+    contract_config: dict[str, Any],
+    provider: str,
+    section: str | None,
+    field: str,
+    value: Any,
+) -> None:
+    invalid = copy.deepcopy(contract_config)
+    bootstrap = _contract(invalid)["providers"][provider]["bootstrap"]
+    target = bootstrap if section is None else bootstrap[section]
+    target[field] = value
+    with pytest.raises(InterfaceContractValidationError, match="bootstrap"):
         InterfaceContractEnricher(_write_config(tmp_path, invalid))

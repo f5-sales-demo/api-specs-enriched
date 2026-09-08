@@ -10,13 +10,15 @@ from typing import Any
 
 import yaml
 
+from scripts.utils.smsv2_bootstrap_contract import validate_bootstrap_contract
+
 from .extension_constants import X_F5XC_CE_AUTOMATION_CONTRACT
 
 CONFIG_PATH = Path(__file__).parent.parent.parent / "config" / "interface_contracts.yaml"
 SUPPORTED_ROLES = frozenset({"slo", "external", "sli"})
-CONFIG_VERSION = "6.1.0"
-CONTRACT_VERSION = "6.1.0"
-CONTRACT_ID = "f5xc-ce-automation/v3"
+CONFIG_VERSION = "7.0.0"
+CONTRACT_VERSION = "7.0.0"
+CONTRACT_ID = "f5xc-smsv2-api/v1"
 CAPABILITY_STATES = frozenset({"available", "unavailable"})
 STABLE_IDENTITY_FIELDS = frozenset(
     {
@@ -511,6 +513,10 @@ class InterfaceContractEnricher:
         aws = providers["aws"]
         if not isinstance(azure, dict) or not isinstance(aws, dict):
             raise InterfaceContractValidationError(f"{resource}: provider profiles must be objects")
+        try:
+            validate_bootstrap_contract(providers)
+        except (TypeError, ValueError) as error:
+            raise InterfaceContractValidationError(str(error)) from error
         self._validate_aws_profile(resource, aws)
         self._validate_interface_profile(resource, azure)
 
@@ -570,16 +576,6 @@ class InterfaceContractEnricher:
                 f"{resource}: AWS unsupported capabilities must fail closed"
             )
 
-        bootstrap = self._required_object(profile, "bootstrap", resource=resource)
-        required_bootstrap = {
-            "mode": "interactive_console_only",
-            "reference": "session_bound_opaque_one_use",
-            "headless_checkout": "unavailable",
-        }
-        if any(bootstrap.get(field) != value for field, value in required_bootstrap.items()):
-            raise InterfaceContractValidationError(
-                f"{resource}: AWS bootstrap must remain console-only"
-            )
         evidence = self._required_object(profile, "evidence", resource=resource)
         if not isinstance(evidence.get("provenance"), str) or not evidence["provenance"]:
             raise InterfaceContractValidationError(

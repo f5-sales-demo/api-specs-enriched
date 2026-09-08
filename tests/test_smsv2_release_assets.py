@@ -28,14 +28,14 @@ def _assets(tmp_path: Path) -> dict[str, bytes]:
     return build_release_assets(
         Path(__file__).parents[1] / "config" / "interface_contracts.yaml",
         tmp_path,
-        "v6.1.0",
+        "v7.0.0",
         _COMMIT,
     )
 
 
 def _release(**overrides: object) -> dict[str, object]:
     release: dict[str, object] = {
-        "tag_name": "v6.1.0",
+        "tag_name": "v7.0.0",
         "target_commitish": _COMMIT,
         "draft": False,
         "prerelease": False,
@@ -55,7 +55,7 @@ def test_builds_deterministic_sanitized_assets(tmp_path: Path) -> None:
     second = _assets(tmp_path / "two")
     assert first == second
     manifest = json.loads(first[MANIFEST_FILE])
-    assert manifest["release"] == {"tag": "v6.1.0", "commit": _COMMIT}
+    assert manifest["release"] == {"tag": "v7.0.0", "commit": _COMMIT}
     assert digest(first[CONTRACT_FILE]) == manifest["assets"][CONTRACT_FILE]
     assert digest(first[EVIDENCE_FILE]) == manifest["assets"][EVIDENCE_FILE]
     assert b"bearer" not in first[EVIDENCE_FILE].lower()
@@ -67,7 +67,7 @@ def test_validates_stable_receipted_release(tmp_path: Path) -> None:
     contract = validate_release_assets(
         assets[MANIFEST_FILE], assets, _release(), _receipt(manifest), now=_NOW
     )
-    assert contract["version"] == "6.1.0"
+    assert contract["version"] == "7.0.0"
     assert contract["providers"]["aws"]["availability"] == "evidence_backed"
     assert contract["providers"]["aws"]["capabilities"] == {
         "aws_ce_create": "available",
@@ -75,7 +75,7 @@ def test_validates_stable_receipted_release(tmp_path: Path) -> None:
         "site_upgrade": "available",
         "tgw_connect": "available",
     }
-    assert contract["contract_id"] == "f5xc-ce-automation/v3"
+    assert contract["contract_id"] == "f5xc-smsv2-api/v1"
     aws = contract["providers"]["aws"]
     assert aws["interface_identity"]["fields"] == ["node", "ethernet_interface.mac"]
     assert aws["interface_identity"]["uniqueness_scope"] == "node"
@@ -194,7 +194,7 @@ def test_validates_schema_only_release_with_blocking_receipt(tmp_path: Path) -> 
     ]
     config_path = tmp_path / "interface_contracts.yaml"
     config_path.write_text(yaml.safe_dump(config, sort_keys=False))
-    assets = build_release_assets(config_path, tmp_path / "assets", "v6.1.0", _COMMIT)
+    assets = build_release_assets(config_path, tmp_path / "assets", "v7.0.0", _COMMIT)
     manifest = json.loads(assets[MANIFEST_FILE])
 
     contract = validate_release_assets(
@@ -234,6 +234,18 @@ def _mutate_contract_asset(
     ("mutation", "message"),
     [
         (lambda contract: contract.update({"contract_id": "f5xc-ce-automation/v1"}), "identity"),
+        (
+            lambda contract: contract["providers"]["aws"]["bootstrap"]["token"].update(
+                {"credential_response_path": "system_metadata.uid"}
+            ),
+            "bootstrap",
+        ),
+        (
+            lambda contract: contract["providers"]["azure"]["bootstrap"].update(
+                {"runtime_verification": "verified"}
+            ),
+            "bootstrap",
+        ),
         (
             lambda contract: contract["providers"]["aws"]["capabilities"].update(
                 {"runtime_status": "unavailable"}

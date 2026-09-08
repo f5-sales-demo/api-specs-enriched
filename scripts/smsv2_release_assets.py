@@ -6,7 +6,7 @@ import argparse
 import hashlib
 import json
 import re
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
@@ -26,6 +26,7 @@ from scripts.utils.interface_contract_enricher import (
     validate_aws_telemetry_intake,
     validate_aws_v3_contract,
 )
+from scripts.utils.smsv2_bootstrap_contract import validate_bootstrap_contract
 
 CONTRACT_FILE = "smsv2-contract.json"
 EVIDENCE_FILE = "smsv2-evidence-receipt.json"
@@ -161,7 +162,7 @@ def validate_release_assets(
     if release.get("immutable") is not True:
         raise Smsv2ReleaseValidationError("mutable contract releases are unavailable")
     published = _parse_timestamp(release.get("published_at"), "release.published_at")
-    current = now or datetime.now(UTC)
+    current = now or datetime.now(timezone.utc)
     if published > current or current - published > max_age:
         raise Smsv2ReleaseValidationError("contract release is stale")
     release_identity = manifest.get("release")
@@ -214,6 +215,10 @@ def validate_release_assets(
         "delete",
     ]:
         raise Smsv2ReleaseValidationError("SMSv2 API authority is incomplete")
+    try:
+        validate_bootstrap_contract(contract.get("providers"))
+    except (TypeError, ValueError) as error:
+        raise Smsv2ReleaseValidationError(str(error)) from error
     aws = contract.get("providers", {}).get("aws", {})
     expected_aws_fields = {
         "node_list_path": "aws.not_managed.node_list[]",
