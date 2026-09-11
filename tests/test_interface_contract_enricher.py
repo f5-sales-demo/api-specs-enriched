@@ -199,6 +199,24 @@ def test_contract_defines_stable_identity_and_role_invariants() -> None:
     assert azure["stable_identity"]["required_fields"]
     assert [role["name"] for role in azure["roles"]] == ["slo", "external", "sli"]
     assert azure["invariants"]["bgp_bindable_roles"] == ["slo"]
+    assert azure["runtime"]["configuration"]["response_mappings"]["nodes"] == (
+        "spec.azure.not_managed.node_list[]"
+    )
+    assert azure["runtime"]["configuration"]["response_mappings"]["provider"] == (
+        "spec.azure.not_managed"
+    )
+    assert azure["runtime"]["bgp_peers"]["operation_id"] == (
+        "ves.io.schema.operate.bgp.CustomPublicAPI.ShowBGPPeers"
+    )
+    assert azure["runtime"]["bgp_peers"]["response_schema"] == "bgpBGPPeersResponse"
+    assert azure["runtime"]["bgp_peers"] == contract["providers"]["aws"]["runtime"]["bgp_peers"]
+    assert azure["runtime"]["bgp_routes"]["operation_id"] == (
+        "ves.io.schema.operate.bgp.CustomPublicAPI.ShowBGPRoutes"
+    )
+    assert azure["runtime"]["bgp_routes"]["response_schema"] == "bgpBGPRoutesResponse"
+    assert azure["runtime"]["bgp_routes"] == contract["providers"]["aws"]["runtime"]["bgp_routes"]
+    assert set(azure["runtime"]) == {"configuration", "bgp_peers", "bgp_routes"}
+    assert "convergence" not in azure["runtime"]["bgp_routes"]
     assert azure["change_risk"]["maintenance_window_required"] is True
     assert azure["change_risk"]["restarts_ce_data_plane_services"] is True
 
@@ -232,6 +250,24 @@ Mutation = Callable[[dict[str, Any]], Any]
                 {"guest_interface_names": "authoritative"}
             ),
             "guest interface names must be observational only",
+        ),
+        (
+            lambda config: _azure_contract(config)["runtime"]["configuration"].update(
+                {"path": "/api/config/namespaces/{namespace}/sites/{site}"}
+            ),
+            "Azure runtime endpoints or schemas are incomplete",
+        ),
+        (
+            lambda config: _azure_contract(config)["runtime"]["bgp_peers"][
+                "response_mappings"
+            ].update({"state": "ver[].peer[].state"}),
+            "Azure runtime endpoints or schemas are incomplete",
+        ),
+        (
+            lambda config: _azure_contract(config)["runtime"]["bgp_routes"].update(
+                {"operation_id": "ves.io.schema.operate.route.CustomPublicAPI.ShowRoutes"}
+            ),
+            "Azure runtime endpoints or schemas are incomplete",
         ),
         (
             lambda config: _contract(config)["providers"]["aws"]["site_upgrade"][
@@ -575,9 +611,20 @@ def test_api_contract_separates_bootstrap_schema_and_platform_evidence(
     assert aws["material"]["reject_unresolved_placeholders"] is True
     assert aws["evidence"]["scope"] == "aws_only"
     azure = contract["providers"]["azure"]["bootstrap"]
+    assert azure["mode"] == "site_bound_jwt_cloud_init"
     assert azure["schema_support"] == "available"
     assert azure["runtime_verification"] == "awaiting_evidence"
-    assert azure["headless_checkout"] == "unavailable"
+    assert azure["headless_checkout"] == "available"
+    assert azure["image_runtime_acceptance"] is False
+    assert azure["token"]["request_fields"] == {
+        "spec.type": 1,
+        "spec.site_name": "site_name",
+    }
+    assert azure["cloud_init"]["query_fields"] == {
+        "provider": "azure",
+        "site_name": "site_name",
+        "enable_management_network": False,
+    }
     verification = azure["api_verification"]
     assert verification["status"] == "verified_api_only"
     assert verification["runtime_acceptance"] is False
@@ -612,7 +659,10 @@ def test_api_contract_separates_bootstrap_schema_and_platform_evidence(
         ("azure", "api_verification", "scope", "all_clouds"),
         ("azure", "api_verification", "receipt_sha256", "0" * 64),
         ("azure", None, "runtime_verification", "verified"),
-        ("azure", None, "headless_checkout", "available"),
+        ("azure", None, "headless_checkout", "unavailable"),
+        ("azure", None, "image_runtime_acceptance", True),
+        ("azure", "token", "credential_response_path", "system_metadata.uid"),
+        ("azure", "cloud_init", "query_fields", {"provider": "aws"}),
     ],
 )
 def test_rejects_unverified_bootstrap_contract(

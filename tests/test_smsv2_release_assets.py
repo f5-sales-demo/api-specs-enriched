@@ -90,6 +90,18 @@ def test_validates_stable_receipted_release(tmp_path: Path) -> None:
         "ver[].ri_table[].rt_table[].exported[].subnet",
     ]
     assert aws["runtime"]["simplified_routes"]["semantics"] == "observational_read_only"
+    azure = contract["providers"]["azure"]
+    assert azure["bootstrap"]["headless_checkout"] == "available"
+    assert azure["bootstrap"]["image_runtime_acceptance"] is False
+    assert azure["bootstrap"]["cloud_init"]["query_fields"]["provider"] == "azure"
+    assert azure["runtime"]["configuration"]["response_mappings"]["nodes"] == (
+        "spec.azure.not_managed.node_list[]"
+    )
+    assert azure["runtime"]["configuration"]["response_mappings"]["provider"] == (
+        "spec.azure.not_managed"
+    )
+    assert azure["runtime"]["bgp_peers"]["response_schema"] == "bgpBGPPeersResponse"
+    assert azure["runtime"]["bgp_routes"]["response_schema"] == "bgpBGPRoutesResponse"
     assert "observed_at" not in repr(contract)
 
 
@@ -251,6 +263,12 @@ def _mutate_contract_asset(
                 {"runtime_verification": "verified"}
             ),
             "bootstrap",
+        ),
+        (
+            lambda contract: contract["providers"]["azure"]["runtime"]["bgp_peers"].update(
+                {"response_schema": "bgpBGPPeerResponse"}
+            ),
+            "Azure runtime endpoints or schemas are incomplete",
         ),
         (
             lambda contract: contract["providers"]["aws"]["capabilities"].update(

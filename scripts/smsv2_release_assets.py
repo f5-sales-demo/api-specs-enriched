@@ -25,6 +25,7 @@ from scripts.utils.interface_contract_enricher import (
     InterfaceContractValidationError,
     validate_aws_telemetry_intake,
     validate_aws_v3_contract,
+    validate_azure_runtime_contract,
 )
 from scripts.utils.smsv2_bootstrap_contract import validate_bootstrap_contract
 
@@ -218,6 +219,10 @@ def validate_release_assets(
     try:
         validate_bootstrap_contract(contract.get("providers"))
     except (TypeError, ValueError) as error:
+        raise Smsv2ReleaseValidationError(str(error)) from error
+    try:
+        validate_azure_runtime_contract(contract.get("providers", {}).get("azure"))
+    except InterfaceContractValidationError as error:
         raise Smsv2ReleaseValidationError(str(error)) from error
     aws = contract.get("providers", {}).get("aws", {})
     expected_aws_fields = {
