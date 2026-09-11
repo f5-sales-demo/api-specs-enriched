@@ -91,7 +91,7 @@ AWS_V3_ROLES = [
     {"name": "slo", "network_option": "site_local_network"},
     {"name": "sli", "network_option": "site_local_inside_network"},
 ]
-AWS_V3_RUNTIME = {
+AWS_V3_RUNTIME: dict[str, Any] = {
     "configuration": {
         "method": "GET",
         "path": "/api/config/namespaces/{namespace}/securemesh_site_v2s/{site}",
