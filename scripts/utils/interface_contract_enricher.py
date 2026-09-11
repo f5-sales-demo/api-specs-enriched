@@ -195,6 +195,19 @@ AWS_V3_RUNTIME = {
         },
     },
 }
+AZURE_RUNTIME = {
+    "configuration": {
+        **copy.deepcopy(AWS_V3_RUNTIME["configuration"]),
+        "response_mappings": {
+            **copy.deepcopy(AWS_V3_RUNTIME["configuration"]["response_mappings"]),
+            "provider": "spec.azure.not_managed",
+            "nodes": "spec.azure.not_managed.node_list[]",
+            "device": "ethernet_interface.device",
+        },
+    },
+    "bgp_peers": copy.deepcopy(AWS_V3_RUNTIME["bgp_peers"]),
+    "bgp_routes": copy.deepcopy(AWS_V3_RUNTIME["bgp_routes"]),
+}
 AWS_SITE_UPGRADE = {
     "site_status": {
         "method": "GET",
@@ -394,6 +407,12 @@ def validate_aws_v3_contract(profile: object) -> None:
         raise InterfaceContractValidationError("AWS site upgrade contract is incomplete")
     if profile.get("authorities") != AWS_V3_AUTHORITIES:
         raise InterfaceContractValidationError("AWS and F5 authority declarations are invalid")
+
+
+def validate_azure_runtime_contract(profile: object) -> None:
+    """Validate Azure configuration and read-only routing observation mappings."""
+    if not isinstance(profile, dict) or profile.get("runtime") != AZURE_RUNTIME:
+        raise InterfaceContractValidationError("Azure runtime endpoints or schemas are incomplete")
 
 
 @dataclass
@@ -680,6 +699,10 @@ class InterfaceContractEnricher:
             raise InterfaceContractValidationError(
                 f"{resource}: Azure availability must be evidence_backed"
             )
+        try:
+            validate_azure_runtime_contract(contract)
+        except InterfaceContractValidationError as error:
+            raise InterfaceContractValidationError(f"{resource}: {error}") from error
 
         stable_identity = self._required_object(contract, "stable_identity", resource=resource)
         fields = stable_identity.get("required_fields")
