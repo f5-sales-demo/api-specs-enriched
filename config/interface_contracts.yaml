@@ -452,6 +452,25 @@ contracts:
             source_commit: c1310d030cfc252571bf0e816db21b618697d991
             source_path: docs/en/customer-edge/smsv2/azure-route-server.mdx
           availability: "evidence_backed"
+          route_server_ebgp_multihop:
+            availability: "unavailable"
+            enforcement: "reject_before_mutation"
+            reason: "no_schema_valid_ebgp_multihop_request_control"
+            source:
+              repository: "f5-sales-demo/api-specs-enriched"
+              commit: "322c202ed49c8cfcd5015a524f3195bbd2a8f2bc"
+              asset_path: "docs/specifications/api/network.json"
+              asset_sha256: "sha256:a7398d85475409c93750a04ccdec7c0b1a7ae12bc362ebfbc76866275904762a"
+              schema_paths:
+                - "components.schemas.bgpPeer"
+                - "components.schemas.bgpPeerExternal"
+                - "components.schemas.bgpBgpParameters"
+            future_mapping_requirements:
+              request_schema_path: "explicit"
+              request_field_path: "explicit"
+              request_value_semantics: "explicit"
+              schema_validation: "required"
+              runtime_acceptance: "required"
           runtime:
             configuration:
               method: "GET"

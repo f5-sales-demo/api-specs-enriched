@@ -217,6 +217,21 @@ def test_contract_defines_stable_identity_and_role_invariants() -> None:
     assert azure["runtime"]["bgp_routes"] == contract["providers"]["aws"]["runtime"]["bgp_routes"]
     assert set(azure["runtime"]) == {"configuration", "bgp_peers", "bgp_routes"}
     assert "convergence" not in azure["runtime"]["bgp_routes"]
+    multihop = azure["route_server_ebgp_multihop"]
+    assert multihop["availability"] == "unavailable"
+    assert multihop["enforcement"] == "reject_before_mutation"
+    assert multihop["reason"] == "no_schema_valid_ebgp_multihop_request_control"
+    assert multihop["source"] == {
+        "repository": "f5-sales-demo/api-specs-enriched",
+        "commit": "322c202ed49c8cfcd5015a524f3195bbd2a8f2bc",
+        "asset_path": "docs/specifications/api/network.json",
+        "asset_sha256": "sha256:a7398d85475409c93750a04ccdec7c0b1a7ae12bc362ebfbc76866275904762a",
+        "schema_paths": [
+            "components.schemas.bgpPeer",
+            "components.schemas.bgpPeerExternal",
+            "components.schemas.bgpBgpParameters",
+        ],
+    }
     assert azure["change_risk"]["maintenance_window_required"] is True
     assert azure["change_risk"]["restarts_ce_data_plane_services"] is True
 
@@ -286,6 +301,31 @@ def test_rejects_unsafe_or_incomplete_contracts(
     invalid = copy.deepcopy(contract_config)
     mutate(invalid)
     with pytest.raises(InterfaceContractValidationError, match=message):
+        InterfaceContractEnricher(_write_config(tmp_path, invalid))
+
+
+@pytest.mark.parametrize(
+    "mutate",
+    [
+        lambda azure: azure.pop("route_server_ebgp_multihop"),
+        lambda azure: azure["route_server_ebgp_multihop"].update({"availability": "available"}),
+        lambda azure: azure["route_server_ebgp_multihop"].update(
+            {"enforcement": "allow_before_mutation"}
+        ),
+        lambda azure: azure["route_server_ebgp_multihop"]["source"].update(
+            {"asset_sha256": "sha256:" + "0" * 64}
+        ),
+    ],
+)
+def test_rejects_missing_or_fabricated_azure_route_server_multihop_capability(
+    tmp_path: Path, contract_config: dict[str, Any], mutate: Callable[[dict[str, Any]], Any]
+) -> None:
+    invalid = copy.deepcopy(contract_config)
+    mutate(_azure_contract(invalid))
+    with pytest.raises(
+        InterfaceContractValidationError,
+        match="Azure Route Server eBGP multihop capability is unavailable",
+    ):
         InterfaceContractEnricher(_write_config(tmp_path, invalid))
 
 

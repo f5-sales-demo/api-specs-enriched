@@ -102,6 +102,8 @@ def test_validates_stable_receipted_release(tmp_path: Path) -> None:
     )
     assert azure["runtime"]["bgp_peers"]["response_schema"] == "bgpBGPPeersResponse"
     assert azure["runtime"]["bgp_routes"]["response_schema"] == "bgpBGPRoutesResponse"
+    assert azure["route_server_ebgp_multihop"]["availability"] == "unavailable"
+    assert azure["route_server_ebgp_multihop"]["enforcement"] == "reject_before_mutation"
     assert "observed_at" not in repr(contract)
 
 
@@ -269,6 +271,12 @@ def _mutate_contract_asset(
                 {"response_schema": "bgpBGPPeerResponse"}
             ),
             "Azure runtime endpoints or schemas are incomplete",
+        ),
+        (
+            lambda contract: contract["providers"]["azure"]["route_server_ebgp_multihop"].update(
+                {"availability": "available"}
+            ),
+            "Azure Route Server eBGP multihop capability is unavailable",
         ),
         (
             lambda contract: contract["providers"]["aws"]["capabilities"].update(

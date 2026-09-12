@@ -208,6 +208,29 @@ AZURE_RUNTIME = {
     "bgp_peers": copy.deepcopy(AWS_V3_RUNTIME["bgp_peers"]),
     "bgp_routes": copy.deepcopy(AWS_V3_RUNTIME["bgp_routes"]),
 }
+AZURE_ROUTE_SERVER_EBGP_MULTIHOP: dict[str, Any] = {
+    "availability": "unavailable",
+    "enforcement": "reject_before_mutation",
+    "reason": "no_schema_valid_ebgp_multihop_request_control",
+    "source": {
+        "repository": "f5-sales-demo/api-specs-enriched",
+        "commit": "322c202ed49c8cfcd5015a524f3195bbd2a8f2bc",
+        "asset_path": "docs/specifications/api/network.json",
+        "asset_sha256": "sha256:a7398d85475409c93750a04ccdec7c0b1a7ae12bc362ebfbc76866275904762a",
+        "schema_paths": [
+            "components.schemas.bgpPeer",
+            "components.schemas.bgpPeerExternal",
+            "components.schemas.bgpBgpParameters",
+        ],
+    },
+    "future_mapping_requirements": {
+        "request_schema_path": "explicit",
+        "request_field_path": "explicit",
+        "request_value_semantics": "explicit",
+        "schema_validation": "required",
+        "runtime_acceptance": "required",
+    },
+}
 AWS_SITE_UPGRADE = {
     "site_status": {
         "method": "GET",
@@ -410,9 +433,13 @@ def validate_aws_v3_contract(profile: object) -> None:
 
 
 def validate_azure_runtime_contract(profile: object) -> None:
-    """Validate Azure configuration and read-only routing observation mappings."""
+    """Validate Azure read-only mappings and the Route Server request capability boundary."""
     if not isinstance(profile, dict) or profile.get("runtime") != AZURE_RUNTIME:
         raise InterfaceContractValidationError("Azure runtime endpoints or schemas are incomplete")
+    if profile.get("route_server_ebgp_multihop") != AZURE_ROUTE_SERVER_EBGP_MULTIHOP:
+        raise InterfaceContractValidationError(
+            "Azure Route Server eBGP multihop capability is unavailable or lacks exact provenance"
+        )
 
 
 @dataclass
