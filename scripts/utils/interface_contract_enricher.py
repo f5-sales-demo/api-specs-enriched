@@ -195,6 +195,52 @@ AWS_V3_RUNTIME: dict[str, Any] = {
         },
     },
 }
+AZURE_BGP_CONFIGURATION = {
+    "method": "GET",
+    "path": "/api/config/namespaces/{namespace}/bgps/{name}",
+    "operation_id": "ves.io.schema.bgp.API.Get",
+    "response_schema": "bgpGetResponse",
+    "authority": "f5xc",
+    "semantics": "observational_read_only",
+    "response_mappings": {
+        "parameters": "spec.bgp_parameters",
+        "peers": "spec.peers[]",
+        "target_service": "spec.peers[].target_service",
+        "family_inet_v6": "spec.peers[].external.family_inet_v6",
+    },
+    "response_only_fields": [
+        "spec.peers[].target_service",
+        "spec.peers[].external.family_inet_v6",
+    ],
+    "request_eligibility": "rejected_without_authoritative_request_schema",
+    "source": {
+        "repository": "f5-sales-demo/api-specs-enriched",
+        "commit": "055d32d68c14824e32d748a425bf541dec2f529e",
+        "asset_path": "docs/specifications/api/network.json",
+        "asset_sha256": "sha256:0b5381bcaaf8090e0992c6923aea8ae4a3aa664c5966ad5503790e5d6a842d8d",
+        "schema_paths": [
+            "components.schemas.bgpPeer",
+            "components.schemas.bgpPeerExternal",
+            "components.schemas.bgpBgpParameters",
+            "components.schemas.bgpGetResponse",
+        ],
+    },
+    "evidence_receipt": {
+        "path": "config/evidence/azure_bgp_response_drift_v7.0.0.json",
+        "sha256": "54bf13997a6933de8431846c5d6e9267a9665e1378e1250fc06f76c77405dec7",
+    },
+    "live_evidence": {
+        "method": "GET",
+        "selection": "unique_ownership_labeled_azure_terraform_ce_bgp",
+        "observed_response_fields": [
+            "spec.peers[].target_service",
+            "spec.peers[].external.family_inet_v6",
+        ],
+        "form_metadata": {"create_form": None, "replace_form": None},
+        "sanitized": True,
+        "retention": "field_shapes_only_no_names_addresses_tokens_or_raw_response",
+    },
+}
 AZURE_RUNTIME = {
     "configuration": {
         **copy.deepcopy(AWS_V3_RUNTIME["configuration"]),
@@ -205,6 +251,7 @@ AZURE_RUNTIME = {
             "device": "ethernet_interface.device",
         },
     },
+    "bgp_configuration": copy.deepcopy(AZURE_BGP_CONFIGURATION),
     "bgp_peers": copy.deepcopy(AWS_V3_RUNTIME["bgp_peers"]),
     "bgp_routes": copy.deepcopy(AWS_V3_RUNTIME["bgp_routes"]),
 }
