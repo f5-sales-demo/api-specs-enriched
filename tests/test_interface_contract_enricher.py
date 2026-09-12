@@ -205,6 +205,24 @@ def test_contract_defines_stable_identity_and_role_invariants() -> None:
     assert azure["runtime"]["configuration"]["response_mappings"]["provider"] == (
         "spec.azure.not_managed"
     )
+    bgp_configuration = azure["runtime"]["bgp_configuration"]
+    assert bgp_configuration["method"] == "GET"
+    assert bgp_configuration["path"] == "/api/config/namespaces/{namespace}/bgps/{name}"
+    assert bgp_configuration["response_schema"] == "bgpGetResponse"
+    assert bgp_configuration["semantics"] == "observational_read_only"
+    assert bgp_configuration["response_mappings"] == {
+        "parameters": "spec.bgp_parameters",
+        "peers": "spec.peers[]",
+        "target_service": "spec.peers[].target_service",
+        "family_inet_v6": "spec.peers[].external.family_inet_v6",
+    }
+    assert bgp_configuration["response_only_fields"] == [
+        "spec.peers[].target_service",
+        "spec.peers[].external.family_inet_v6",
+    ]
+    assert bgp_configuration["request_eligibility"] == (
+        "rejected_without_authoritative_request_schema"
+    )
     assert azure["runtime"]["bgp_peers"]["operation_id"] == (
         "ves.io.schema.operate.bgp.CustomPublicAPI.ShowBGPPeers"
     )
@@ -215,7 +233,12 @@ def test_contract_defines_stable_identity_and_role_invariants() -> None:
     )
     assert azure["runtime"]["bgp_routes"]["response_schema"] == "bgpBGPRoutesResponse"
     assert azure["runtime"]["bgp_routes"] == contract["providers"]["aws"]["runtime"]["bgp_routes"]
-    assert set(azure["runtime"]) == {"configuration", "bgp_peers", "bgp_routes"}
+    assert set(azure["runtime"]) == {
+        "configuration",
+        "bgp_configuration",
+        "bgp_peers",
+        "bgp_routes",
+    }
     assert "convergence" not in azure["runtime"]["bgp_routes"]
     multihop = azure["route_server_ebgp_multihop"]
     assert multihop["availability"] == "unavailable"
@@ -234,6 +257,50 @@ def test_contract_defines_stable_identity_and_role_invariants() -> None:
     }
     assert azure["change_risk"]["maintenance_window_required"] is True
     assert azure["change_risk"]["restarts_ce_data_plane_services"] is True
+
+
+def test_azure_bgp_response_drift_receipt_is_sanitized_and_hash_bound(
+    contract_config: dict[str, Any],
+) -> None:
+    root = Path(__file__).parent.parent
+    bgp_configuration = _azure_contract(contract_config)["runtime"]["bgp_configuration"]
+    receipt_binding = bgp_configuration["evidence_receipt"]
+    receipt_bytes = (root / receipt_binding["path"]).read_bytes()
+    assert hashlib.sha256(receipt_bytes).hexdigest() == receipt_binding["sha256"]
+
+    receipt = json.loads(receipt_bytes)
+    source = bgp_configuration["source"]
+    observation = receipt["observation"]
+    response_only_fields = bgp_configuration["response_only_fields"]
+
+    assert receipt["schema_version"] == 1
+    assert receipt["scope"] == "azure_bgp_response_shape_drift"
+    assert receipt["source"]["repository"] == source["repository"]
+    assert receipt["source"]["commit"] == source["commit"]
+    assert receipt["source"]["asset_path"] == source["asset_path"]
+    assert receipt["source"]["asset_sha256"] == source["asset_sha256"]
+    assert receipt["source"]["schema_paths"] == source["schema_paths"]
+    assert receipt["source"]["absent_response_fields"] == response_only_fields
+    assert observation["observed_response_fields"] == response_only_fields
+    assert observation["method"] == "GET"
+    assert observation["http_status"] == 200
+    assert observation["form_metadata"] == {"create_form": None, "replace_form": None}
+    assert observation["sanitized"] is True
+    assert observation["retention"] == (
+        "field_shapes_only_no_names_addresses_tokens_or_raw_response"
+    )
+    assert receipt["classification"] == {
+        "target_service": "response_only",
+        "family_inet_v6": "response_only",
+        "request_eligibility": "rejected_without_authoritative_request_schema",
+        "route_server_ebgp_multihop": "unavailable_reject_before_mutation",
+    }
+    assert set(receipt["source"]["absent_request_controls"]) == {
+        "ebgp_multihop",
+        "hop_count",
+        "multihop",
+        "ttl",
+    }
 
 
 Mutation = Callable[[dict[str, Any]], Any]
@@ -325,6 +392,32 @@ def test_rejects_missing_or_fabricated_azure_route_server_multihop_capability(
     with pytest.raises(
         InterfaceContractValidationError,
         match="Azure Route Server eBGP multihop capability is unavailable",
+    ):
+        InterfaceContractEnricher(_write_config(tmp_path, invalid))
+
+
+@pytest.mark.parametrize(
+    "mutate",
+    [
+        lambda bgp: bgp.update(
+            {"request_mappings": {"target_service": "spec.peers[].target_service"}}
+        ),
+        lambda bgp: bgp.update({"request_eligibility": "allowed"}),
+        lambda bgp: bgp["response_only_fields"].remove("spec.peers[].external.family_inet_v6"),
+        lambda bgp: bgp["live_evidence"]["form_metadata"].update({"create_form": {"spec": {}}}),
+        lambda bgp: bgp["evidence_receipt"].update({"sha256": "0" * 64}),
+    ],
+)
+def test_rejects_azure_bgp_response_field_request_promotion(
+    tmp_path: Path,
+    contract_config: dict[str, Any],
+    mutate: Callable[[dict[str, Any]], Any],
+) -> None:
+    invalid = copy.deepcopy(contract_config)
+    mutate(_azure_contract(invalid)["runtime"]["bgp_configuration"])
+    with pytest.raises(
+        InterfaceContractValidationError,
+        match="Azure runtime endpoints or schemas are incomplete",
     ):
         InterfaceContractEnricher(_write_config(tmp_path, invalid))
 
