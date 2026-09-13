@@ -377,7 +377,15 @@ class OperationMetadataEnricher:
         for prerequisite in prerequisites:
             if not isinstance(prerequisite, dict):
                 raise TypeError(f"operation {operation_id} prerequisite must be an object")
-            required = {"id", "resource", "cardinality", "enforcement", "availability", "reason", "source"}
+            required = {
+                "id",
+                "resource",
+                "cardinality",
+                "enforcement",
+                "availability",
+                "reason",
+                "source",
+            }
             missing = sorted(required - set(prerequisite))
             if missing:
                 raise ValueError(

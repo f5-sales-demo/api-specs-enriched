@@ -191,8 +191,7 @@ def test_image_download_prerequisite_does_not_invent_maurice_config_crud() -> No
         for path, path_item in spec["paths"].items()
         if "maurice_config" in path
         for method, operation in path_item.items()
-        if method.upper() in {"POST", "PUT", "PATCH", "DELETE"}
-        and isinstance(operation, dict)
+        if method.upper() in {"POST", "PUT", "PATCH", "DELETE"} and isinstance(operation, dict)
     ]
 
     assert maurice_operations == []

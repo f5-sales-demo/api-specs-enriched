@@ -987,9 +987,7 @@ def build_api_operations(paths: dict[str, Any]) -> list[dict[str, Any]]:
                 if not isinstance(prerequisites, list) or not all(
                     isinstance(prerequisite, dict) for prerequisite in prerequisites
                 ):
-                    raise ValueError(
-                        f"operation {operation_id} has invalid x-f5xc-prerequisites"
-                    )
+                    raise ValueError(f"operation {operation_id} has invalid x-f5xc-prerequisites")
                 if prerequisites:
                     entry["prerequisites"] = prerequisites
             elif operation.get("x-f5xc-terraform-name") is not None:
