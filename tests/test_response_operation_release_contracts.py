@@ -10,7 +10,7 @@ REPO_ROOT = Path(__file__).parent.parent
 OPENAPI_PATH = REPO_ROOT / "docs" / "specifications" / "api" / "openapi.json"
 CATALOG_PATH = REPO_ROOT / "release" / "api-catalog.json"
 
-EXPECTED_OPERATIONS = {
+EXPECTED_OPERATIONS: dict[str, dict[str, Any]] = {
     "ves.io.schema.registration.CustomAPI.GetImageDownloadUrl": {
         "role": "query",
         "terraformName": "site_image",

@@ -393,23 +393,40 @@ class OperationMetadataEnricher:
                 )
             cardinality = prerequisite["cardinality"]
             source = prerequisite["source"]
-            if (
-                not isinstance(prerequisite["id"], str)
-                or not re.fullmatch(r"[a-z][a-z0-9_]*", prerequisite["id"])
-                or not isinstance(prerequisite["resource"], str)
-                or not prerequisite["resource"]
-                or not isinstance(cardinality, dict)
-                or set(cardinality) != {"exactly"}
-                or not isinstance(cardinality["exactly"], int)
-                or cardinality["exactly"] < 1
-                or prerequisite["enforcement"] != "server"
-                or prerequisite["availability"] != "external_tenant_prerequisite"
-                or not isinstance(prerequisite["reason"], str)
-                or not prerequisite["reason"].strip()
-                or not isinstance(source, dict)
-                or source.get("kind") != "runtime_api_error"
-                or source.get("operation") != operation_id
-                or source.get("immutable") is not True
+            valid_identity = isinstance(prerequisite["id"], str) and re.fullmatch(
+                r"[a-z][a-z0-9_]*", prerequisite["id"]
+            )
+            valid_resource = isinstance(prerequisite["resource"], str) and bool(
+                prerequisite["resource"]
+            )
+            valid_cardinality = (
+                isinstance(cardinality, dict)
+                and set(cardinality) == {"exactly"}
+                and isinstance(cardinality["exactly"], int)
+                and cardinality["exactly"] >= 1
+            )
+            valid_availability = (
+                prerequisite["enforcement"] == "server"
+                and prerequisite["availability"] == "external_tenant_prerequisite"
+            )
+            valid_reason = isinstance(prerequisite["reason"], str) and bool(
+                prerequisite["reason"].strip()
+            )
+            valid_source = (
+                isinstance(source, dict)
+                and source.get("kind") == "runtime_api_error"
+                and source.get("operation") == operation_id
+                and source.get("immutable") is True
+            )
+            if not all(
+                (
+                    valid_identity,
+                    valid_resource,
+                    valid_cardinality,
+                    valid_availability,
+                    valid_reason,
+                    valid_source,
+                )
             ):
                 raise ValueError(f"operation {operation_id} has an invalid prerequisite contract")
             validated.append(copy.deepcopy(prerequisite))
