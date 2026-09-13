@@ -14,6 +14,7 @@ Uses x-f5xc-* extensions to store operation metadata.
 Issue: #292 - Migrated from x-ves-* to x-f5xc-* namespace
 """
 
+import copy
 import re
 from dataclasses import dataclass
 from pathlib import Path
@@ -194,6 +195,7 @@ class OperationMetadataEnricher:
         self.stats.operations_enriched += 1
         operation_id = operation.get("operationId", "")
         operation_role, special_contract = self._response_operation_contract(operation_id)
+        prerequisites = self._validated_prerequisites(special_contract, operation_id)
         if operation_role is not None:
             allowed_methods = {"POST"} if operation_role == "action" else {"GET", "POST"}
             if method not in allowed_methods:
@@ -223,6 +225,8 @@ class OperationMetadataEnricher:
             operation[f"{self.extension_prefix}-terraform-name"] = special_contract[
                 "terraform_name"
             ]
+            if prerequisites:
+                operation[f"{self.extension_prefix}-prerequisites"] = prerequisites
 
         # Extract and add required fields
         required_fields = (
@@ -271,6 +275,7 @@ class OperationMetadataEnricher:
             required_fields,
             danger_level,
             side_effects,
+            prerequisites,
         )
         if operation_role in {"query", "collection"}:
             comprehensive_metadata["conditions"]["postconditions"] = [
@@ -359,6 +364,49 @@ class OperationMetadataEnricher:
             raise ValueError(f"{role} operation {operation_id} requires a valid terraform_name")
         return role, contract
 
+    @staticmethod
+    def _validated_prerequisites(
+        contract: dict[str, Any], operation_id: str
+    ) -> list[dict[str, Any]]:
+        """Return validated, source-owned prerequisites for a response operation."""
+        prerequisites = contract.get("prerequisites", [])
+        if not isinstance(prerequisites, list):
+            raise TypeError(f"operation {operation_id} prerequisites must be an array")
+
+        validated: list[dict[str, Any]] = []
+        for prerequisite in prerequisites:
+            if not isinstance(prerequisite, dict):
+                raise TypeError(f"operation {operation_id} prerequisite must be an object")
+            required = {"id", "resource", "cardinality", "enforcement", "availability", "reason", "source"}
+            missing = sorted(required - set(prerequisite))
+            if missing:
+                raise ValueError(
+                    f"operation {operation_id} prerequisite is missing fields: {', '.join(missing)}"
+                )
+            cardinality = prerequisite["cardinality"]
+            source = prerequisite["source"]
+            if (
+                not isinstance(prerequisite["id"], str)
+                or not re.fullmatch(r"[a-z][a-z0-9_]*", prerequisite["id"])
+                or not isinstance(prerequisite["resource"], str)
+                or not prerequisite["resource"]
+                or not isinstance(cardinality, dict)
+                or set(cardinality) != {"exactly"}
+                or not isinstance(cardinality["exactly"], int)
+                or cardinality["exactly"] < 1
+                or prerequisite["enforcement"] != "server"
+                or prerequisite["availability"] != "external_tenant_prerequisite"
+                or not isinstance(prerequisite["reason"], str)
+                or not prerequisite["reason"].strip()
+                or not isinstance(source, dict)
+                or source.get("kind") != "runtime_api_error"
+                or source.get("operation") != operation_id
+                or source.get("immutable") is not True
+            ):
+                raise ValueError(f"operation {operation_id} has an invalid prerequisite contract")
+            validated.append(copy.deepcopy(prerequisite))
+        return validated
+
     def _build_comprehensive_metadata(
         self,
         method: str,
@@ -367,6 +415,7 @@ class OperationMetadataEnricher:
         required_fields: list[str],
         danger_level: str,
         side_effects: dict[str, Any],
+        prerequisite_contracts: list[dict[str, Any]],
     ) -> dict[str, Any]:
         """Build comprehensive operation metadata object.
 
@@ -380,6 +429,7 @@ class OperationMetadataEnricher:
             required_fields: List of required fields
             danger_level: Danger level classification
             side_effects: Side effects dictionary
+            prerequisite_contracts: Typed response-operation prerequisites
 
         Returns:
             Comprehensive metadata dictionary
@@ -387,7 +437,10 @@ class OperationMetadataEnricher:
         resource_type = self._extract_resource_type(path)
         optional_fields = self._identify_optional_fields(operation, method)
         field_docs = self._generate_field_docs(operation)
-        prerequisites = self._determine_prerequisites(method, path)
+        prerequisite_reasons = self._determine_prerequisites(method, path)
+        prerequisite_reasons.extend(
+            prerequisite["reason"] for prerequisite in prerequisite_contracts
+        )
         postconditions = self._determine_postconditions(method, path)
         common_errors = self._generate_common_errors(operation)
         performance_impact = self._assess_performance_impact(method, path, operation)
@@ -403,7 +456,7 @@ class OperationMetadataEnricher:
             "optional_fields": optional_fields,
             "field_docs": field_docs,
             "conditions": {
-                "prerequisites": prerequisites,
+                "prerequisites": prerequisite_reasons,
                 "postconditions": postconditions,
             },
             "side_effects": side_effects or {},

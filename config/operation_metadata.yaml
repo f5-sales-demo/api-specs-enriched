@@ -54,6 +54,20 @@ query_operations:
     rationale: Returns signed Customer Edge image URLs without changing tenant state
     required_fields: [provider]
     terraform_name: site_image
+    prerequisites:
+      - id: maurice_config_cardinality_exactly_one
+        resource: maurice_config
+        cardinality:
+          exactly: 1
+        enforcement: server
+        availability: external_tenant_prerequisite
+        reason: >-
+          The tenant must contain exactly one maurice_config object before the
+          platform can issue a Customer Edge image download URL.
+        source:
+          kind: runtime_api_error
+          operation: ves.io.schema.registration.CustomAPI.GetImageDownloadUrl
+          immutable: true
 
 # Operations that issue a new credential. These are not reads: consumers must
 # persist the first response and must not refresh the operation on every plan.

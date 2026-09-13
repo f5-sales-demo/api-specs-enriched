@@ -102,6 +102,7 @@ X_F5XC_CONSOLE_FIELD = "x-f5xc-console-field"
 # =============================================================================
 
 X_F5XC_REQUIRED_FIELDS = "x-f5xc-required-fields"
+X_F5XC_PREREQUISITES = "x-f5xc-prerequisites"
 X_F5XC_DANGER_LEVEL = "x-f5xc-danger-level"
 X_F5XC_CONFIRMATION_REQUIRED = "x-f5xc-confirmation-required"
 X_F5XC_SIDE_EFFECTS = "x-f5xc-side-effects"
@@ -268,6 +269,7 @@ VALID_X_F5XC_EXTENSIONS = frozenset(
         X_F5XC_WIRE_NAME,
         # Operation-level
         X_F5XC_REQUIRED_FIELDS,
+        X_F5XC_PREREQUISITES,
         X_F5XC_DANGER_LEVEL,
         X_F5XC_CONFIRMATION_REQUIRED,
         X_F5XC_SIDE_EFFECTS,

@@ -230,6 +230,32 @@ def test_main_cli_writes_output_file():
         assert len(catalog["categories"]) >= 1
 
 
+def test_main_cli_preserves_utf8_output():
+    """Generated catalog output remains UTF-8 rather than JSON-escaped ASCII."""
+    with tempfile.TemporaryDirectory() as tmpdir:
+        input_path = Path(tmpdir) / "input.json"
+        output_path = Path(tmpdir) / "api-catalog.json"
+        spec = {
+            "openapi": "3.0.3",
+            "info": {"version": "UTF-8 — verified"},
+            "paths": {
+                "/api/config/namespaces/{namespace}/widgets": {
+                    "get": {"operationId": "list_widgets", "responses": {"200": {}}},
+                },
+            },
+        }
+        input_path.write_text(json.dumps(spec, ensure_ascii=False), encoding="utf-8")
+
+        original_argv = sys.argv
+        sys.argv = ["compile_catalog", "--input", str(input_path), "--output", str(output_path)]
+        try:
+            assert main() == 0
+        finally:
+            sys.argv = original_argv
+
+        assert "UTF-8 — verified" in output_path.read_text(encoding="utf-8")
+
+
 def test_compile_catalog_against_real_spec():
     """compile_catalog() processes the real specs/discovered/openapi.json without error."""
     import pytest

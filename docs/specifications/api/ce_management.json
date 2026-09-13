@@ -2987,7 +2987,8 @@
           "field_docs": {},
           "conditions": {
             "prerequisites": [
-              "Active namespace"
+              "Active namespace",
+              "The tenant must contain exactly one maurice_config object before the platform can issue a Customer Edge image download URL."
             ],
             "postconditions": [
               "Requested data returned",
@@ -3046,7 +3047,24 @@
           "p99_ms": 8000,
           "sample_count": 0,
           "source": "estimate"
-        }
+        },
+        "x-f5xc-prerequisites": [
+          {
+            "id": "maurice_config_cardinality_exactly_one",
+            "resource": "maurice_config",
+            "cardinality": {
+              "exactly": 1
+            },
+            "enforcement": "server",
+            "availability": "external_tenant_prerequisite",
+            "reason": "The tenant must contain exactly one maurice_config object before the platform can issue a Customer Edge image download URL.",
+            "source": {
+              "kind": "runtime_api_error",
+              "operation": "ves.io.schema.registration.CustomAPI.GetImageDownloadUrl",
+              "immutable": true
+            }
+          }
+        ]
       },
       "x-displayname": "Registration.",
       "x-ves-proto-service": "ves.io.schema.registration.CustomAPI",
