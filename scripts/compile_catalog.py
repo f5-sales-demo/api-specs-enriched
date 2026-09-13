@@ -983,6 +983,13 @@ def build_api_operations(paths: dict[str, Any]) -> list[dict[str, Any]]:
                         )
                 entry["role"] = operation_role
                 entry["terraformName"] = terraform_name
+                prerequisites = operation.get("x-f5xc-prerequisites", [])
+                if not isinstance(prerequisites, list) or not all(
+                    isinstance(prerequisite, dict) for prerequisite in prerequisites
+                ):
+                    raise ValueError(f"operation {operation_id} has invalid x-f5xc-prerequisites")
+                if prerequisites:
+                    entry["prerequisites"] = prerequisites
             elif operation.get("x-f5xc-terraform-name") is not None:
                 raise ValueError(
                     f"operation {operation_id} has x-f5xc-terraform-name without an operation role"
@@ -1195,7 +1202,7 @@ def main() -> int:
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
     with args.output.open("w", encoding="utf-8") as f:
-        json.dump(catalog, f, indent=2)
+        json.dump(catalog, f, indent=2, ensure_ascii=False)
         f.write("\n")
 
     total_ops = sum(len(c["operations"]) for c in catalog["categories"])

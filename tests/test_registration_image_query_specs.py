@@ -23,6 +23,24 @@ def test_image_download_operation_is_a_read_only_query() -> None:
     assert operation["x-f5xc-danger-level"] == "low"
     assert "x-f5xc-side-effects" not in operation
     assert operation["x-f5xc-required-fields"] == ["provider"]
+    assert operation["x-f5xc-prerequisites"] == [
+        {
+            "id": "maurice_config_cardinality_exactly_one",
+            "resource": "maurice_config",
+            "cardinality": {"exactly": 1},
+            "enforcement": "server",
+            "availability": "external_tenant_prerequisite",
+            "reason": (
+                "The tenant must contain exactly one maurice_config object before "
+                "the platform can issue a Customer Edge image download URL."
+            ),
+            "source": {
+                "kind": "runtime_api_error",
+                "operation": OPERATION_ID,
+                "immutable": True,
+            },
+        },
+    ]
 
 
 def test_image_download_schema_marks_signed_urls_sensitive() -> None:
@@ -67,6 +85,24 @@ def test_release_catalog_publishes_the_query_schema_pair() -> None:
         "responseSchema": "registrationGetImageDownloadUrlResp",
         "role": "query",
         "terraformName": "site_image",
+        "prerequisites": [
+            {
+                "id": "maurice_config_cardinality_exactly_one",
+                "resource": "maurice_config",
+                "cardinality": {"exactly": 1},
+                "enforcement": "server",
+                "availability": "external_tenant_prerequisite",
+                "reason": (
+                    "The tenant must contain exactly one maurice_config object before "
+                    "the platform can issue a Customer Edge image download URL."
+                ),
+                "source": {
+                    "kind": "runtime_api_error",
+                    "operation": OPERATION_ID,
+                    "immutable": True,
+                },
+            },
+        ],
     }
 
 

@@ -10,7 +10,7 @@ REPO_ROOT = Path(__file__).parent.parent
 OPENAPI_PATH = REPO_ROOT / "docs" / "specifications" / "api" / "openapi.json"
 CATALOG_PATH = REPO_ROOT / "release" / "api-catalog.json"
 
-EXPECTED_OPERATIONS = {
+EXPECTED_OPERATIONS: dict[str, dict[str, Any]] = {
     "ves.io.schema.registration.CustomAPI.GetImageDownloadUrl": {
         "role": "query",
         "terraformName": "site_image",
@@ -19,6 +19,24 @@ EXPECTED_OPERATIONS = {
         "required": ["provider"],
         "requestSchema": "registrationGetImageDownloadUrlReq",
         "responseSchema": "registrationGetImageDownloadUrlResp",
+        "prerequisites": [
+            {
+                "id": "maurice_config_cardinality_exactly_one",
+                "resource": "maurice_config",
+                "cardinality": {"exactly": 1},
+                "enforcement": "server",
+                "availability": "external_tenant_prerequisite",
+                "reason": (
+                    "The tenant must contain exactly one maurice_config object before "
+                    "the platform can issue a Customer Edge image download URL."
+                ),
+                "source": {
+                    "kind": "runtime_api_error",
+                    "operation": "ves.io.schema.registration.CustomAPI.GetImageDownloadUrl",
+                    "immutable": True,
+                },
+            },
+        ],
     },
     "ves.io.schema.token.CustomAPI.GetCloudInitConfig": {
         "role": "issuance",
@@ -110,6 +128,7 @@ def test_release_publishes_all_terraform_response_operations() -> None:
         assert operation["x-f5xc-operation-role"] == expected["role"]
         assert operation["x-f5xc-terraform-name"] == expected["terraformName"]
         assert operation["x-f5xc-required-fields"] == expected["required"]
+        assert operation.get("x-f5xc-prerequisites", []) == expected.get("prerequisites", [])
 
         catalog_operation = catalog_operations[operation_id]
         for field in (
@@ -119,6 +138,7 @@ def test_release_publishes_all_terraform_response_operations() -> None:
             "path",
             "requestSchema",
             "responseSchema",
+            "prerequisites",
         ):
             if field in expected:
                 assert catalog_operation[field] == expected[field]
@@ -162,3 +182,16 @@ def test_upgrade_force_remains_optional() -> None:
         request = spec["components"]["schemas"][schema_name]
         assert request["properties"]["force"]["type"] == "boolean"
         assert request["properties"]["force"]["x-ves-required"] == "false"
+
+
+def test_image_download_prerequisite_does_not_invent_maurice_config_crud() -> None:
+    spec = json.loads(OPENAPI_PATH.read_text())
+    maurice_operations = [
+        operation
+        for path, path_item in spec["paths"].items()
+        if "maurice_config" in path
+        for method, operation in path_item.items()
+        if method.upper() in {"POST", "PUT", "PATCH", "DELETE"} and isinstance(operation, dict)
+    ]
+
+    assert maurice_operations == []

@@ -671,6 +671,18 @@ stubby as long as the `### x-name` header exists and the
 - **Example:** `"x-f5xc-required-fields": ["metadata.name", "spec.domains"]`
 - **Pass-through from upstream:** no
 
+### x-f5xc-prerequisites
+
+- **Applied at:** operation
+- **Purpose:** Documents typed external or server-enforced prerequisites without claiming a writable API for the prerequisite.
+- **Consumers:** Terraform, CLI, MCP
+- **Value type:** array
+- **Value schema:** `{"type": "array", "items": {"type": "object"}}`
+- **Injected by:** scripts/utils/operation_metadata_enricher.py
+- **Driven by config:** config/operation_metadata.yaml
+- **Example:** `"x-f5xc-prerequisites": [{"id": "maurice_config_cardinality_exactly_one", "cardinality": {"exactly": 1}}]`
+- **Pass-through from upstream:** no
+
 ### x-f5xc-danger-level
 
 - **Applied at:** operation

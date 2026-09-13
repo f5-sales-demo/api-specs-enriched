@@ -545,6 +545,31 @@ operation_level:
     consumers: [cli, mcp]
     migrated_from: "x-ves-required-fields"
 
+  x-f5xc-prerequisites:
+    type: array
+    items: object
+    purpose: >-
+      Typed external or API-enforced prerequisites required before an operation
+      can succeed. These document dependency contracts without implying that
+      the prerequisite has a writable API surface.
+    consumers: [terraform, cli, mcp]
+    properties:
+      id: "Stable prerequisite identifier"
+      resource: "Referenced prerequisite resource or tenant configuration"
+      cardinality: "Required cardinality constraint"
+      enforcement: "Where the prerequisite is enforced"
+      availability: "Whether a consumer can manage the prerequisite"
+      reason: "Actionable explanation of the requirement"
+      source: "Immutable provenance for the requirement"
+    example:
+      - id: "maurice_config_cardinality_exactly_one"
+        resource: "maurice_config"
+        cardinality: {exactly: 1}
+        enforcement: "server"
+        availability: "external_tenant_prerequisite"
+        reason: "Tenant configuration must exist exactly once"
+        source: {kind: "runtime_api_error", immutable: true}
+
   x-f5xc-danger-level:
     type: string
     enum: [low, medium, high]
