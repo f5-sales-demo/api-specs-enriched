@@ -20,6 +20,8 @@ import subprocess
 import sys
 from typing import TYPE_CHECKING, Any
 
+from scripts.stamp_release_version import carries_build_version
+
 if TYPE_CHECKING:
     from pathlib import Path
 
@@ -34,6 +36,7 @@ _PUBLISHING_PATH_MARKERS: tuple[str, ...] = (
     "/docs/specifications/api/",
     "/docs/api-reference/",
 )
+_ATOMIC_PIPELINE_CANDIDATE_PREFIX = ".api-candidate-"
 
 
 class BiomeNotFoundError(RuntimeError):
@@ -78,6 +81,19 @@ def _is_publishing_path(output_path: Path) -> bool:
     return any(marker in resolved for marker in _PUBLISHING_PATH_MARKERS)
 
 
+def _is_atomic_pipeline_candidate(output_path: Path) -> bool:
+    """Return whether *output_path* is inside the pipeline's staging tree.
+
+    The candidate deliberately contains a nested ``docs/specifications/api``
+    suffix, but its temporary prefix means Biome does not apply the repository
+    override that disables formatting for generated specifications. Formatting
+    there would therefore produce different bytes from the final published path.
+    """
+    return any(
+        part.startswith(_ATOMIC_PIPELINE_CANDIDATE_PREFIX) for part in output_path.resolve().parts
+    )
+
+
 def _is_formatter_disabled(result: subprocess.CompletedProcess[str]) -> bool:
     """True iff biome skipped the file because formatter is disabled for its path."""
     stderr = result.stderr
@@ -86,10 +102,16 @@ def _is_formatter_disabled(result: subprocess.CompletedProcess[str]) -> bool:
     return no_files and not_oversize
 
 
-def _format_with_biome(output_path: Path) -> None:
+def _format_with_biome(output_path: Path, *, release_versioned: bool = False) -> None:
     if not _is_publishing_path(output_path):
         # Writes outside the release-committed docs tree do not need
         # Biome formatting and must not fail when Biome is missing.
+        return
+
+    if _is_atomic_pipeline_candidate(output_path) and release_versioned:
+        # A release stamp rewrites build-versioned artifacts with json.dumps
+        # after the candidate is published. Match those final bytes now instead
+        # of letting the staging prefix bypass the final path's disabled rule.
         return
 
     if os.environ.get(_SKIP_BIOME_ENV):
@@ -170,4 +192,7 @@ def write_json_file(
         json.dump(data, f, indent=indent, sort_keys=sort_keys, ensure_ascii=ensure_ascii)
         f.write("\n")
 
-    _format_with_biome(output_path)
+    _format_with_biome(
+        output_path,
+        release_versioned=carries_build_version(data),
+    )

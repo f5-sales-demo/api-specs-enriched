@@ -174,7 +174,9 @@ fi
 # The saved index above makes any later failure transactional as well.
 ENRICHED_SPECS=()
 if [ -d "$OUTPUT_DIR" ]; then
-  mapfile -d '' -t ENRICHED_SPECS < <(find "$OUTPUT_DIR" -maxdepth 1 -type f -name '*.json' -print0)
+  while IFS= read -r -d '' spec; do
+    ENRICHED_SPECS+=("$spec")
+  done < <(find "$OUTPUT_DIR" -maxdepth 1 -type f -name '*.json' -print0)
 fi
 if [ "${#ENRICHED_SPECS[@]}" -gt 0 ]; then
   echo -e "${YELLOW}Staging ${#ENRICHED_SPECS[@]} validated enriched spec files...${NC}"

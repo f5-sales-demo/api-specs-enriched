@@ -167,6 +167,15 @@ class TestForceOverride:
         assert "skipping enrichment + lint" not in result.stdout
 
 
+class TestShellPortability:
+    """The repository hook must run with macOS system Bash 3.2."""
+
+    def test_hook_does_not_require_bash_4_mapfile(self) -> None:
+        hook = _project_hook().read_text()
+
+        assert "mapfile" not in hook
+
+
 class TestGeneratedOutputRecovery:
     """Pipeline failures cannot leave generated specs modified or staged."""
 
