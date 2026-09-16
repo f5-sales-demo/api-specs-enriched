@@ -10,6 +10,16 @@ from pathlib import Path
 from typing import Any
 
 
+def carries_build_version(document: Any) -> bool:
+    """Return whether *document* receives the repository release version."""
+    if not isinstance(document, dict) or "$schema" in document:
+        return False
+
+    info = document.get("info")
+    is_openapi = "openapi" in document or "swagger" in document
+    return (is_openapi and isinstance(info, dict)) or "version" in document
+
+
 def stamp_document(document: Any, version: str) -> bool:
     """Apply a build version to a generated document in place.
 
@@ -17,7 +27,7 @@ def stamp_document(document: Any, version: str) -> bool:
     build artifacts carry it in a top-level ``version`` field. Self-describing
     ``$schema`` artifacts have their own format version and must not be changed.
     """
-    if not isinstance(document, dict) or "$schema" in document:
+    if not carries_build_version(document):
         return False
 
     info = document.get("info")

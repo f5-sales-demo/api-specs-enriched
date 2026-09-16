@@ -115,6 +115,58 @@ class TestIsMaxsizeOnly:
 class TestFormatWithBiome:
     """_format_with_biome gates on path, env var, PATH availability, and exit."""
 
+    def test_skips_atomic_pipeline_candidate_that_publishes_to_disabled_tree(
+        self,
+        tmp_path: Path,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        target = (
+            tmp_path
+            / "docs"
+            / "specifications"
+            / ".api-candidate-test"
+            / "docs"
+            / "specifications"
+            / "api"
+            / "x.json"
+        )
+        target.parent.mkdir(parents=True, exist_ok=True)
+        monkeypatch.delenv("API_SPECS_SKIP_BIOME", raising=False)
+
+        with patch.object(subprocess, "run") as mock_run:
+            write_json_file({"version": "7.0.3", "resources": {}}, target)
+
+        mock_run.assert_not_called()
+
+    def test_formats_self_describing_artifact_inside_atomic_pipeline_candidate(
+        self,
+        tmp_path: Path,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        target = (
+            tmp_path
+            / "docs"
+            / "specifications"
+            / ".api-candidate-test"
+            / "docs"
+            / "specifications"
+            / "api"
+            / "validation.json"
+        )
+        monkeypatch.delenv("API_SPECS_SKIP_BIOME", raising=False)
+
+        with (
+            patch.object(json_writer.shutil, "which", return_value="/usr/bin/biome"),
+            patch.object(
+                subprocess,
+                "run",
+                return_value=_fake_completed(stdout="", stderr="", returncode=0),
+            ) as mock_run,
+        ):
+            write_json_file({"$schema": "example", "version": "2.1.0"}, target)
+
+        mock_run.assert_called_once()
+
     def test_skips_non_publishing_path(self, tmp_path: Path) -> None:
         target = tmp_path / "out.json"
         target.write_text("{}")

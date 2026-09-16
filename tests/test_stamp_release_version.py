@@ -7,7 +7,14 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from scripts.stamp_release_version import stamp_directory, stamp_document
+from scripts.stamp_release_version import carries_build_version, stamp_directory, stamp_document
+
+
+def test_carries_build_version_matches_release_stamping_contract() -> None:
+    assert carries_build_version({"openapi": "3.0.3", "info": {}}) is True
+    assert carries_build_version({"version": "1.0.0"}) is True
+    assert carries_build_version({"$schema": "example", "version": "2.1.0"}) is False
+    assert carries_build_version({"info": {"version": "format-v1"}}) is False
 
 
 def test_stamp_document_uses_openapi_info_version() -> None:
