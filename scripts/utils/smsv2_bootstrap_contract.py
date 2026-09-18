@@ -67,9 +67,9 @@ AWS_BOOTSTRAP: dict[str, Any] = {
     },
     "evidence": {
         "scope": "aws_only",
-        "source_repository": "f5-sales-demo/mcn",
+        "source_repository": "f5-sales-demo/multi-cloud-networking",
         "source_commit": "4dc25ec4f423c82aa9b052f81ca3c114b25a129c",
-        "source_issue": "f5-sales-demo/mcn#1103",
+        "source_issue": "f5-sales-demo/multi-cloud-networking#1103",
         "fresh_acceptance_required": True,
     },
 }
@@ -125,7 +125,7 @@ AZURE_BOOTSTRAP: dict[str, Any] = {
         "reject_unresolved_placeholders": True,
         "storage": "restricted_deployment_storage",
     },
-    "source_repository": "f5-sales-demo/mcn",
+    "source_repository": "f5-sales-demo/multi-cloud-networking",
     "source_commit": "c1310d030cfc252571bf0e816db21b618697d991",
     "source_path": "docs/en/customer-edge/smsv2/azure-route-server.mdx",
 }
