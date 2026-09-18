@@ -16,6 +16,7 @@ from scripts.utils.extension_constants import X_F5XC_CE_AUTOMATION_CONTRACT
 from scripts.utils.interface_contract_enricher import (
     InterfaceContractEnricher,
     InterfaceContractValidationError,
+    validate_aws_node_configuration,
     validate_aws_telemetry_intake,
 )
 
@@ -60,6 +61,7 @@ def _azure_contract(config: dict[str, Any]) -> dict[str, Any]:
 def _make_schema_only_aws(aws: dict[str, Any]) -> None:
     aws["availability"] = "schema_only"
     aws["capabilities"] = dict.fromkeys(aws["capabilities"], "unavailable")
+    aws.pop("node_configuration", None)
     aws["unavailable_capabilities"] = list(aws["capabilities"])
     aws["telemetry_intake"]["availability"] = "unavailable"
     aws["telemetry_intake"]["complete"] = False
@@ -75,6 +77,166 @@ def _make_schema_only_aws(aws: dict[str, Any]) -> None:
             "redaction": "no tenant response, token, bootstrap material, or resource identifier",
         }
     ]
+
+
+def _valid_aws_node_configuration(
+    strategy: str = "discovery_rebuild",
+) -> dict[str, Any]:
+    return {
+        "availability": "evidence_backed",
+        "enforcement": "required",
+        "strategy": strategy,
+        "operation": {
+            "method": "PUT",
+            "path": (
+                "/api/config/namespaces/{metadata.namespace}/securemesh_site_v2s/{metadata.name}"
+            ),
+            "operation_id": "ves.io.schema.views.securemesh_site_v2.API.Replace",
+            "request_schema": "securemesh_site_v2ReplaceRequest",
+        },
+        "field_paths": [
+            "resource_version",
+            "spec.aws.not_managed.node_list[]",
+            "spec.aws.not_managed.node_list[].hostname",
+            "spec.aws.not_managed.node_list[].interface_list[]",
+            ("spec.aws.not_managed.node_list[].interface_list[].ethernet_interface.device"),
+            ("spec.aws.not_managed.node_list[].interface_list[].ethernet_interface.mac"),
+        ],
+        "mapping": {
+            "registration_source": "site_registration_hardware_inventory",
+            "join_key": "normalized_mac",
+            "cardinality": "one_to_one",
+            "device_value_path": "interfaces[].device",
+            "mac_value_path": "interfaces[].mac",
+            "terraform_mac_source": "aws_network_interface.mac_address",
+            "device_policy": "observed_only",
+        },
+        "invariants": {
+            "node_count": 1,
+            "ha": "disabled",
+            "interface_count": 2,
+            "interface_roles": ["slo", "sli"],
+            "interface_role_cardinality": "exactly_one_each",
+            "mac_normalization": "ieee802_lowercase_colon",
+            "device_source": "observed_registration_only",
+        },
+        "unsupported_reasons": {
+            "direct_rebuild_mode_transition": (
+                "aws_node_configuration_discovery_rebuild_requires_distinct_site"
+            ),
+            "multi_node_or_ha_input": "aws_node_configuration_requires_single_non_ha_node",
+            "missing_mapping": "aws_node_configuration_mapping_missing",
+            "ambiguous_mapping": "aws_node_configuration_mapping_ambiguous",
+            "malformed_mac": "aws_node_configuration_mac_malformed",
+            "guessed_device": "aws_node_configuration_device_must_be_observed",
+            "incomplete_request_semantics": ("aws_node_configuration_request_semantics_incomplete"),
+        },
+        "provenance": {
+            "source_commit": "a" * 40,
+            "source_spec_sha256": "b" * 64,
+            "probe_date": "2026-09-17",
+            "issue": "f5-sales-demo/api-specs-enriched#1776",
+            "evidence_receipt_sha256": "c" * 64,
+        },
+    }
+
+
+def test_accepts_complete_aws_node_configuration_contract() -> None:
+    validate_aws_node_configuration(_valid_aws_node_configuration())
+    validate_aws_node_configuration(_valid_aws_node_configuration("same_site_replace"))
+
+
+def test_emitted_aws_node_configuration_selects_discovery_rebuild() -> None:
+    aws = InterfaceContractEnricher().contracts[0][1]["providers"]["aws"]
+    assert aws["capabilities"]["aws_node_configuration"] == "available"
+    assert aws["node_configuration"]["strategy"] == "discovery_rebuild"
+    validate_aws_node_configuration(aws["node_configuration"])
+
+
+def test_aws_node_configuration_provenance_binds_sanitized_probe_receipt() -> None:
+    root = Path(__file__).parent.parent
+    receipt_path = root / "config/evidence/aws-node-configuration-discovery-rebuild-20260917.json"
+    receipt_bytes = receipt_path.read_bytes()
+    receipt = json.loads(receipt_bytes)
+    aws = InterfaceContractEnricher().contracts[0][1]["providers"]["aws"]
+    provenance = aws["node_configuration"]["provenance"]
+
+    assert hashlib.sha256(receipt_bytes).hexdigest() == provenance["evidence_receipt_sha256"]
+    assert receipt["schema_version"] == 1
+    assert receipt["scope"] == "aws_only"
+    assert receipt["sanitized"] is True
+    assert receipt["strategy"] == "discovery_rebuild"
+    assert receipt["source"]["commit"] == provenance["source_commit"]
+    assert receipt["source"]["spec_sha256"] == provenance["source_spec_sha256"]
+    assert receipt["probe_date"] == provenance["probe_date"]
+    assert receipt["source_issue"] == provenance["issue"]
+    assert receipt["retention"] == {
+        "credentials_or_tokens_retained": False,
+        "mac_addresses_retained": False,
+        "object_identifiers_retained": False,
+        "raw_responses_retained": False,
+        "resource_versions_retained": False,
+    }
+
+
+def test_registration_catalog_has_no_site_configuration_operation() -> None:
+    catalog_path = Path(__file__).parent.parent / "release" / "api-catalog.json"
+    catalog = json.loads(catalog_path.read_bytes())
+    registrations = [
+        operation
+        for group in catalog["apiOperations"]
+        for operation in group["operations"]
+        if operation.get("operationId", "").startswith("ves.io.schema.registration.")
+    ]
+    identities = {operation["operationId"] for operation in registrations}
+    assert {
+        "ves.io.schema.registration.CustomAPI.List",
+        "ves.io.schema.registration.CustomAPI.Get",
+        "ves.io.schema.registration.CustomAPI.RegistrationApprove",
+        "ves.io.schema.registration.CustomAPI.RegistrationConfig",
+    } <= identities
+    assert all(
+        "securemesh_site_v2s" not in operation["path"]
+        and operation.get("requestSchema") != "securemesh_site_v2ReplaceRequest"
+        for operation in registrations
+    )
+
+
+@pytest.mark.parametrize(
+    ("mutation", "message"),
+    [
+        (lambda contract: contract.pop("mapping"), "mapping is required"),
+        (
+            lambda contract: contract["mapping"].update({"cardinality": "many_to_one"}),
+            "mapping must be one-to-one",
+        ),
+        (
+            lambda contract: contract["mapping"].update({"device_policy": "guessed"}),
+            "device names must come from observed registration data",
+        ),
+        (
+            lambda contract: contract["operation"].pop("request_schema"),
+            "request semantics are incomplete",
+        ),
+        (
+            lambda contract: contract.update({"strategy": "best_effort"}),
+            "strategy is invalid",
+        ),
+        (
+            lambda contract: contract["provenance"].update(
+                {"evidence_receipt_sha256": "not-a-digest"}
+            ),
+            "immutable provenance is incomplete",
+        ),
+    ],
+)
+def test_aws_node_configuration_fails_closed_for_unsupported_semantics(
+    mutation: Callable[[dict[str, Any]], None], message: str
+) -> None:
+    contract = _valid_aws_node_configuration()
+    mutation(contract)
+    with pytest.raises(InterfaceContractValidationError, match=message):
+        validate_aws_node_configuration(contract)
 
 
 def test_emits_contract_for_only_securemesh_request_schemas(sms_spec: dict[str, Any]) -> None:
@@ -162,6 +324,7 @@ def test_contract_defines_stable_identity_and_role_invariants() -> None:
     assert contract["version"] == "7.0.0"
     assert contract["providers"]["aws"]["capabilities"] == {
         "aws_ce_create": "available",
+        "aws_node_configuration": "available",
         "runtime_status": "available",
         "site_upgrade": "available",
         "tgw_connect": "available",

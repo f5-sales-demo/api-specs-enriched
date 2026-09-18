@@ -36,6 +36,7 @@ AWS_REQUIRED_TELEMETRY_FACTS = frozenset(
 )
 AWS_V3_CAPABILITIES = {
     "aws_ce_create": "available",
+    "aws_node_configuration": "available",
     "runtime_status": "available",
     "site_upgrade": "available",
     "tgw_connect": "available",
@@ -411,10 +412,125 @@ AWS_V3_AUTHORITIES = {
         "autonomous_system_numbers",
     ],
 }
+AWS_NODE_CONFIGURATION_OPERATION = {
+    "method": "PUT",
+    "path": ("/api/config/namespaces/{metadata.namespace}/securemesh_site_v2s/{metadata.name}"),
+    "operation_id": "ves.io.schema.views.securemesh_site_v2.API.Replace",
+    "request_schema": "securemesh_site_v2ReplaceRequest",
+}
+AWS_NODE_CONFIGURATION_FIELD_PATHS = [
+    "resource_version",
+    "spec.aws.not_managed.node_list[]",
+    "spec.aws.not_managed.node_list[].hostname",
+    "spec.aws.not_managed.node_list[].interface_list[]",
+    "spec.aws.not_managed.node_list[].interface_list[].ethernet_interface.device",
+    "spec.aws.not_managed.node_list[].interface_list[].ethernet_interface.mac",
+]
+AWS_NODE_CONFIGURATION_MAPPING = {
+    "registration_source": "site_registration_hardware_inventory",
+    "join_key": "normalized_mac",
+    "cardinality": "one_to_one",
+    "device_value_path": "interfaces[].device",
+    "mac_value_path": "interfaces[].mac",
+    "terraform_mac_source": "aws_network_interface.mac_address",
+    "device_policy": "observed_only",
+}
+AWS_NODE_CONFIGURATION_INVARIANTS = {
+    "node_count": 1,
+    "ha": "disabled",
+    "interface_count": 2,
+    "interface_roles": ["slo", "sli"],
+    "interface_role_cardinality": "exactly_one_each",
+    "mac_normalization": "ieee802_lowercase_colon",
+    "device_source": "observed_registration_only",
+}
+AWS_NODE_CONFIGURATION_UNSUPPORTED_REASONS = {
+    "direct_rebuild_mode_transition": (
+        "aws_node_configuration_discovery_rebuild_requires_distinct_site"
+    ),
+    "multi_node_or_ha_input": "aws_node_configuration_requires_single_non_ha_node",
+    "missing_mapping": "aws_node_configuration_mapping_missing",
+    "ambiguous_mapping": "aws_node_configuration_mapping_ambiguous",
+    "malformed_mac": "aws_node_configuration_mac_malformed",
+    "guessed_device": "aws_node_configuration_device_must_be_observed",
+    "incomplete_request_semantics": "aws_node_configuration_request_semantics_incomplete",
+}
 
 
 class InterfaceContractValidationError(ValueError):
     """Raised when an interface contract would be unsafe to publish."""
+
+
+def validate_aws_node_configuration(contract: object) -> None:
+    """Validate the evidence-selected AWS registration lifecycle contract."""
+    if not isinstance(contract, dict):
+        raise InterfaceContractValidationError("AWS node configuration contract is required")
+    if contract.get("availability") != "evidence_backed":
+        raise InterfaceContractValidationError(
+            "AWS node configuration availability must be evidence-backed"
+        )
+    if contract.get("enforcement") != "required":
+        raise InterfaceContractValidationError(
+            "AWS node configuration enforcement must be required"
+        )
+    if contract.get("strategy") not in {"same_site_replace", "discovery_rebuild"}:
+        raise InterfaceContractValidationError("AWS node configuration strategy is invalid")
+    if contract.get("operation") != AWS_NODE_CONFIGURATION_OPERATION:
+        raise InterfaceContractValidationError(
+            "AWS node configuration request semantics are incomplete"
+        )
+    if contract.get("field_paths") != AWS_NODE_CONFIGURATION_FIELD_PATHS:
+        raise InterfaceContractValidationError("AWS node configuration field paths are incomplete")
+    mapping = contract.get("mapping")
+    if not isinstance(mapping, dict):
+        raise InterfaceContractValidationError("AWS node configuration mapping is required")
+    if mapping.get("cardinality") != "one_to_one":
+        raise InterfaceContractValidationError("AWS node configuration mapping must be one-to-one")
+    if (
+        mapping.get("device_policy") != "observed_only"
+        or mapping.get("registration_source") != "site_registration_hardware_inventory"
+    ):
+        raise InterfaceContractValidationError(
+            "AWS node configuration device names must come from observed registration data"
+        )
+    if mapping != AWS_NODE_CONFIGURATION_MAPPING:
+        raise InterfaceContractValidationError("AWS node configuration mapping is incomplete")
+    if contract.get("invariants") != AWS_NODE_CONFIGURATION_INVARIANTS:
+        raise InterfaceContractValidationError(
+            "AWS node configuration single-node interface invariants are incomplete"
+        )
+    if contract.get("unsupported_reasons") != AWS_NODE_CONFIGURATION_UNSUPPORTED_REASONS:
+        raise InterfaceContractValidationError(
+            "AWS node configuration unsupported reasons are incomplete"
+        )
+    provenance = contract.get("provenance")
+    if not isinstance(provenance, dict):
+        raise InterfaceContractValidationError(
+            "AWS node configuration immutable provenance is incomplete"
+        )
+    provenance_valid = (
+        set(provenance)
+        == {
+            "source_commit",
+            "source_spec_sha256",
+            "probe_date",
+            "issue",
+            "evidence_receipt_sha256",
+        }
+        and isinstance(provenance.get("source_commit"), str)
+        and re.fullmatch(r"[0-9a-f]{40}", provenance["source_commit"]) is not None
+        and isinstance(provenance.get("source_spec_sha256"), str)
+        and re.fullmatch(r"[0-9a-f]{64}", provenance["source_spec_sha256"]) is not None
+        and isinstance(provenance.get("evidence_receipt_sha256"), str)
+        and re.fullmatch(r"[0-9a-f]{64}", provenance["evidence_receipt_sha256"]) is not None
+        and isinstance(provenance.get("probe_date"), str)
+        and re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", provenance["probe_date"]) is not None
+        and provenance.get("issue") == "f5-sales-demo/api-specs-enriched#1776"
+    )
+    if not provenance_valid:
+        raise InterfaceContractValidationError(
+            "AWS node configuration immutable provenance is incomplete"
+        )
 
 
 def validate_aws_telemetry_intake(intake: object) -> bool:
@@ -627,6 +743,7 @@ class InterfaceContractEnricher:
             raise InterfaceContractValidationError(f"{resource}: AWS availability is invalid")
 
         capabilities = self._required_object(profile, "capabilities", resource=resource)
+        node_configuration = profile.get("node_configuration")
         telemetry_intake = profile.get("telemetry_intake")
         if not isinstance(telemetry_intake, dict):
             raise InterfaceContractValidationError(
@@ -635,6 +752,10 @@ class InterfaceContractEnricher:
         telemetry_complete = validate_aws_telemetry_intake(telemetry_intake)
         validate_aws_v3_contract(profile)
         if availability == "schema_only":
+            if node_configuration is not None:
+                raise InterfaceContractValidationError(
+                    f"{resource}: schema-only AWS node configuration must fail closed"
+                )
             if not capabilities or set(capabilities.values()) != {"unavailable"}:
                 raise InterfaceContractValidationError(
                     f"{resource}: schema-only AWS capabilities must fail closed"
@@ -647,7 +768,13 @@ class InterfaceContractEnricher:
             raise InterfaceContractValidationError(
                 f"{resource}: AWS v3 capability model is incomplete or unavailable"
             )
-        elif not telemetry_complete:
+        elif node_configuration is None:
+            raise InterfaceContractValidationError(
+                f"{resource}: AWS node configuration contract is required"
+            )
+        else:
+            validate_aws_node_configuration(node_configuration)
+        if availability == "evidence_backed" and not telemetry_complete:
             raise InterfaceContractValidationError(
                 f"{resource}: AWS v3 requires completed telemetry intake"
             )
