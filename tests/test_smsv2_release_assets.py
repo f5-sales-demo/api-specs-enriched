@@ -71,6 +71,7 @@ def test_validates_stable_receipted_release(tmp_path: Path) -> None:
     assert contract["providers"]["aws"]["availability"] == "evidence_backed"
     assert contract["providers"]["aws"]["capabilities"] == {
         "aws_ce_create": "available",
+        "aws_node_configuration": "available",
         "runtime_status": "available",
         "site_upgrade": "available",
         "tgw_connect": "available",
@@ -192,6 +193,7 @@ def test_validates_schema_only_release_with_blocking_receipt(tmp_path: Path) -> 
     aws["availability"] = "schema_only"
     aws["capabilities"] = dict.fromkeys(aws["capabilities"], "unavailable")
     aws["unavailable_capabilities"] = list(aws["capabilities"])
+    aws.pop("node_configuration")
     aws["telemetry_intake"]["availability"] = "unavailable"
     aws["telemetry_intake"]["complete"] = False
     aws["evidence"]["receipts"] = [

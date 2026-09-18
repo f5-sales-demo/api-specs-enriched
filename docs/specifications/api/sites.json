@@ -99251,9 +99251,66 @@
               "interface_list_path": "aws.not_managed.node_list[].interface_list[]",
               "capabilities": {
                 "aws_ce_create": "available",
+                "aws_node_configuration": "available",
                 "runtime_status": "available",
                 "site_upgrade": "available",
                 "tgw_connect": "available"
+              },
+              "node_configuration": {
+                "availability": "evidence_backed",
+                "enforcement": "required",
+                "strategy": "discovery_rebuild",
+                "operation": {
+                  "method": "PUT",
+                  "path": "/api/config/namespaces/{metadata.namespace}/securemesh_site_v2s/{metadata.name}",
+                  "operation_id": "ves.io.schema.views.securemesh_site_v2.API.Replace",
+                  "request_schema": "securemesh_site_v2ReplaceRequest"
+                },
+                "field_paths": [
+                  "resource_version",
+                  "spec.aws.not_managed.node_list[]",
+                  "spec.aws.not_managed.node_list[].hostname",
+                  "spec.aws.not_managed.node_list[].interface_list[]",
+                  "spec.aws.not_managed.node_list[].interface_list[].ethernet_interface.device",
+                  "spec.aws.not_managed.node_list[].interface_list[].ethernet_interface.mac"
+                ],
+                "mapping": {
+                  "registration_source": "site_registration_hardware_inventory",
+                  "join_key": "normalized_mac",
+                  "cardinality": "one_to_one",
+                  "device_value_path": "interfaces[].device",
+                  "mac_value_path": "interfaces[].mac",
+                  "terraform_mac_source": "aws_network_interface.mac_address",
+                  "device_policy": "observed_only"
+                },
+                "invariants": {
+                  "node_count": 1,
+                  "ha": "disabled",
+                  "interface_count": 2,
+                  "interface_roles": [
+                    "slo",
+                    "sli"
+                  ],
+                  "interface_role_cardinality": "exactly_one_each",
+                  "mac_normalization": "ieee802_lowercase_colon",
+                  "device_source": "observed_registration_only"
+                },
+                "unsupported_reasons": {
+                  "direct_rebuild_mode_transition": "aws_node_configuration_discovery_rebuild_requires_distinct_site",
+                  "multi_node_or_ha_input": "aws_node_configuration_requires_single_non_ha_node",
+                  "missing_mapping": "aws_node_configuration_mapping_missing",
+                  "ambiguous_mapping": "aws_node_configuration_mapping_ambiguous",
+                  "malformed_mac": "aws_node_configuration_mac_malformed",
+                  "guessed_device": "aws_node_configuration_device_must_be_observed",
+                  "incomplete_request_semantics": "aws_node_configuration_request_semantics_incomplete"
+                },
+                "provenance": {
+                  "source_commit": "3be0310daf3658bc90383048cc18ab6447d18e35",
+                  "source_spec_sha256": "c6145b7096d7b08416732c8ebbd80e83be1902f73096ba08309e360d9a746eec",
+                  "probe_date": "2026-09-17",
+                  "issue": "f5-sales-demo/api-specs-enriched#1776",
+                  "evidence_receipt_sha256": "a5e423f8223bce56b83b74d0c546072984240761d392f15b664920e9fbfeec29"
+                }
               },
               "interface_identity": {
                 "fields": [
@@ -101301,9 +101358,66 @@
               "interface_list_path": "aws.not_managed.node_list[].interface_list[]",
               "capabilities": {
                 "aws_ce_create": "available",
+                "aws_node_configuration": "available",
                 "runtime_status": "available",
                 "site_upgrade": "available",
                 "tgw_connect": "available"
+              },
+              "node_configuration": {
+                "availability": "evidence_backed",
+                "enforcement": "required",
+                "strategy": "discovery_rebuild",
+                "operation": {
+                  "method": "PUT",
+                  "path": "/api/config/namespaces/{metadata.namespace}/securemesh_site_v2s/{metadata.name}",
+                  "operation_id": "ves.io.schema.views.securemesh_site_v2.API.Replace",
+                  "request_schema": "securemesh_site_v2ReplaceRequest"
+                },
+                "field_paths": [
+                  "resource_version",
+                  "spec.aws.not_managed.node_list[]",
+                  "spec.aws.not_managed.node_list[].hostname",
+                  "spec.aws.not_managed.node_list[].interface_list[]",
+                  "spec.aws.not_managed.node_list[].interface_list[].ethernet_interface.device",
+                  "spec.aws.not_managed.node_list[].interface_list[].ethernet_interface.mac"
+                ],
+                "mapping": {
+                  "registration_source": "site_registration_hardware_inventory",
+                  "join_key": "normalized_mac",
+                  "cardinality": "one_to_one",
+                  "device_value_path": "interfaces[].device",
+                  "mac_value_path": "interfaces[].mac",
+                  "terraform_mac_source": "aws_network_interface.mac_address",
+                  "device_policy": "observed_only"
+                },
+                "invariants": {
+                  "node_count": 1,
+                  "ha": "disabled",
+                  "interface_count": 2,
+                  "interface_roles": [
+                    "slo",
+                    "sli"
+                  ],
+                  "interface_role_cardinality": "exactly_one_each",
+                  "mac_normalization": "ieee802_lowercase_colon",
+                  "device_source": "observed_registration_only"
+                },
+                "unsupported_reasons": {
+                  "direct_rebuild_mode_transition": "aws_node_configuration_discovery_rebuild_requires_distinct_site",
+                  "multi_node_or_ha_input": "aws_node_configuration_requires_single_non_ha_node",
+                  "missing_mapping": "aws_node_configuration_mapping_missing",
+                  "ambiguous_mapping": "aws_node_configuration_mapping_ambiguous",
+                  "malformed_mac": "aws_node_configuration_mac_malformed",
+                  "guessed_device": "aws_node_configuration_device_must_be_observed",
+                  "incomplete_request_semantics": "aws_node_configuration_request_semantics_incomplete"
+                },
+                "provenance": {
+                  "source_commit": "3be0310daf3658bc90383048cc18ab6447d18e35",
+                  "source_spec_sha256": "c6145b7096d7b08416732c8ebbd80e83be1902f73096ba08309e360d9a746eec",
+                  "probe_date": "2026-09-17",
+                  "issue": "f5-sales-demo/api-specs-enriched#1776",
+                  "evidence_receipt_sha256": "a5e423f8223bce56b83b74d0c546072984240761d392f15b664920e9fbfeec29"
+                }
               },
               "interface_identity": {
                 "fields": [
@@ -103294,9 +103408,66 @@
               "interface_list_path": "aws.not_managed.node_list[].interface_list[]",
               "capabilities": {
                 "aws_ce_create": "available",
+                "aws_node_configuration": "available",
                 "runtime_status": "available",
                 "site_upgrade": "available",
                 "tgw_connect": "available"
+              },
+              "node_configuration": {
+                "availability": "evidence_backed",
+                "enforcement": "required",
+                "strategy": "discovery_rebuild",
+                "operation": {
+                  "method": "PUT",
+                  "path": "/api/config/namespaces/{metadata.namespace}/securemesh_site_v2s/{metadata.name}",
+                  "operation_id": "ves.io.schema.views.securemesh_site_v2.API.Replace",
+                  "request_schema": "securemesh_site_v2ReplaceRequest"
+                },
+                "field_paths": [
+                  "resource_version",
+                  "spec.aws.not_managed.node_list[]",
+                  "spec.aws.not_managed.node_list[].hostname",
+                  "spec.aws.not_managed.node_list[].interface_list[]",
+                  "spec.aws.not_managed.node_list[].interface_list[].ethernet_interface.device",
+                  "spec.aws.not_managed.node_list[].interface_list[].ethernet_interface.mac"
+                ],
+                "mapping": {
+                  "registration_source": "site_registration_hardware_inventory",
+                  "join_key": "normalized_mac",
+                  "cardinality": "one_to_one",
+                  "device_value_path": "interfaces[].device",
+                  "mac_value_path": "interfaces[].mac",
+                  "terraform_mac_source": "aws_network_interface.mac_address",
+                  "device_policy": "observed_only"
+                },
+                "invariants": {
+                  "node_count": 1,
+                  "ha": "disabled",
+                  "interface_count": 2,
+                  "interface_roles": [
+                    "slo",
+                    "sli"
+                  ],
+                  "interface_role_cardinality": "exactly_one_each",
+                  "mac_normalization": "ieee802_lowercase_colon",
+                  "device_source": "observed_registration_only"
+                },
+                "unsupported_reasons": {
+                  "direct_rebuild_mode_transition": "aws_node_configuration_discovery_rebuild_requires_distinct_site",
+                  "multi_node_or_ha_input": "aws_node_configuration_requires_single_non_ha_node",
+                  "missing_mapping": "aws_node_configuration_mapping_missing",
+                  "ambiguous_mapping": "aws_node_configuration_mapping_ambiguous",
+                  "malformed_mac": "aws_node_configuration_mac_malformed",
+                  "guessed_device": "aws_node_configuration_device_must_be_observed",
+                  "incomplete_request_semantics": "aws_node_configuration_request_semantics_incomplete"
+                },
+                "provenance": {
+                  "source_commit": "3be0310daf3658bc90383048cc18ab6447d18e35",
+                  "source_spec_sha256": "c6145b7096d7b08416732c8ebbd80e83be1902f73096ba08309e360d9a746eec",
+                  "probe_date": "2026-09-17",
+                  "issue": "f5-sales-demo/api-specs-enriched#1776",
+                  "evidence_receipt_sha256": "a5e423f8223bce56b83b74d0c546072984240761d392f15b664920e9fbfeec29"
+                }
               },
               "interface_identity": {
                 "fields": [
