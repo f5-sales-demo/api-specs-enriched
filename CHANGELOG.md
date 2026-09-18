@@ -1,12 +1,12 @@
 # Changelog
 
-## Version 7.0.4 (2026-09-18)
+## Version 7.0.5 (2026-09-18)
 
 ### Version Information
-- **Full Version**: 7.0.4
+- **Full Version**: 7.0.5
 - **Upstream Timestamp**: unknown
 - **Upstream ETag**: unknown
-- **Enriched Version**: 7.0.4
+- **Enriched Version**: 7.0.5
 
 ### Release Type
 - **patch** release
@@ -45,7 +45,7 @@ docs/specifications/api/
 \`\`\`
 
 ### Download
-- ZIP Package: F5xc-api-(unknown-7.0.4).zip
+- ZIP Package: F5xc-api-(unknown-7.0.5).zip
 
 ### Source
 - Source: F5 Distributed Cloud OpenAPI specifications
