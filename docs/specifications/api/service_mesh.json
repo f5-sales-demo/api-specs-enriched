@@ -8727,26 +8727,21 @@
           "maurice"
         ],
         "x-f5xc-operation-metadata": {
-          "purpose": "Resource creation operation",
+          "purpose": "Resolve Customer Edge images by Site UID",
           "required_fields": [
-            "metadata.name",
-            "metadata.namespace"
+            "uids"
           ],
           "optional_fields": [],
           "field_docs": {},
           "conditions": {
             "prerequisites": [],
             "postconditions": [
-              "Software-os-version resource created",
-              "Resource assigned unique identifier"
+              "Requested data returned",
+              "Tenant state unchanged"
             ]
           },
-          "side_effects": {
-            "creates": [
-              "software-os-version"
-            ]
-          },
-          "danger_level": "medium",
+          "side_effects": {},
+          "danger_level": "low",
           "confirmation_required": false,
           "common_errors": [
             {
@@ -8785,16 +8780,12 @@
             "resource_usage": "low"
           }
         },
+        "x-f5xc-operation-role": "query",
+        "x-f5xc-terraform-name": "site_os_images",
         "x-f5xc-required-fields": [
-          "metadata.name",
-          "metadata.namespace"
+          "uids"
         ],
-        "x-f5xc-danger-level": "medium",
-        "x-f5xc-side-effects": {
-          "creates": [
-            "software-os-version"
-          ]
-        },
+        "x-f5xc-danger-level": "low",
         "x-f5xc-discovered-response-time": {
           "p50_ms": 1000,
           "p95_ms": 3000,
@@ -34412,7 +34403,7 @@
         "properties": {
           "uids": {
             "type": "array",
-            "description": "Configuration parameter for uids",
+            "description": "Observed Site object UIDs from the system Site collection. For SMSv2 select owner_view.kind equal to securemesh_site_v2 and join owner_view.uid to the exact Secure Mesh Site v2 configuration UID. These are not software-version IDs or configuration-object UIDs. Never fabricate an identifier or infer it from the site name.",
             "minItems": 1,
             "maxItems": 100,
             "items": {
@@ -34427,14 +34418,9 @@
               "ves.io.schema.rules.repeated.unique": "true",
               "ves.io.schema.rules.string.pattern": "^([0-9a-f]{8}-){1}([0-9a-f]{4}-){3}([0-9a-f]{12})$"
             },
-            "x-f5xc-example": "[\"00000000-0000-4000-8000-d36e055b3ea2\", \"00000000-0000-4000-8000-631b8bae734e\"]",
-            "x-validation-rules": {
-              "ves.io.schema.rules.message.required": "true",
-              "ves.io.schema.rules.repeated.max_items": "100",
-              "ves.io.schema.rules.repeated.min_items": "1",
-              "ves.io.schema.rules.repeated.unique": "true",
-              "ves.io.schema.rules.string.pattern": "^([0-9a-f]{8}-){1}([0-9a-f]{4}-){3}([0-9a-f]{12})$"
-            },
+            "uniqueItems": true,
+            "x-f5xc-description-short": "Observed Site object UIDs from the system Site collection.",
+            "x-f5xc-description-medium": "Observed Site object UIDs from the system Site collection. For SMSv2 select owner_view.kind equal to securemesh_site_v2 and join owner_view.uid to the exact Secure Mesh Site v2 configuration UID. These are not software-version IDs or configuration-object UIDs.",
             "x-f5xc-constraints": {
               "constraintType": "array",
               "category": "discovery",
@@ -34466,6 +34452,9 @@
           "example_yaml": "uids:\n- value"
         },
         "x-f5xc-cli-domain": "service_mesh",
+        "required": [
+          "uids"
+        ],
         "x-f5xc-namespace-profile": {
           "constraint": {
             "allowed": [
@@ -34493,7 +34482,35 @@
         "properties": {
           "images": {
             "type": "object",
-            "description": "Map of UID to image info.",
+            "description": "Mapping keyed by each requested Site UID. Reject missing mappings, nonempty error_description, or incomplete image fields before use.",
+            "additionalProperties": {
+              "type": "object",
+              "properties": {
+                "download_image_link": {
+                  "type": "string",
+                  "format": "uri",
+                  "description": "Download location for the image selected for this Site.",
+                  "x-f5xc-sensitive": true
+                },
+                "copy_image_name": {
+                  "type": "string",
+                  "description": "Provider-specific image name or download location.",
+                  "x-f5xc-sensitive": true
+                },
+                "image_md5_sum": {
+                  "type": "string",
+                  "pattern": "^[0-9a-fA-F]{32}$",
+                  "description": "MD5 digest used by the console to verify the image artifact."
+                },
+                "error_description": {
+                  "type": "string",
+                  "description": "Per-Site lookup failure; any nonempty value rejects the result.",
+                  "x-f5xc-sensitive": true
+                }
+              }
+            },
+            "x-f5xc-description-short": "Mapping keyed by each requested Site UID. Reject missing mappings, nonempty error_description, or incomplete image fields before use.",
+            "x-f5xc-description-medium": "Mapping keyed by each requested Site UID. Reject missing mappings, nonempty error_description, or incomplete image fields before use.",
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -34512,6 +34529,10 @@
           "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "service_mesh",
+        "required": [
+          "images"
+        ],
+        "x-f5xc-category": "Sites",
         "x-f5xc-namespace-profile": {
           "constraint": {
             "allowed": [

@@ -29,15 +29,22 @@ def test_image_download_operation_is_a_read_only_query() -> None:
             "resource": "maurice_config",
             "cardinality": {"exactly": 1},
             "enforcement": "server",
-            "availability": "external_tenant_prerequisite",
+            "availability": "unresolved_server_lookup",
+            "lookup_scope": "unknown",
+            "lookup_count": "unknown",
             "reason": (
-                "The tenant must contain exactly one maurice_config object before "
-                "the platform can issue a Customer Edge image download URL."
+                "The server reported a maurice_config lookup whose result was not "
+                "exactly one. Lookup scope, actual count, and corrective operation "
+                "remain unverified."
             ),
             "source": {
                 "kind": "runtime_api_error",
                 "operation": OPERATION_ID,
                 "immutable": True,
+                "receipt_path": "config/evidence/kvm-image-sequence-20260919.json",
+                "receipt_sha256": "5de747a7d201a3c5b9a20a689d5c6c11ab0489f883a8a6900b5236b98b88a965",
+                "source_commit": "5c33dcf51eb8bee24e2ca1856e32cb5fef2a286f",
+                "spec_sha256": "d056d904285a39889b66e3933b2ff0766eb1443649bdc5f81310bc27666d39e7",
             },
         },
     ]
@@ -50,7 +57,7 @@ def test_image_download_schema_marks_signed_urls_sensitive() -> None:
     response = schemas["registrationGetImageDownloadUrlResp"]
 
     assert request["properties"]["provider"]["x-ves-required"] == "true"
-    assert request["properties"]["provider"]["x-f5xc-recommended-value"] == "KVM"
+    assert request["properties"]["provider"]["x-f5xc-recommended-value"] == "kvm"
     assert request["properties"]["provider"]["x-f5xc-description-medium"] == (
         "Deployment platform identifier for the requested Customer Edge image."
     )
@@ -91,41 +98,49 @@ def test_release_catalog_publishes_the_query_schema_pair() -> None:
                 "resource": "maurice_config",
                 "cardinality": {"exactly": 1},
                 "enforcement": "server",
-                "availability": "external_tenant_prerequisite",
+                "availability": "unresolved_server_lookup",
+                "lookup_scope": "unknown",
+                "lookup_count": "unknown",
                 "reason": (
-                    "The tenant must contain exactly one maurice_config object before "
-                    "the platform can issue a Customer Edge image download URL."
+                    "The server reported a maurice_config lookup whose result was not "
+                    "exactly one. Lookup scope, actual count, and corrective operation "
+                    "remain unverified."
                 ),
                 "source": {
                     "kind": "runtime_api_error",
                     "operation": OPERATION_ID,
                     "immutable": True,
+                    "receipt_path": "config/evidence/kvm-image-sequence-20260919.json",
+                    "receipt_sha256": "5de747a7d201a3c5b9a20a689d5c6c11ab0489f883a8a6900b5236b98b88a965",
+                    "source_commit": "5c33dcf51eb8bee24e2ca1856e32cb5fef2a286f",
+                    "spec_sha256": "d056d904285a39889b66e3933b2ff0766eb1443649bdc5f81310bc27666d39e7",
                 },
             },
         ],
     }
 
 
-def test_cloud_init_operation_is_a_site_scoped_sensitive_issuance() -> None:
+def test_cloud_init_operation_is_a_sensitive_template_query() -> None:
     spec = json.loads(TOKEN_SPEC_PATH.read_text())
     operation = spec["paths"]["/api/register/namespaces/system/get-cloud-init-config"]["get"]
     response = spec["components"]["schemas"]["tokenGetCloudInitConfigResp"]
 
     assert operation["operationId"] == CLOUD_INIT_OPERATION_ID
-    assert operation["x-f5xc-operation-role"] == "issuance"
+    assert operation["x-f5xc-operation-role"] == "query"
     assert operation["x-f5xc-terraform-name"] == "site_cloud_init"
     assert operation["x-f5xc-required-fields"] == ["provider", "site_name"]
-    assert operation["x-f5xc-danger-level"] == "medium"
-    assert operation["x-f5xc-side-effects"] == {"creates": ["site_node_token"]}
+    assert operation["x-f5xc-danger-level"] == "low"
+    assert "x-f5xc-side-effects" not in operation
     assert response["x-f5xc-terraform-resource"] == "xcsh_site_cloud_init"
     assert response["x-f5xc-category"] == "Sites"
     assert response["properties"]["cloud_init_config"]["x-f5xc-sensitive"] is True
     assert response["properties"]["cloud_init_config"]["x-f5xc-description-medium"] == (
-        "Complete cloud-init containing the site-scoped one-time node token."
+        "Cloud-init template with an unresolved token placeholder; substitute "
+        "a separately issued site-bound JWT before deployment."
     )
 
 
-def test_release_catalog_publishes_the_cloud_init_issuance() -> None:
+def test_release_catalog_publishes_the_cloud_init_query() -> None:
     catalog = json.loads(CATALOG_PATH.read_text())
     token = next(
         identity
@@ -144,6 +159,6 @@ def test_release_catalog_publishes_the_cloud_init_issuance() -> None:
         "operationId": CLOUD_INIT_OPERATION_ID,
         "surface": "register",
         "responseSchema": "tokenGetCloudInitConfigResp",
-        "role": "issuance",
+        "role": "query",
         "terraformName": "site_cloud_init",
     }

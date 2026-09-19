@@ -115,7 +115,7 @@ class TestSchemaOverrideEnricher:
         schemas = enricher.enrich_spec(spec)["components"]["schemas"]
         request = schemas["registrationGetImageDownloadUrlReq"]
         schema = schemas["registrationGetImageDownloadUrlResp"]
-        assert request["properties"]["provider"]["x-f5xc-recommended-value"] == "KVM"
+        assert request["properties"]["provider"]["x-f5xc-recommended-value"] == "kvm"
         assert request["properties"]["provider"]["x-f5xc-description-medium"].startswith(
             "Deployment platform identifier"
         )

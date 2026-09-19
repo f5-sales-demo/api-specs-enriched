@@ -559,6 +559,8 @@ operation_level:
       cardinality: "Required cardinality constraint"
       enforcement: "Where the prerequisite is enforced"
       availability: "Whether a consumer can manage the prerequisite"
+      lookup_scope: "Unknown unless independently proven by immutable evidence"
+      lookup_count: "Unknown when a runtime error only reports a cardinality mismatch"
       reason: "Actionable explanation of the requirement"
       source: "Immutable provenance for the requirement"
     example:
@@ -566,9 +568,18 @@ operation_level:
         resource: "maurice_config"
         cardinality: {exactly: 1}
         enforcement: "server"
-        availability: "external_tenant_prerequisite"
-        reason: "Tenant configuration must exist exactly once"
-        source: {kind: "runtime_api_error", immutable: true}
+        availability: "unresolved_server_lookup"
+        lookup_scope: "unknown"
+        lookup_count: "unknown"
+        reason: "The server reported a lookup cardinality mismatch; scope and count are unverified"
+        source:
+          kind: "runtime_api_error"
+          operation: "ves.io.schema.registration.CustomAPI.GetImageDownloadUrl"
+          immutable: true
+          receipt_path: config/evidence/kvm-image-sequence-20260919.json
+          receipt_sha256: 5de747a7d201a3c5b9a20a689d5c6c11ab0489f883a8a6900b5236b98b88a965
+          source_commit: 5c33dcf51eb8bee24e2ca1856e32cb5fef2a286f
+          spec_sha256: d056d904285a39889b66e3933b2ff0766eb1443649bdc5f81310bc27666d39e7
 
   x-f5xc-danger-level:
     type: string

@@ -27,6 +27,7 @@ from scripts.utils.interface_contract_enricher import (
     validate_aws_v3_contract,
     validate_azure_runtime_contract,
 )
+from scripts.utils.kvm_image_contract import validate_kvm_image_contract
 from scripts.utils.smsv2_bootstrap_contract import validate_bootstrap_contract
 
 CONTRACT_FILE = "smsv2-contract.json"
@@ -93,9 +94,21 @@ def _evidence(contract: dict[str, Any]) -> dict[str, Any]:
         "recorded_at": evidence.get("recorded_at"),
         "profiles": evidence.get("profiles"),
         "receipts": evidence.get("receipts"),
+        "kvm_image_resolution": _kvm_image_evidence(contract),
     }
     _assert_sanitized_evidence(receipt)
     return receipt
+
+
+def _kvm_image_evidence(contract: dict[str, Any]) -> dict[str, Any]:
+    image = contract.get("providers", {}).get("kvm", {}).get("image_resolution")
+    validate_kvm_image_contract(image)
+    provenance = image["provenance"]
+    source = Path(__file__).parents[1] / provenance["receipt_path"]
+    return {
+        "source_sha256": provenance["receipt_sha256"],
+        "receipt": json.loads(source.read_bytes()),
+    }
 
 
 def _assert_sanitized_evidence(value: object) -> None:
@@ -218,8 +231,15 @@ def validate_release_assets(
         raise Smsv2ReleaseValidationError("SMSv2 API authority is incomplete")
     try:
         validate_bootstrap_contract(contract.get("providers"))
+        validate_kvm_image_contract(
+            contract.get("providers", {}).get("kvm", {}).get("image_resolution")
+        )
     except (TypeError, ValueError) as error:
         raise Smsv2ReleaseValidationError(str(error)) from error
+    if evidence.get("kvm_image_resolution") != _kvm_image_evidence(contract):
+        raise Smsv2ReleaseValidationError(
+            "KVM image release evidence does not match its source receipt"
+        )
     try:
         validate_azure_runtime_contract(contract.get("providers", {}).get("azure"))
     except InterfaceContractValidationError as error:

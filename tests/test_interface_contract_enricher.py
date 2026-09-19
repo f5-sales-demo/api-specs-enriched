@@ -900,7 +900,7 @@ def test_api_contract_separates_bootstrap_schema_and_platform_evidence(
     assert aws["token"]["request_fields"] == {"spec.type": 1, "spec.site_name": "site_name"}
     assert aws["token"]["credential_response_path"] == "spec.content"
     assert aws["cloud_init"]["method"] == "GET"
-    assert aws["cloud_init"]["operation_role"] == "issuance"
+    assert aws["cloud_init"]["operation_role"] == "query"
     assert aws["cloud_init"]["response_path"] == "cloud_init_config"
     assert aws["material"]["preserve_paths"] == ["/etc/vpm/config.yaml"]
     assert aws["material"]["issued_path"] == "/etc/vpm/user_data"
@@ -946,7 +946,7 @@ def test_api_contract_separates_bootstrap_schema_and_platform_evidence(
         ("aws", "token", "site_response_path", None),
         ("aws", "token", "request_fields", {"spec.type": 0}),
         ("aws", "cloud_init", "method", "POST"),
-        ("aws", "cloud_init", "operation_role", "query"),
+        ("aws", "cloud_init", "operation_role", "issuance"),
         ("aws", "material", "preserve_paths", []),
         ("aws", "material", "reject_unresolved_placeholders", False),
         ("aws", "material", "reject_unresolved_placeholders", 1),

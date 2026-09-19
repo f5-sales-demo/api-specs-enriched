@@ -1,15 +1,21 @@
 enabled: true
 operations:
+  ves.io.schema.virtual_appliance.SoftwareVersionOsImageCustomApi.GetImage:
+    short: Resolve Customer Edge images by Site UID
+    medium: Resolve version-specific Customer Edge image locations and MD5 checksums for observed Site UIDs
+    long: 'Read-only Site-UID image resolution. Select Site objects owned by the exact Secure Mesh
+      Site v2 configuration through owner_view.kind and owner_view.uid. Reject per-item errors,
+      missing or ambiguous identity mappings, and incomplete image metadata'
   ves.io.schema.registration.CustomAPI.GetImageDownloadUrl:
     short: Retrieve signed Customer Edge image download URLs
     medium: Signed Customer Edge image and checksum URLs for a requested deployment platform
     long: 'Read-only Customer Edge image lookup returning signed download URLs for the platform image
       and its MD5 checksum without changing tenant configuration'
   ves.io.schema.token.CustomAPI.GetCloudInitConfig:
-    short: Issue site-scoped Customer Edge cloud-init
-    medium: Issue Customer Edge cloud-init containing a one-time node token for a Secure Mesh v2 site
-    long: 'Secure Mesh v2 credential issuance returning Customer Edge cloud-init with a new,
-      site-scoped one-time node token'
+    short: Retrieve Customer Edge cloud-init template
+    medium: Retrieve a Customer Edge cloud-init template for a Secure Mesh v2 site
+    long: 'Read-only cloud-init template retrieval. Substitute the unresolved token placeholder
+      with a separately issued site-bound JWT before deploying a Customer Edge node'
   ves.io.schema.registration.CustomAPI.List:
     short: List Customer Edge registrations
     medium: Customer Edge registration collection with optional report and label filters

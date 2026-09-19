@@ -236,12 +236,13 @@ overrides:
       - pattern: "^registrationGetImageDownloadUrlReq$"
         set_property_extensions:
           provider:
-            x-f5xc-recommended-value: "KVM"
+            x-f5xc-recommended-value: "kvm"
             x-f5xc-description-medium: >-
               Deployment platform identifier for the requested Customer Edge
               image.
       - pattern: "^registrationGetImageDownloadUrlResp$"
         inject_extensions:
+          required: [image_download_url, image_md5_download_url]
           x-f5xc-terraform-resource: "xcsh_site_image"
           x-f5xc-category: "Sites"
           x-f5xc-description-medium: >-
@@ -249,13 +250,69 @@ overrides:
             deployment platform.
         set_property_extensions:
           image_download_url:
+            minLength: 1
+            format: uri
             x-f5xc-sensitive: true
             x-f5xc-description-medium: >-
               Signed URL for the requested Customer Edge image.
           image_md5_download_url:
+            minLength: 1
+            format: uri
             x-f5xc-sensitive: true
             x-f5xc-description-medium: >-
               Signed URL for the requested Customer Edge image MD5 checksum.
+
+  site_uid_image_resolution:
+    upstream_issue: "f5-sales-demo/api-specs-enriched#1805"
+    description: >-
+      The current console resolves SMSv2 images through Site object UIDs, joined
+      to configuration objects by owner_view.uid. The upstream response omits
+      the image record fields. Console source and a zero-node Terraform probe
+      establish the request identity and response shape without token issuance.
+    schemas:
+      - pattern: "^virtual_applianceGetImageRequest$"
+        inject_extensions:
+          required: [uids]
+        set_property_extensions:
+          uids:
+            description: >-
+              Observed Site object UIDs from the system Site collection. For
+              SMSv2 select owner_view.kind equal to securemesh_site_v2 and join
+              owner_view.uid to the exact Secure Mesh Site v2 configuration UID.
+              These are not software-version IDs or configuration-object UIDs.
+              Never fabricate an identifier or infer it from the site name.
+            minItems: 1
+            maxItems: 100
+            uniqueItems: true
+      - pattern: "^virtual_applianceGetImageResponse$"
+        inject_extensions:
+          required: [images]
+          x-f5xc-category: "Sites"
+        set_property_extensions:
+          images:
+            description: >-
+              Mapping keyed by each requested Site UID. Reject missing mappings,
+              nonempty error_description, or incomplete image fields before use.
+            additionalProperties:
+              type: object
+              properties:
+                download_image_link:
+                  type: string
+                  format: uri
+                  description: Download location for the image selected for this Site.
+                  x-f5xc-sensitive: true
+                copy_image_name:
+                  type: string
+                  description: Provider-specific image name or download location.
+                  x-f5xc-sensitive: true
+                image_md5_sum:
+                  type: string
+                  pattern: "^[0-9a-fA-F]{32}$"
+                  description: MD5 digest used by the console to verify the image artifact.
+                error_description:
+                  type: string
+                  description: Per-Site lookup failure; any nonempty value rejects the result.
+                  x-f5xc-sensitive: true
 
   token_site_bound_jwt:
     canonical: true
@@ -304,25 +361,27 @@ overrides:
             readOnly: true
 
   token_cloud_init:
-    upstream_issue: "f5-sales-demo/api-specs-enriched#1485"
+    upstream_issue: "f5-sales-demo/api-specs-enriched#1805"
     description: >-
-      Secure Mesh v2 cloud-init contains a one-time site node token. Mark the
-      response sensitive and publish it as a generated create-once Terraform
-      resource.
+      Secure Mesh v2 cloud-init is a template with a token placeholder, not
+      token issuance. Keep the response sensitive for conservative handling
+      and publish it as a query through the operation-role contract.
     schemas:
       - pattern: "^tokenGetCloudInitConfigResp$"
         inject_extensions:
+          required: [cloud_init_config]
           x-f5xc-terraform-resource: "xcsh_site_cloud_init"
           x-f5xc-category: "Sites"
           x-f5xc-description-medium: >-
-            Site-scoped Customer Edge cloud-init containing a one-time Secure
-            Mesh v2 node registration token.
+            Customer Edge cloud-init template requiring a separately issued
+            site-bound node registration token.
         set_property_extensions:
           cloud_init_config:
+            minLength: 1
             x-f5xc-sensitive: true
             x-f5xc-description-medium: >-
-              Complete cloud-init containing the site-scoped one-time node
-              token.
+              Cloud-init template with an unresolved token placeholder; substitute
+              a separately issued site-bound JWT before deployment.
 
   secret_payloads:
     upstream_issue: "f5-sales-demo/api-specs-enriched#1492"

@@ -11,6 +11,15 @@ OPENAPI_PATH = REPO_ROOT / "docs" / "specifications" / "api" / "openapi.json"
 CATALOG_PATH = REPO_ROOT / "release" / "api-catalog.json"
 
 EXPECTED_OPERATIONS: dict[str, dict[str, Any]] = {
+    "ves.io.schema.virtual_appliance.SoftwareVersionOsImageCustomApi.GetImage": {
+        "role": "query",
+        "terraformName": "site_os_images",
+        "method": "POST",
+        "path": "/api/maurice/software_os_version",
+        "required": ["uids"],
+        "requestSchema": "virtual_applianceGetImageRequest",
+        "responseSchema": "virtual_applianceGetImageResponse",
+    },
     "ves.io.schema.registration.CustomAPI.GetImageDownloadUrl": {
         "role": "query",
         "terraformName": "site_image",
@@ -25,21 +34,28 @@ EXPECTED_OPERATIONS: dict[str, dict[str, Any]] = {
                 "resource": "maurice_config",
                 "cardinality": {"exactly": 1},
                 "enforcement": "server",
-                "availability": "external_tenant_prerequisite",
+                "availability": "unresolved_server_lookup",
+                "lookup_scope": "unknown",
+                "lookup_count": "unknown",
                 "reason": (
-                    "The tenant must contain exactly one maurice_config object before "
-                    "the platform can issue a Customer Edge image download URL."
+                    "The server reported a maurice_config lookup whose result was not "
+                    "exactly one. Lookup scope, actual count, and corrective operation "
+                    "remain unverified."
                 ),
                 "source": {
                     "kind": "runtime_api_error",
                     "operation": "ves.io.schema.registration.CustomAPI.GetImageDownloadUrl",
                     "immutable": True,
+                    "receipt_path": "config/evidence/kvm-image-sequence-20260919.json",
+                    "receipt_sha256": "5de747a7d201a3c5b9a20a689d5c6c11ab0489f883a8a6900b5236b98b88a965",
+                    "source_commit": "5c33dcf51eb8bee24e2ca1856e32cb5fef2a286f",
+                    "spec_sha256": "d056d904285a39889b66e3933b2ff0766eb1443649bdc5f81310bc27666d39e7",
                 },
             },
         ],
     },
     "ves.io.schema.token.CustomAPI.GetCloudInitConfig": {
-        "role": "issuance",
+        "role": "query",
         "terraformName": "site_cloud_init",
         "method": "GET",
         "path": "/api/register/namespaces/system/get-cloud-init-config",
@@ -154,9 +170,6 @@ def test_release_roles_preserve_side_effect_semantics() -> None:
         if expected["role"] in {"query", "collection"}:
             assert operation["x-f5xc-danger-level"] == "low"
             assert "x-f5xc-side-effects" not in operation
-        elif expected["role"] == "issuance":
-            assert operation["x-f5xc-danger-level"] == "medium"
-            assert operation["x-f5xc-side-effects"] == {"creates": ["site_node_token"]}
         else:
             assert operation["x-f5xc-danger-level"] == "medium"
             assert operation["x-f5xc-side-effects"] == {"modifies": ["site"]}
