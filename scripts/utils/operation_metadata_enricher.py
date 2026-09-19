@@ -15,6 +15,8 @@ Issue: #292 - Migrated from x-ves-* to x-f5xc-* namespace
 """
 
 import copy
+import hashlib
+import json
 import re
 from dataclasses import dataclass
 from pathlib import Path
@@ -266,6 +268,8 @@ class OperationMetadataEnricher:
         if side_effects:
             operation[f"{self.extension_prefix}-side-effects"] = side_effects
             self.stats.side_effects_documented += 1
+        elif operation_role in {"query", "collection"}:
+            operation.pop(f"{self.extension_prefix}-side-effects", None)
 
         # Build and add comprehensive metadata (dual-format approach)
         comprehensive_metadata = self._build_comprehensive_metadata(
@@ -383,6 +387,8 @@ class OperationMetadataEnricher:
                 "cardinality",
                 "enforcement",
                 "availability",
+                "lookup_scope",
+                "lookup_count",
                 "reason",
                 "source",
             }
@@ -403,11 +409,14 @@ class OperationMetadataEnricher:
                 isinstance(cardinality, dict)
                 and set(cardinality) == {"exactly"}
                 and isinstance(cardinality["exactly"], int)
+                and not isinstance(cardinality["exactly"], bool)
                 and cardinality["exactly"] >= 1
             )
             valid_availability = (
                 prerequisite["enforcement"] == "server"
-                and prerequisite["availability"] == "external_tenant_prerequisite"
+                and prerequisite["availability"] == "unresolved_server_lookup"
+                and prerequisite["lookup_scope"] == "unknown"
+                and prerequisite["lookup_count"] == "unknown"
             )
             valid_reason = isinstance(prerequisite["reason"], str) and bool(
                 prerequisite["reason"].strip()
@@ -417,6 +426,7 @@ class OperationMetadataEnricher:
                 and source.get("kind") == "runtime_api_error"
                 and source.get("operation") == operation_id
                 and source.get("immutable") is True
+                and OperationMetadataEnricher._valid_runtime_evidence(source)
             )
             if not all(
                 (
@@ -431,6 +441,34 @@ class OperationMetadataEnricher:
                 raise ValueError(f"operation {operation_id} has an invalid prerequisite contract")
             validated.append(copy.deepcopy(prerequisite))
         return validated
+
+    @staticmethod
+    def _valid_runtime_evidence(source: dict[str, Any]) -> bool:
+        """Bind unknown lookup semantics to a sanitized, immutable source receipt."""
+        patterns = {
+            "receipt_path": r"config/evidence/[a-z0-9-]+\.json",
+            "receipt_sha256": r"[a-f0-9]{64}",
+            "source_commit": r"[a-f0-9]{40}",
+            "spec_sha256": r"[a-f0-9]{64}",
+        }
+        if any(
+            not isinstance(source.get(key), str) or not re.fullmatch(pattern, source[key])
+            for key, pattern in patterns.items()
+        ):
+            return False
+        try:
+            raw = (Path(__file__).resolve().parents[2] / source["receipt_path"]).read_bytes()
+            evidence = json.loads(raw)
+        except (OSError, ValueError):
+            return False
+        return (
+            hashlib.sha256(raw).hexdigest() == source["receipt_sha256"]
+            and isinstance(evidence, dict)
+            and evidence.get("source_commit") == source["source_commit"]
+            and evidence.get("spec_sha256") == source["spec_sha256"]
+            and evidence.get("lookup_scope") == "unknown"
+            and evidence.get("lookup_count") == "unknown"
+        )
 
     def _build_comprehensive_metadata(
         self,

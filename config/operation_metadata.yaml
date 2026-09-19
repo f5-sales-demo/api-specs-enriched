@@ -46,10 +46,14 @@ side_effects:
     PATCH: 'modifies'
     DELETE: 'deletes'
 
-# POST operations that only retrieve data. HTTP method alone is insufficient to
+# Operations that only retrieve data. HTTP method alone is insufficient to
 # classify these: each entry is an evidence-backed exception keyed by the exact
 # operation identity published by F5.
 query_operations:
+  ves.io.schema.virtual_appliance.SoftwareVersionOsImageCustomApi.GetImage:
+    rationale: Resolves Customer Edge image metadata from observed Site object UIDs without changing tenant state
+    required_fields: [uids]
+    terraform_name: site_os_images
   ves.io.schema.registration.CustomAPI.GetImageDownloadUrl:
     rationale: Returns signed Customer Edge image URLs without changing tenant state
     required_fields: [provider]
@@ -60,22 +64,27 @@ query_operations:
         cardinality:
           exactly: 1
         enforcement: server
-        availability: external_tenant_prerequisite
+        availability: unresolved_server_lookup
+        lookup_scope: unknown
+        lookup_count: unknown
         reason: >-
-          The tenant must contain exactly one maurice_config object before the
-          platform can issue a Customer Edge image download URL.
+          The server reported a maurice_config lookup whose result was not
+          exactly one. Lookup scope, actual count, and corrective operation
+          remain unverified.
         source:
           kind: runtime_api_error
           operation: ves.io.schema.registration.CustomAPI.GetImageDownloadUrl
           immutable: true
+          receipt_path: config/evidence/kvm-image-sequence-20260919.json
+          receipt_sha256: 5de747a7d201a3c5b9a20a689d5c6c11ab0489f883a8a6900b5236b98b88a965
+          source_commit: 5c33dcf51eb8bee24e2ca1856e32cb5fef2a286f
+          spec_sha256: d056d904285a39889b66e3933b2ff0766eb1443649bdc5f81310bc27666d39e7
 
-# Operations that issue a new credential. These are not reads: consumers must
-# persist the first response and must not refresh the operation on every plan.
-issuance_operations:
+  # The live KVM response is a template with an unresolved Token placeholder.
+  # Token creation is a separate, site-bound JWT operation, not this GET.
   ves.io.schema.token.CustomAPI.GetCloudInitConfig:
-    rationale: Issues site-scoped Customer Edge cloud-init with a one-time node token
+    rationale: Returns a Customer Edge cloud-init template for a separately issued site-bound JWT
     required_fields: [provider, site_name]
-    creates: [site_node_token]
     terraform_name: site_cloud_init
 
 # Read-only operations whose response is a typed collection. These contracts

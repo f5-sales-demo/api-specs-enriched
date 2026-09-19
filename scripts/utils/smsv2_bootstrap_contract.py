@@ -31,7 +31,7 @@ AWS_BOOTSTRAP: dict[str, Any] = {
         "receipt_path": "config/evidence/aws-preboot-interface-api-20260908.json",
         "receipt_sha256": "b613d9fe858f58a36f3dc4dc7409ea95bafcb0669a70bda5d92cfd32abdb04eb",
     },
-    "sequence": ["site_create", "jwt_issue", "cloud_init_issue", "deploy", "registration"],
+    "sequence": ["site_create", "jwt_issue", "cloud_init_template", "deploy", "registration"],
     "token": {
         "method": "POST",
         "path": "/api/register/namespaces/system/tokens",
@@ -47,7 +47,7 @@ AWS_BOOTSTRAP: dict[str, Any] = {
         "method": "GET",
         "path": "/api/register/namespaces/system/get-cloud-init-config",
         "operation_id": "ves.io.schema.token.CustomAPI.GetCloudInitConfig",
-        "operation_role": "issuance",
+        "operation_role": "query",
         "query_fields": {
             "provider": "aws",
             "site_name": "site_name",
@@ -91,7 +91,7 @@ AZURE_BOOTSTRAP: dict[str, Any] = {
         "receipt_sha256": "ba3975c417a43e9e6a68d02bb51bec76bfe043aa1d1a756b199377be0f450e21",
         "runtime_acceptance": False,
     },
-    "sequence": ["site_create", "jwt_issue", "cloud_init_issue"],
+    "sequence": ["site_create", "jwt_issue", "cloud_init_template"],
     "token": {
         "method": "POST",
         "path": "/api/register/namespaces/system/tokens",
@@ -107,7 +107,7 @@ AZURE_BOOTSTRAP: dict[str, Any] = {
         "method": "GET",
         "path": "/api/register/namespaces/system/get-cloud-init-config",
         "operation_id": "ves.io.schema.token.CustomAPI.GetCloudInitConfig",
-        "operation_role": "issuance",
+        "operation_role": "query",
         "query_fields": {
             "provider": "azure",
             "site_name": "site_name",

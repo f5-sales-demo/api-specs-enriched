@@ -10,6 +10,7 @@ from typing import Any
 
 import yaml
 
+from scripts.utils.kvm_image_contract import validate_kvm_image_contract
 from scripts.utils.smsv2_bootstrap_contract import validate_bootstrap_contract
 
 from .extension_constants import X_F5XC_CE_AUTOMATION_CONTRACT
@@ -724,6 +725,7 @@ class InterfaceContractEnricher:
             raise InterfaceContractValidationError(f"{resource}: provider profiles must be objects")
         try:
             validate_bootstrap_contract(providers)
+            validate_kvm_image_contract(providers.get("kvm", {}).get("image_resolution"))
         except (TypeError, ValueError) as error:
             raise InterfaceContractValidationError(str(error)) from error
         self._validate_aws_profile(resource, aws)

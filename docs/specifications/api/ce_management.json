@@ -2988,7 +2988,7 @@
           "conditions": {
             "prerequisites": [
               "Active namespace",
-              "The tenant must contain exactly one maurice_config object before the platform can issue a Customer Edge image download URL."
+              "The server reported a maurice_config lookup whose result was not exactly one. Lookup scope, actual count, and corrective operation remain unverified."
             ],
             "postconditions": [
               "Requested data returned",
@@ -3045,12 +3045,18 @@
               "exactly": 1
             },
             "enforcement": "server",
-            "availability": "external_tenant_prerequisite",
-            "reason": "The tenant must contain exactly one maurice_config object before the platform can issue a Customer Edge image download URL.",
+            "availability": "unresolved_server_lookup",
+            "lookup_scope": "unknown",
+            "lookup_count": "unknown",
+            "reason": "The server reported a maurice_config lookup whose result was not exactly one. Lookup scope, actual count, and corrective operation remain unverified.",
             "source": {
               "kind": "runtime_api_error",
               "operation": "ves.io.schema.registration.CustomAPI.GetImageDownloadUrl",
-              "immutable": true
+              "immutable": true,
+              "receipt_path": "config/evidence/kvm-image-sequence-20260919.json",
+              "receipt_sha256": "5de747a7d201a3c5b9a20a689d5c6c11ab0489f883a8a6900b5236b98b88a965",
+              "source_commit": "5c33dcf51eb8bee24e2ca1856e32cb5fef2a286f",
+              "spec_sha256": "d056d904285a39889b66e3933b2ff0766eb1443649bdc5f81310bc27666d39e7"
             }
           }
         ],
@@ -29128,7 +29134,7 @@
             "x-ves-validation-rules": {
               "ves.io.schema.rules.message.required": "true"
             },
-            "x-f5xc-recommended-value": "KVM",
+            "x-f5xc-recommended-value": "kvm",
             "x-f5xc-description-medium": "Deployment platform identifier for the requested Customer Edge image.",
             "x-f5xc-example": "kvm",
             "x-validation-rules": {
@@ -29196,13 +29202,17 @@
             "description": "URL of image download.",
             "title": "Image Download Url",
             "x-displayname": "Image Download URL.",
+            "minLength": 1,
+            "format": "uri",
             "x-f5xc-sensitive": true,
             "x-f5xc-description-medium": "Signed URL for the requested Customer Edge image.",
             "maxLength": 1024,
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "general",
+              "minLength": 1,
               "maxLength": 1024,
+              "format": "uri",
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
@@ -29221,13 +29231,17 @@
             "description": "URL of image md5 download.",
             "title": "Image Md5 Download Url",
             "x-displayname": "Image Md5 Download URL.",
+            "minLength": 1,
+            "format": "uri",
             "x-f5xc-sensitive": true,
             "x-f5xc-description-medium": "Signed URL for the requested Customer Edge image MD5 checksum.",
             "maxLength": 1024,
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "general",
+              "minLength": 1,
               "maxLength": 1024,
+              "format": "uri",
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
@@ -29250,6 +29264,10 @@
           "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "ce_management",
+        "required": [
+          "image_download_url",
+          "image_md5_download_url"
+        ],
         "x-f5xc-terraform-resource": "xcsh_site_image",
         "x-f5xc-category": "Sites",
         "x-f5xc-description-medium": "Signed Customer Edge image and checksum URLs for a requested deployment platform.",

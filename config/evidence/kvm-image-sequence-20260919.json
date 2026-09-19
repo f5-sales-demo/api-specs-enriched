@@ -1,0 +1,60 @@
+{
+  "schema": "f5xc-kvm-image-sequence-evidence/v1",
+  "issue": "f5-sales-demo/api-specs-enriched#1805",
+  "probe_date": "2026-09-19",
+  "source_commit": "5c33dcf51eb8bee24e2ca1856e32cb5fef2a286f",
+  "spec_sha256": "d056d904285a39889b66e3933b2ff0766eb1443649bdc5f81310bc27666d39e7",
+  "tenant_alias": "expected_tenant",
+  "hypothesis": "site_and_bootstrap_sequence_enables_image_lookup",
+  "hypothesis_supported": false,
+  "phases": [
+    {
+      "alias": "baseline",
+      "observed_at": "2026-09-19T17:30:09.311966+00:00",
+      "http_status": 500,
+      "outcome": "maurice_lookup_cardinality_error",
+      "receipt_sha256": "089c8fcee9e636af42c4b6391cfa60bdbb780e09434c1c8a38529adce66189d2"
+    },
+    {
+      "alias": "site_created",
+      "observed_at": "2026-09-19T17:34:33.837993+00:00",
+      "http_status": 500,
+      "outcome": "maurice_lookup_cardinality_error",
+      "receipt_sha256": "4c2ef7293ee8b5d62d41bab69ff000501ac6954097bdbeca2c7c6c0fcaf94207"
+    },
+    {
+      "alias": "bootstrap_issued",
+      "observed_at": "2026-09-19T17:36:20.018307+00:00",
+      "http_status": 500,
+      "outcome": "maurice_lookup_cardinality_error",
+      "receipt_sha256": "4ca10381effe1d9a220dd9e30bdcea6b15d10d99376a4b41fa43957814e47bd7"
+    },
+    {
+      "alias": "site_removed",
+      "observed_at": "2026-09-19T17:37:34.898005+00:00",
+      "http_status": 500,
+      "outcome": "maurice_lookup_cardinality_error",
+      "receipt_sha256": "179cbe7d0e344622263923d99980b5855516d38a07bd5d3e19bdc13e4a8ecead"
+    }
+  ],
+  "bootstrap": {
+    "jwt_created_by_terraform": true,
+    "cloud_init_http_status": 200,
+    "modern_userdata_file_count": 1,
+    "unresolved_token_placeholder": true,
+    "associated_tokens_after_cloud_init": 1,
+    "raw_material_retained": false
+  },
+  "cleanup": {
+    "reviewed_terraform_destroy": true,
+    "site_get_status": 404,
+    "token_get_status": 404,
+    "associated_token_count": 0,
+    "terraform_resource_count": 0,
+    "compute_instances_created": 0,
+    "network_interfaces_created": 0
+  },
+  "lookup_scope": "unknown",
+  "lookup_count": "unknown",
+  "correction_verified": false
+}

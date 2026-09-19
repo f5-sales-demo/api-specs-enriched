@@ -1889,7 +1889,7 @@
           "register"
         ],
         "x-f5xc-operation-metadata": {
-          "purpose": "Issue site-scoped Customer Edge cloud-init",
+          "purpose": "Retrieve Customer Edge cloud-init template",
           "required_fields": [
             "provider",
             "site_name"
@@ -1901,16 +1901,12 @@
               "Active namespace"
             ],
             "postconditions": [
-              "One-time site node token issued",
-              "Credential returned only in the response"
+              "Requested data returned",
+              "Tenant state unchanged"
             ]
           },
-          "side_effects": {
-            "creates": [
-              "site_node_token"
-            ]
-          },
-          "danger_level": "medium",
+          "side_effects": {},
+          "danger_level": "low",
           "confirmation_required": false,
           "common_errors": [
             {
@@ -1949,18 +1945,13 @@
             "resource_usage": "moderate"
           }
         },
-        "x-f5xc-operation-role": "issuance",
+        "x-f5xc-operation-role": "query",
         "x-f5xc-terraform-name": "site_cloud_init",
         "x-f5xc-required-fields": [
           "provider",
           "site_name"
         ],
-        "x-f5xc-danger-level": "medium",
-        "x-f5xc-side-effects": {
-          "creates": [
-            "site_node_token"
-          ]
-        },
+        "x-f5xc-danger-level": "low",
         "x-discovered-response-time-ms": 153.29,
         "x-discovered-sample-size": 1,
         "x-f5xc-discovered-response-time": {
@@ -8163,12 +8154,14 @@
             "description": "Cloud-init config.",
             "title": "cloud-init config",
             "x-displayname": "Cloud-init config.",
+            "minLength": 1,
             "x-f5xc-sensitive": true,
-            "x-f5xc-description-medium": "Complete cloud-init containing the site-scoped one-time node token.",
+            "x-f5xc-description-medium": "Cloud-init template with an unresolved token placeholder; substitute a separately issued site-bound JWT before deployment.",
             "maxLength": 1024,
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "general",
+              "minLength": 1,
               "maxLength": 1024,
               "metadata": {
                 "source": "inferred",
@@ -8181,10 +8174,7 @@
               "create": false,
               "update": false,
               "read": false
-            },
-            "minLength": 279,
-            "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-16T03:54:27+00:00"
+            }
           }
         },
         "x-f5xc-minimum-configuration": {
@@ -8195,9 +8185,12 @@
           "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "users",
+        "required": [
+          "cloud_init_config"
+        ],
         "x-f5xc-terraform-resource": "xcsh_site_cloud_init",
         "x-f5xc-category": "Sites",
-        "x-f5xc-description-medium": "Site-scoped Customer Edge cloud-init containing a one-time Secure Mesh v2 node registration token.",
+        "x-f5xc-description-medium": "Customer Edge cloud-init template requiring a separately issued site-bound node registration token.",
         "x-f5xc-namespace-profile": {
           "constraint": {
             "allowed": [
