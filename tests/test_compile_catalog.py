@@ -131,7 +131,7 @@ def test_extract_parameters_namespace_gets_default():
     path = "/api/config/namespaces/{namespace}/http_loadbalancers"
     params = extract_parameters(path, {})
     ns_param = next(p for p in params if p["name"] == "namespace")
-    assert ns_param["default"] == "$F5XC_NAMESPACE"
+    assert ns_param["default"] == "$XCSH_NAMESPACE"
 
 
 def test_group_paths_by_resource():
@@ -167,6 +167,57 @@ def test_compile_catalog_structure():
     op_names = [op["name"] for op in cat["operations"]]
     assert "list_http_loadbalancers" in op_names
     assert "delete_http_loadbalancer" in op_names
+
+
+def test_compile_catalog_sanitizes_identity_values_in_minimum_payloads():
+    captured_namespace = "captured-" + "namespace"
+    captured_tenant = "captured-" + "tenant"
+    captured_first_name = "Cap" + "tured"
+    captured_last_name = "Per" + "son"
+    example = {
+        "namespace": captured_namespace,
+        "tenant": captured_tenant,
+        "first_name": captured_first_name,
+        "last_name": captured_last_name,
+    }
+    schema = {
+        "type": "object",
+        "properties": {key: {"type": "string"} for key in example},
+        "x-f5xc-minimum-configuration": {
+            "example_json": json.dumps(example),
+            "example_yaml": "\n".join(f"{key}: {value}" for key, value in example.items()),
+            "required_fields": list(example),
+        },
+    }
+    openapi = {
+        "openapi": "3.0.3",
+        "paths": {
+            "/api/config/namespaces/{namespace}/widgets": {
+                "post": {
+                    "operationId": "create_widget",
+                    "requestBody": {
+                        "content": {"application/json": {"schema": schema}},
+                    },
+                    "responses": {},
+                },
+            },
+        },
+    }
+
+    catalog = compile_catalog(openapi)
+    payload = catalog["categories"][0]["operations"][0]["minimumPayload"]["json"]
+
+    assert payload == {
+        "namespace": "default",
+        "tenant": "example-corp",
+        "first_name": "Example",
+        "last_name": "Example",
+    }
+    rendered = json.dumps(catalog)
+    assert captured_namespace not in rendered
+    assert captured_tenant not in rendered
+    assert captured_first_name not in rendered
+    assert captured_last_name not in rendered
 
 
 def test_compile_catalog_operation_fields():
@@ -421,7 +472,7 @@ def test_extract_parameters_normalizes_dotted_params():
     path = "/api/config/namespaces/{metadata.namespace}/http_loadbalancers"
     params = extract_parameters(path, {})
     ns_param = next(p for p in params if p["name"] == "namespace")
-    assert ns_param["default"] == "$F5XC_NAMESPACE"
+    assert ns_param["default"] == "$XCSH_NAMESPACE"
     assert ns_param["in"] == "path"
 
 

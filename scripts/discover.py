@@ -57,8 +57,8 @@ def load_config(config_path: Path) -> dict:
 def get_default_config() -> dict:
     """Get default discovery configuration."""
     return {
-        "api_url": os.environ.get("F5XC_API_URL", ""),
-        "auth_token": os.environ.get("F5XC_API_TOKEN", ""),
+        "api_url": os.environ.get("XCSH_API_URL", ""),
+        "auth_token": os.environ.get("XCSH_API_TOKEN", ""),
         "rate_limit": {
             "requests_per_second": 5,
             "burst_limit": 10,
@@ -82,13 +82,13 @@ def get_default_config() -> dict:
 
 def get_api_url(config: dict) -> str:
     """Get API URL from config or environment."""
-    url = os.environ.get("F5XC_API_URL") or config.get("api_url", "")
+    url = os.environ.get("XCSH_API_URL") or config.get("api_url", "")
     return url.rstrip("/")
 
 
 def get_auth_headers(config: dict) -> dict[str, str]:
     """Get authentication headers."""
-    token = os.environ.get("F5XC_API_TOKEN") or config.get("auth_token", "")
+    token = os.environ.get("XCSH_API_TOKEN") or config.get("auth_token", "")
     if token:
         return {"Authorization": f"APIToken {token}"}
     return {}
@@ -549,7 +549,7 @@ async def run_discovery(
     )
 
     if not session.api_url:
-        console.print("[red]Error: F5XC_API_URL not set[/red]")
+        console.print("[red]Error: XCSH_API_URL not set[/red]")
         session.errors.append("API URL not configured")
         return session
 

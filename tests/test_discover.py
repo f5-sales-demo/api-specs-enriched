@@ -62,7 +62,7 @@ discovery:
 
     @patch.dict(
         os.environ,
-        {"F5XC_API_URL": "https://env.example.com", "F5XC_API_TOKEN": "env-token"},
+        {"XCSH_API_URL": "https://env.example.com", "XCSH_API_TOKEN": "env-token"},
     )
     def test_get_default_config_uses_environment_variables(self):
         """Should populate defaults from environment variables."""
@@ -77,7 +77,7 @@ discovery:
 class TestAPIConfiguration:
     """Test API URL and authentication configuration."""
 
-    @patch.dict(os.environ, {"F5XC_API_URL": "https://env.example.com/"})
+    @patch.dict(os.environ, {"XCSH_API_URL": "https://env.example.com/"})
     def test_get_api_url_prefers_env_var(self):
         """Should prefer environment variable over config."""
         from scripts.discover import get_api_url
@@ -107,7 +107,7 @@ class TestAPIConfiguration:
 
         assert url == ""
 
-    @patch.dict(os.environ, {"F5XC_API_TOKEN": "test-token-123"})
+    @patch.dict(os.environ, {"XCSH_API_TOKEN": "test-token-123"})
     def test_get_auth_headers_uses_env_var(self):
         """Should use token from environment variable."""
         from scripts.discover import get_auth_headers
@@ -1031,7 +1031,7 @@ discovery:
 class TestURLandAuthConfiguration:
     """Test URL and authentication configuration edge cases."""
 
-    @patch.dict(os.environ, {"F5XC_API_URL": "https://env.example.com////"})
+    @patch.dict(os.environ, {"XCSH_API_URL": "https://env.example.com////"})
     def test_get_api_url_strips_multiple_trailing_slashes(self):
         """Should strip multiple trailing slashes."""
         from scripts.discover import get_api_url
@@ -1041,7 +1041,7 @@ class TestURLandAuthConfiguration:
 
         assert url.count("/") == 2  # Only in https://
 
-    @patch.dict(os.environ, {"F5XC_API_TOKEN": ""}, clear=True)
+    @patch.dict(os.environ, {"XCSH_API_TOKEN": ""}, clear=True)
     def test_get_auth_headers_handles_empty_token_string(self):
         """Should handle empty string token."""
         from scripts.discover import get_auth_headers
@@ -1388,7 +1388,7 @@ class TestAPIURLEdgeCases:
         assert url == "https://config.example.com"
         assert not url.endswith("/")
 
-    @patch.dict(os.environ, {"F5XC_API_URL": "https://env.example.com"})
+    @patch.dict(os.environ, {"XCSH_API_URL": "https://env.example.com"})
     def test_get_api_url_prefers_env_over_config(self):
         """Should prefer environment variable over config."""
         from scripts.discover import get_api_url
@@ -1404,7 +1404,7 @@ class TestAPIURLEdgeCases:
 class TestAuthHeadersEdgeCases:
     """Test authentication headers edge cases."""
 
-    @patch.dict(os.environ, {"F5XC_API_TOKEN": "simple-token"})
+    @patch.dict(os.environ, {"XCSH_API_TOKEN": "simple-token"})
     def test_get_auth_headers_returns_authorization_header(self):
         """Should return Authorization header with token."""
         from scripts.discover import get_auth_headers

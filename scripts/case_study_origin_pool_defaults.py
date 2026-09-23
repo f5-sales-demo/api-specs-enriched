@@ -7,8 +7,8 @@ to determine which fields are truly required vs have server-applied defaults.
 
 Usage:
     # Set credentials (staging environment)
-    export F5XC_API_URL="https://nferreira.staging.volterra.us"
-    export F5XC_API_TOKEN='your-token'
+    export XCSH_API_URL="https://nferreira.staging.volterra.us"
+    export XCSH_API_TOKEN='your-token'
 
     # Run the case study
     python -m scripts.case_study_origin_pool_defaults
@@ -811,13 +811,13 @@ async def main() -> int:
     )
 
     # Get credentials from environment
-    api_url = os.environ.get("F5XC_API_URL", "")
-    api_token = os.environ.get("F5XC_API_TOKEN", "")
+    api_url = os.environ.get("XCSH_API_URL", "")
+    api_token = os.environ.get("XCSH_API_TOKEN", "")
 
     if not api_url or not api_token:
         logger.error("Missing required environment variables:")
-        logger.error("  F5XC_API_URL - F5 XC API base URL")
-        logger.error("  F5XC_API_TOKEN - API authentication token")
+        logger.error("  XCSH_API_URL - F5 XC API base URL")
+        logger.error("  XCSH_API_TOKEN - API authentication token")
         return 1
 
     # Run case study

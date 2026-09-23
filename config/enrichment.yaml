@@ -76,15 +76,6 @@ branding:
     # Direct transformation: vesctl → xcsh (skipping f5xcctl intermediate step)
     # Also removes any existing f5xcctl references
 
-    # Environment variable transformations (must come first to handle F5XCCTL_ prefix)
-    - pattern: "\\bF5XCCTL_([A-Z_]+)\\b"
-      replacement: "XCSH_\\1"
-      case_sensitive: true
-
-    - pattern: "\\bVES_([A-Z_]+)\\b"
-      replacement: "F5XC_\\1"
-      case_sensitive: true
-
     # CLI tool name transformations
     - pattern: "\\bf5xcctl\\b"
       replacement: "xcsh"

@@ -31,10 +31,7 @@ sys.path.insert(0, str(REPO_ROOT))
 
 from scripts.discover_namespace_crud import get_api_client  # noqa: E402
 
-_HAVE_CREDS = bool(
-    (os.environ.get("F5XC_API_URL") or os.environ.get("XCSH_API_URL"))
-    and (os.environ.get("F5XC_API_TOKEN") or os.environ.get("XCSH_API_TOKEN"))
-)
+_HAVE_CREDS = bool(os.environ.get("XCSH_API_URL") and os.environ.get("XCSH_API_TOKEN"))
 
 pytestmark = [
     pytest.mark.live,

@@ -992,7 +992,7 @@ def calculate_complexity(path_count: int, schema_count: int) -> str:
 CLI_METADATA = {
     "virtual": {
         "quick_start": {
-            "command": "curl $F5XC_API_URL/api/config/namespaces/default/http_loadbalancers -H 'Authorization: APIToken $F5XC_API_TOKEN'",
+            "command": "curl $XCSH_API_URL/api/config/namespaces/default/http_loadbalancers -H 'Authorization: APIToken $XCSH_API_TOKEN'",
             "description": "List all HTTP load balancers in default namespace",
             "expected_output": "JSON array of load balancer objects with status",
         },
@@ -1003,12 +1003,12 @@ CLI_METADATA = {
                 "steps": [
                     {
                         "step": 1,
-                        "command": "curl -X POST $F5XC_API_URL/api/config/namespaces/default/origin_pools -H 'Authorization: APIToken $F5XC_API_TOKEN' -H 'Content-Type: application/json' -d '{...pool_config...}'",
+                        "command": "curl -X POST $XCSH_API_URL/api/config/namespaces/default/origin_pools -H 'Authorization: APIToken $XCSH_API_TOKEN' -H 'Content-Type: application/json' -d '{...pool_config...}'",
                         "description": "Create backend origin pool with target endpoints",
                     },
                     {
                         "step": 2,
-                        "command": "curl -X POST $F5XC_API_URL/api/config/namespaces/default/http_loadbalancers -H 'Authorization: APIToken $F5XC_API_TOKEN' -H 'Content-Type: application/json' -d '{...lb_config...}'",
+                        "command": "curl -X POST $XCSH_API_URL/api/config/namespaces/default/http_loadbalancers -H 'Authorization: APIToken $XCSH_API_TOKEN' -H 'Content-Type: application/json' -d '{...lb_config...}'",
                         "description": "Create HTTP load balancer pointing to origin pool",
                     },
                 ],
@@ -1029,7 +1029,7 @@ CLI_METADATA = {
                     "Requests timeout",
                 ],
                 "diagnosis_commands": [
-                    "curl $F5XC_API_URL/api/config/namespaces/default/http_loadbalancers/{name} -H 'Authorization: APIToken $F5XC_API_TOKEN'",
+                    "curl $XCSH_API_URL/api/config/namespaces/default/http_loadbalancers/{name} -H 'Authorization: APIToken $XCSH_API_TOKEN'",
                     "Check origin_pool status and endpoint connectivity",
                 ],
                 "solutions": [
@@ -1044,7 +1044,7 @@ CLI_METADATA = {
     },
     "dns": {
         "quick_start": {
-            "command": "curl $F5XC_API_URL/api/config/namespaces/default/dns_domains -H 'Authorization: APIToken $F5XC_API_TOKEN'",
+            "command": "curl $XCSH_API_URL/api/config/namespaces/default/dns_domains -H 'Authorization: APIToken $XCSH_API_TOKEN'",
             "description": "List all DNS domains configured in default namespace",
             "expected_output": "JSON array of DNS domain objects",
         },
@@ -1060,7 +1060,7 @@ CLI_METADATA = {
                     },
                     {
                         "step": 2,
-                        "command": "curl -X POST $F5XC_API_URL/api/config/namespaces/default/dns_domains -H 'Authorization: APIToken $F5XC_API_TOKEN' -H 'Content-Type: application/json' -d '{...dns_config...}'",
+                        "command": "curl -X POST $XCSH_API_URL/api/config/namespaces/default/dns_domains -H 'Authorization: APIToken $XCSH_API_TOKEN' -H 'Content-Type: application/json' -d '{...dns_config...}'",
                         "description": "Create DNS domain pointing to load balancer",
                     },
                 ],
@@ -1077,7 +1077,7 @@ CLI_METADATA = {
                 "problem": "DNS queries not resolving",
                 "symptoms": ["NXDOMAIN responses", "Timeout on DNS queries"],
                 "diagnosis_commands": [
-                    "curl $F5XC_API_URL/api/config/namespaces/default/dns_domains/{domain} -H 'Authorization: APIToken $F5XC_API_TOKEN'",
+                    "curl $XCSH_API_URL/api/config/namespaces/default/dns_domains/{domain} -H 'Authorization: APIToken $XCSH_API_TOKEN'",
                     "nslookup {domain} @ns-server",
                 ],
                 "solutions": [
@@ -1091,7 +1091,7 @@ CLI_METADATA = {
     },
     "api": {
         "quick_start": {
-            "command": "curl $F5XC_API_URL/api/config/namespaces/default/api_catalogs -H 'Authorization: APIToken $F5XC_API_TOKEN'",
+            "command": "curl $XCSH_API_URL/api/config/namespaces/default/api_catalogs -H 'Authorization: APIToken $XCSH_API_TOKEN'",
             "description": "List all API catalogs in default namespace",
             "expected_output": "JSON array of API catalog objects",
         },
@@ -1102,12 +1102,12 @@ CLI_METADATA = {
                 "steps": [
                     {
                         "step": 1,
-                        "command": "curl -X POST $F5XC_API_URL/api/config/namespaces/default/api_catalogs -H 'Authorization: APIToken $F5XC_API_TOKEN' -H 'Content-Type: application/json' -d '{...catalog_config...}'",
+                        "command": "curl -X POST $XCSH_API_URL/api/config/namespaces/default/api_catalogs -H 'Authorization: APIToken $XCSH_API_TOKEN' -H 'Content-Type: application/json' -d '{...catalog_config...}'",
                         "description": "Create API catalog for API discovery and documentation",
                     },
                     {
                         "step": 2,
-                        "command": "curl -X POST $F5XC_API_URL/api/config/namespaces/default/api_definitions -H 'Authorization: APIToken $F5XC_API_TOKEN' -H 'Content-Type: application/json' -d '{...api_config...}'",
+                        "command": "curl -X POST $XCSH_API_URL/api/config/namespaces/default/api_definitions -H 'Authorization: APIToken $XCSH_API_TOKEN' -H 'Content-Type: application/json' -d '{...api_config...}'",
                         "description": "Create API definition with security enforcement",
                     },
                 ],
@@ -1124,7 +1124,7 @@ CLI_METADATA = {
                 "problem": "API traffic blocked by security policy",
                 "symptoms": ["HTTP 403 Forbidden", "Requests rejected at edge"],
                 "diagnosis_commands": [
-                    "curl $F5XC_API_URL/api/config/namespaces/default/api_definitions/{api} -H 'Authorization: APIToken $F5XC_API_TOKEN'",
+                    "curl $XCSH_API_URL/api/config/namespaces/default/api_definitions/{api} -H 'Authorization: APIToken $XCSH_API_TOKEN'",
                     "Check security policy enforcement rules",
                 ],
                 "solutions": [
@@ -1138,7 +1138,7 @@ CLI_METADATA = {
     },
     "sites": {
         "quick_start": {
-            "command": "curl $F5XC_API_URL/api/config/namespaces/default/sites -H 'Authorization: APIToken $F5XC_API_TOKEN'",
+            "command": "curl $XCSH_API_URL/api/config/namespaces/default/sites -H 'Authorization: APIToken $XCSH_API_TOKEN'",
             "description": "List all configured sites in default namespace",
             "expected_output": "JSON array of site objects with deployment status",
         },
@@ -1149,12 +1149,12 @@ CLI_METADATA = {
                 "steps": [
                     {
                         "step": 1,
-                        "command": "curl -X POST $F5XC_API_URL/api/config/namespaces/default/cloud_credentials -H 'Authorization: APIToken $F5XC_API_TOKEN' -H 'Content-Type: application/json' -d '{...aws_credentials...}'",
+                        "command": "curl -X POST $XCSH_API_URL/api/config/namespaces/default/cloud_credentials -H 'Authorization: APIToken $XCSH_API_TOKEN' -H 'Content-Type: application/json' -d '{...aws_credentials...}'",
                         "description": "Create cloud credentials for AWS access",
                     },
                     {
                         "step": 2,
-                        "command": "curl -X POST $F5XC_API_URL/api/config/namespaces/default/sites -H 'Authorization: APIToken $F5XC_API_TOKEN' -H 'Content-Type: application/json' -d '{...site_config...}'",
+                        "command": "curl -X POST $XCSH_API_URL/api/config/namespaces/default/sites -H 'Authorization: APIToken $XCSH_API_TOKEN' -H 'Content-Type: application/json' -d '{...site_config...}'",
                         "description": "Create site definition for AWS deployment",
                     },
                 ],
@@ -1171,7 +1171,7 @@ CLI_METADATA = {
                 "problem": "Site deployment fails",
                 "symptoms": ["Status: Error", "Nodes not coming online", "Connectivity issues"],
                 "diagnosis_commands": [
-                    "curl $F5XC_API_URL/api/config/namespaces/default/sites/{site} -H 'Authorization: APIToken $F5XC_API_TOKEN'",
+                    "curl $XCSH_API_URL/api/config/namespaces/default/sites/{site} -H 'Authorization: APIToken $XCSH_API_TOKEN'",
                     "Check site events and node status",
                 ],
                 "solutions": [
@@ -1186,7 +1186,7 @@ CLI_METADATA = {
     },
     "system": {
         "quick_start": {
-            "command": "curl $F5XC_API_URL/api/config/system/namespaces -H 'Authorization: APIToken $F5XC_API_TOKEN'",
+            "command": "curl $XCSH_API_URL/api/config/system/namespaces -H 'Authorization: APIToken $XCSH_API_TOKEN'",
             "description": "List all namespaces in the F5 XC system",
             "expected_output": "JSON array of namespace objects",
         },
@@ -1197,12 +1197,12 @@ CLI_METADATA = {
                 "steps": [
                     {
                         "step": 1,
-                        "command": "curl -X POST $F5XC_API_URL/api/config/system/namespaces -H 'Authorization: APIToken $F5XC_API_TOKEN' -H 'Content-Type: application/json' -d '{...namespace_config...}'",
+                        "command": "curl -X POST $XCSH_API_URL/api/config/system/namespaces -H 'Authorization: APIToken $XCSH_API_TOKEN' -H 'Content-Type: application/json' -d '{...namespace_config...}'",
                         "description": "Create namespace with appropriate quotas",
                     },
                     {
                         "step": 2,
-                        "command": "curl -X POST $F5XC_API_URL/api/config/system/role_bindings -H 'Authorization: APIToken $F5XC_API_TOKEN' -H 'Content-Type: application/json' -d '{...role_config...}'",
+                        "command": "curl -X POST $XCSH_API_URL/api/config/system/role_bindings -H 'Authorization: APIToken $XCSH_API_TOKEN' -H 'Content-Type: application/json' -d '{...role_config...}'",
                         "description": "Assign RBAC roles to namespace users",
                     },
                 ],
@@ -1219,7 +1219,7 @@ CLI_METADATA = {
                 "problem": "Users cannot access namespace resources",
                 "symptoms": ["Permission denied errors", "Resources not visible"],
                 "diagnosis_commands": [
-                    "curl $F5XC_API_URL/api/config/system/namespaces/{ns} -H 'Authorization: APIToken $F5XC_API_TOKEN'",
+                    "curl $XCSH_API_URL/api/config/system/namespaces/{ns} -H 'Authorization: APIToken $XCSH_API_TOKEN'",
                     "Check RBAC role bindings for namespace",
                 ],
                 "solutions": [

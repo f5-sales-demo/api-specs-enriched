@@ -22,9 +22,9 @@ variables:
       - "example-corp"
       - "example-partners"
       - "example-company"
-    env_var: "F5XC_TENANT"
+    env_var: "XCSH_TENANT"
     notes: |
-      Default comes from F5XC_TENANT environment variable if set.
+      Default comes from XCSH_TENANT environment variable if set.
       Extracted from the api_url subdomain (e.g., tenant.console.ves.volterra.io).
       Required for multi-tenant deployments.
 
@@ -39,9 +39,9 @@ variables:
     enum:
       - "console.ves.volterra.io"
       - "staging.volterra.us"
-    env_var: "F5XC_CONSOLE_URL"
+    env_var: "XCSH_CONSOLE_URL"
     notes: |
-      Default comes from F5XC_CONSOLE_URL environment variable if set.
+      Default comes from XCSH_CONSOLE_URL environment variable if set.
       Encodes both environment (production/staging/custom) and hosting region.
       Part of the hostname structure: https://[tenant].[console_url]/...
 
@@ -57,9 +57,9 @@ variables:
       - "production"
       - "staging"
       - "development"
-    env_var: "F5XC_ENVIRONMENT"
+    env_var: "XCSH_ENVIRONMENT"
     notes: |
-      Default comes from F5XC_ENVIRONMENT environment variable if set.
+      Default comes from XCSH_ENVIRONMENT environment variable if set.
       Used for explicit environment selection and configuration.
       Can be combined with console_url for additional environment control.
 
@@ -71,9 +71,9 @@ variables:
       - "api"        # Standard API subdomain
       - "api-edge"   # Edge API variant
       - "internal"   # Internal API
-    env_var: "F5XC_DOMAIN_PREFIX"
+    env_var: "XCSH_DOMAIN_PREFIX"
     notes: |
-      Default comes from F5XC_DOMAIN_PREFIX environment variable if set.
+      Default comes from XCSH_DOMAIN_PREFIX environment variable if set.
       Supports industry-standard naming conventions (api, api-edge, etc).
       Available for advanced use cases and custom deployments.
 
@@ -87,9 +87,9 @@ variables:
       - "eu-west-1"
       - "eu-central-1"
       - "ap-northeast-1"
-    env_var: "F5XC_REGION"
+    env_var: "XCSH_REGION"
     notes: |
-      Default comes from F5XC_REGION environment variable if set.
+      Default comes from XCSH_REGION environment variable if set.
       Enables multi-region deployment patterns with geographic routing.
       Used for region-aware API configuration and failover strategies.
 
@@ -104,10 +104,10 @@ variables:
       - "feature-123"    # Feature branch namespace
       - "bugfix-456"     # Bugfix branch namespace
       - "staging"        # Staging environment namespace
-    env_var: "F5XC_DEFAULT_NAMESPACE"
+    env_var: "XCSH_DEFAULT_NAMESPACE"
     naming_pattern: "[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?"  # RFC 1123 compliant
     notes: |
-      Default comes from F5XC_DEFAULT_NAMESPACE environment variable if set.
+      Default comes from XCSH_DEFAULT_NAMESPACE environment variable if set.
       Supports Kubernetes-style namespace naming for environment separation.
       Enables zero-downtime deployments with namespace-based isolation.
 

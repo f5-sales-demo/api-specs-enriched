@@ -6,7 +6,7 @@ to distinguish between listable and creatable namespaces.
 
 Run manually, review output, update namespace_profile.yaml.
 
-Requires: F5XC_API_URL/XCSH_API_URL and F5XC_API_TOKEN/XCSH_API_TOKEN environment variables.
+Requires: XCSH_API_URL and XCSH_API_TOKEN environment variables.
 
 Usage:
     python scripts/discover_namespace_constraints.py [--output discovery_report.yaml]
@@ -33,13 +33,13 @@ NAMESPACE_TYPES_TO_TEST = ["system", "shared", "default"]
 def get_api_client() -> tuple[str, dict[str, str]]:
     """Return (base_url, headers) for the F5 XC API.
 
-    Supports both F5XC_API_* and XCSH_API_* environment variable prefixes.
+    Supports both XCSH_API_* and XCSH_API_* environment variable prefixes.
     """
-    url = os.environ.get("F5XC_API_URL") or os.environ.get("XCSH_API_URL", "")
-    token = os.environ.get("F5XC_API_TOKEN") or os.environ.get("XCSH_API_TOKEN", "")
+    url = os.environ.get("XCSH_API_URL", "")
+    token = os.environ.get("XCSH_API_TOKEN", "")
     if not url or not token:
         print(
-            "Error: Set F5XC_API_URL/XCSH_API_URL and F5XC_API_TOKEN/XCSH_API_TOKEN",
+            "Error: Set XCSH_API_URL and XCSH_API_TOKEN",
             file=sys.stderr,
         )
         sys.exit(1)

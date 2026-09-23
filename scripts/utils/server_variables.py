@@ -65,7 +65,7 @@ class ServerVariableHelper:
         """Get default value for a variable from config or environment.
 
         Priority:
-        1. Environment variable (F5XC_*)
+        1. Environment variable (XCSH_*)
         2. Config default value
         3. Hardcoded fallback
 

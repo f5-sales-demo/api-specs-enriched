@@ -81,8 +81,8 @@ DEFAULT_CONFIG = {
     "authentication": {
         "method": "api_token",
         "env_vars": {
-            "api_token": "F5XC_API_TOKEN",
-            "api_url": "F5XC_API_URL",
+            "api_token": "XCSH_API_TOKEN",
+            "api_url": "XCSH_API_URL",
         },
     },
     "scope": {
@@ -144,7 +144,7 @@ def get_auth_headers(config: dict) -> dict[str, str]:
     headers = {}
 
     # Check for API token
-    token_var = env_vars.get("api_token", "F5XC_API_TOKEN")
+    token_var = env_vars.get("api_token", "XCSH_API_TOKEN")
     token = os.environ.get(token_var)
     if token:
         headers["Authorization"] = f"APIToken {token}"
@@ -158,7 +158,7 @@ def get_base_url(config: dict) -> str:
     env_vars = auth_config.get("env_vars", {})
 
     # Check environment variable first
-    url_var = env_vars.get("api_url", "F5XC_API_URL")
+    url_var = env_vars.get("api_url", "XCSH_API_URL")
     url = os.environ.get(url_var)
     if url:
         return url.rstrip("/")
