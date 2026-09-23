@@ -289,13 +289,13 @@ def _result_to_dict(obj: Any) -> Any:
 
 
 async def _run(resource_type: str, dry_run: bool, output: str | None, rate: float) -> None:
-    api_url = os.environ.get("F5XC_API_URL", "")
-    api_token = os.environ.get("F5XC_API_TOKEN", "")
-    namespace = os.environ.get("F5XC_NAMESPACE", "r-mordasiewicz")
+    api_url = os.environ.get("XCSH_API_URL", "")
+    api_token = os.environ.get("XCSH_API_TOKEN", "")
+    namespace = os.environ.get("XCSH_NAMESPACE", "r-mordasiewicz")
 
     if not dry_run and not api_token:
         print(
-            "ERROR: F5XC_API_TOKEN not set. Use --dry-run or set credentials.",
+            "ERROR: XCSH_API_TOKEN not set. Use --dry-run or set credentials.",
             file=sys.stderr,
         )
         sys.exit(1)

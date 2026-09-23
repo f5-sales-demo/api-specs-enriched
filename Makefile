@@ -122,8 +122,8 @@ lint:
 
 # Validate specifications with live API (optional, requires credentials)
 validate:
-	@if [ -z "$$F5XC_API_TOKEN" ]; then \
-		echo "F5XC_API_TOKEN not set. Skipping live validation."; \
+	@if [ -z "$$XCSH_API_TOKEN" ]; then \
+		echo "XCSH_API_TOKEN not set. Skipping live validation."; \
 	else \
 		$(PYTHON) -m scripts.validate --dry-run; \
 	fi
@@ -134,16 +134,16 @@ validate-domains:
 
 # API Discovery - explore live API to find undocumented behavior
 discover:
-	@if [ -z "$$F5XC_API_TOKEN" ]; then \
-		echo "F5XC_API_TOKEN not set. Set credentials first."; \
+	@if [ -z "$$XCSH_API_TOKEN" ]; then \
+		echo "XCSH_API_TOKEN not set. Set credentials first."; \
 		exit 1; \
 	fi
 	$(PYTHON) -m scripts.discover
 
 # Discover specific namespace (usage: make discover-namespace NS=system)
 discover-namespace:
-	@if [ -z "$$F5XC_API_TOKEN" ]; then \
-		echo "F5XC_API_TOKEN not set. Set credentials first."; \
+	@if [ -z "$$XCSH_API_TOKEN" ]; then \
+		echo "XCSH_API_TOKEN not set. Set credentials first."; \
 		exit 1; \
 	fi
 	$(PYTHON) -m scripts.discover --namespace $(NS)
@@ -154,8 +154,8 @@ discover-dry-run:
 
 # CLI-only discovery using xcsh
 discover-cli:
-	@if [ -z "$$F5XC_API_TOKEN" ]; then \
-		echo "F5XC_API_TOKEN not set. Set credentials first."; \
+	@if [ -z "$$XCSH_API_TOKEN" ]; then \
+		echo "XCSH_API_TOKEN not set. Set credentials first."; \
 		exit 1; \
 	fi
 	$(PYTHON) -m scripts.discover --cli-only
@@ -185,9 +185,9 @@ push-discovery:
 discover-and-push: discover push-discovery
 
 # Constraint boundary audit targets
-audit: check-deps ## Probe healthcheck constraints against live API (requires F5XC_API_TOKEN)
-	@if [ -z "$$F5XC_API_TOKEN" ]; then \
-		echo "F5XC_API_TOKEN not set. Set credentials first."; \
+audit: check-deps ## Probe healthcheck constraints against live API (requires XCSH_API_TOKEN)
+	@if [ -z "$$XCSH_API_TOKEN" ]; then \
+		echo "XCSH_API_TOKEN not set. Set credentials first."; \
 		exit 1; \
 	fi
 	@mkdir -p reports/audit
@@ -292,7 +292,7 @@ help:
 	@echo "  validate-domains  Validate domain patterns against natural identifiers"
 	@echo ""
 	@echo "API Discovery (explore live API for undocumented behavior):"
-	@echo "  discover           Full API discovery (needs F5XC_API_TOKEN)"
+	@echo "  discover           Full API discovery (needs XCSH_API_TOKEN)"
 	@echo "  discover-namespace Discover specific namespace (NS=system)"
 	@echo "  discover-dry-run   List endpoints without making requests"
 	@echo "  discover-cli       CLI-only discovery using xcsh"

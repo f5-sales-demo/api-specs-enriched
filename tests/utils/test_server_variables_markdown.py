@@ -31,13 +31,13 @@ def temp_config():
                     "default": "test-corp",
                     "description": "Tenant identifier",
                     "examples": ["test-corp", "example-corp"],
-                    "env_var": "F5XC_TENANT",
+                    "env_var": "XCSH_TENANT",
                 },
                 "console_url": {
                     "default": "console.example.io",
                     "description": "Console URL base",
                     "examples": ["console.example.io", "staging.example.io"],
-                    "env_var": "F5XC_CONSOLE_URL",
+                    "env_var": "XCSH_CONSOLE_URL",
                 },
             },
             "github_branch_mapping": {
@@ -81,7 +81,7 @@ def test_render_variables_detailed_table(temp_config):
 
     assert "| Variable | Default | Examples | Environment Var |" in table
     assert "test-corp" in table
-    assert "F5XC_TENANT" in table
+    assert "XCSH_TENANT" in table
 
 
 def test_render_url_template_section(temp_config):

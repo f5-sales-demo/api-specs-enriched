@@ -10,6 +10,7 @@ Usage:
 """
 
 import argparse
+import copy
 import hashlib
 import json
 import os
@@ -18,23 +19,25 @@ import sys
 from pathlib import Path
 from typing import Any
 
+import yaml
+
 from scripts.utils.canonical_merge import canonical_merge_sources
-from scripts.utils.pii_sanitizer import sanitize_emails
+from scripts.utils.pii_sanitizer import sanitize_discovery_payload, sanitize_emails
 from scripts.utils.version_calculator import get_version_from_tags
 
 DEFAULT_INPUT = Path("specs/discovered/openapi.json")
 DEFAULT_OUTPUT = Path("release/api-catalog.json")
 
-F5XC_AUTH = {
+XCSH_AUTH = {
     "type": "api_token",
     "headerName": "Authorization",
     "headerTemplate": "APIToken {token}",
-    "tokenSource": "F5XC_API_TOKEN",
-    "baseUrlSource": "F5XC_API_URL",
+    "tokenSource": "XCSH_API_TOKEN",
+    "baseUrlSource": "XCSH_API_URL",
 }
 
-F5XC_DEFAULTS = {
-    "namespace": {"source": "F5XC_NAMESPACE"},
+XCSH_DEFAULTS = {
+    "namespace": {"source": "XCSH_NAMESPACE"},
 }
 
 _HTTP_METHODS = frozenset({"get", "post", "put", "patch", "delete", "options"})
@@ -181,7 +184,7 @@ def extract_parameters(path: str, operation: dict[str, Any]) -> list[dict[str, A
             "type": "string",
         }
         if name == "namespace":
-            param["default"] = "$F5XC_NAMESPACE"
+            param["default"] = "$XCSH_NAMESPACE"
         params.append(param)
 
     params.extend(
@@ -646,7 +649,8 @@ def _build_operation(
     aliases = operation.get("x-f5xc-operation-aliases")
     if aliases:
         op["operationAliases"] = list(aliases)
-    body_schema = _resolve_body_schema(operation, components)
+    resolved_body_schema = _resolve_body_schema(operation, components)
+    body_schema = copy.deepcopy(resolved_body_schema) if resolved_body_schema else None
     if body_schema:
         op["bodySchema"] = body_schema
     response_schema = extract_response_schema(operation, components)
@@ -658,7 +662,20 @@ def _build_operation(
         min_config = body_schema.get("x-f5xc-minimum-configuration")
         if min_config and min_config.get("example_json"):
             try:
-                parsed_json = json.loads(min_config["example_json"])
+                source_json = json.loads(min_config["example_json"])
+                parsed_json = sanitize_discovery_payload(source_json)
+                if parsed_json != source_json:
+                    min_config["example_json"] = json.dumps(
+                        parsed_json,
+                        ensure_ascii=False,
+                        separators=(",", ":"),
+                    )
+                    if min_config.get("example_yaml"):
+                        min_config["example_yaml"] = yaml.safe_dump(
+                            parsed_json,
+                            allow_unicode=True,
+                            sort_keys=False,
+                        ).rstrip()
                 errors = validate_payload_against_schema(parsed_json, body_schema, components)
                 if errors:
                     operation_id = operation.get("operationId") or f"{method.upper()} {path}"
@@ -1154,8 +1171,8 @@ def compile_catalog(openapi: dict[str, Any]) -> dict[str, Any]:
         "displayName": "F5 Distributed Cloud",
         "version": version,
         "specSource": "f5-sales-demo/api-specs-enriched",
-        "auth": F5XC_AUTH,
-        "defaults": F5XC_DEFAULTS,
+        "auth": XCSH_AUTH,
+        "defaults": XCSH_DEFAULTS,
         "categories": categories,
         "apiOperations": api_operations,
         "apiExclusions": api_exclusions,

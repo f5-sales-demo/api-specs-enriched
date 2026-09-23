@@ -540,11 +540,11 @@ def main(argv: Sequence[str] | None = None) -> int:
     rc = 1 if violations else 0
 
     if args.live_sample > 0:
-        api_url = os.environ.get("F5XC_API_URL")
-        api_token = os.environ.get("F5XC_API_TOKEN")
+        api_url = os.environ.get("XCSH_API_URL")
+        api_token = os.environ.get("XCSH_API_TOKEN")
         if not api_url or not api_token:
             print(
-                "live-sample requested but F5XC_API_URL/TOKEN not set; skipping",
+                "live-sample requested but XCSH_API_URL/TOKEN not set; skipping",
                 file=sys.stderr,
             )
         else:

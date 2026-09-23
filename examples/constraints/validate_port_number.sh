@@ -12,13 +12,13 @@
 set -e
 
 # F5 XC API credentials
-: "${F5XC_API_URL:?F5XC_API_URL not set}"
-: "${F5XC_API_TOKEN:?F5XC_API_TOKEN not set}"
-: "${F5XC_TENANT:?F5XC_TENANT not set}"
+: "${XCSH_API_URL:?XCSH_API_URL not set}"
+: "${XCSH_API_TOKEN:?XCSH_API_TOKEN not set}"
+: "${XCSH_TENANT:?XCSH_TENANT not set}"
 
 # Test namespace
-NAMESPACE="${F5XC_NAMESPACE:-test}"
-API_BASE="${F5XC_API_URL}/api/config/namespaces/${NAMESPACE}"
+NAMESPACE="${XCSH_NAMESPACE:-test}"
+API_BASE="${XCSH_API_URL}/api/config/namespaces/${NAMESPACE}"
 
 echo "=========================================="
 echo "Port Number Constraint Validation Tests"
@@ -37,7 +37,7 @@ test_port() {
 
   # Create origin pool with the test port
   response=$(curl -s -w "\n%{http_code}" -X POST "${API_BASE}/origin_pools" \
-    -H "Authorization: APIToken ${F5XC_API_TOKEN}" \
+    -H "Authorization: APIToken ${XCSH_API_TOKEN}" \
     -H "Content-Type: application/json" \
     -d "{
             \"metadata\": {
@@ -69,7 +69,7 @@ test_port() {
     # Clean up
     if [ "$http_code" = "200" ]; then
       curl -s -X DELETE "${API_BASE}/origin_pools/${test_name}" \
-        -H "Authorization: APIToken ${F5XC_API_TOKEN}" >/dev/null
+        -H "Authorization: APIToken ${XCSH_API_TOKEN}" >/dev/null
       echo "  🧹 Cleaned up test resource"
     fi
   elif [ "$http_code" = "400" ]; then

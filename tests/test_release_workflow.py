@@ -17,7 +17,7 @@ def test_specification_validation_is_release_blocking() -> None:
     assert "run: python -m scripts.validate --dry-run" in validation_step
 
 
-def test_dry_run_validation_receives_no_f5xc_secrets() -> None:
+def test_dry_run_validation_receives_no_xcsh_secrets() -> None:
     """Offline validation must not receive unnecessary tenant credentials."""
 
     workflow = WORKFLOW.read_text(encoding="utf-8")
@@ -25,8 +25,8 @@ def test_dry_run_validation_receives_no_f5xc_secrets() -> None:
         "- name: Detect release-worthy changes", maxsplit=1
     )[0]
 
-    assert "F5XC_API_TOKEN" not in validation_step
-    assert "F5XC_API_URL" not in validation_step
+    assert "XCSH_API_TOKEN" not in validation_step
+    assert "XCSH_API_URL" not in validation_step
 
 
 def test_secret_consumers_are_bound_to_protected_environments() -> None:

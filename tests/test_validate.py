@@ -98,9 +98,9 @@ new_key: new_value
 class TestAuthenticationHeaders:
     """Test authentication header generation."""
 
-    @patch.dict(os.environ, {"F5XC_API_TOKEN": "test-token-12345"})
+    @patch.dict(os.environ, {"XCSH_API_TOKEN": "test-token-12345"})
     def test_get_auth_headers_uses_default_env_var(self):
-        """Should use F5XC_API_TOKEN by default."""
+        """Should use XCSH_API_TOKEN by default."""
         config = DEFAULT_CONFIG
 
         headers = get_auth_headers(config)
@@ -131,7 +131,7 @@ class TestAuthenticationHeaders:
 
         assert headers == {}
 
-    @patch.dict(os.environ, {"F5XC_API_TOKEN": ""})
+    @patch.dict(os.environ, {"XCSH_API_TOKEN": ""})
     def test_get_auth_headers_returns_empty_for_empty_token(self):
         """Should return empty dict when token is empty string."""
         config = DEFAULT_CONFIG
@@ -144,12 +144,12 @@ class TestAuthenticationHeaders:
 class TestBaseURLResolution:
     """Test API base URL resolution."""
 
-    @patch.dict(os.environ, {"F5XC_API_URL": "https://custom.api.com/"})
+    @patch.dict(os.environ, {"XCSH_API_URL": "https://custom.api.com/"})
     def test_get_base_url_prefers_env_var(self):
         """Should prefer environment variable over config."""
         config = {
             "api": {"base_url": "https://config.api.com"},
-            "authentication": {"env_vars": {"api_url": "F5XC_API_URL"}},
+            "authentication": {"env_vars": {"api_url": "XCSH_API_URL"}},
         }
 
         url = get_base_url(config)
@@ -177,10 +177,10 @@ class TestBaseURLResolution:
 
         assert url == "https://console.ves.volterra.io"
 
-    @patch.dict(os.environ, {"F5XC_API_URL": "https://api.com/trailing/slash/"})
+    @patch.dict(os.environ, {"XCSH_API_URL": "https://api.com/trailing/slash/"})
     def test_get_base_url_strips_trailing_slash(self):
         """Should strip trailing slashes from URL."""
-        config = {"authentication": {"env_vars": {"api_url": "F5XC_API_URL"}}}
+        config = {"authentication": {"env_vars": {"api_url": "XCSH_API_URL"}}}
 
         url = get_base_url(config)
 

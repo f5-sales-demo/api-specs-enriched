@@ -14,15 +14,15 @@
 set -e
 
 # F5 XC API credentials (set these environment variables)
-: "${F5XC_API_URL:?F5XC_API_URL not set}"
-: "${F5XC_API_TOKEN:?F5XC_API_TOKEN not set}"
-: "${F5XC_TENANT:?F5XC_TENANT not set}"
+: "${XCSH_API_URL:?XCSH_API_URL not set}"
+: "${XCSH_API_TOKEN:?XCSH_API_TOKEN not set}"
+: "${XCSH_TENANT:?XCSH_TENANT not set}"
 
 # Test namespace (use a test namespace, not production!)
-NAMESPACE="${F5XC_NAMESPACE:-test}"
+NAMESPACE="${XCSH_NAMESPACE:-test}"
 
 # Base API endpoint
-API_BASE="${F5XC_API_URL}/api/config/namespaces/${NAMESPACE}"
+API_BASE="${XCSH_API_URL}/api/config/namespaces/${NAMESPACE}"
 
 echo "=========================================="
 echo "DNS Label Constraint Validation Tests"
@@ -40,7 +40,7 @@ test_name() {
 
   # Create HTTP load balancer with the test name
   response=$(curl -s -w "\n%{http_code}" -X POST "${API_BASE}/http_loadbalancers" \
-    -H "Authorization: APIToken ${F5XC_API_TOKEN}" \
+    -H "Authorization: APIToken ${XCSH_API_TOKEN}" \
     -H "Content-Type: application/json" \
     -d "{
             \"metadata\": {
@@ -63,7 +63,7 @@ test_name() {
     # Clean up if we created it
     if [ "$http_code" = "200" ]; then
       curl -s -X DELETE "${API_BASE}/http_loadbalancers/${name}" \
-        -H "Authorization: APIToken ${F5XC_API_TOKEN}" >/dev/null
+        -H "Authorization: APIToken ${XCSH_API_TOKEN}" >/dev/null
       echo "  🧹 Cleaned up test resource"
     fi
   elif [ "$http_code" = "400" ]; then

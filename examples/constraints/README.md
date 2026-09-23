@@ -20,10 +20,10 @@ These scripts validate the constraints documented in `x-f5xc-constraints` extens
 Export your F5 XC credentials:
 
 ```bash
-export F5XC_API_URL="https://your-tenant.console.ves.volterra.io"
-export F5XC_API_TOKEN="your-api-token-here"
-export F5XC_TENANT="your-tenant-name"
-export F5XC_NAMESPACE="test"  # Use a test namespace!
+export XCSH_API_URL="https://your-tenant.console.ves.volterra.io"
+export XCSH_API_TOKEN="your-api-token-here"
+export XCSH_TENANT="your-tenant-name"
+export XCSH_NAMESPACE="test"  # Use a test namespace!
 ```
 
 **Security Note**: Never commit credentials to version control. Use environment variables or a secrets manager.
@@ -245,8 +245,8 @@ Test your own constraints:
 
 ```bash
 # Test custom pattern
-curl -X POST "${F5XC_API_URL}/api/config/namespaces/default/http_loadbalancers" \
-    -H "Authorization: APIToken ${F5XC_API_TOKEN}" \
+curl -X POST "${XCSH_API_URL}/api/config/namespaces/default/http_loadbalancers" \
+    -H "Authorization: APIToken ${XCSH_API_TOKEN}" \
     -H "Content-Type: application/json" \
     -d '{
         "metadata": {

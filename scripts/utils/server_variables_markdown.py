@@ -250,7 +250,7 @@ class ServerVariablesMarkdownHelper:
         content += "\n**Testing Notes**:\n\n"
         content += "- Tests execute against each configured variable value\n"
         content += "- Default values shown above are used for automated testing\n"
-        content += "- Environment variables (F5XC_*) can override defaults\n"
+        content += "- Environment variables (XCSH_*) can override defaults\n"
         content += "- Multi-environment testing validates across all namespaces\n"
 
         return BaseReporter.markdown_section(
