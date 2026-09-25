@@ -67,7 +67,7 @@ jobs:
     name: Check for Updates
     runs-on: managed-socketless
     outputs:
-      has_updates: ${{ steps.check.outputs.updated }}
+      has_updates: ${{ steps.check.outputs.updated == 'true' || steps.network-allowlist.outputs.updated == 'true' }}
       etag: ${{ steps.check.outputs.etag }}
     steps:
       - name: Checkout repository
@@ -135,6 +135,20 @@ jobs:
               exit $EXIT_CODE
             fi
           fi
+
+      - name: Check live F5 network allowlist
+        id: network-allowlist
+        if: github.event_name == 'schedule'
+        run: |
+          set +e
+          python -m scripts.network_allowlist --check
+          status=$?
+          set -e
+          case "$status" in
+            0) echo "updated=false" >> "$GITHUB_OUTPUT" ;;
+            1) echo "updated=true" >> "$GITHUB_OUTPUT" ;;
+            *) echo "::error::F5 network allowlist check failed"; exit "$status" ;;
+          esac
 
   sync-and-enrich:
     name: Sync and Enrich Specifications
@@ -262,6 +276,11 @@ jobs:
       - name: Generate constraint analysis report
         if: steps.check-discovery.outputs.has_full_discovery == 'true' && steps.enriched-cache.outputs.cache-hit != 'true'
         run: python -m scripts.analyze_constraints
+
+      # Always refetch after a core pipeline run or cache restore. A cache hit
+      # must never publish a previously fetched F5 inventory as current.
+      - name: Fetch and merge F5 network allowlist
+        run: python -m scripts.network_allowlist
 
       - name: Compile API catalog
         run: python -m scripts.compile_catalog --input docs/specifications/api/openapi.json --output release/api-catalog.json

@@ -40,6 +40,19 @@ stubby as long as the `### x-name` header exists and the
 
 ## Injected — spec-level (info section)
 
+### x-f5xc-network-allowlist
+
+- **Applied at:** info (canonical `openapi.json` only)
+- **Purpose:** Complete F5 network address and domain inventory for firewall and proxy allowlisting. The reference page supplies port, direction, and site-specific rules; this inventory alone is not a firewall rule set.
+- **Consumers:** multiple
+- **Value type:** object
+- **Value schema:** `{"source_url": "HTTPS URL", "sha256": "lowercase SHA-256 of sorted-key compact UTF-8 manifest JSON", "manifest": "validated F5 JSON object"}`
+- **Injected by:** scripts/network_allowlist.py
+- **Driven by config:** hardcoded F5 feed URL
+- **Example:** `"x-f5xc-network-allowlist": {"source_url": "https://docs.cloud.f5.com/docs-v2/downloads/platform/reference/network-cloud-ref/ips-domains.json", "sha256": "...", "manifest": {"manifest_type": "firewall_proxy_allowlist", "services": {}, "customer_edge": {}}}`
+- **Pass-through from upstream:** no
+
+
 ### x-f5xc-cli-domain
 
 - **Applied at:** info

@@ -41,7 +41,7 @@
 #       ├── openapi.json    (master combined spec)
 #       └── index.json      (spec metadata)
 
-.PHONY: all build clean install download download-force pipeline enrich normalize merge lint pylint validate validate-domains serve help check-deps venv pre-commit-install pre-commit-run pre-commit-uninstall discover discover-namespace discover-dry-run discover-cli enrich-with-discovery constraint-report build-enriched pipeline-enriched push-discovery discover-and-push api-viewer catalog test
+.PHONY: all build clean install download download-force pipeline pipeline-core network-allowlist enrich normalize merge lint pylint validate validate-domains serve help check-deps venv pre-commit-install pre-commit-run pre-commit-uninstall discover discover-namespace discover-dry-run discover-cli enrich-with-discovery constraint-report build-enriched pipeline-enriched push-discovery discover-and-push api-viewer catalog test
 
 # Virtual environment
 VENV := .venv
@@ -84,10 +84,16 @@ download:
 download-force:
 	$(PYTHON) -m scripts.download --force
 
-# Run unified pipeline (enrich → normalize → merge → api-viewer)
-pipeline:
+# Run deterministic source pipeline, then merge the current F5 allowlist.
+pipeline: pipeline-core
+	$(PYTHON) -m scripts.network_allowlist
+
+pipeline-core:
 	$(PYTHON) -m scripts.pipeline
 	$(PYTHON) -m scripts.generate_api_viewer
+
+network-allowlist:
+	$(PYTHON) -m scripts.network_allowlist
 
 # Individual steps (for debugging or development)
 enrich:
@@ -216,6 +222,7 @@ build-enriched: check-deps download discover pipeline-enriched
 pipeline-enriched:
 	$(PYTHON) -m scripts.pipeline
 	$(PYTHON) -m scripts.generate_api_viewer
+	$(PYTHON) -m scripts.network_allowlist
 	$(PYTHON) -m scripts.analyze_constraints
 
 # Serve documentation locally

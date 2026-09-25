@@ -36,6 +36,7 @@ X_F5XC_API_URL = "x-f5xc-api-url"
 X_F5XC_API_REFERENCE_URL = "x-f5xc-api-reference-url"
 X_F5XC_RESPONSE_TIME_MS = "x-f5xc-response-time-ms"
 X_F5XC_SUMMARY = "x-f5xc-summary"
+X_F5XC_NETWORK_ALLOWLIST = "x-f5xc-network-allowlist"
 
 # Domain-level extensions for operational knowledge (Issue #314)
 X_F5XC_BEST_PRACTICES = "x-f5xc-best-practices"
@@ -230,6 +231,7 @@ VALID_X_F5XC_EXTENSIONS = frozenset(
         X_F5XC_API_REFERENCE_URL,
         X_F5XC_RESPONSE_TIME_MS,
         X_F5XC_SUMMARY,
+        X_F5XC_NETWORK_ALLOWLIST,
         # Domain-level (Issue #314)
         X_F5XC_BEST_PRACTICES,
         X_F5XC_GUIDED_WORKFLOWS,
