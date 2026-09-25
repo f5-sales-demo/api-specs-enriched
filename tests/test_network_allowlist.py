@@ -26,7 +26,9 @@ def manifest() -> dict:
         },
         "customer_edge": {
             "defaults": {"dns_servers": ["8.8.8.8"]},
-            "site_types": {"secure_mesh_v2": {"egress_domain_rules": {"domains": [".ves.volterra.io"]}}},
+            "site_types": {
+                "secure_mesh_v2": {"egress_domain_rules": {"domains": [".ves.volterra.io"]}}
+            },
         },
     }
 
@@ -34,7 +36,9 @@ def manifest() -> dict:
 @pytest.fixture
 def spec_path(tmp_path: Path) -> Path:
     path = tmp_path / "openapi.json"
-    path.write_text(json.dumps({"openapi": "3.0.0", "info": {"title": "F5", "version": "1"}}) + "\n")
+    path.write_text(
+        json.dumps({"openapi": "3.0.0", "info": {"title": "F5", "version": "1"}}) + "\n"
+    )
     return path
 
 
@@ -42,7 +46,9 @@ def fake_fetch(monkeypatch: pytest.MonkeyPatch, payload: bytes, returncode: int 
     monkeypatch.setattr(
         allowlist.subprocess,
         "run",
-        lambda *args, **kwargs: subprocess.CompletedProcess(args[0], returncode, payload, b"HTTP failure"),
+        lambda *args, **kwargs: subprocess.CompletedProcess(
+            args[0], returncode, payload, b"HTTP failure"
+        ),
     )
 
 
@@ -55,9 +61,9 @@ def test_unchanged_and_changed_feed_preserve_manifest_and_list_order(
     extension = json.loads(first)["info"][allowlist.EXTENSION]
     assert extension["source_url"] == allowlist.SOURCE_URL
     assert extension["manifest"] == manifest
-    assert extension["manifest"]["services"]["regional_edges"]["regions"]["americas"]["ipv4_cidrs"] == [
-        "1.2.3.4/32", "5.6.7.8"
-    ]
+    assert extension["manifest"]["services"]["regional_edges"]["regions"]["americas"][
+        "ipv4_cidrs"
+    ] == ["1.2.3.4/32", "5.6.7.8"]
     assert extension["sha256"] == allowlist.digest(manifest)
     assert allowlist.update(spec_path) is False
     assert spec_path.read_bytes() == first
@@ -108,7 +114,11 @@ def test_malformed_or_unsupported_feed_fails_without_mutation(
     ],
 )
 def test_invalid_address_or_domain_fails_closed(
-    monkeypatch: pytest.MonkeyPatch, manifest: dict, spec_path: Path, path: tuple[str, ...], value: list[str]
+    monkeypatch: pytest.MonkeyPatch,
+    manifest: dict,
+    spec_path: Path,
+    path: tuple[str, ...],
+    value: list[str],
 ) -> None:
     node = manifest
     for part in path[:-1]:
@@ -151,9 +161,7 @@ def test_write_failure_keeps_original(
     assert not list(spec_path.parent.glob(".network-allowlist-*"))
 
 
-def test_duplicate_json_keys_are_rejected(
-    monkeypatch: pytest.MonkeyPatch, spec_path: Path
-) -> None:
+def test_duplicate_json_keys_are_rejected(monkeypatch: pytest.MonkeyPatch, spec_path: Path) -> None:
     fake_fetch(monkeypatch, b'{"manifest_type":"firewall_proxy_allowlist","manifest_type":"other"}')
     with pytest.raises(allowlist.AllowlistError, match="duplicate"):
         allowlist.update(spec_path)
@@ -177,9 +185,11 @@ def test_release_and_clean_rebuild_workflow_wiring() -> None:
     assert build_job.index("Run enrichment pipeline") < build_job.index(
         "Fetch and merge F5 network allowlist"
     )
-    assert build_job.index("Fetch and merge F5 network allowlist") < build_job.index(
-        "Compile API catalog"
-    ) < build_job.index("Validate specifications")
+    assert (
+        build_job.index("Fetch and merge F5 network allowlist")
+        < build_job.index("Compile API catalog")
+        < build_job.index("Validate specifications")
+    )
     assert "run: make pipeline-core PYTHON=python" in tests
     assert 'pop("x-f5xc-network-allowlist", None)' in tests
     assert "pipeline: pipeline-core\n\t$(PYTHON) -m scripts.network_allowlist" in makefile

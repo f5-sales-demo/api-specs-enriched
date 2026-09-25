@@ -26,11 +26,18 @@ MAX_BYTES = 1024 * 1024
 MAX_SECONDS = 15
 ADDRESS_FIELDS = frozenset({"ipv4_cidrs", "ipv4_ips", "dns_servers", "ntp_servers"})
 LIST_FIELDS = ADDRESS_FIELDS | {"domains"}
-SERVICE_TYPES = frozenset({
-    "regional_edges", "cdn", "secondary_dns_zone_transfer",
-    "global_log_receiver", "dnslb_health_checks",
-    "global_controller_sso_egress", "bot_defense", "data_intelligence",
-})
+SERVICE_TYPES = frozenset(
+    {
+        "regional_edges",
+        "cdn",
+        "secondary_dns_zone_transfer",
+        "global_log_receiver",
+        "dnslb_health_checks",
+        "global_controller_sso_egress",
+        "bot_defense",
+        "data_intelligence",
+    }
+)
 SITE_TYPES = frozenset({"secure_mesh_v2", "legacy"})
 SERVICE_FIELDS = {
     "regional_edges": "regions",
@@ -104,8 +111,13 @@ def _validate_tree(node: Any, path: str) -> int:
 def validate(manifest: Any) -> dict[str, Any]:
     """Validate the documented manifest envelope and every address leaf."""
     expected = {
-        "manifest_type", "schema_version", "manifest_version",
-        "generated_at", "reference", "services", "customer_edge",
+        "manifest_type",
+        "schema_version",
+        "manifest_version",
+        "generated_at",
+        "reference",
+        "services",
+        "customer_edge",
     }
     if not isinstance(manifest, dict) or set(manifest) != expected:
         raise AllowlistError("unsupported manifest envelope")
@@ -113,11 +125,18 @@ def validate(manifest: Any) -> dict[str, Any]:
         raise AllowlistError("unsupported manifest type")
     if manifest["schema_version"] != "1.0.0":
         raise AllowlistError("unsupported manifest schema version")
-    if not isinstance(manifest["manifest_version"], str) or not VERSION.fullmatch(manifest["manifest_version"]):
+    if not isinstance(manifest["manifest_version"], str) or not VERSION.fullmatch(
+        manifest["manifest_version"]
+    ):
         raise AllowlistError("invalid manifest version")
-    if not isinstance(manifest["generated_at"], str) or not TIMESTAMP.fullmatch(manifest["generated_at"]):
+    if not isinstance(manifest["generated_at"], str) or not TIMESTAMP.fullmatch(
+        manifest["generated_at"]
+    ):
         raise AllowlistError("invalid generated_at")
-    if manifest["reference"] != "https://docs.cloud.f5.com/docs-v2/platform/reference/network-cloud-ref":
+    if (
+        manifest["reference"]
+        != "https://docs.cloud.f5.com/docs-v2/platform/reference/network-cloud-ref"
+    ):
         raise AllowlistError("unexpected manifest reference")
     services = manifest["services"]
     edge = manifest["customer_edge"]
@@ -153,19 +172,29 @@ def extension(manifest: dict[str, Any]) -> dict[str, Any]:
 def fetch() -> dict[str, Any]:
     """Fetch only HTTPS bytes, with curl-enforced total time and size bounds."""
     command = [
-        "curl", "--fail", "--silent", "--show-error", "--location",
-        "--proto", "=https", "--proto-redir", "=https",
-        "--max-time", str(MAX_SECONDS), "--max-filesize", str(MAX_BYTES),
+        "curl",
+        "--fail",
+        "--silent",
+        "--show-error",
+        "--location",
+        "--proto",
+        "=https",
+        "--proto-redir",
+        "=https",
+        "--max-time",
+        str(MAX_SECONDS),
+        "--max-filesize",
+        str(MAX_BYTES),
         SOURCE_URL,
     ]
     try:
-        result = subprocess.run(
-            command, capture_output=True, check=False, timeout=MAX_SECONDS + 5
-        )
+        result = subprocess.run(command, capture_output=True, check=False, timeout=MAX_SECONDS + 5)
     except (OSError, subprocess.TimeoutExpired) as exc:
         raise AllowlistError("F5 network allowlist retrieval failed") from exc
     if result.returncode != 0:
-        raise AllowlistError(f"F5 network allowlist HTTP retrieval failed (curl exit {result.returncode})")
+        raise AllowlistError(
+            f"F5 network allowlist HTTP retrieval failed (curl exit {result.returncode})"
+        )
     if not result.stdout or len(result.stdout) > MAX_BYTES:
         raise AllowlistError("F5 network allowlist response is empty or too large")
     try:
