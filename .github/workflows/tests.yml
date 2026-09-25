@@ -134,7 +134,7 @@ jobs:
         # enrich workflow installs and pins biome for the release path.
         env:
           API_SPECS_SKIP_BIOME: "1"
-        run: make pipeline PYTHON=python
+        run: make pipeline-core PYTHON=python
 
       # #1152: the pipeline just rebuilt every spec from the freshly downloaded
       # upstream seed, so this is the cheapest possible place to answer "is the
@@ -186,6 +186,11 @@ jobs:
               if not carries_build_version(doc):
                   return doc
               doc = dict(doc)
+              # The live F5 inventory is attached after the deterministic core rebuild.
+              # It is independently checked on the daily sync.
+              if isinstance(doc.get("info"), dict):
+                  doc["info"] = dict(doc["info"])
+                  doc["info"].pop("x-f5xc-network-allowlist", None)
               doc.pop("version", None)
               info = doc.get("info")
               if isinstance(info, dict):
