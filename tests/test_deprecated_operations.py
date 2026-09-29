@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -12,15 +12,15 @@ from scripts import enrich, pipeline
 from scripts.utils.deprecated_operations import HTTP_METHODS, remove_deprecated_operations
 
 
-def _operation(deprecated: object = None, *, include: bool = True) -> dict:
-    operation = {"responses": {"200": {"description": "ok"}}}
+def _operation(deprecated: object = None, *, include: bool = True) -> dict[str, Any]:
+    operation: dict[str, Any] = {"responses": {"200": {"description": "ok"}}}
     if include:
         operation["deprecated"] = deprecated
     return operation
 
 
 def test_removes_only_strictly_deprecated_http_operations_and_empty_paths() -> None:
-    spec = {
+    spec: dict[str, Any] = {
         "paths": {
             "/mixed": {
                 "parameters": [{"name": "id", "in": "path"}],

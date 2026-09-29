@@ -9,7 +9,7 @@ import os
 import re
 import tempfile
 from dataclasses import asdict, dataclass
-from datetime import UTC, date, datetime
+from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any
 from urllib.parse import quote
@@ -244,7 +244,7 @@ def load_acknowledgements(path: Path) -> dict[str, dict[str, str]]:
             raise UpstreamRemovalError(
                 f"acknowledgements[{index}] has invalid acknowledgement date"
             ) from error
-        if acknowledged_date > datetime.now(UTC).date():
+        if acknowledged_date > datetime.now(timezone.utc).date():
             raise UpstreamRemovalError(f"acknowledgements[{index}] is future-dated")
         if fingerprint in result:
             raise UpstreamRemovalError(f"duplicate acknowledgement: {fingerprint}")
@@ -289,7 +289,7 @@ def _receipt_identity(receipt: dict[str, Any]) -> dict[str, str]:
 
 def operation_inventory(document: dict[str, Any]) -> list[dict[str, str]]:
     """Return sorted path-plus-method identities for every HTTP operation."""
-    inventory = []
+    inventory: list[dict[str, str]] = []
     paths = document.get("paths", {})
     if not isinstance(paths, dict):
         return inventory
@@ -305,7 +305,7 @@ def operation_inventory(document: dict[str, Any]) -> list[dict[str, str]]:
 
 
 def _property_inventory(document: dict[str, Any]) -> dict[tuple[str, str], Any]:
-    inventory = {}
+    inventory: dict[tuple[str, str], Any] = {}
     schemas = document.get("components", {}).get("schemas", {})
     if not isinstance(schemas, dict):
         return inventory
