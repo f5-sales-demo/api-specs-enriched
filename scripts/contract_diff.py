@@ -27,6 +27,7 @@ from deepdiff import DeepDiff
 
 from scripts.utils.additive_allowlist import is_additive_change
 from scripts.utils.canonical_merge import canonical_merge_sources
+from scripts.utils.deprecated_operations import remove_deprecated_operations
 from scripts.utils.schema_override_enricher import (
     CONFIG_PATH as SCHEMA_OVERRIDES_PATH,
     SchemaOverrideEnricher,
@@ -296,6 +297,7 @@ def run_contract_diff(
         output_spec,
         declared_removals or (),
     )
+    remove_deprecated_operations(input_spec)
     # Normalize both sides: an allOf-wrapped $ref is semantically identical to a
     # direct $ref, and either spec may use either form. Flattening only the
     # output turned upstream-wrapped properties into a phantom `allOf` removal

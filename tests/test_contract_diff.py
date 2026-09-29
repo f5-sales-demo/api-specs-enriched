@@ -479,6 +479,23 @@ def test_multi_member_allof_is_not_flattened() -> None:
     assert run_contract_diff(input_spec, output_spec) != []
 
 
+def test_explicitly_deprecated_operation_removal_is_normalized() -> None:
+    deprecated = {
+        "deprecated": True,
+        "responses": {"200": {"description": "ok"}},
+    }
+    active = {"responses": {"200": {"description": "ok"}}}
+    input_spec = {
+        "paths": {
+            "/removed": {"post": deprecated},
+            "/mixed": {"get": deprecated, "put": active},
+        }
+    }
+    output_spec = {"paths": {"/mixed": {"put": active}}}
+
+    assert run_contract_diff(input_spec, output_spec) == []
+
+
 @pytest.mark.parametrize("wrapped", [False, True])
 def test_retargeted_ref_is_a_shape_change(wrapped: bool) -> None:
     def reference(name: str) -> dict:
