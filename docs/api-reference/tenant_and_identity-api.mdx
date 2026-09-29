@@ -9,7 +9,7 @@ Account view configurations and admin alert channels. One-time password resets, 
 
 - **Category**: Platform
 - **Complexity**: advanced
-- **Paths**: 184 | **Schemas**: 509
+- **Paths**: 190 | **Schemas**: 543
 - **Tier**: Standard
 - **Related domains**: `users`, `authentication`, `system`
 
@@ -50,6 +50,7 @@ Account view configurations and admin alert channels. One-time password resets, 
 | POST | `/api/waf/namespaces/&#123;namespace&#125;/authorization_servers/&#123;name&#125;/update` | Update Authorization Server. |
 | GET | `/api/web/namespaces/system/partner-management/child_tenants` | List of Child Tenants. |
 | POST | `/api/web/namespaces/system/partner-management/child_tenants/migrate` | Migrate Child Tenants. |
+| GET | `/api/web/namespaces/system/partner-management/customer_support/&#123;tp_id&#125;/comments` | GET comments. |
 | GET | `/api/web/namespaces/system/partner-management/customer_supports` | List all support tickets created in child tenant. |
 | POST | `/api/web/namespaces/system/partner-management/customer_supports` | Create customer support ticket in child tenant. |
 | GET | `/api/web/namespaces/system/partner-management/customer_supports/&#123;tp_id&#125;` | GET customer support ticket in child tenant. |
@@ -73,11 +74,17 @@ Account view configurations and admin alert channels. One-time password resets, 
 | DELETE | `/api/web/namespaces/&#123;namespace&#125;/child_tenant_managers/&#123;name&#125;` | DELETE Child Tenant Manager. |
 | GET | `/api/cloud-data/namespaces/system/cloud_user_accounts/&#123;cloud_user_account_name&#125;/onboarded_networks` | GET Onboarded Cloud Networks. |
 | GET | `/api/cloud-data/namespaces/system/cloud_user_accounts/&#123;cloud_user_account_name&#125;/validate` | Validates Cloud User Account. |
+| POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_user_accounts` | Specification. |
+| PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/cloud_user_accounts/&#123;metadata.name&#125;` | Specification. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_user_accounts` | List Cloud User Account. |
+| GET | `/api/config/namespaces/&#123;namespace&#125;/cloud_user_accounts/&#123;name&#125;` | Specification. |
+| DELETE | `/api/config/namespaces/&#123;namespace&#125;/cloud_user_accounts/&#123;name&#125;` | DELETE Cloud User Account. |
 | POST | `/api/web/namespaces/&#123;metadata.namespace&#125;/contacts` | Create Contact. |
 | PUT | `/api/web/namespaces/&#123;metadata.namespace&#125;/contacts/&#123;metadata.name&#125;` | Replace Contact. |
 | GET | `/api/web/namespaces/&#123;namespace&#125;/contacts` | List Contact. |
 | GET | `/api/web/namespaces/&#123;namespace&#125;/contacts/&#123;name&#125;` | GET Contact. |
 | DELETE | `/api/web/namespaces/&#123;namespace&#125;/contacts/&#123;name&#125;` | DELETE Contact. |
+| GET | `/api/web/namespaces/system/managed_client/customer_support/&#123;tp_id&#125;/comments` | GET comments. |
 | GET | `/api/web/namespaces/system/managed_client/customer_supports` | List tickets of managed tenant. |
 | POST | `/api/web/namespaces/system/managed_client/customer_supports` | Create customer support ticket in managed tenant. |
 | GET | `/api/web/namespaces/system/managed_client/customer_supports/&#123;tp_id&#125;` | GET customer support ticket in managed tenant. |
@@ -119,6 +126,7 @@ Account view configurations and admin alert channels. One-time password resets, 
 | POST | `/api/config/namespaces/&#123;namespace&#125;/dynamic-data` | Dynamic Data. |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/fast_acls_for_internet_vips` | GET FastACLs For Internet VIPs. |
 | POST | `/api/config/namespaces/&#123;namespace&#125;/fast_acls_for_internet_vips` | Set FastACLs For Internet VIPs. |
+| POST | `/api/config/namespaces/&#123;namespace&#125;/oidc_oauth_discovery` | OIDC OAuth Discovery. |
 | POST | `/api/web/namespaces/&#123;namespace&#125;/suggest-values` | Suggest Values. |
 | GET | `/api/web/namespaces/&#123;name&#125;` | GET Namespace. |
 | POST | `/api/web/namespaces/&#123;name&#125;/cascade_delete` | Cascade DELETE. |
@@ -217,7 +225,6 @@ Account view configurations and admin alert channels. One-time password resets, 
 | PUT | `/api/web/custom/namespaces/system/users/group_remove` | Remove user from groups. |
 | POST | `/api/web/custom/namespaces/&#123;namespace&#125;/accept_tos` | Accept TOS. |
 | POST | `/api/web/custom/namespaces/&#123;namespace&#125;/role_users` | Assign role to User. |
-| POST | `/api/web/custom/namespaces/&#123;namespace&#125;/send_password_email` | Send Password Email. |
 | GET | `/api/web/custom/namespaces/&#123;namespace&#125;/tos` | GET TOS |
 | GET | `/api/web/custom/namespaces/&#123;namespace&#125;/user_roles` | GET User and Role Assignments. |
 | POST | `/api/web/custom/namespaces/&#123;namespace&#125;/user_roles` | Create User with Role Assignment. |

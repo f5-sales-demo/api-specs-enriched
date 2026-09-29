@@ -43,7 +43,7 @@ resources:
         reason: "WAF enabled or disabled"
 
       - name: "bot_defense"
-        fields: ["spec.bot_defense", "spec.bot_defense_advanced", "spec.disable_bot_defense"]
+        fields: ["spec.bot_defense", "spec.bot_defense_advanced_protection", "spec.disable_bot_defense"]
         reason: "Bot defense enabled or disabled"
 
       - name: "rate_limit"
@@ -2047,7 +2047,7 @@ resources:
 
     mutually_exclusive_groups:
       - name: "provider_choice"
-        fields: ["spec.aws", "spec.azure", "spec.baremetal", "spec.equinix", "spec.gcp", "spec.kvm", "spec.nutanix", "spec.oci", "spec.openshift_virtualization", "spec.openstack", "spec.vmware"]
+        fields: ["spec.aws", "spec.azure", "spec.baremetal", "spec.eks_k8s", "spec.equinix", "spec.gcp", "spec.kvm", "spec.nutanix", "spec.oci", "spec.openshift_virtualization", "spec.openstack", "spec.vmware"]
         required: true
         reason: "Choose exactly one cloud provider"
       - name: "node_ha_choice"
@@ -2063,7 +2063,7 @@ resources:
         fields: ["spec.active_forward_proxy_policies", "spec.no_forward_proxy"]
         reason: "Forward proxy or none"
       - name: "enterprise_proxy_choice"
-        fields: ["spec.custom_proxy", "spec.f5_proxy"]
+        fields: ["spec.custom_proxy", "spec.f5_proxy", "spec.private_adn"]
         reason: "Proxy type"
       - name: "proxy_bypass_choice"
         fields: ["spec.custom_proxy_bypass", "spec.no_proxy_bypass"]

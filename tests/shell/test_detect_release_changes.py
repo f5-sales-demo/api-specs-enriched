@@ -105,6 +105,7 @@ def _release_asset_names(version: str = "2.1.0") -> list[str]:
         "smsv2-contract.json",
         "smsv2-evidence-receipt.json",
         "smsv2_parity_manifest.json",
+        "upstream-contract-changes.json",
         "upstream-contract-removals.json",
     ]
 

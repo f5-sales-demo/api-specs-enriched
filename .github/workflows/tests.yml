@@ -116,12 +116,17 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         # --force: .etag tracks version but specs/original/ is gitignored
         # and absent in CI. Without --force, download skips with 'No updates'.
-        run: python -m scripts.download --force
+        run: |
+          cp .github_release "$RUNNER_TEMP/previous-upstream-release.json"
+          python -m scripts.download --force
 
-      - name: Gate consecutive upstream contract removals
+      - name: Gate and report upstream contract changes
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python -m scripts.upstream_contract_removals
+        run: >-
+          python -m scripts.upstream_contract_removals
+          --previous-receipt "$RUNNER_TEMP/previous-upstream-release.json"
+          --current-receipt .github_release
 
       - name: Run enrichment pipeline
         # Override Makefile's PYTHON=.venv/bin/python since CI installs

@@ -9,7 +9,7 @@ Traffic distribution across regions with routing rules. Health checks and failov
 
 - **Category**: Networking
 - **Complexity**: advanced
-- **Paths**: 133 | **Schemas**: 837
+- **Paths**: 128 | **Schemas**: 855
 - **Tier**: Advanced
 - **Related domains**: `dns`, `service_policy`, `network`
 
@@ -52,6 +52,7 @@ Traffic distribution across regions with routing rules. Health checks and failov
 | POST | `/api/data/namespaces/&#123;namespace&#125;/app_security/events/aggregation` | Security Events Aggregation Query. |
 | GET | `/api/data/namespaces/&#123;namespace&#125;/app_security/events/scroll` | Security Event Scroll Query. |
 | POST | `/api/data/namespaces/&#123;namespace&#125;/app_security/events/scroll` | Security Event Scroll Query. |
+| POST | `/api/data/namespaces/&#123;namespace&#125;/app_security/evidence` | Security Evidence Query. |
 | POST | `/api/data/namespaces/&#123;namespace&#125;/app_security/incidents` | Security Incidents Query. |
 | POST | `/api/data/namespaces/&#123;namespace&#125;/app_security/incidents/aggregation` | Security Incidents Aggregation Query. |
 | GET | `/api/data/namespaces/&#123;namespace&#125;/app_security/incidents/scroll` | Security Incidents Scroll Query. |
@@ -62,14 +63,11 @@ Traffic distribution across regions with routing rules. Health checks and failov
 | POST | `/api/data/namespaces/&#123;namespace&#125;/app_security/suspicious_user_logs/aggregation` | Suspicious User Logs Aggregation Query. |
 | GET | `/api/data/namespaces/&#123;namespace&#125;/app_security/suspicious_user_logs/scroll` | Suspicious User Logs Scroll Query. |
 | POST | `/api/data/namespaces/&#123;namespace&#125;/app_security/suspicious_user_logs/scroll` | Suspicious User Logs Scroll Query. |
-| POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/api_endpoint_protection/suggestion` | Suggest API endpoint protection rule. |
 | POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/block_client/suggestion` | Suggest block client rule. |
-| POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/data_exposure/suggestion` | Suggest sensitive data rule. |
 | POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/ddos_mitigation/suggestion` | Suggest DDoS Mitigation rule. |
-| POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/oas_validation/suggestion` | Suggest Open API specification validation rule. |
-| POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/rate_limit/suggestion` | Suggest rate limit rule. |
 | POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/trust_client/suggestion` | Suggest trust client rule. |
 | POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/waf_exclusion/suggestion` | Suggest WAF Exclusion Rule. |
+| POST | `/api/waf/threats` | GET Threats. |
 | POST | `/api/config/namespaces/&#123;metadata.namespace&#125;/clusters` | Create Cluster. |
 | PUT | `/api/config/namespaces/&#123;metadata.namespace&#125;/clusters/&#123;metadata.name&#125;` | Replace Cluster. |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/clusters` | List Cluster. |
@@ -81,12 +79,7 @@ Traffic distribution across regions with routing rules. Health checks and failov
 | POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/get_security_config` | GET Security Config for HTTP Load Balancer. |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;` | GET HTTP Load Balancer. |
 | DELETE | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;` | DELETE Configure HTTP Load Balancer. |
-| POST | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/api_definitions/assign` | Assign API Definition. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/api_definitions/available` | List Available API Definitions. |
-| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/api_endpoints` | GET API Endpoints. |
 | GET | `/api/ml/data/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/api_endpoints/swagger_spec` | GET Swagger Spec for HTTP Load Balancer. |
-| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/api_inventory/api_endpoints/get_schema_updates` | GET API Endpoints Schema Updates. |
-| POST | `/api/ml/data/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/api_inventory/api_endpoints/update_schemas` | Update API Endpoints Schemas. |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/dos_automitigation_rules` | GET DoS Auto-Mitigation Rules for HTTP Load Balancer. |
 | DELETE | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/dos_automitigation_rules/&#123;dos_automitigation_rule_name&#125;` | DELETE DoS Auto-Mitigation Rule for HTTP Load Balancer. |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/http_loadbalancers/&#123;name&#125;/get-dns-info` | GET DNS Info. |
@@ -187,9 +180,11 @@ Traffic distribution across regions with routing rules. Health checks and failov
 | GET | `/api/config/namespaces/&#123;namespace&#125;/waf_exclusion_policys` | List WAF Exclusion Policy. |
 | GET | `/api/config/namespaces/&#123;namespace&#125;/waf_exclusion_policys/&#123;name&#125;` | GET WAF Exclusion Policy. |
 | DELETE | `/api/config/namespaces/&#123;namespace&#125;/waf_exclusion_policys/&#123;name&#125;` | DELETE WAF Exclusion Policy. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;vh_name&#125;/active_staged_signatures` | Active Staged Signatures. |
-| GET | `/api/config/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;vh_name&#125;/released_signatures` | Released Signatures. |
+| GET | `/api/waf/attack-signatures` | List Attack Signatures. |
+| GET | `/api/waf/bot-signatures` | List Bot Signatures. |
+| GET | `/api/waf/latest-signatures-version` | GET Latest Version. |
 | POST | `/api/ml/data/namespaces/&#123;namespace&#125;/virtual_hosts/&#123;vh_name&#125;/staged_signatures` | Staged Signatures. |
+| GET | `/api/waf/threat-campaigns` | List Threat Campaigns. |
 
 ## Links
 

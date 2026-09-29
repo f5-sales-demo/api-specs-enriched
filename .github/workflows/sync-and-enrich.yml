@@ -186,6 +186,9 @@ jobs:
       # A release-producing event must consume fresh upstream bytes. The old
       # specs/original cache could make a forced push or dispatch silently
       # enrich the previous upstream release.
+      - name: Snapshot consumed upstream receipt
+        run: cp .github_release "$RUNNER_TEMP/previous-upstream-release.json"
+
       - name: Download specifications from GitHub Releases
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -273,6 +276,16 @@ jobs:
         env:
           DISCOVERY_ENRICHMENT_ENABLED: ${{ steps.check-discovery.outputs.has_discovery }}
 
+      - name: Verify deprecated operation removal
+        run: |
+          operation_count=$(jq '[.paths[] | to_entries[] | select(.key | IN("get", "put", "post", "delete", "options", "head", "patch", "trace"))] | length' docs/specifications/api/openapi.json)
+          deprecated_count=$(jq '[.paths[] | to_entries[] | select((.key | IN("get", "put", "post", "delete", "options", "head", "patch", "trace")) and (.value.deprecated == true))] | length' docs/specifications/api/openapi.json)
+          echo "::notice::Published operation count: ${operation_count}"
+          test "$deprecated_count" -eq 0 || {
+            echo "::error::Published specification contains ${deprecated_count} deprecated operations"
+            exit 1
+          }
+
       - name: Generate constraint analysis report
         if: steps.check-discovery.outputs.has_full_discovery == 'true' && steps.enriched-cache.outputs.cache-hit != 'true'
         run: python -m scripts.analyze_constraints
@@ -285,10 +298,13 @@ jobs:
       - name: Compile API catalog
         run: python -m scripts.compile_catalog --input docs/specifications/api/openapi.json --output release/api-catalog.json
 
-      - name: Gate consecutive upstream contract removals
+      - name: Gate and report upstream contract changes
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python -m scripts.upstream_contract_removals
+        run: >-
+          python -m scripts.upstream_contract_removals
+          --previous-receipt "$RUNNER_TEMP/previous-upstream-release.json"
+          --current-receipt .github_release
 
       - name: Save enriched output cache
         if: steps.enriched-cache.outputs.cache-hit != 'true'
@@ -428,6 +444,7 @@ jobs:
           ORIG_SPECS=$(find specs/original -name '*.json' 2>/dev/null | wc -l | xargs)
           DOMAIN_COUNT=$(jq '.specifications | length' docs/specifications/api/index.json)
           PATH_COUNT=$(jq '[.specifications[].path_count] | add' docs/specifications/api/index.json)
+          OPERATION_COUNT=$(jq '[.paths[] | to_entries[] | select(.key | IN("get", "put", "post", "delete", "options", "head", "patch", "trace"))] | length' docs/specifications/api/openapi.json)
           SCHEMA_COUNT=$(jq '[.specifications[].schema_count] | add' docs/specifications/api/index.json)
 
           # Write changelog directly to avoid heredoc YAML parsing issues
@@ -462,6 +479,7 @@ jobs:
             echo "- Original specs: $ORIG_SPECS"
             echo "- Domains: $DOMAIN_COUNT"
             echo "- Total paths: $PATH_COUNT"
+            echo "- Total operations: $OPERATION_COUNT"
             echo "- Total schemas: $SCHEMA_COUNT"
 
             # Add discovery section if available
@@ -607,7 +625,7 @@ jobs:
           else
             # Create a new release PR only when this version has no prior PR.
             git checkout -b "$BRANCH"
-            git add -f CHANGELOG.md .github_release release/api-catalog.json docs/specifications/api/ docs/api-reference/
+            git add -f CHANGELOG.md .github_release release/api-catalog.json release/upstream-contract-removals.json release/upstream-contract-removals.md release/upstream-contract-changes.json release/upstream-contract-changes.md docs/specifications/api/ docs/api-reference/
             if git diff --staged --quiet; then
               echo "::error::Release detector requested v${VERSION}, but no generated output is staged"
               exit 1
@@ -767,6 +785,7 @@ jobs:
             docs/specifications/api/smsv2_parity_manifest.json
             release/api-catalog.json
             release/upstream-contract-removals.json
+            release/upstream-contract-changes.json
             release-package/smsv2-contract.json
             release-package/smsv2-evidence-receipt.json
             release-package/smsv2-contract-manifest.json
@@ -801,6 +820,8 @@ jobs:
             cat CHANGELOG.md
             printf '\n'
             cat release/upstream-contract-removals.md
+            printf '\n'
+            cat release/upstream-contract-changes.md
             printf '\n'
             cat "$RECEIPT_LINE_FILE"
           } > "$NOTES_FILE"

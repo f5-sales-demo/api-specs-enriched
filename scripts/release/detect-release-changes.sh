@@ -178,6 +178,7 @@ REQUIRED_RELEASE_ASSETS=(
   "smsv2-contract.json"
   "smsv2-evidence-receipt.json"
   "smsv2_parity_manifest.json"
+  "upstream-contract-changes.json"
   "upstream-contract-removals.json"
 )
 RELEASE_CONTRACT_CHANGED=false
@@ -207,7 +208,7 @@ while IFS= read -r file; do
   fi
 done < <(git diff --name-only HEAD -- "$OUTPUT_DIR")
 
-if [ "$SOURCE_CHANGED" = false ] && [ "$OUTPUT_CHANGED" = false ] && \
+if [ "$SOURCE_CHANGED" = false ] && [ "$OUTPUT_CHANGED" = false ] &&
   [ "$RELEASE_CONTRACT_CHANGED" = false ]; then
   emit "has_changes=false"
   echo "No release: generated output matches HEAD and upstream release is unchanged"

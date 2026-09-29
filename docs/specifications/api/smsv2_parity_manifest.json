@@ -2,7 +2,7 @@
   "version": "8.0.3",
   "resource": "securemesh_site_v2",
   "root_schema": "securemesh_site_v2CreateRequest",
-  "path_count": 1254,
+  "path_count": 1358,
   "paths": [
     {
       "path": "metadata",
@@ -96,7 +96,7 @@
       "create_required": false,
       "read_only": false,
       "write_only": false,
-      "schema": "network_firewallActiveEnhancedFirewallPoliciesType"
+      "schema": "schemanetwork_firewallActiveEnhancedFirewallPoliciesType"
     },
     {
       "path": "spec.active_enhanced_firewall_policies.enhanced_firewall_policies[]",
@@ -153,7 +153,7 @@
       "create_required": false,
       "read_only": false,
       "write_only": false,
-      "schema": "network_firewallActiveForwardProxyPoliciesType"
+      "schema": "schemanetwork_firewallActiveForwardProxyPoliciesType"
     },
     {
       "path": "spec.active_forward_proxy_policies.forward_proxy_policies[]",
@@ -3751,6 +3751,1089 @@
       "read_only": false,
       "write_only": false,
       "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.eks_k8s",
+      "wire_key": "eks_k8s",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "securemesh_site_v2KubernetesProviderType"
+    },
+    {
+      "path": "spec.eks_k8s.deployment_size",
+      "wire_key": "deployment_size",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "securemesh_site_v2KubernetesDeploymentSize",
+      "default": "KUBERNETES_DEPLOYMENT_SIZE_MEDIUM",
+      "enum": [
+        "KUBERNETES_DEPLOYMENT_SIZE_MEDIUM",
+        "KUBERNETES_DEPLOYMENT_SIZE_LARGE"
+      ]
+    },
+    {
+      "path": "spec.eks_k8s.disable_anti_affinity",
+      "wire_key": "disable_anti_affinity",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.eks_k8s.enable_anti_affinity",
+      "wire_key": "enable_anti_affinity",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "securemesh_site_v2PodAntiAffinityConfigType"
+    },
+    {
+      "path": "spec.eks_k8s.enable_anti_affinity.rules[]",
+      "wire_key": "rules",
+      "type": "array",
+      "cardinality": "list",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false,
+      "minItems": 1,
+      "maxItems": 20
+    },
+    {
+      "path": "spec.eks_k8s.enable_anti_affinity.rules[].label_key",
+      "wire_key": "label_key",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false,
+      "minLength": 1,
+      "maxLength": 253
+    },
+    {
+      "path": "spec.eks_k8s.enable_anti_affinity.rules[].label_value",
+      "wire_key": "label_value",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false,
+      "minLength": 1,
+      "maxLength": 63
+    },
+    {
+      "path": "spec.eks_k8s.enable_anti_affinity.rules[].topology_keys[]",
+      "wire_key": "topology_keys",
+      "type": "array",
+      "cardinality": "list",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false,
+      "minItems": 1,
+      "maxItems": 10
+    },
+    {
+      "path": "spec.eks_k8s.labels",
+      "wire_key": "labels",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.eks_k8s.not_managed",
+      "wire_key": "not_managed",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "securemesh_site_v2NodeList"
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[]",
+      "wire_key": "node_list",
+      "type": "array",
+      "cardinality": "list",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "maxItems": 128
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].hostname",
+      "wire_key": "hostname",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "maxLength": 256
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[]",
+      "wire_key": "interface_list",
+      "type": "array",
+      "cardinality": "list",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "maxItems": 128
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].bond_interface",
+      "wire_key": "bond_interface",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "fleetFleetBondDeviceType"
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].bond_interface.active_backup",
+      "wire_key": "active_backup",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].bond_interface.devices[]",
+      "wire_key": "devices",
+      "type": "array",
+      "cardinality": "list",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false,
+      "minItems": 1,
+      "maxItems": 8
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].bond_interface.lacp",
+      "wire_key": "lacp",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "fleetBondLacpType"
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].bond_interface.lacp.rate",
+      "wire_key": "rate",
+      "type": "integer",
+      "cardinality": "single",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].bond_interface.link_polling_interval",
+      "wire_key": "link_polling_interval",
+      "type": "integer",
+      "cardinality": "single",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].bond_interface.link_up_delay",
+      "wire_key": "link_up_delay",
+      "type": "integer",
+      "cardinality": "single",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].bond_interface.name",
+      "wire_key": "name",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false,
+      "maxLength": 64
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].description",
+      "wire_key": "description",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "maxLength": 256
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].dhcp_client",
+      "wire_key": "dhcp_client",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].dhcp_server",
+      "wire_key": "dhcp_server",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceDHCPServerParametersType"
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].dhcp_server.automatic_from_end",
+      "wire_key": "automatic_from_end",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].dhcp_server.automatic_from_start",
+      "wire_key": "automatic_from_start",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[]",
+      "wire_key": "dhcp_networks",
+      "type": "array",
+      "cardinality": "list",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false,
+      "minItems": 1,
+      "maxItems": 1
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].dgw_address",
+      "wire_key": "dgw_address",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].dns_address",
+      "wire_key": "dns_address",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].first_address",
+      "wire_key": "first_address",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].last_address",
+      "wire_key": "last_address",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].network_prefix",
+      "wire_key": "network_prefix",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].pool_settings",
+      "wire_key": "pool_settings",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceDHCPPoolSettingType",
+      "default": "INCLUDE_IP_ADDRESSES_FROM_DHCP_POOLS",
+      "enum": [
+        "INCLUDE_IP_ADDRESSES_FROM_DHCP_POOLS",
+        "EXCLUDE_IP_ADDRESSES_FROM_DHCP_POOLS"
+      ]
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].pools[]",
+      "wire_key": "pools",
+      "type": "array",
+      "cardinality": "list",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "maxItems": 16
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].pools[].end_ip",
+      "wire_key": "end_ip",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].pools[].exclude",
+      "wire_key": "exclude",
+      "type": "boolean",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].pools[].start_ip",
+      "wire_key": "start_ip",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].same_as_dgw",
+      "wire_key": "same_as_dgw",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_option82_tag",
+      "wire_key": "dhcp_option82_tag",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].dhcp_server.fixed_ip_map",
+      "wire_key": "fixed_ip_map",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].dhcp_server.interface_ip_map",
+      "wire_key": "interface_ip_map",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceDHCPInterfaceIPType"
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].dhcp_server.interface_ip_map.interface_ip_map",
+      "wire_key": "interface_ip_map",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].ethernet_interface",
+      "wire_key": "ethernet_interface",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "viewssecuremesh_site_v2EthernetInterfaceType"
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].ethernet_interface.device",
+      "wire_key": "device",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "minLength": 1,
+      "maxLength": 64
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].ethernet_interface.mac",
+      "wire_key": "mac",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config",
+      "wire_key": "ipv6_auto_config",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceIPV6AutoConfigType"
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.host",
+      "wire_key": "host",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router",
+      "wire_key": "router",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceIPV6AutoConfigRouterType"
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config",
+      "wire_key": "dns_config",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceIPV6DnsConfig"
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.configured_list",
+      "wire_key": "configured_list",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceIPV6DnsList"
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.configured_list.dns_list[]",
+      "wire_key": "dns_list",
+      "type": "array",
+      "cardinality": "list",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false,
+      "minItems": 1,
+      "maxItems": 4
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.local_dns",
+      "wire_key": "local_dns",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceIPV6LocalDnsAddress"
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.local_dns.configured_address",
+      "wire_key": "configured_address",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.local_dns.first_address",
+      "wire_key": "first_address",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.local_dns.last_address",
+      "wire_key": "last_address",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.network_prefix",
+      "wire_key": "network_prefix",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful",
+      "wire_key": "stateful",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceDHCPIPV6StatefulServer"
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.automatic_from_end",
+      "wire_key": "automatic_from_end",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.automatic_from_start",
+      "wire_key": "automatic_from_start",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.dhcp_networks[]",
+      "wire_key": "dhcp_networks",
+      "type": "array",
+      "cardinality": "list",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false,
+      "minItems": 1,
+      "maxItems": 1
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.dhcp_networks[].network_prefix",
+      "wire_key": "network_prefix",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.dhcp_networks[].pool_settings",
+      "wire_key": "pool_settings",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceDHCPPoolSettingType",
+      "default": "INCLUDE_IP_ADDRESSES_FROM_DHCP_POOLS",
+      "enum": [
+        "INCLUDE_IP_ADDRESSES_FROM_DHCP_POOLS",
+        "EXCLUDE_IP_ADDRESSES_FROM_DHCP_POOLS"
+      ]
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.dhcp_networks[].pools[]",
+      "wire_key": "pools",
+      "type": "array",
+      "cardinality": "list",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "maxItems": 16
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.dhcp_networks[].pools[].end_ip",
+      "wire_key": "end_ip",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.dhcp_networks[].pools[].start_ip",
+      "wire_key": "start_ip",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.fixed_ip_map",
+      "wire_key": "fixed_ip_map",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.interface_ip_map",
+      "wire_key": "interface_ip_map",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceDHCPInterfaceIPV6Type"
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.interface_ip_map.interface_ip_map",
+      "wire_key": "interface_ip_map",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].is_management",
+      "wire_key": "is_management",
+      "type": "boolean",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": true,
+      "write_only": false
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].is_primary",
+      "wire_key": "is_primary",
+      "type": "boolean",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": true,
+      "write_only": false
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].labels",
+      "wire_key": "labels",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].monitor",
+      "wire_key": "monitor",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceLinkQualityMonitorConfig"
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].monitor_disabled",
+      "wire_key": "monitor_disabled",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].mtu",
+      "wire_key": "mtu",
+      "type": "integer",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].name",
+      "wire_key": "name",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "maxLength": 256
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].network_option",
+      "wire_key": "network_option",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "viewsNetworkSelectType"
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].network_option.site_local_inside_network",
+      "wire_key": "site_local_inside_network",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].network_option.site_local_network",
+      "wire_key": "site_local_network",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].no_ipv4_address",
+      "wire_key": "no_ipv4_address",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].no_ipv6_address",
+      "wire_key": "no_ipv6_address",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].priority",
+      "wire_key": "priority",
+      "type": "integer",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].site_to_site_connectivity_interface_disabled",
+      "wire_key": "site_to_site_connectivity_interface_disabled",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].site_to_site_connectivity_interface_enabled",
+      "wire_key": "site_to_site_connectivity_interface_enabled",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].static_ip",
+      "wire_key": "static_ip",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceStaticIpParametersNodeType"
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].static_ip.default_gw",
+      "wire_key": "default_gw",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].static_ip.dns_server",
+      "wire_key": "dns_server",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].static_ip.ip_address",
+      "wire_key": "ip_address",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].static_ipv6_address",
+      "wire_key": "static_ipv6_address",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceStaticIPParametersType"
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].static_ipv6_address.cluster_static_ip",
+      "wire_key": "cluster_static_ip",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceStaticIpParametersClusterType"
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].static_ipv6_address.cluster_static_ip.interface_ip_map",
+      "wire_key": "interface_ip_map",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].static_ipv6_address.node_static_ip",
+      "wire_key": "node_static_ip",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceStaticIpParametersNodeType"
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].static_ipv6_address.node_static_ip.default_gw",
+      "wire_key": "default_gw",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].static_ipv6_address.node_static_ip.dns_server",
+      "wire_key": "dns_server",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].static_ipv6_address.node_static_ip.ip_address",
+      "wire_key": "ip_address",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].vlan_interface",
+      "wire_key": "vlan_interface",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "securemesh_site_v2VlanInterfaceType"
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].vlan_interface.device",
+      "wire_key": "device",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false,
+      "minLength": 1,
+      "maxLength": 64
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].interface_list[].vlan_interface.vlan_id",
+      "wire_key": "vlan_id",
+      "type": "integer",
+      "cardinality": "single",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].public_ip",
+      "wire_key": "public_ip",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "maxLength": 256
+    },
+    {
+      "path": "spec.eks_k8s.not_managed.node_list[].type",
+      "wire_key": "type",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "enum": [
+        "Control",
+        "Worker"
+      ]
     },
     {
       "path": "spec.enable_advanced_delivery",
@@ -11829,6 +12912,28 @@
       "schema": "ioschemaEmpty"
     },
     {
+      "path": "spec.private_adn",
+      "wire_key": "private_adn",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "securemesh_site_v2PrivateADNType"
+    },
+    {
+      "path": "spec.private_adn.private_adn",
+      "wire_key": "private_adn",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false,
+      "maxLength": 64
+    },
+    {
       "path": "spec.re_select",
       "wire_key": "re_select",
       "type": "object",
@@ -12502,6 +13607,39 @@
       "read_only": false,
       "write_only": false,
       "maxLength": 20
+    },
+    {
+      "path": "spec.software_settings.waf_signatures",
+      "wire_key": "waf_signatures",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "common_wafLiveSignaturesUpdate"
+    },
+    {
+      "path": "spec.software_settings.waf_signatures.automatic",
+      "wire_key": "automatic",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.software_settings.waf_signatures.manual",
+      "wire_key": "manual",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
     },
     {
       "path": "spec.tunnel_dead_timeout",
@@ -13894,9 +15032,93 @@
       "spec.dns_ntp_config.custom_ntp",
       "spec.dns_ntp_config.f5_ntp_default"
     ],
+    "spec.eks_k8s.anti_affinity_choice": [
+      "spec.eks_k8s.disable_anti_affinity",
+      "spec.eks_k8s.enable_anti_affinity"
+    ],
+    "spec.eks_k8s.not_managed.node_list[].interface_list[].address_choice": [
+      "spec.eks_k8s.not_managed.node_list[].interface_list[].dhcp_client",
+      "spec.eks_k8s.not_managed.node_list[].interface_list[].dhcp_server",
+      "spec.eks_k8s.not_managed.node_list[].interface_list[].no_ipv4_address",
+      "spec.eks_k8s.not_managed.node_list[].interface_list[].static_ip"
+    ],
+    "spec.eks_k8s.not_managed.node_list[].interface_list[].bond_interface.lacp_choice": [
+      "spec.eks_k8s.not_managed.node_list[].interface_list[].bond_interface.active_backup",
+      "spec.eks_k8s.not_managed.node_list[].interface_list[].bond_interface.lacp"
+    ],
+    "spec.eks_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].dns_choice": [
+      "spec.eks_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].dns_address",
+      "spec.eks_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].same_as_dgw"
+    ],
+    "spec.eks_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].gateway_choice": [
+      "spec.eks_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].dgw_address",
+      "spec.eks_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].first_address",
+      "spec.eks_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].last_address"
+    ],
+    "spec.eks_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].network_prefix_choice": [
+      "spec.eks_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].network_prefix"
+    ],
+    "spec.eks_k8s.not_managed.node_list[].interface_list[].dhcp_server.interfaces_addressing_choice": [
+      "spec.eks_k8s.not_managed.node_list[].interface_list[].dhcp_server.automatic_from_end",
+      "spec.eks_k8s.not_managed.node_list[].interface_list[].dhcp_server.automatic_from_start",
+      "spec.eks_k8s.not_managed.node_list[].interface_list[].dhcp_server.interface_ip_map"
+    ],
+    "spec.eks_k8s.not_managed.node_list[].interface_list[].interface_choice": [
+      "spec.eks_k8s.not_managed.node_list[].interface_list[].bond_interface",
+      "spec.eks_k8s.not_managed.node_list[].interface_list[].ethernet_interface",
+      "spec.eks_k8s.not_managed.node_list[].interface_list[].vlan_interface"
+    ],
+    "spec.eks_k8s.not_managed.node_list[].interface_list[].ipv6_address_choice": [
+      "spec.eks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config",
+      "spec.eks_k8s.not_managed.node_list[].interface_list[].no_ipv6_address",
+      "spec.eks_k8s.not_managed.node_list[].interface_list[].static_ipv6_address"
+    ],
+    "spec.eks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.autoconfig_choice": [
+      "spec.eks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.host",
+      "spec.eks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router"
+    ],
+    "spec.eks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.address_choice": [
+      "spec.eks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.network_prefix",
+      "spec.eks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful"
+    ],
+    "spec.eks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.dns_choice": [
+      "spec.eks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.configured_list",
+      "spec.eks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.local_dns"
+    ],
+    "spec.eks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.local_dns.local_dns_choice": [
+      "spec.eks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.local_dns.configured_address",
+      "spec.eks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.local_dns.first_address",
+      "spec.eks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.local_dns.last_address"
+    ],
+    "spec.eks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.dhcp_networks[].network_prefix_choice": [
+      "spec.eks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.dhcp_networks[].network_prefix"
+    ],
+    "spec.eks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.interfaces_addressing_choice": [
+      "spec.eks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.automatic_from_end",
+      "spec.eks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.automatic_from_start",
+      "spec.eks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.interface_ip_map"
+    ],
+    "spec.eks_k8s.not_managed.node_list[].interface_list[].monitoring_choice": [
+      "spec.eks_k8s.not_managed.node_list[].interface_list[].monitor",
+      "spec.eks_k8s.not_managed.node_list[].interface_list[].monitor_disabled"
+    ],
+    "spec.eks_k8s.not_managed.node_list[].interface_list[].network_option.network_choice": [
+      "spec.eks_k8s.not_managed.node_list[].interface_list[].network_option.segment_network",
+      "spec.eks_k8s.not_managed.node_list[].interface_list[].network_option.site_local_inside_network",
+      "spec.eks_k8s.not_managed.node_list[].interface_list[].network_option.site_local_network"
+    ],
+    "spec.eks_k8s.not_managed.node_list[].interface_list[].site_to_site_connectivity_interface_choice": [
+      "spec.eks_k8s.not_managed.node_list[].interface_list[].site_to_site_connectivity_interface_disabled",
+      "spec.eks_k8s.not_managed.node_list[].interface_list[].site_to_site_connectivity_interface_enabled"
+    ],
+    "spec.eks_k8s.not_managed.node_list[].interface_list[].static_ipv6_address.network_prefix_choice": [
+      "spec.eks_k8s.not_managed.node_list[].interface_list[].static_ipv6_address.cluster_static_ip",
+      "spec.eks_k8s.not_managed.node_list[].interface_list[].static_ipv6_address.node_static_ip"
+    ],
     "spec.enterprise_proxy_choice": [
       "spec.custom_proxy",
-      "spec.f5_proxy"
+      "spec.f5_proxy",
+      "spec.private_adn"
     ],
     "spec.equinix.not_managed.node_list[].interface_list[].address_choice": [
       "spec.equinix.not_managed.node_list[].interface_list[].dhcp_client",
@@ -14564,6 +15786,7 @@
       "spec.aws",
       "spec.azure",
       "spec.baremetal",
+      "spec.eks_k8s",
       "spec.equinix",
       "spec.gcp",
       "spec.kvm",
@@ -14624,6 +15847,10 @@
     "spec.software_settings.sw.volterra_sw_version_choice": [
       "spec.software_settings.sw.default_sw_version",
       "spec.software_settings.sw.volterra_software_version"
+    ],
+    "spec.software_settings.waf_signatures.signatures_update_mode_choice": [
+      "spec.software_settings.waf_signatures.automatic",
+      "spec.software_settings.waf_signatures.manual"
     ],
     "spec.upgrade_settings.kubernetes_upgrade_drain.enable_upgrade_drain.drain_max_unavailable_choice": [
       "spec.upgrade_settings.kubernetes_upgrade_drain.enable_upgrade_drain.drain_max_unavailable_node_count",
@@ -14742,24 +15969,6 @@
       "issue": "#1738"
     }
   },
-  "verified_removals": [
-    "spec.private_adn"
-  ],
-  "verified_removal_evidence": {
-    "spec.private_adn": {
-      "classification": "current_feature_removal",
-      "proof_kind": "create_read_normalization",
-      "observed_date": "2026-09-06",
-      "create_status": 200,
-      "get_status": 200,
-      "absence_after_probe_verified": true,
-      "legacy_version": "0.12.2",
-      "legacy_source_commit": "22f029dbf14412c99502fe1daba829f7c3261017",
-      "legacy_fixture_sha256": "sha256:fd8719ddf14465f309ad520d1b1418413d518d2019c67d2dec418b8061e94521",
-      "probe_receipt_sha256": "sha256:e9f751450ebd875ff18b5c4ca91afa11ef0e027fdef8bedfddd3df3c258db9cb",
-      "realized_behavior": "unverified",
-      "issue": "#1738",
-      "server_behavior": "silently_removed"
-    }
-  }
+  "verified_removals": [],
+  "verified_removal_evidence": {}
 }
