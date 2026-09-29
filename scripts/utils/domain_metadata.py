@@ -162,7 +162,7 @@ DOMAIN_PRIMARY_RESOURCES = {
     "blindfold": ["blindfold_secret", "secret_policy", "policy_document"],
     "ddos": ["ddos_protection", "ddos_mitigation_rule"],
     "rate_limiting": ["rate_limiter", "rate_limiter_policy", "rate_limit_threshold"],
-    "shape": ["shape_app_firewall", "shape_recognizer"],
+    "shape": ["shape_app_firewall"],
     "threat_campaign": ["threat_campaign_policy"],
     "authentication": ["authentication_policy", "token", "api_credential"],
     "users": ["user", "user_role", "namespace_role"],

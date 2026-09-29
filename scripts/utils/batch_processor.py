@@ -47,6 +47,8 @@ class BatchStats(TypedDict):
     cache_writes: int
     cache_reads: int
     gc_collections: int
+    deprecated_operations_removed: int
+    deprecated_paths_removed: int
 
 
 def _process_spec_file(
@@ -57,19 +59,19 @@ def _process_spec_file(
         Callable[[dict, dict], tuple[dict, dict]],
         dict[str, Any],
     ],
-) -> tuple[str, Path | None, str | None]:
+) -> tuple[str, Path | None, dict[str, int], str | None]:
     """Process one spec in a worker and persist its deterministic cache entry."""
     spec_file, cache_path, enrich_func, normalize_func, config = args
     try:
         with spec_file.open() as file_handle:
             spec = json.load(file_handle)
-        spec, _ = enrich_func(spec, config)
+        spec, enrich_stats = enrich_func(spec, config)
         spec, _ = normalize_func(spec, config)
         with cache_path.open("w") as file_handle:
             json.dump(spec, file_handle, indent=2)
-        return spec_file.name, cache_path, None
+        return spec_file.name, cache_path, enrich_stats, None
     except Exception as exc:  # Workers return failures so the parent can aggregate them.
-        return spec_file.name, None, str(exc)
+        return spec_file.name, None, {}, str(exc)
 
 
 class BatchSpecProcessor:
@@ -119,6 +121,8 @@ class BatchSpecProcessor:
             "cache_writes": 0,
             "cache_reads": 0,
             "gc_collections": 0,
+            "deprecated_operations_removed": 0,
+            "deprecated_paths_removed": 0,
         }
 
         logger.info(
@@ -199,7 +203,7 @@ class BatchSpecProcessor:
                     else map(_process_spec_file, tasks)
                 )
 
-                for filename, cache_path, error in results:
+                for filename, cache_path, enrich_stats, error in results:
                     if error is not None:
                         logger.error("Error processing %s: %s", filename, error)
                         self.stats["specs_failed"] += 1
@@ -210,6 +214,12 @@ class BatchSpecProcessor:
                     if cache_path is None:
                         raise RuntimeError(f"Worker returned no cache path for {filename}")
                     processed_paths[filename] = cache_path
+                    self.stats["deprecated_operations_removed"] += enrich_stats.get(
+                        "deprecated_operations_removed", 0
+                    )
+                    self.stats["deprecated_paths_removed"] += enrich_stats.get(
+                        "deprecated_paths_removed", 0
+                    )
                     self.stats["cache_writes"] += 1
                     self.stats["specs_processed"] += 1
 

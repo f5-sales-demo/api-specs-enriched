@@ -162,6 +162,12 @@ def test_forced_events_always_download_fresh_upstream_specs() -> None:
     assert "Save specs cache" not in sync_job
     assert "path: specs/original" not in sync_job
     assert "run: python -m scripts.download --force" in sync_job
+    snapshot = 'cp .github_release "$RUNNER_TEMP/previous-upstream-release.json"'
+    download = "run: python -m scripts.download --force"
+    compare = '--previous-receipt "$RUNNER_TEMP/previous-upstream-release.json"'
+    assert snapshot in sync_job
+    assert compare in sync_job
+    assert sync_job.index(snapshot) < sync_job.index(download) < sync_job.index(compare)
 
 
 def test_release_retry_reuses_existing_pr_and_publishes_its_merge() -> None:
@@ -195,6 +201,8 @@ def test_release_pr_commits_catalog_and_verifies_version_coherence() -> None:
         "\n  deploy-docs:\n", maxsplit=1
     )[0]
 
+    assert "release/upstream-contract-changes.json" in release_job
+    assert "release/upstream-contract-changes.md" in release_job
     assert "git add -f CHANGELOG.md .github_release release/api-catalog.json" in release_job
     assert release_job.count("python -m scripts.verify_release_version") >= 3
     assert '--receipt "$RECEIPT_JSON_FILE"' in release_job

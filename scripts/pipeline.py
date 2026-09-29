@@ -120,6 +120,7 @@ from scripts.utils.canonical_merge import (
     canonical_merge_sources,
     rewrite_sources_with_schema_keys,
 )
+from scripts.utils.deprecated_operations import remove_deprecated_operations
 from scripts.utils.domain_metadata import (
     calculate_complexity,
     get_domain_icon,
@@ -219,6 +220,8 @@ class PipelineStats:
     conflicts_with_added: int = 0
     schema_properties_removed: int = 0
     schema_property_removals_missed: int = 0
+    deprecated_operations_removed: int = 0
+    deprecated_paths_removed: int = 0
     errors: list[dict[str, Any]] = field(default_factory=list)
 
 
@@ -277,6 +280,8 @@ def enrich_spec(spec: dict[str, Any], config: dict) -> tuple[dict[str, Any], dic
         - consistency_issues: number of consistency issues found
         - domains_normalized: number of domain names normalized (RFC 2606)
     """
+    deprecated_stats = remove_deprecated_operations(spec)
+
     # `title` is INTENTIONALLY omitted from the default list. Title is a
     # metadata field that downstream codegens and doc tools compare
     # byte-for-byte against upstream; rewriting it breaks those tools.
@@ -458,6 +463,8 @@ def enrich_spec(spec: dict[str, Any], config: dict) -> tuple[dict[str, Any], dic
         "constraint_coverage": constraint_stats.get("coverage_percentage", 0),
         "constraint_pattern_matches": constraint_stats.get("pattern_matches", 0),
         "constraint_avg_confidence": constraint_stats.get("average_confidence", 0),
+        "deprecated_operations_removed": deprecated_stats.operations_removed,
+        "deprecated_paths_removed": deprecated_stats.paths_removed,
         # Note: namespace_profiles_added stats tracked in merge_specs_by_domain()
         # Note: best_practices, guided_workflows, and server_defaults stats tracked
         # in merge_specs_by_domain() since they require merged schemas
@@ -1915,6 +1922,8 @@ def _run_pipeline(
             stats.files_processed = batch_stats["specs_processed"] + batch_stats["specs_failed"]
             stats.files_succeeded = batch_stats["specs_processed"]
             stats.files_failed = batch_stats["specs_failed"]
+            stats.deprecated_operations_removed = batch_stats["deprecated_operations_removed"]
+            stats.deprecated_paths_removed = batch_stats["deprecated_paths_removed"]
             stats.errors.extend(
                 {"file": error["file"], "error": error["error"]} for error in batch_stats["errors"]
             )
@@ -2186,6 +2195,8 @@ def print_summary(stats: PipelineStats) -> None:
     table.add_row("Domains Created", str(stats.domains_created))
     table.add_row("Paths Merged", str(stats.paths_merged))
     table.add_row("Schemas Merged", str(stats.schemas_merged))
+    table.add_row("Deprecated Operations Removed", str(stats.deprecated_operations_removed))
+    table.add_row("Deprecated Paths Removed", str(stats.deprecated_paths_removed))
 
     # Discovery enrichment stats (if any)
     if stats.discovery_enriched > 0:
@@ -2248,6 +2259,8 @@ def generate_report(stats: PipelineStats, output_path: Path) -> None:
             "conflicts_with_added": stats.conflicts_with_added,
             "schema_properties_removed": stats.schema_properties_removed,
             "schema_property_removals_missed": stats.schema_property_removals_missed,
+            "deprecated_operations_removed": stats.deprecated_operations_removed,
+            "deprecated_paths_removed": stats.deprecated_paths_removed,
         },
         "errors": stats.errors,
     }

@@ -45,6 +45,7 @@ from scripts.utils import (
     UniquenessEnricher,
 )
 from scripts.utils.console_ui_enricher import ConsoleUIEnricher
+from scripts.utils.deprecated_operations import remove_deprecated_operations
 from scripts.utils.json_writer import write_json_file
 
 console = Console()
@@ -106,6 +107,8 @@ class EnrichmentStats:
     validation_failed: int = 0
     consistency_issues: int = 0
     discovery_enrichments: int = 0
+    deprecated_operations_removed: int = 0
+    deprecated_paths_removed: int = 0
     errors: list[dict[str, Any]] = field(default_factory=list)
 
 
@@ -271,6 +274,7 @@ def enrich_spec_file(
     try:
         # Load specification
         spec = load_spec(spec_path)
+        deprecated_stats = remove_deprecated_operations(spec)
         original_field_count = count_text_fields(spec, config.get("target_fields", []))
 
         # Initialize enrichment utilities
@@ -433,6 +437,8 @@ def enrich_spec_file(
                 "constraint_coverage": constraint_stats.get("coverage_percentage", 0),
                 "constraint_pattern_matches": constraint_stats.get("pattern_matches", 0),
                 "constraint_avg_confidence": constraint_stats.get("average_confidence", 0),
+                "deprecated_operations_removed": deprecated_stats.operations_removed,
+                "deprecated_paths_removed": deprecated_stats.paths_removed,
             },
             validation_passed=validation_passed,
             error=validation_error if not validation_passed else None,
@@ -543,6 +549,10 @@ def _update_stats(stats: EnrichmentStats, result: EnrichmentResult) -> None:
     """Update statistics from an enrichment result."""
     if result.success:
         stats.files_succeeded += 1
+        stats.deprecated_operations_removed += result.changes.get(
+            "deprecated_operations_removed", 0
+        )
+        stats.deprecated_paths_removed += result.changes.get("deprecated_paths_removed", 0)
         if result.validation_passed:
             stats.validation_passed += 1
         else:
@@ -565,6 +575,8 @@ def generate_report(stats: EnrichmentStats, output_path: Path) -> None:
             "files_failed": stats.files_failed,
             "validation_passed": stats.validation_passed,
             "validation_failed": stats.validation_failed,
+            "deprecated_operations_removed": stats.deprecated_operations_removed,
+            "deprecated_paths_removed": stats.deprecated_paths_removed,
         },
         "errors": stats.errors,
     }
@@ -588,6 +600,8 @@ def print_summary(stats: EnrichmentStats) -> None:
     table.add_row("Files Failed", str(stats.files_failed))
     table.add_row("Validation Passed", str(stats.validation_passed))
     table.add_row("Validation Failed", str(stats.validation_failed))
+    table.add_row("Deprecated Operations Removed", str(stats.deprecated_operations_removed))
+    table.add_row("Deprecated Paths Removed", str(stats.deprecated_paths_removed))
 
     console.print(table)
 

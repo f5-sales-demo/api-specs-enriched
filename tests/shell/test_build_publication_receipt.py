@@ -46,6 +46,7 @@ def _asset_names(version: str) -> list[str]:
         "smsv2-evidence-receipt.json",
         "smsv2-contract-manifest.json",
         "smsv2_parity_manifest.json",
+        "upstream-contract-changes.json",
         "upstream-contract-removals.json",
     ]
 

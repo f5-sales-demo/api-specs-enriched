@@ -27,15 +27,17 @@ def test_manifest_contains_complete_nested_paths_and_semantics() -> None:
     interface_prefix = "spec.baremetal.not_managed.node_list[].interface_list[]"
     assert paths[f"{interface_prefix}.is_management"]["read_only"] is True
     assert paths[f"{interface_prefix}.is_primary"]["read_only"] is True
-    assert not ({"spec.log_receiver", "spec.private_adn", "spec.rseries"} & paths.keys())
+    assert not ({"spec.log_receiver", "spec.rseries"} & paths.keys())
+    assert "spec.private_adn" in paths
     assert manifest["current_platform_removals"] == ["spec.rseries"]
-    assert manifest["verified_removals"] == ["spec.private_adn"]
+    assert manifest["verified_removals"] == []
     assert not set(manifest["current_platform_removals"]) & paths.keys()
     assert len(manifest["choice_groups"]) > 50
     assert manifest["choice_groups"]["spec.provider_choice"] == [
         "spec.aws",
         "spec.azure",
         "spec.baremetal",
+        "spec.eks_k8s",
         "spec.equinix",
         "spec.gcp",
         "spec.kvm",
@@ -151,10 +153,11 @@ def test_rseries_removal_retains_verified_api_evidence() -> None:
     assert proof["proof_kind"] == "explicit_api_rejection"
 
 
-def test_private_adn_removal_retains_create_read_normalization_evidence() -> None:
-    spec = json.loads(Path("docs/specifications/api/openapi.json").read_text())
-    manifest = build_parity_manifest(spec)
-    proof = manifest["verified_removal_evidence"]["spec.private_adn"]
+def test_private_adn_reintroduction_retains_prior_probe_evidence() -> None:
+    evidence = yaml.safe_load(Path("config/smsv2_platform_evidence.yaml").read_text())
+    proof = evidence["fields"]["spec.private_adn"]
+    assert proof["classification"] == "behavior_requires_investigation"
+    assert proof["current_upstream_schema"] == "present"
     assert proof["proof_kind"] == "create_read_normalization"
     assert proof["create_status"] == 200
     assert proof["get_status"] == 200
