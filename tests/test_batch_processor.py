@@ -138,6 +138,8 @@ class TestBatchProcessorInitialization:
             "cache_writes": 0,
             "cache_reads": 0,
             "gc_collections": 0,
+            "deprecated_operations_removed": 0,
+            "deprecated_paths_removed": 0,
         }
 
         assert processor.stats == expected_stats

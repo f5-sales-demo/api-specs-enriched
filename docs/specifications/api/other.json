@@ -3,7 +3,7 @@
   "info": {
     "title": "Other",
     "description": "F5 Distributed Cloud Other",
-    "version": "8.0.3",
+    "version": "9.0.0",
     "contact": {
       "name": "F5 Distributed Cloud",
       "url": "https://docs.cloud.f5.com"
@@ -139,6 +139,9 @@
       "name": "config"
     },
     {
+      "name": "data"
+    },
+    {
       "name": "discovery"
     },
     {
@@ -246,6 +249,16 @@
                 "schema": {
                   "type": "string",
                   "format": "string"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_ai_assistant"
                 }
               }
             }
@@ -367,6 +380,1039 @@
       "x-ves-proto-service": "ves.io.schema.discovery_cloud.CustomAPI",
       "x-ves-proto-service-type": "CUSTOM_PUBLIC"
     },
+    "/api/data/namespaces/{namespace}/access/active-sessions": {
+      "get": {
+        "summary": "List Active Sessions.",
+        "description": "List all active sessions.",
+        "operationId": "ves.io.schema.access.access_active_sessions.CustomAPI.ListActiveSessions",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/access_active_sessionsListActiveSessionsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Returned when operation is not authorized.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Returned when there is no permission to access resource.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Returned when resource is not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Returned when operation on resource is conflicting with current value.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Returned when operation has been rejected as it is happening too frequently.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Returned when server encountered an error in processing API.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Returned when service is unavailable temporarily.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Returned when server timed out processing request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_ai_data_bfdp"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "description": "Namespace\nNamespace of the App type for the current request.",
+            "in": "path",
+            "required": true,
+            "x-displayname": "Namespace",
+            "schema": {
+              "type": "string"
+            },
+            "x-f5xc-example": "ns1"
+          },
+          {
+            "name": "cursor",
+            "description": "Cursor for pagination. Contains encoded sequence_id for next/previous page.",
+            "in": "query",
+            "required": false,
+            "x-displayname": "Cursor",
+            "schema": {
+              "type": "string"
+            },
+            "x-f5xc-example": "eyJzZXF1ZW5jZV9pZCI6MTIzNDU2fQ=="
+          },
+          {
+            "name": "limit",
+            "description": "Limits the number of results to the specified number.",
+            "in": "query",
+            "required": false,
+            "x-displayname": "Limit",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-f5xc-example": "25"
+          },
+          {
+            "name": "direction",
+            "description": "Direction for pagination (forward or backward)\n\nGET next page of results\nGET previous page of results.",
+            "in": "query",
+            "required": false,
+            "x-displayname": "Backward",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "FORWARD",
+                "BACKWARD"
+              ],
+              "default": "FORWARD"
+            }
+          },
+          {
+            "name": "username",
+            "description": "Filter sessions by username. Supports a comma-separated list to match any of the specified values (e.g. \"joe,bob\").",
+            "in": "query",
+            "required": false,
+            "x-displayname": "Username Filter.",
+            "schema": {
+              "type": "string"
+            },
+            "x-f5xc-example": "joe,bob"
+          },
+          {
+            "name": "client_ip",
+            "description": "Filter sessions by client IP address. Supports a comma-separated list to match any of the specified values (e.g. \"192.0.2.106,192.0.2.233\").",
+            "in": "query",
+            "required": false,
+            "x-displayname": "Client IP Filter.",
+            "schema": {
+              "type": "string"
+            },
+            "x-f5xc-example": "192.0.2.106,192.0.2.233"
+          },
+          {
+            "name": "virtual_server",
+            "description": "Filter sessions by virtual server. Supports a comma-separated list to match any of the specified values (e.g. \"web-app,API-server\").",
+            "in": "query",
+            "required": false,
+            "x-displayname": "Virtual Server Filter.",
+            "schema": {
+              "type": "string"
+            },
+            "x-f5xc-example": "web-app,api-server"
+          },
+          {
+            "name": "policy",
+            "description": "Filter sessions by policy. Supports a comma-separated list to match any of the specified values (e.g. \"default-policy,strict-policy\").",
+            "in": "query",
+            "required": false,
+            "x-displayname": "Policy Filter.",
+            "schema": {
+              "type": "string"
+            },
+            "x-f5xc-example": "default-policy,strict-policy"
+          },
+          {
+            "name": "site",
+            "description": "Filter sessions by site. Supports a comma-separated list to match any of the specified values (e.g. \"us-west-2,eu-west-1\").",
+            "in": "query",
+            "required": false,
+            "x-displayname": "Site Filter.",
+            "schema": {
+              "type": "string"
+            },
+            "x-f5xc-example": "us-west-2,eu-west-1"
+          },
+          {
+            "name": "status",
+            "description": "Filter sessions by status. If not specified, returns sessions with all statuses.\n\nReturn sessions with any status (default when no status filter is specified)\nFilter for sessions with pending status\nFilter for sessions with established status.",
+            "in": "query",
+            "required": false,
+            "x-displayname": "Established Only.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ANY",
+                "PENDING_ONLY",
+                "ESTABLISHED_ONLY"
+              ],
+              "default": "ANY"
+            }
+          },
+          {
+            "name": "start_time_from",
+            "description": "Filter sessions that started from this timestamp (inclusive)\nFormat: RFC 3339 (e.g., 2024-08-06T20:00:00Z)",
+            "in": "query",
+            "required": false,
+            "x-displayname": "Start Time From.",
+            "schema": {
+              "type": "string"
+            },
+            "x-f5xc-example": "2024-08-06T20:00:00Z"
+          },
+          {
+            "name": "start_time_to",
+            "description": "Filter sessions that started up to this timestamp (inclusive)\nFormat: RFC 3339 (e.g., 2024-08-07T20:00:00Z)",
+            "in": "query",
+            "required": false,
+            "x-displayname": "Start Time To.",
+            "schema": {
+              "type": "string"
+            },
+            "x-f5xc-example": "2024-08-07T20:00:00Z"
+          },
+          {
+            "name": "expiration_time_from",
+            "description": "Filter sessions that expire from this timestamp (inclusive)\nFormat: RFC 3339 (e.g., 2024-08-06T20:00:00Z)",
+            "in": "query",
+            "required": false,
+            "x-displayname": "Expiration Time From.",
+            "schema": {
+              "type": "string"
+            },
+            "x-f5xc-example": "2024-08-06T20:00:00Z"
+          },
+          {
+            "name": "expiration_time_to",
+            "description": "Filter sessions that expire up to this timestamp (inclusive)\nFormat: RFC 3339 (e.g., 2024-08-07T20:00:00Z)",
+            "in": "query",
+            "required": false,
+            "x-displayname": "Expiration Time To.",
+            "schema": {
+              "type": "string"
+            },
+            "x-f5xc-example": "2024-08-07T20:00:00Z"
+          }
+        ],
+        "externalDocs": {
+          "description": "Examples of this operation.",
+          "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/other/"
+        },
+        "x-ves-proto-rpc": "ves.io.schema.access.access_active_sessions.CustomAPI.ListActiveSessions",
+        "tags": [
+          "data"
+        ],
+        "x-f5xc-operation-metadata": {
+          "purpose": "Resource retrieval operation",
+          "required_fields": [
+            "path.namespace"
+          ],
+          "optional_fields": [],
+          "field_docs": {},
+          "conditions": {
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": []
+          },
+          "side_effects": {},
+          "danger_level": "low",
+          "confirmation_required": false,
+          "common_errors": [
+            {
+              "code": 401,
+              "message": "Authentication required",
+              "solution": "Provide valid API credentials"
+            },
+            {
+              "code": 403,
+              "message": "Permission denied",
+              "solution": "Check access permissions for this operation"
+            },
+            {
+              "code": 404,
+              "message": "Resource not found",
+              "solution": "Verify resource name, namespace, and path"
+            },
+            {
+              "code": 409,
+              "message": "Resource already exists",
+              "solution": "Use different name or update existing resource"
+            },
+            {
+              "code": 429,
+              "message": "Rate limit exceeded",
+              "solution": "Wait before retrying the operation"
+            },
+            {
+              "code": 500,
+              "message": "Server error",
+              "solution": "Retry operation or contact support"
+            }
+          ],
+          "performance_impact": {
+            "latency": "moderate",
+            "resource_usage": "moderate"
+          }
+        },
+        "x-f5xc-required-fields": [
+          "path.namespace"
+        ],
+        "x-f5xc-danger-level": "low",
+        "x-f5xc-discovered-response-time": {
+          "p50_ms": 200,
+          "p95_ms": 800,
+          "p99_ms": 2000,
+          "sample_count": 0,
+          "source": "estimate"
+        }
+      },
+      "x-displayname": "Manage Access Active Sessions.",
+      "x-ves-proto-service": "ves.io.schema.access.access_active_sessions.CustomAPI",
+      "x-ves-proto-service-type": "CUSTOM_PUBLIC"
+    },
+    "/api/data/namespaces/{namespace}/access/active-sessions/terminate": {
+      "post": {
+        "summary": "Terminate Multiple Access Sessions.",
+        "description": "Terminate multiple access sessions in a single request\nReturns HTTP 200 if all sessions terminated successfully,\nHTTP 207 Multi-Status if some sessions succeeded and some failed,\nHTTP 4xx/5xx if the request is invalid or all sessions failed.",
+        "operationId": "ves.io.schema.access.access_active_sessions.CustomAPI.TerminateSessions",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/access_active_sessionsTerminateSessionsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Returned when operation is not authorized.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Returned when there is no permission to access resource.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Returned when resource is not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Returned when operation on resource is conflicting with current value.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Returned when operation has been rejected as it is happening too frequently.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Returned when server encountered an error in processing API.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Returned when service is unavailable temporarily.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Returned when server timed out processing request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_ai_data_bfdp"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "description": "Namespace\nNamespace of the App type for the current request (path parameter)",
+            "in": "path",
+            "required": true,
+            "x-displayname": "Namespace",
+            "schema": {
+              "type": "string"
+            },
+            "x-f5xc-example": "ns1"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/access_active_sessionsTerminateSessionsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "externalDocs": {
+          "description": "Examples of this operation.",
+          "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/other/"
+        },
+        "x-ves-proto-rpc": "ves.io.schema.access.access_active_sessions.CustomAPI.TerminateSessions",
+        "tags": [
+          "data"
+        ],
+        "x-f5xc-operation-metadata": {
+          "purpose": "Resource creation operation",
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.namespace"
+          ],
+          "optional_fields": [],
+          "field_docs": {},
+          "conditions": {
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Terminate resource created",
+              "Resource assigned unique identifier"
+            ]
+          },
+          "side_effects": {
+            "creates": [
+              "terminate"
+            ]
+          },
+          "danger_level": "medium",
+          "confirmation_required": false,
+          "common_errors": [
+            {
+              "code": 401,
+              "message": "Authentication required",
+              "solution": "Provide valid API credentials"
+            },
+            {
+              "code": 403,
+              "message": "Permission denied",
+              "solution": "Check access permissions for this operation"
+            },
+            {
+              "code": 404,
+              "message": "Resource not found",
+              "solution": "Verify resource name, namespace, and path"
+            },
+            {
+              "code": 409,
+              "message": "Resource already exists",
+              "solution": "Use different name or update existing resource"
+            },
+            {
+              "code": 429,
+              "message": "Rate limit exceeded",
+              "solution": "Wait before retrying the operation"
+            },
+            {
+              "code": 500,
+              "message": "Server error",
+              "solution": "Retry operation or contact support"
+            }
+          ],
+          "performance_impact": {
+            "latency": "low",
+            "resource_usage": "low"
+          }
+        },
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.namespace"
+        ],
+        "x-f5xc-danger-level": "medium",
+        "x-f5xc-side-effects": {
+          "creates": [
+            "terminate"
+          ]
+        },
+        "x-f5xc-discovered-response-time": {
+          "p50_ms": 1000,
+          "p95_ms": 3000,
+          "p99_ms": 8000,
+          "sample_count": 0,
+          "source": "estimate"
+        }
+      },
+      "x-displayname": "Manage Access Active Sessions.",
+      "x-ves-proto-service": "ves.io.schema.access.access_active_sessions.CustomAPI",
+      "x-ves-proto-service-type": "CUSTOM_PUBLIC"
+    },
+    "/api/data/namespaces/{namespace}/access/active-sessions/{id}": {
+      "get": {
+        "summary": "GET Active Session.",
+        "description": "GET an active session by ID.",
+        "operationId": "ves.io.schema.access.access_active_sessions.CustomAPI.GetActiveSession",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/access_active_sessionsGetActiveSessionResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Returned when operation is not authorized.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Returned when there is no permission to access resource.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Returned when resource is not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Returned when operation on resource is conflicting with current value.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Returned when operation has been rejected as it is happening too frequently.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Returned when server encountered an error in processing API.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Returned when service is unavailable temporarily.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Returned when server timed out processing request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_ai_data_bfdp"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "description": "Namespace\nNamespace of the App type for the current request.",
+            "in": "path",
+            "required": true,
+            "x-displayname": "Namespace",
+            "schema": {
+              "type": "string"
+            },
+            "x-f5xc-example": "ns1"
+          },
+          {
+            "name": "id",
+            "description": "ID\nID of the session.",
+            "in": "path",
+            "required": true,
+            "x-displayname": "Session ID.",
+            "schema": {
+              "type": "string"
+            },
+            "x-f5xc-example": "9d6d591"
+          }
+        ],
+        "externalDocs": {
+          "description": "Examples of this operation.",
+          "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/other/"
+        },
+        "x-ves-proto-rpc": "ves.io.schema.access.access_active_sessions.CustomAPI.GetActiveSession",
+        "tags": [
+          "data"
+        ],
+        "x-f5xc-operation-metadata": {
+          "purpose": "Resource retrieval operation",
+          "required_fields": [
+            "path.id",
+            "path.namespace"
+          ],
+          "optional_fields": [],
+          "field_docs": {},
+          "conditions": {
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": []
+          },
+          "side_effects": {},
+          "danger_level": "low",
+          "confirmation_required": false,
+          "common_errors": [
+            {
+              "code": 401,
+              "message": "Authentication required",
+              "solution": "Provide valid API credentials"
+            },
+            {
+              "code": 403,
+              "message": "Permission denied",
+              "solution": "Check access permissions for this operation"
+            },
+            {
+              "code": 404,
+              "message": "Resource not found",
+              "solution": "Verify resource name, namespace, and path"
+            },
+            {
+              "code": 409,
+              "message": "Resource already exists",
+              "solution": "Use different name or update existing resource"
+            },
+            {
+              "code": 429,
+              "message": "Rate limit exceeded",
+              "solution": "Wait before retrying the operation"
+            },
+            {
+              "code": 500,
+              "message": "Server error",
+              "solution": "Retry operation or contact support"
+            }
+          ],
+          "performance_impact": {
+            "latency": "low",
+            "resource_usage": "low"
+          }
+        },
+        "x-f5xc-required-fields": [
+          "path.id",
+          "path.namespace"
+        ],
+        "x-f5xc-danger-level": "low",
+        "x-f5xc-discovered-response-time": {
+          "p50_ms": 200,
+          "p95_ms": 800,
+          "p99_ms": 2000,
+          "sample_count": 0,
+          "source": "estimate"
+        }
+      },
+      "delete": {
+        "summary": "Terminate Access Session.",
+        "description": "Terminate an access session.",
+        "operationId": "ves.io.schema.access.access_active_sessions.CustomAPI.TerminateSession",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "401": {
+            "description": "Returned when operation is not authorized.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Returned when there is no permission to access resource.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Returned when resource is not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Returned when operation on resource is conflicting with current value.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Returned when operation has been rejected as it is happening too frequently.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Returned when server encountered an error in processing API.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Returned when service is unavailable temporarily.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Returned when server timed out processing request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_ai_data_bfdp"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "description": "Namespace\nNamespace of the App type for the current request.",
+            "in": "path",
+            "required": true,
+            "x-displayname": "Namespace",
+            "schema": {
+              "type": "string"
+            },
+            "x-f5xc-example": "ns1"
+          },
+          {
+            "name": "id",
+            "description": "ID\n\nx-required\nID of the session to terminate.",
+            "in": "path",
+            "required": true,
+            "x-displayname": "Session ID.",
+            "schema": {
+              "type": "string"
+            },
+            "x-f5xc-example": "9d6d591"
+          }
+        ],
+        "externalDocs": {
+          "description": "Examples of this operation.",
+          "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/other/"
+        },
+        "x-ves-proto-rpc": "ves.io.schema.access.access_active_sessions.CustomAPI.TerminateSession",
+        "tags": [
+          "data"
+        ],
+        "x-f5xc-operation-metadata": {
+          "purpose": "Resource deletion operation",
+          "required_fields": [
+            "path.id",
+            "path.namespace"
+          ],
+          "optional_fields": [],
+          "field_docs": {},
+          "conditions": {
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Resource removed from system",
+              "Associated resources may be affected"
+            ]
+          },
+          "side_effects": {
+            "deletes": [
+              "active-session",
+              "contained_resources"
+            ]
+          },
+          "danger_level": "high",
+          "confirmation_required": true,
+          "common_errors": [
+            {
+              "code": 401,
+              "message": "Authentication required",
+              "solution": "Provide valid API credentials"
+            },
+            {
+              "code": 403,
+              "message": "Permission denied",
+              "solution": "Check access permissions for this operation"
+            },
+            {
+              "code": 404,
+              "message": "Resource not found",
+              "solution": "Verify resource name, namespace, and path"
+            },
+            {
+              "code": 409,
+              "message": "Resource already exists",
+              "solution": "Use different name or update existing resource"
+            },
+            {
+              "code": 429,
+              "message": "Rate limit exceeded",
+              "solution": "Wait before retrying the operation"
+            },
+            {
+              "code": 500,
+              "message": "Server error",
+              "solution": "Retry operation or contact support"
+            }
+          ],
+          "performance_impact": {
+            "latency": "high",
+            "resource_usage": "moderate"
+          }
+        },
+        "x-f5xc-required-fields": [
+          "path.id",
+          "path.namespace"
+        ],
+        "x-f5xc-danger-level": "high",
+        "x-f5xc-confirmation-required": true,
+        "x-f5xc-side-effects": {
+          "deletes": [
+            "active-session",
+            "contained_resources"
+          ]
+        },
+        "x-f5xc-discovered-response-time": {
+          "p50_ms": 500,
+          "p95_ms": 1500,
+          "p99_ms": 4000,
+          "sample_count": 0,
+          "source": "estimate"
+        }
+      },
+      "x-displayname": "Manage Access Active Sessions.",
+      "x-ves-proto-service": "ves.io.schema.access.access_active_sessions.CustomAPI",
+      "x-ves-proto-service-type": "CUSTOM_PUBLIC"
+    },
     "/api/web/namespaces/system/customer_data": {
       "get": {
         "summary": "GET customer data.",
@@ -467,6 +1513,16 @@
                 "schema": {
                   "type": "string",
                   "format": "string"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_ai_assistant"
                 }
               }
             }
@@ -639,6 +1695,16 @@
                 "schema": {
                   "type": "string",
                   "format": "string"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_ai_assistant"
                 }
               }
             }
@@ -840,6 +1906,16 @@
                 }
               }
             }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_ai_assistant"
+                }
+              }
+            }
           }
         },
         "externalDocs": {
@@ -1012,6 +2088,16 @@
                 }
               }
             }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_ai_assistant"
+                }
+              }
+            }
           }
         },
         "requestBody": {
@@ -1105,6 +2191,468 @@
       },
       "x-displayname": "RTIP",
       "x-ves-proto-service": "ves.io.schema.rtip.CustomAPI",
+      "x-ves-proto-service-type": "CUSTOM_PUBLIC"
+    },
+    "/api/config/namespaces/{namespace}/sites-signatures/update": {
+      "post": {
+        "summary": "Update Signatures on Sites.",
+        "description": "Updates WAF signatures for one or more sites.",
+        "operationId": "ves.io.schema.site_signatures.CustomSiteSignaturesApi.UpdateSignatures",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/site_signaturesUpdateSignaturesResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Returned when operation is not authorized.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Returned when there is no permission to access resource.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Returned when resource is not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Returned when operation on resource is conflicting with current value.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Returned when operation has been rejected as it is happening too frequently.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Returned when server encountered an error in processing API.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Returned when service is unavailable temporarily.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Returned when server timed out processing request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_ai_assistant"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "description": "Namespace\nNamespace of the site to update signatures for.",
+            "in": "path",
+            "required": true,
+            "x-displayname": "Namespace",
+            "schema": {
+              "type": "string"
+            },
+            "x-f5xc-example": "system"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/site_signaturesUpdateSignaturesRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "externalDocs": {
+          "description": "Examples of this operation.",
+          "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/other/"
+        },
+        "x-ves-proto-rpc": "ves.io.schema.site_signatures.CustomSiteSignaturesApi.UpdateSignatures",
+        "tags": [
+          "config"
+        ],
+        "x-f5xc-operation-metadata": {
+          "purpose": "Resource creation operation",
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.namespace"
+          ],
+          "optional_fields": [],
+          "field_docs": {},
+          "conditions": {
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Update resource created",
+              "Resource assigned unique identifier"
+            ]
+          },
+          "side_effects": {
+            "creates": [
+              "update"
+            ]
+          },
+          "danger_level": "medium",
+          "confirmation_required": false,
+          "common_errors": [
+            {
+              "code": 401,
+              "message": "Authentication required",
+              "solution": "Provide valid API credentials"
+            },
+            {
+              "code": 403,
+              "message": "Permission denied",
+              "solution": "Check access permissions for this operation"
+            },
+            {
+              "code": 404,
+              "message": "Resource not found",
+              "solution": "Verify resource name, namespace, and path"
+            },
+            {
+              "code": 409,
+              "message": "Resource already exists",
+              "solution": "Use different name or update existing resource"
+            },
+            {
+              "code": 429,
+              "message": "Rate limit exceeded",
+              "solution": "Wait before retrying the operation"
+            },
+            {
+              "code": 500,
+              "message": "Server error",
+              "solution": "Retry operation or contact support"
+            }
+          ],
+          "performance_impact": {
+            "latency": "low",
+            "resource_usage": "low"
+          }
+        },
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.namespace"
+        ],
+        "x-f5xc-danger-level": "medium",
+        "x-f5xc-side-effects": {
+          "creates": [
+            "update"
+          ]
+        },
+        "x-f5xc-discovered-response-time": {
+          "p50_ms": 1000,
+          "p95_ms": 3000,
+          "p99_ms": 8000,
+          "sample_count": 0,
+          "source": "estimate"
+        }
+      },
+      "x-displayname": "Site Signature Update APIs.",
+      "x-ves-proto-service": "ves.io.schema.site_signatures.CustomSiteSignaturesApi",
+      "x-ves-proto-service-type": "CUSTOM_PUBLIC"
+    },
+    "/api/data/namespaces/{namespace}/tmm_session/metrics": {
+      "post": {
+        "summary": "TMM Session Metrics.",
+        "description": "Request to GET monitoring data for tmm session.",
+        "operationId": "ves.io.schema.tmm_session.CustomAPI.TMMSessionMetrics",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/tmm_sessionTMMSessionMetricsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Returned when operation is not authorized.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Returned when there is no permission to access resource.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Returned when resource is not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Returned when operation on resource is conflicting with current value.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Returned when operation has been rejected as it is happening too frequently.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Returned when server encountered an error in processing API.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Returned when service is unavailable temporarily.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Returned when server timed out processing request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_ai_assistant"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "description": "Namespace\nnamespace is used to scope session metrics. Only virtual server in given namespace will be considered.",
+            "in": "path",
+            "required": true,
+            "x-displayname": "Namespace",
+            "schema": {
+              "type": "string"
+            },
+            "x-f5xc-example": "value"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/tmm_sessionTMMSessionMetricsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "externalDocs": {
+          "description": "Examples of this operation.",
+          "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/other/"
+        },
+        "x-ves-proto-rpc": "ves.io.schema.tmm_session.CustomAPI.TMMSessionMetrics",
+        "tags": [
+          "data"
+        ],
+        "x-f5xc-operation-metadata": {
+          "purpose": "Resource creation operation",
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.namespace"
+          ],
+          "optional_fields": [],
+          "field_docs": {},
+          "conditions": {
+            "prerequisites": [
+              "Active namespace"
+            ],
+            "postconditions": [
+              "Metric resource created",
+              "Resource assigned unique identifier"
+            ]
+          },
+          "side_effects": {
+            "creates": [
+              "metric"
+            ]
+          },
+          "danger_level": "medium",
+          "confirmation_required": false,
+          "common_errors": [
+            {
+              "code": 401,
+              "message": "Authentication required",
+              "solution": "Provide valid API credentials"
+            },
+            {
+              "code": 403,
+              "message": "Permission denied",
+              "solution": "Check access permissions for this operation"
+            },
+            {
+              "code": 404,
+              "message": "Resource not found",
+              "solution": "Verify resource name, namespace, and path"
+            },
+            {
+              "code": 409,
+              "message": "Resource already exists",
+              "solution": "Use different name or update existing resource"
+            },
+            {
+              "code": 429,
+              "message": "Rate limit exceeded",
+              "solution": "Wait before retrying the operation"
+            },
+            {
+              "code": 500,
+              "message": "Server error",
+              "solution": "Retry operation or contact support"
+            }
+          ],
+          "performance_impact": {
+            "latency": "low",
+            "resource_usage": "low"
+          }
+        },
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.namespace"
+        ],
+        "x-f5xc-danger-level": "medium",
+        "x-f5xc-side-effects": {
+          "creates": [
+            "metric"
+          ]
+        },
+        "x-f5xc-discovered-response-time": {
+          "p50_ms": 1000,
+          "p95_ms": 3000,
+          "p99_ms": 8000,
+          "sample_count": 0,
+          "source": "estimate"
+        }
+      },
+      "x-displayname": "TMM Session.",
+      "x-ves-proto-service": "ves.io.schema.tmm_session.CustomAPI",
       "x-ves-proto-service-type": "CUSTOM_PUBLIC"
     },
     "/api/config/namespaces/{namespace}/virtual_servers/{name}/associated-objects": {
@@ -1207,6 +2755,16 @@
                 "schema": {
                   "type": "string",
                   "format": "string"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_ai_assistant"
                 }
               }
             }
@@ -1362,7 +2920,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -1396,7 +2954,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -1436,7 +2994,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true
             },
@@ -1448,13 +3006,13 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00",
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "request_body": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/protobufAny"
+                "$ref": "#/components/schemas/protobufAny__ves_io_schema_ai_assistant"
               }
             ],
             "x-f5xc-required-for": {
@@ -1516,7 +3074,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.7,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -1579,7 +3137,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.8,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -1590,7 +3148,7 @@
             },
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00"
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00"
           },
           "ref_value": {
             "allOf": [
@@ -1632,7 +3190,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -1673,7 +3231,7 @@
           }
         }
       },
-      "protobufAny": {
+      "protobufAny__ves_io_schema_ai_assistant": {
         "type": "object",
         "description": "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form\nof utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\nFoo foo = ...;\nAny any;\nany.packfrom(foo);\n...\nIf (any.unpackto(&foo)) {\n...\n}\n\nExample 2: Pack and unpack a message in Java.\n\nFoo foo = ...;\nAny any = any.pack(foo);\n...\nIf (any.is(foo.class)) {\nfoo = any.unpack(foo.class);\n}\n\nExample 3: Pack and unpack a message in Python.\n\nFoo = Foo(...)\nany = Any()\nany.pack(foo)\n...\nIf any.is(foo.descriptor):\nany.unpack(foo)\n...\n\nExample 4: Pack and unpack a message in Go\n\nfoo := &pb.foo{...}\nany, err := ptypes.marshalany(foo)\n...\nFoo := &pb.foo{}\nif err := ptypes.unmarshalany(any, foo); err != nil {\n...\n}\n\nThe pack methods provided by protobuf library will by default use\n'type.googleapis.com/full.type.name' as the type URL and the unpack\nmethods only use the fully qualified type name after the last '/'\nin the type URL, for example \"foo.example.com/x/y.z\" will yield type\nname \"y.z\".\n\nJSON\n====\nThe JSON representation of an `Any` value uses the regular\nrepresentation of the deserialized, embedded message, with an\nadditional field `@type` which contains the type URL. Example:\n\npackage google.profile;\nmessage Person {\nstring first_name = 1;\nstring last_name = 2;\n}\n\n{\n\"@type\": \"type.googleapis.com/google.profile.person\",\n\"firstName\": <string>,\n\"lastName\": <string>\n}\n\nIf the embedded message type is well-known and has a custom JSON\nrepresentation, that representation will be embedded adding a field\n`value` which holds the custom JSON in addition to the `@type`\nfield. Example (for message [google.protobuf.duration][]):\n\n{\n\"@type\": \"type.googleapis.com/google.protobuf.duration\",\n\"value\": \"1.212s\"\n}",
         "properties": {
@@ -1690,7 +3248,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -1713,7 +3271,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -1724,13 +3282,111 @@
             },
             "minLength": 3,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00"
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00"
           }
         },
         "x-f5xc-description-short": "Contains an arbitrary serialized protocol buffer message along with a URL that describes the type of the serialized message.",
         "x-f5xc-description-medium": "Contains an arbitrary serialized protocol buffer message along with a URL that describes the type of the serialized message. Protobuf library provides support to pack/unpack Any values in the form of utility functions or additional generated methods of the Any type. Example 1: Pack and unpack a...",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for protobufAny",
+          "required_fields": [],
+          "mutually_exclusive_groups": [],
+          "example_json": "{}",
+          "example_yaml": "{}"
+        },
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": false
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
+      },
+      "runtimeError__ves_io_schema_ai_assistant": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Configuration parameter for code",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "details": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/protobufAny__ves_io_schema_ai_assistant"
+            },
+            "description": "Configuration parameter for details",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "error": {
+            "type": "string",
+            "description": "Configuration parameter for error",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "message": {
+            "type": "string",
+            "description": "Configuration parameter for message",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          }
+        },
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for runtimeError",
           "required_fields": [],
           "mutually_exclusive_groups": [],
           "example_json": "{}",
@@ -1799,7 +3455,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -1846,7 +3502,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true,
               "byteLength": {
@@ -1861,7 +3517,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00",
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "tenant": {
@@ -1891,7 +3547,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -1904,7 +3560,7 @@
             "x-field-mutability": "read-only",
             "minLength": 12,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00"
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00"
           }
         },
         "x-f5xc-description-short": "Type establishes a direct reference from one object(the referrer) to another(the referred).",
@@ -1917,6 +3573,1443 @@
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"name\": \"contacts-route\"\n}",
           "example_yaml": "name: contacts-route"
+        },
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": false
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
+      },
+      "access_active_sessionsFailedTermination": {
+        "type": "object",
+        "description": "Information about a session that failed to terminate.",
+        "title": "FailedTermination",
+        "x-displayname": "Failed Termination.",
+        "x-ves-proto-message": "ves.io.schema.access.access_active_sessions.FailedTermination",
+        "properties": {
+          "code": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/access_active_sessionsTerminationErrorCode"
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "id": {
+            "type": "string",
+            "description": "ID of the session that failed to terminate.",
+            "title": "id",
+            "x-displayname": "Session ID.",
+            "x-ves-example": "9d6d591",
+            "x-f5xc-example": "9d6d591",
+            "x-f5xc-description-short": "ID of the session that failed to terminate.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "reason": {
+            "type": "string",
+            "description": "Human-readable description of the termination failure.",
+            "title": "reason",
+            "x-displayname": "Failure Reason.",
+            "x-ves-example": "Session not found or already terminated.",
+            "x-f5xc-example": "Session not found or already terminated",
+            "x-f5xc-description-short": "Human-readable description of the termination failure.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "minLength": 27,
+            "x-reconciled-from-discovery": true,
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00"
+          }
+        },
+        "x-f5xc-description-short": "Information about a session that failed to terminate.",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for access_active_sessionsFailedTermination",
+          "required_fields": [],
+          "mutually_exclusive_groups": [],
+          "example_json": "{}",
+          "example_yaml": "{}"
+        },
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": false
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
+      },
+      "access_active_sessionsGetActiveSessionResponse": {
+        "type": "object",
+        "description": "Response structure of active session query.",
+        "title": "GetActiveSessionResponse",
+        "x-displayname": "GET Active Session Response.",
+        "x-ves-proto-message": "ves.io.schema.access.access_active_sessions.GetActiveSessionResponse",
+        "properties": {
+          "client_ip": {
+            "type": "string",
+            "description": "Client IP of the user that connected via the session.",
+            "title": "client_ip",
+            "x-displayname": "Client IP",
+            "x-ves-example": "192.0.2.106.",
+            "x-f5xc-example": "192.0.2.106",
+            "x-f5xc-description-short": "Client IP of the user that connected via the session.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "expiration_time": {
+            "type": "string",
+            "description": "Expiration time of the session in RFC 3339 format.",
+            "title": "expiration_time",
+            "format": "date-time",
+            "x-displayname": "Expiration Time.",
+            "x-ves-example": "2024-08-07T20:58:46Z.",
+            "x-f5xc-example": "2024-08-07T20:58:46Z",
+            "x-f5xc-description-short": "Expiration time of the session in RFC 3339 format.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "format": "date-time",
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "id": {
+            "type": "string",
+            "description": "ID of the session.",
+            "title": "id",
+            "x-displayname": "Session ID.",
+            "x-ves-example": "9d6d591",
+            "x-f5xc-example": "9d6d591",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "last_activity_time": {
+            "type": "string",
+            "description": "Last activity time of the session in RFC 3339 format.",
+            "title": "last_activity_time",
+            "format": "date-time",
+            "x-displayname": "Last Activity Time.",
+            "x-ves-example": "2024-08-06T21:30:12Z.",
+            "x-f5xc-example": "2024-08-06T21:30:12Z",
+            "x-f5xc-description-short": "Last activity time of the session in RFC 3339 format.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "format": "date-time",
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "policy": {
+            "type": "string",
+            "description": "Policy associated with the session.",
+            "title": "policy",
+            "x-displayname": "Policy",
+            "x-ves-example": "Default-policy.",
+            "x-f5xc-example": "default-policy",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "site": {
+            "type": "string",
+            "description": "Site where the session is created.",
+            "title": "site",
+            "x-displayname": "Site",
+            "x-ves-example": "Us-west-2",
+            "x-f5xc-example": "us-west-2",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "start_time": {
+            "type": "string",
+            "description": "Start time of the session in RFC 3339 format.",
+            "title": "start_time",
+            "format": "date-time",
+            "x-displayname": "Start Time.",
+            "x-ves-example": "2024-08-06T20:58:46Z.",
+            "x-f5xc-example": "2024-08-06T20:58:46Z",
+            "x-f5xc-description-short": "Start time of the session in RFC 3339 format.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "format": "date-time",
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/access_active_sessionsSessionStatus"
+              }
+            ],
+            "x-f5xc-example": "active",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "maxLength": 17,
+            "minLength": 17,
+            "x-reconciled-from-discovery": true,
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00"
+          },
+          "username": {
+            "type": "string",
+            "description": "Username used in authentication of this session.",
+            "title": "username",
+            "x-displayname": "Username",
+            "x-ves-example": "TestUser",
+            "x-f5xc-example": "testUser",
+            "x-f5xc-description-short": "Username used in authentication of this session.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "identity",
+              "maxLength": 1024,
+              "minLength": 1,
+              "pattern": "^[a-zA-Z0-9_.-]+$",
+              "characterSet": {
+                "allowed": "[a-zA-Z0-9_.-]",
+                "description": "Alphanumeric with underscores, dots, hyphens"
+              },
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "variables": {
+            "type": "array",
+            "description": "Session variables as key-value pairs.",
+            "title": "variables",
+            "items": {
+              "$ref": "#/components/schemas/access_active_sessionsSessionVariable"
+            },
+            "x-displayname": "Variables",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "virtual_server": {
+            "type": "string",
+            "description": "Virtual server associated with the session.",
+            "title": "virtual_server",
+            "x-displayname": "Virtual Server.",
+            "x-ves-example": "Web-app",
+            "x-f5xc-example": "web-app",
+            "x-f5xc-description-short": "Virtual server associated with the session.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          }
+        },
+        "x-f5xc-description-short": "Response structure of active session query.",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for access_active_sessionsGetActiveSessionResponse",
+          "required_fields": [],
+          "mutually_exclusive_groups": [],
+          "example_json": "{}",
+          "example_yaml": "{}"
+        },
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": false
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
+      },
+      "access_active_sessionsListActiveSessionsItem": {
+        "type": "object",
+        "description": "An object representing an active session.",
+        "title": "ListActiveSessionsItem",
+        "x-displayname": "List Active Session Item.",
+        "x-ves-proto-message": "ves.io.schema.access.access_active_sessions.ListActiveSessionsItem",
+        "properties": {
+          "client_ip": {
+            "type": "string",
+            "description": "Client IP of the user that connected via the session.",
+            "title": "client_ip",
+            "x-displayname": "Client IP",
+            "x-ves-example": "192.0.2.106.",
+            "x-f5xc-example": "192.0.2.106",
+            "x-f5xc-description-short": "Client IP of the user that connected via the session.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "expiration_time": {
+            "type": "string",
+            "description": "Expiration time of the session in RFC 3339 format.",
+            "title": "expiration_time",
+            "format": "date-time",
+            "x-displayname": "Expiration Time.",
+            "x-ves-example": "2024-08-07T20:58:46Z.",
+            "x-f5xc-example": "2024-08-07T20:58:46Z",
+            "x-f5xc-description-short": "Expiration time of the session in RFC 3339 format.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "format": "date-time",
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "id": {
+            "type": "string",
+            "description": "ID of the session.",
+            "title": "id",
+            "x-displayname": "Session ID.",
+            "x-ves-example": "9d6d591",
+            "x-f5xc-example": "9d6d591",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "last_activity_time": {
+            "type": "string",
+            "description": "Last activity time of the session in RFC 3339 format.",
+            "title": "last_activity_time",
+            "format": "date-time",
+            "x-displayname": "Last Activity Time.",
+            "x-ves-example": "2024-08-06T21:30:12Z.",
+            "x-f5xc-example": "2024-08-06T21:30:12Z",
+            "x-f5xc-description-short": "Last activity time of the session in RFC 3339 format.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "format": "date-time",
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "policy": {
+            "type": "string",
+            "description": "Policy associated with the session.",
+            "title": "policy",
+            "x-displayname": "Policy",
+            "x-ves-example": "Default-policy.",
+            "x-f5xc-example": "default-policy",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "site": {
+            "type": "string",
+            "description": "Site where the session is created.",
+            "title": "site",
+            "x-displayname": "Site",
+            "x-ves-example": "Us-west-2",
+            "x-f5xc-example": "us-west-2",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "start_time": {
+            "type": "string",
+            "description": "Start time of the session in RFC 3339 format.",
+            "title": "start_time",
+            "format": "date-time",
+            "x-displayname": "Start Time.",
+            "x-ves-example": "2024-08-06T20:58:46Z.",
+            "x-f5xc-example": "2024-08-06T20:58:46Z",
+            "x-f5xc-description-short": "Start time of the session in RFC 3339 format.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "format": "date-time",
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/access_active_sessionsSessionStatus"
+              }
+            ],
+            "x-f5xc-example": "active",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "maxLength": 17,
+            "minLength": 17,
+            "x-reconciled-from-discovery": true,
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00"
+          },
+          "username": {
+            "type": "string",
+            "description": "Username used in authentication of this session.",
+            "title": "username",
+            "x-displayname": "Username",
+            "x-ves-example": "TestUser",
+            "x-f5xc-example": "testUser",
+            "x-f5xc-description-short": "Username used in authentication of this session.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "identity",
+              "maxLength": 1024,
+              "minLength": 1,
+              "pattern": "^[a-zA-Z0-9_.-]+$",
+              "characterSet": {
+                "allowed": "[a-zA-Z0-9_.-]",
+                "description": "Alphanumeric with underscores, dots, hyphens"
+              },
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "virtual_server": {
+            "type": "string",
+            "description": "Virtual server associated with the session.",
+            "title": "virtual_server",
+            "x-displayname": "Virtual Server.",
+            "x-ves-example": "Web-app",
+            "x-f5xc-example": "web-app",
+            "x-f5xc-description-short": "Virtual server associated with the session.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          }
+        },
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for access_active_sessionsListActiveSessionsItem",
+          "required_fields": [],
+          "mutually_exclusive_groups": [],
+          "example_json": "{}",
+          "example_yaml": "{}"
+        },
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": false
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
+      },
+      "access_active_sessionsListActiveSessionsResponse": {
+        "type": "object",
+        "description": "Response structure for active sessions list with cursor-based pagination.",
+        "title": "ListActiveSessionsResponse",
+        "x-displayname": "List Active Sessions Response.",
+        "x-ves-proto-message": "ves.io.schema.access.access_active_sessions.ListActiveSessionsResponse",
+        "properties": {
+          "count": {
+            "type": "integer",
+            "description": "Total count of all active sessions (across all pages, after applying filters)",
+            "title": "count",
+            "format": "int32",
+            "x-displayname": "Total Count.",
+            "x-ves-example": "150",
+            "x-f5xc-example": "150",
+            "x-f5xc-description-short": "Total count of all active sessions (across all pages, after applying filters).",
+            "x-f5xc-constraints": {
+              "constraintType": "number",
+              "category": "general",
+              "minimum": 0,
+              "maximum": 10000,
+              "multipleOf": 1,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.7,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "items": {
+            "type": "array",
+            "description": "List of active sessions.",
+            "title": "items",
+            "items": {
+              "$ref": "#/components/schemas/access_active_sessionsListActiveSessionsItem"
+            },
+            "x-displayname": "Sessions",
+            "x-f5xc-example": "[\"item1\", \"item2\", \"item3\"]",
+            "x-f5xc-constraints": {
+              "constraintType": "array",
+              "category": "general",
+              "minItems": 0,
+              "maxItems": 256,
+              "uniqueItems": false,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.7,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "next_cursor": {
+            "type": "string",
+            "description": "Cursor for the next page of results.",
+            "title": "next_cursor",
+            "x-displayname": "Next Cursor.",
+            "x-ves-example": "EyJzZXF1ZW5jZV9pZCI6MTIzNDU2fQ==.",
+            "x-f5xc-example": "eyJzZXF1ZW5jZV9pZCI6MTIzNDU2fQ==",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "previous_cursor": {
+            "type": "string",
+            "description": "Cursor for the previous page of results.",
+            "title": "previous_cursor",
+            "x-displayname": "Previous Cursor.",
+            "x-ves-example": "EyJzZXF1ZW5jZV9pZCI6MTIzNDAwfQ==.",
+            "x-f5xc-example": "eyJzZXF1ZW5jZV9pZCI6MTIzNDAwfQ==",
+            "x-f5xc-description-short": "Cursor for the previous page of results.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "total_established": {
+            "type": "integer",
+            "description": "Total count of sessions with ESTABLISHED status (after applying filters)",
+            "title": "total_established",
+            "format": "int32",
+            "x-displayname": "Total Established.",
+            "x-ves-example": "105",
+            "x-f5xc-example": "105",
+            "x-f5xc-description-short": "Total count of sessions with ESTABLISHED status (after applying filters).",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "total_pending": {
+            "type": "integer",
+            "description": "Total count of sessions with PENDING status (after applying filters)",
+            "title": "total_pending",
+            "format": "int32",
+            "x-displayname": "Total Pending.",
+            "x-ves-example": "45",
+            "x-f5xc-example": "45",
+            "x-f5xc-description-short": "Total count of sessions with PENDING status (after applying filters).",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          }
+        },
+        "x-f5xc-description-short": "Response structure for active sessions list with cursor-based pagination.",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for access_active_sessionsListActiveSessionsResponse",
+          "required_fields": [],
+          "mutually_exclusive_groups": [],
+          "example_json": "{}",
+          "example_yaml": "{}"
+        },
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": false
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
+      },
+      "access_active_sessionsSessionStatus": {
+        "type": "string",
+        "description": "The actual status of an active session\n\nSession status is pending\nSession status is established.",
+        "title": "SessionStatus",
+        "enum": [
+          "PENDING",
+          "ESTABLISHED"
+        ],
+        "default": "PENDING",
+        "x-displayname": "Session Status.",
+        "x-ves-proto-enum": "ves.io.schema.access.access_active_sessions.SessionStatus",
+        "x-f5xc-description-short": "The actual status of an active session Session status is pending Session status is established.",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for access_active_sessionsSessionStatus",
+          "required_fields": [],
+          "mutually_exclusive_groups": [],
+          "example_json": "\"PENDING\"",
+          "example_yaml": "PENDING\n..."
+        },
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": false
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
+      },
+      "access_active_sessionsSessionVariable": {
+        "type": "object",
+        "description": "A key-value pair representing a session variable.",
+        "title": "SessionVariable",
+        "x-displayname": "Session Variable.",
+        "x-ves-proto-message": "ves.io.schema.access.access_active_sessions.SessionVariable",
+        "properties": {
+          "value": {
+            "type": "string",
+            "description": "The value of the session variable.",
+            "title": "value",
+            "x-displayname": "Variable Value.",
+            "x-ves-example": "Admin",
+            "x-f5xc-example": "admin",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "minLength": 3,
+            "x-reconciled-from-discovery": true,
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00"
+          },
+          "variable": {
+            "type": "string",
+            "description": "The name of the session variable.",
+            "title": "variable",
+            "x-displayname": "Variable Name.",
+            "x-ves-example": "session.user.role.",
+            "x-f5xc-example": "session.user.role",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          }
+        },
+        "x-f5xc-description-short": "Key-value pair representing a session variable.",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for access_active_sessionsSessionVariable",
+          "required_fields": [],
+          "mutually_exclusive_groups": [],
+          "example_json": "{}",
+          "example_yaml": "{}"
+        },
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": false
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
+      },
+      "access_active_sessionsTerminateSessionsRequest": {
+        "type": "object",
+        "description": "Request structure for batch termination of access sessions.",
+        "title": "TerminateSessionsRequest",
+        "x-displayname": "Terminate Multiple Access Sessions Request.",
+        "x-ves-proto-message": "ves.io.schema.access.access_active_sessions.TerminateSessionsRequest",
+        "properties": {
+          "ids": {
+            "type": "array",
+            "description": "List of session IDs to terminate (maximum 100 per request)",
+            "title": "ids",
+            "minItems": 1,
+            "maxItems": 100,
+            "items": {
+              "type": "string"
+            },
+            "x-displayname": "Session IDs.",
+            "x-ves-required": "true",
+            "x-ves-validation-rules": {
+              "ves.io.schema.rules.message.required": "true",
+              "ves.io.schema.rules.repeated.max_items": "100",
+              "ves.io.schema.rules.repeated.min_items": "1"
+            },
+            "x-f5xc-example": "[\"9d6d591\", \"946e4d5c\", \"6b4428e\"]",
+            "x-validation-rules": {
+              "ves.io.schema.rules.message.required": "true",
+              "ves.io.schema.rules.repeated.max_items": "100",
+              "ves.io.schema.rules.repeated.min_items": "1"
+            },
+            "x-f5xc-description-short": "List of session IDs to terminate (maximum 100 per request).",
+            "x-f5xc-constraints": {
+              "constraintType": "array",
+              "category": "discovery",
+              "minItems": 1,
+              "maxItems": 100,
+              "deterministic": true,
+              "metadata": {
+                "source": "discovery",
+                "confidence": 0.99,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": true,
+              "create": true,
+              "update": false,
+              "read": false
+            }
+          },
+          "namespace": {
+            "type": "string",
+            "description": "Namespace of the App type for the current request (path parameter)",
+            "title": "namespace",
+            "x-displayname": "Namespace",
+            "x-ves-example": "Ns1",
+            "x-f5xc-example": "ns1",
+            "x-f5xc-description-short": "Namespace of the App type for the current request (path parameter).",
+            "maxLength": 63,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "naming",
+              "maxLength": 63,
+              "minLength": 1,
+              "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+              "characterSet": {
+                "allowed": "[a-z0-9-]",
+                "restricted": "[^a-z0-9-]",
+                "required": "[a-z0-9]",
+                "description": "Lowercase letter start, alphanumeric with hyphens, alphanumeric end"
+              },
+              "format": "dns-label",
+              "formatDescription": "DNS-1035 label: must start with a lowercase letter",
+              "validation": {
+                "rfc": "RFC 1035",
+                "standard": "DNS-1035 label (alpha-first)"
+              },
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.99,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              },
+              "deterministic": true
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "minLength": 1,
+            "x-reconciled-from-discovery": true,
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00",
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
+          }
+        },
+        "x-f5xc-description-short": "Request structure for batch termination of access sessions.",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for access_active_sessionsTerminateSessionsRequest",
+          "required_fields": [
+            "ids"
+          ],
+          "mutually_exclusive_groups": [],
+          "example_json": "{\n  \"ids\": [\n    \"value\"\n  ]\n}",
+          "example_yaml": "ids:\n- value"
+        },
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": false
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
+      },
+      "access_active_sessionsTerminateSessionsResponse": {
+        "type": "object",
+        "description": "Response structure for batch termination showing which sessions were successfully terminated and which failed.\nWhen both succeeded and failed arrays have entries, HTTP 207 Multi-Status should be returned.\nWhen only succeeded has entries, HTTP 200 OK should be returned.\nWhen only failed has entries, HTTP 4xx/5xx should be returned based on error types.",
+        "title": "TerminateSessionsResponse",
+        "x-displayname": "Terminate Multiple Access Sessions Response.",
+        "x-ves-proto-message": "ves.io.schema.access.access_active_sessions.TerminateSessionsResponse",
+        "properties": {
+          "failed": {
+            "type": "array",
+            "description": "List of sessions that failed to terminate with reasons.",
+            "title": "failed",
+            "items": {
+              "$ref": "#/components/schemas/access_active_sessionsFailedTermination"
+            },
+            "x-displayname": "Failed Terminations.",
+            "x-f5xc-description-short": "List of sessions that failed to terminate with reasons.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "succeeded": {
+            "type": "array",
+            "description": "List of session IDs that were successfully terminated.",
+            "title": "succeeded",
+            "items": {
+              "type": "string"
+            },
+            "x-displayname": "Successfully Terminated.",
+            "x-f5xc-description-short": "List of session IDs that were successfully terminated.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          }
+        },
+        "x-f5xc-description-short": "Response structure for batch termination showing which sessions were successfully terminated and which failed.",
+        "x-f5xc-description-medium": "Response structure for batch termination showing which sessions were successfully terminated and which failed. When both succeeded and failed arrays have entries, HTTP 207 Multi-Status should be returned. When only succeeded has entries, HTTP 200 OK should be returned.",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for access_active_sessionsTerminateSessionsResponse",
+          "required_fields": [],
+          "mutually_exclusive_groups": [],
+          "example_json": "{}",
+          "example_yaml": "{}"
+        },
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": false
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
+      },
+      "access_active_sessionsTerminationErrorCode": {
+        "type": "string",
+        "description": "Error codes for failed session terminations (uses standard gRPC status codes)\n\nTermination was successful (gRPC OK)\nSession not found or already terminated (gRPC NOT_FOUND)\nInternal system error occurred during termination (gRPC INTERNAL)",
+        "title": "TerminationErrorCode",
+        "enum": [
+          "OK",
+          "NOT_FOUND",
+          "INTERNAL"
+        ],
+        "default": "OK",
+        "x-displayname": "Termination Error Code.",
+        "x-ves-proto-enum": "ves.io.schema.access.access_active_sessions.TerminationErrorCode",
+        "x-f5xc-description-short": "Error codes for failed session terminations (uses standard gRPC status codes) Termination was successful (gRPC OK) Session not found or already...",
+        "x-f5xc-description-medium": "Error codes for failed session terminations (uses standard gRPC status codes) Termination was successful (gRPC OK) Session not found or already terminated (gRPC NOT_FOUND) Internal system error occurred during termination (gRPC INTERNAL).",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for access_active_sessionsTerminationErrorCode",
+          "required_fields": [],
+          "mutually_exclusive_groups": [],
+          "example_json": "\"OK\"",
+          "example_yaml": "OK\n..."
+        },
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": false
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
+      },
+      "protobufAny__ves_io_schema_ai_data_bfdp": {
+        "type": "object",
+        "properties": {
+          "type_url": {
+            "type": "string",
+            "description": "Uniform Resource Locator",
+            "x-f5xc-description-short": "URL identifying the protocol buffer message type.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "value": {
+            "type": "string",
+            "format": "byte",
+            "description": "Configuration parameter for value",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "format": "byte",
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "minLength": 3,
+            "x-reconciled-from-discovery": true,
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00"
+          }
+        },
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for protobufAny",
+          "required_fields": [],
+          "mutually_exclusive_groups": [],
+          "example_json": "{}",
+          "example_yaml": "{}"
+        },
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": false
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
+      },
+      "runtimeError__ves_io_schema_ai_data_bfdp": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Configuration parameter for code",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "details": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/protobufAny__ves_io_schema_ai_data_bfdp"
+            },
+            "description": "Configuration parameter for details",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "error": {
+            "type": "string",
+            "description": "Configuration parameter for error",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "message": {
+            "type": "string",
+            "description": "Configuration parameter for message",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          }
+        },
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for runtimeError",
+          "required_fields": [],
+          "mutually_exclusive_groups": [],
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "other",
         "x-f5xc-namespace-profile": {
@@ -1957,13 +5050,13 @@
             "x-ves-validation-rules": {
               "ves.io.schema.rules.string.max_len": "10000",
               "ves.io.schema.rules.string.min_len": "1",
-              "ves.io.schema.rules.string.pattern": "^\\\\S.*\\\\S$|^\\\\S$"
+              "ves.io.schema.rules.string.pattern": "^\\\\S[\\\\s\\\\S]*\\\\S$|^\\\\S$"
             },
             "x-f5xc-example": "If incident occurs, follow Tier 1 support guidelines and escalate after 30 minutes.",
             "x-validation-rules": {
               "ves.io.schema.rules.string.max_len": "10000",
               "ves.io.schema.rules.string.min_len": "1",
-              "ves.io.schema.rules.string.pattern": "^\\\\S.*\\\\S$|^\\\\S$"
+              "ves.io.schema.rules.string.pattern": "^\\\\S[\\\\s\\\\S]*\\\\S$|^\\\\S$"
             },
             "x-f5xc-description-short": "Public instructions or handling notes meant for customers.",
             "x-f5xc-constraints": {
@@ -1971,12 +5064,12 @@
               "category": "discovery",
               "minLength": 1,
               "maxLength": 10000,
-              "pattern": "^\\\\S.*\\\\S$|^\\\\S$",
+              "pattern": "^\\\\S[\\\\s\\\\S]*\\\\S$|^\\\\S$",
               "deterministic": true,
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -2039,7 +5132,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -2097,13 +5190,13 @@
             "x-ves-validation-rules": {
               "ves.io.schema.rules.string.max_len": "10000",
               "ves.io.schema.rules.string.min_len": "1",
-              "ves.io.schema.rules.string.pattern": "^\\\\S.*\\\\S$|^\\\\S$"
+              "ves.io.schema.rules.string.pattern": "^\\\\S[\\\\s\\\\S]*\\\\S$|^\\\\S$"
             },
             "x-f5xc-example": "Follow Tier 1 support guidelines and escalate after 30 minutes.",
             "x-validation-rules": {
               "ves.io.schema.rules.string.max_len": "10000",
               "ves.io.schema.rules.string.min_len": "1",
-              "ves.io.schema.rules.string.pattern": "^\\\\S.*\\\\S$|^\\\\S$"
+              "ves.io.schema.rules.string.pattern": "^\\\\S[\\\\s\\\\S]*\\\\S$|^\\\\S$"
             },
             "x-f5xc-description-short": "Public instructions or handling notes meant for customers.",
             "x-f5xc-constraints": {
@@ -2111,12 +5204,12 @@
               "category": "discovery",
               "minLength": 1,
               "maxLength": 10000,
-              "pattern": "^\\\\S.*\\\\S$|^\\\\S$",
+              "pattern": "^\\\\S[\\\\s\\\\S]*\\\\S$|^\\\\S$",
               "deterministic": true,
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -2208,13 +5301,13 @@
             "x-ves-validation-rules": {
               "ves.io.schema.rules.string.max_len": "10000",
               "ves.io.schema.rules.string.min_len": "1",
-              "ves.io.schema.rules.string.pattern": "^\\\\S.*\\\\S$|^\\\\S$"
+              "ves.io.schema.rules.string.pattern": "^\\\\S[\\\\s\\\\S]*\\\\S$|^\\\\S$"
             },
             "x-f5xc-example": "If this tenant is impacted, escalate to SecOps Tier 2 immediately.",
             "x-validation-rules": {
               "ves.io.schema.rules.string.max_len": "10000",
               "ves.io.schema.rules.string.min_len": "1",
-              "ves.io.schema.rules.string.pattern": "^\\\\S.*\\\\S$|^\\\\S$"
+              "ves.io.schema.rules.string.pattern": "^\\\\S[\\\\s\\\\S]*\\\\S$|^\\\\S$"
             },
             "x-f5xc-description-short": "Internal text notes or handling guidelines meant only for F5 Support groups.",
             "x-f5xc-constraints": {
@@ -2222,12 +5315,12 @@
               "category": "discovery",
               "minLength": 1,
               "maxLength": 10000,
-              "pattern": "^\\\\S.*\\\\S$|^\\\\S$",
+              "pattern": "^\\\\S[\\\\s\\\\S]*\\\\S$|^\\\\S$",
               "deterministic": true,
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -2304,6 +5397,1268 @@
           }
         }
       },
+      "site_signaturesUpdateSignaturesRequest": {
+        "type": "object",
+        "description": "The request to update the WAF signatures for one or more sites.",
+        "title": "UpdateSignaturesRequest",
+        "x-displayname": "Update Signatures on Sites Request.",
+        "x-ves-proto-message": "ves.io.schema.site_signatures.UpdateSignaturesRequest",
+        "properties": {
+          "namespace": {
+            "type": "string",
+            "description": "Namespace of the site to update signatures for.",
+            "title": "Namespace",
+            "x-displayname": "Namespace",
+            "x-ves-example": "System",
+            "x-f5xc-example": "system",
+            "x-f5xc-description-short": "Namespace of the site to update signatures for.",
+            "maxLength": 63,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "naming",
+              "maxLength": 63,
+              "minLength": 1,
+              "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+              "characterSet": {
+                "allowed": "[a-z0-9-]",
+                "restricted": "[^a-z0-9-]",
+                "required": "[a-z0-9]",
+                "description": "Lowercase letter start, alphanumeric with hyphens, alphanumeric end"
+              },
+              "format": "dns-label",
+              "formatDescription": "DNS-1035 label: must start with a lowercase letter",
+              "validation": {
+                "rfc": "RFC 1035",
+                "standard": "DNS-1035 label (alpha-first)"
+              },
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.99,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              },
+              "deterministic": true
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "minLength": 1,
+            "x-reconciled-from-discovery": true,
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00",
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
+          },
+          "site_names": {
+            "type": "array",
+            "description": "List of site names to update. If empty, no sites will be updated.",
+            "title": "Site Names",
+            "items": {
+              "type": "string"
+            },
+            "x-displayname": "Site Names.",
+            "x-f5xc-example": "example-resource",
+            "x-f5xc-description-short": "List of site names to update. If empty, no sites will be updated.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          }
+        },
+        "x-f5xc-description-short": "The request to update the WAF signatures for one or more sites.",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for site_signaturesUpdateSignaturesRequest",
+          "required_fields": [],
+          "mutually_exclusive_groups": [],
+          "example_json": "{}",
+          "example_yaml": "{}"
+        },
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "system"
+            ],
+            "enforced": false
+          },
+          "recommendation": {
+            "primary": "system",
+            "alternatives": [],
+            "rationale": "Sites are platform-level infrastructure"
+          },
+          "classification": {
+            "category": "infrastructure",
+            "multi_tenant_pattern": "none"
+          }
+        }
+      },
+      "site_signaturesUpdateSignaturesResponse": {
+        "type": "object",
+        "description": "The response after attempting to update the WAF signatures for one or more sites.",
+        "title": "UpdateSignaturesOnSitesResponse",
+        "x-displayname": "Update Signatures on Sites Response.",
+        "x-ves-proto-message": "ves.io.schema.site_signatures.UpdateSignaturesResponse",
+        "properties": {
+          "status_per_site": {
+            "type": "object",
+            "description": "Status of the signature update for each site.",
+            "title": "Status Per Site",
+            "x-displayname": "Status Per Site.",
+            "x-f5xc-example": "{\"site1\"{\"updated\": true, \"status\": \"Signatures updated successfully to version 10.10.2025\"}, \"site2\": {\"updated\": false, \"status\": \"Site not found\"}}",
+            "x-f5xc-description-short": "Status of the signature update for each site.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          }
+        },
+        "x-f5xc-description-short": "The response after attempting to update the WAF signatures for one or more sites.",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for site_signaturesUpdateSignaturesResponse",
+          "required_fields": [],
+          "mutually_exclusive_groups": [],
+          "example_json": "{}",
+          "example_yaml": "{}"
+        },
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "system"
+            ],
+            "enforced": false
+          },
+          "recommendation": {
+            "primary": "system",
+            "alternatives": [],
+            "rationale": "Sites are platform-level infrastructure"
+          },
+          "classification": {
+            "category": "infrastructure",
+            "multi_tenant_pattern": "none"
+          }
+        }
+      },
+      "schemaMetricLabelOp": {
+        "type": "string",
+        "description": "The operator to use when filtering metrics based on label values.",
+        "title": "Metric Label Operator",
+        "enum": [
+          "EQ",
+          "NEQ"
+        ],
+        "default": "EQ",
+        "x-displayname": "Metric Label Operator.",
+        "x-ves-proto-enum": "ves.io.schema.MetricLabelOp",
+        "x-f5xc-description-short": "The operator to use when filtering metrics based on label values.",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for schemaMetricLabelOp",
+          "required_fields": [],
+          "mutually_exclusive_groups": [],
+          "example_json": "\"EQ\"",
+          "example_yaml": "EQ\n..."
+        },
+        "x-f5xc-cli-domain": "label",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": false
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
+      },
+      "schemaMetricValue": {
+        "type": "object",
+        "description": "Metric data contains timestamp and the value.",
+        "title": "Metric Value",
+        "x-displayname": "Metric Value.",
+        "x-ves-proto-message": "ves.io.schema.MetricValue",
+        "properties": {
+          "timestamp": {
+            "type": "number",
+            "description": "Timestamp",
+            "title": "Timestamp",
+            "format": "double",
+            "x-displayname": "Timestamp",
+            "x-ves-example": "1570007981.",
+            "x-f5xc-example": "1570007981",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "trend_value": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaTrendValue"
+              }
+            ],
+            "x-f5xc-description-short": "Configuration parameter for trend value.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "value": {
+            "type": "string",
+            "description": "Configuration parameter for value",
+            "title": "Value",
+            "x-displayname": "Value",
+            "x-ves-example": "15",
+            "x-f5xc-example": "15",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "minLength": 3,
+            "x-reconciled-from-discovery": true,
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00"
+          }
+        },
+        "x-f5xc-description-short": "Metric data contains timestamp and the value.",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for schemaMetricValue",
+          "required_fields": [],
+          "mutually_exclusive_groups": [],
+          "example_json": "{}",
+          "example_yaml": "{}"
+        },
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": false
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
+      },
+      "schemaTrendSentiment": {
+        "type": "string",
+        "description": "Trend sentiment\n\nIndicates trend sentiment is positive\nIndicates trend sentiment is negative.",
+        "title": "Trend Sentiment",
+        "enum": [
+          "TREND_SENTIMENT_NONE",
+          "TREND_SENTIMENT_POSITIVE",
+          "TREND_SENTIMENT_NEGATIVE"
+        ],
+        "default": "TREND_SENTIMENT_NONE",
+        "x-displayname": "Trend Sentiment.",
+        "x-ves-proto-enum": "ves.io.schema.TrendSentiment",
+        "x-f5xc-description-short": "Trend sentiment Indicates trend sentiment is positive Indicates trend sentiment is negative.",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for schemaTrendSentiment",
+          "required_fields": [],
+          "mutually_exclusive_groups": [],
+          "example_json": "\"TREND_SENTIMENT_NONE\"",
+          "example_yaml": "TREND_SENTIMENT_NONE\n..."
+        },
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": false
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
+      },
+      "schemaTrendValue": {
+        "type": "object",
+        "description": "Trend value contains trend value, trend sentiment and trend calculation description and window size.",
+        "title": "Trend Value",
+        "x-displayname": "Trend Value.",
+        "x-ves-proto-message": "ves.io.schema.TrendValue",
+        "properties": {
+          "description": {
+            "type": "string",
+            "description": "Description of the method used to calculate trend.",
+            "title": "Description",
+            "x-displayname": "Description.",
+            "x-ves-example": "Trend was calculated by comparing the avg of window size intervals of end-start Time and last window time interval.",
+            "x-f5xc-example": "Trend was calculated by comparing the avg of window size intervals of end-start Time and last window time interval",
+            "x-f5xc-description-short": "Description of the method used to calculate trend.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "content",
+              "maxLength": 1024,
+              "minLength": 0,
+              "characterSet": {
+                "description": "Free text with UTF-8 support"
+              },
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.8,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "minLength": 21,
+            "x-reconciled-from-discovery": true,
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00"
+          },
+          "previous_value": {
+            "type": "string",
+            "description": "Configuration parameter for previous value",
+            "title": "Previous Value",
+            "x-displayname": "Previous Value.",
+            "x-ves-example": "200.00",
+            "x-f5xc-example": "200.00",
+            "x-f5xc-description-short": "Configuration parameter for previous value.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "sentiment": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaTrendSentiment"
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "value": {
+            "type": "string",
+            "description": "Configuration parameter for value",
+            "title": "Value",
+            "x-displayname": "Value",
+            "x-ves-example": "-15",
+            "x-f5xc-example": "-15",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "minLength": 3,
+            "x-reconciled-from-discovery": true,
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00"
+          }
+        },
+        "x-f5xc-description-short": "Trend value contains trend value, trend sentiment and trend calculation description and window size.",
+        "x-f5xc-description-medium": "Trend value contains trend value, trend sentiment and trend calculation description and window size.",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for schemaTrendValue",
+          "required_fields": [],
+          "mutually_exclusive_groups": [],
+          "example_json": "{}",
+          "example_yaml": "{}"
+        },
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": false
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
+      },
+      "schemaUnitType": {
+        "type": "string",
+        "description": "UnitType is enumeration of units for scalar fields.",
+        "title": "UnitType",
+        "enum": [
+          "UNIT_MILLISECONDS",
+          "UNIT_SECONDS",
+          "UNIT_MINUTES",
+          "UNIT_HOURS",
+          "UNIT_DAYS",
+          "UNIT_BYTES",
+          "UNIT_KBYTES",
+          "UNIT_MBYTES",
+          "UNIT_GBYTES",
+          "UNIT_TBYTES",
+          "UNIT_KIBIBYTES",
+          "UNIT_MIBIBYTES",
+          "UNIT_GIBIBYTES",
+          "UNIT_TEBIBYTES",
+          "UNIT_BITS_PER_SECOND",
+          "UNIT_BYTES_PER_SECOND",
+          "UNIT_KBITS_PER_SECOND",
+          "UNIT_KBYTES_PER_SECOND",
+          "UNIT_MBITS_PER_SECOND",
+          "UNIT_MBYTES_PER_SECOND",
+          "UNIT_CONNECTIONS_PER_SECOND",
+          "UNIT_ERRORS_PER_SECOND",
+          "UNIT_PACKETS_PER_SECOND",
+          "UNIT_REQUESTS_PER_SECOND",
+          "UNIT_PACKETS",
+          "UNIT_PERCENTAGE",
+          "UNIT_COUNT"
+        ],
+        "default": "UNIT_MILLISECONDS",
+        "x-displayname": "Unit",
+        "x-ves-proto-enum": "ves.io.schema.UnitType",
+        "x-f5xc-description-short": "UnitType is enumeration of units for scalar fields.",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for schemaUnitType",
+          "required_fields": [],
+          "mutually_exclusive_groups": [],
+          "example_json": "\"UNIT_MILLISECONDS\"",
+          "example_yaml": "UNIT_MILLISECONDS\n..."
+        },
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": false
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
+      },
+      "schematmm_sessionMetricType": {
+        "type": "string",
+        "description": "X-displayName: TMM Session Metric Type\"\nFieldSelector specifies the metrics that can be queried for virtual servers.\n\nIndicates field not being set\nx-unit: \"count\"\nTotal number of active sessions\nx-unit: \"count\"\nTotal number of allowed sessions\nx-unit: \"count\"\nTotal number of denied Session\nx-unit: \"count\"\nTotal Number of Session\nx-unit: \"count\"\nTotal Number of Session Logout\nx-unit: \"count\"\nTotal Number of Established Timed Out Session\nx-unit: \"count\"\nTotal Number of Evaluation Timed Out Session\nx-unit: \"count\"\nTotal Number of Admin Terminated Session.",
+        "title": "TMM Session Metric Type",
+        "enum": [
+          "METRIC_TYPE_NONE",
+          "METRIC_TYPE_ACTIVE",
+          "METRIC_TYPE_ALLOWED",
+          "METRIC_TYPE_DENIED",
+          "METRIC_TYPE_TOTAL",
+          "METRIC_TYPE_LOGOUT",
+          "METRIC_TYPE_ESTABLISHED_TIMEOUT",
+          "METRIC_TYPE_EVALUATION_TIMEOUT",
+          "METRIC_TYPE_ADMIN_TERMINATED"
+        ],
+        "default": "METRIC_TYPE_NONE",
+        "x-displayname": "",
+        "x-ves-proto-enum": "ves.io.schema.tmm_session.MetricType",
+        "x-f5xc-description-short": "X-displayName: TMM Session Metric Type\" FieldSelector specifies the metrics that can be queried for virtual servers.",
+        "x-f5xc-description-medium": "X-displayName: TMM Session Metric Type\" FieldSelector specifies the metrics that can be queried for virtual servers. Indicates field not being set x-unit: \"count\" Total number of active sessions x-unit: \"count\" Total number of allowed sessions x-unit: \"count\" Total number of denied Session...",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for schematmm_sessionMetricType",
+          "required_fields": [],
+          "mutually_exclusive_groups": [],
+          "example_json": "\"METRIC_TYPE_NONE\"",
+          "example_yaml": "METRIC_TYPE_NONE\n..."
+        },
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": false
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
+      },
+      "schematmm_sessionMetricTypeData": {
+        "type": "object",
+        "description": "Metric Type Data contains key/value pair that uniquely identifies the group_by labels specified in the request.",
+        "title": "Metric Type Data",
+        "x-displayname": "Metric Type Data.",
+        "x-ves-proto-message": "ves.io.schema.tmm_session.MetricTypeData",
+        "properties": {
+          "key": {
+            "type": "object",
+            "description": "Key contains the name/value pair.\n\"name\" is the label name defined in \"MetricLabel\"",
+            "title": "Key",
+            "x-displayname": "Key",
+            "x-f5xc-example": "[REDACTED_PUBLIC_KEY]",
+            "x-f5xc-description-short": "Key contains the name/value pair. \"name\" is the label name defined in \"MetricLabel\".",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "maxLength": 16,
+            "minLength": 7,
+            "x-reconciled-from-discovery": true,
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00"
+          },
+          "value": {
+            "type": "array",
+            "description": "List of metric values.",
+            "title": "Value",
+            "items": {
+              "$ref": "#/components/schemas/schemaMetricValue"
+            },
+            "x-displayname": "Value",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "maxLength": 15,
+            "minLength": 3,
+            "x-reconciled-from-discovery": true,
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00"
+          }
+        },
+        "x-f5xc-description-short": "Metric Type Data contains key/value pair that uniquely identifies the group_by labels specified in the request.",
+        "x-f5xc-description-medium": "Metric Type Data contains key/value pair that uniquely identifies the group_by labels specified in the request.",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for schematmm_sessionMetricTypeData",
+          "required_fields": [],
+          "mutually_exclusive_groups": [],
+          "example_json": "{}",
+          "example_yaml": "{}"
+        },
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": false
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
+      },
+      "tmm_sessionLabelFilter": {
+        "type": "object",
+        "description": "Metrics used to render the session metrics that are tagged with labels listed in the enum Label.\nLabel Filter is used to filter the timeseries that match the specified label key/value\nand the operator.",
+        "title": "Label Filter",
+        "x-displayname": "Label Filter.",
+        "x-ves-proto-message": "ves.io.schema.tmm_session.LabelFilter",
+        "properties": {
+          "label": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/tmm_sessionMetricLabel"
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "op": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaMetricLabelOp"
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "value": {
+            "type": "string",
+            "description": "Value of the label.",
+            "title": "Value",
+            "maxLength": 256,
+            "x-displayname": "Value",
+            "x-ves-example": "Virtual-server-1.",
+            "x-ves-validation-rules": {
+              "ves.io.schema.rules.string.max_len": "256"
+            },
+            "x-f5xc-example": "virtual-server-1",
+            "x-validation-rules": {
+              "ves.io.schema.rules.string.max_len": "256"
+            },
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "discovery",
+              "maxLength": 256,
+              "deterministic": true,
+              "metadata": {
+                "source": "discovery",
+                "confidence": 0.99,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "minLength": 3,
+            "x-reconciled-from-discovery": true,
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00"
+          }
+        },
+        "x-f5xc-description-short": "Metrics used to render the session metrics that are tagged with labels listed in the enum Label.",
+        "x-f5xc-description-medium": "Metrics used to render the session metrics that are tagged with labels listed in the enum Label. Label Filter is used to filter the timeseries that match the specified label key/value and the operator.",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for tmm_sessionLabelFilter",
+          "required_fields": [],
+          "mutually_exclusive_groups": [],
+          "example_json": "{}",
+          "example_yaml": "{}"
+        },
+        "x-f5xc-cli-domain": "label",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": false
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
+      },
+      "tmm_sessionMetricLabel": {
+        "type": "string",
+        "description": "Metrics used to construct the session metrics are tagged with these labels and therefore\nthe metrics can be sliced and diced based on one or more of these labels.\n\nIndicates the field not being set\nIdentifies the workspace where the service is deployed\nIdentifies the virtual server.",
+        "title": "Label",
+        "enum": [
+          "METRIC_LABEL_NONE",
+          "METRIC_LABEL_NAMESPACE",
+          "METRIC_LABEL_VIRTUAL_SERVER"
+        ],
+        "default": "METRIC_LABEL_NONE",
+        "x-displayname": "Label",
+        "x-ves-proto-enum": "ves.io.schema.tmm_session.MetricLabel",
+        "x-f5xc-description-short": "Metrics used to construct the session metrics are tagged with these labels and therefore the metrics can be sliced and diced based on one or more...",
+        "x-f5xc-description-medium": "Metrics used to construct the session metrics are tagged with these labels and therefore the metrics can be sliced and diced based on one or more of these labels. Indicates the field not being set Identifies the workspace where the service is deployed Identifies the virtual server.",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for tmm_sessionMetricLabel",
+          "required_fields": [],
+          "mutually_exclusive_groups": [],
+          "example_json": "\"METRIC_LABEL_NONE\"",
+          "example_yaml": "METRIC_LABEL_NONE\n..."
+        },
+        "x-f5xc-cli-domain": "label",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": false
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
+      },
+      "tmm_sessionTMMSessionData": {
+        "type": "object",
+        "description": "TMM Session data contains the metric type and the corresponding metric value.",
+        "title": "TMM Session Data",
+        "x-displayname": "TMM Session Data.",
+        "x-ves-proto-message": "ves.io.schema.tmm_session.TMMSessionData",
+        "properties": {
+          "metric": {
+            "type": "array",
+            "description": "List of metrics.",
+            "title": "Metrics",
+            "items": {
+              "$ref": "#/components/schemas/schematmm_sessionMetricTypeData"
+            },
+            "x-displayname": "Metric",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "type": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schematmm_sessionMetricType"
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "unit": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaUnitType"
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          }
+        },
+        "x-f5xc-description-short": "TMM Session data contains the metric type and the corresponding metric value.",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for tmm_sessionTMMSessionData",
+          "required_fields": [],
+          "mutually_exclusive_groups": [],
+          "example_json": "{}",
+          "example_yaml": "{}"
+        },
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": false
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
+      },
+      "tmm_sessionTMMSessionMetricsRequest": {
+        "type": "object",
+        "description": "TMM session API is used to GET session metrics.",
+        "title": "TMM Session Request",
+        "x-displayname": "TMM Session Request.",
+        "x-ves-proto-message": "ves.io.schema.tmm_session.TMMSessionMetricsRequest",
+        "properties": {
+          "end_time": {
+            "type": "string",
+            "description": "End time of metric collection from which data will be considered to build dashboard.\nFormat: unix_timestamp|RFC 3339\n\nOptional: If not specified, then the end_time will be evaluated to start_time+10m\nIf start_time is not specified, then the end_time will be evaluated to <current time>",
+            "title": "End time",
+            "x-displayname": "End Time",
+            "x-ves-example": "1570197600.",
+            "x-ves-validation-rules": {
+              "ves.io.schema.rules.string.query_time": "true"
+            },
+            "x-f5xc-example": "1570197600",
+            "x-validation-rules": {
+              "ves.io.schema.rules.string.query_time": "true"
+            },
+            "x-f5xc-description-short": "End time of metric collection from which data will be considered to build dashboard.",
+            "x-f5xc-description-medium": "End time of metric collection from which data will be considered to build dashboard. Format: unix_timestamp|RFC 3339 Optional: If not specified, then the end_time will be evaluated to start_time+10m If start_time is not specified, then the end_time will be evaluated to <current time>.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "field_selector": {
+            "type": "array",
+            "description": "Select fields to be returned in the response.\nField_selector is used to specify the fields to be returned in the response, thereby limiting the\namount of data returned in the response.\n\nNote: Selecting many/all fields may impact the query latency.\n\nOptional: If not specified, only the following fields are returned in the response.\nALLOWED, DENIED, EVALUATION_TIMEOUT.",
+            "title": "Field Selector",
+            "items": {
+              "$ref": "#/components/schemas/schematmm_sessionMetricType"
+            },
+            "x-displayname": "Field Selector.",
+            "x-ves-validation-rules": {
+              "ves.io.schema.rules.repeated.items.enum.defined_only": "true",
+              "ves.io.schema.rules.repeated.unique": "true"
+            },
+            "x-validation-rules": {
+              "ves.io.schema.rules.repeated.items.enum.defined_only": "true",
+              "ves.io.schema.rules.repeated.unique": "true"
+            },
+            "x-f5xc-description-short": "Select fields to be returned in the response.",
+            "x-f5xc-description-medium": "Select fields to be returned in the response. Field_selector is used to specify the fields to be returned in the response, thereby limiting the amount of data returned in the response.",
+            "x-f5xc-constraints": {
+              "constraintType": "array",
+              "category": "discovery",
+              "uniqueItems": true,
+              "deterministic": true,
+              "metadata": {
+                "source": "discovery",
+                "confidence": 0.99,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "group_by": {
+            "type": "array",
+            "description": "Aggregate data by any or all of namespace, site and virtual_server.\n\nOptional: If not specified, then the data is aggregated/grouped by namespace and service.",
+            "title": "Group by",
+            "maxItems": 16,
+            "items": {
+              "$ref": "#/components/schemas/tmm_sessionMetricLabel"
+            },
+            "x-displayname": "Group By",
+            "x-ves-validation-rules": {
+              "ves.io.schema.rules.repeated.max_items": "16",
+              "ves.io.schema.rules.repeated.unique": "true"
+            },
+            "x-validation-rules": {
+              "ves.io.schema.rules.repeated.max_items": "16",
+              "ves.io.schema.rules.repeated.unique": "true"
+            },
+            "x-f5xc-description-short": "Aggregate data by any or all of namespace, site and virtual_server.",
+            "x-f5xc-description-medium": "Aggregate data by any or all of namespace, site and virtual_server. Optional: If not specified, then the data is aggregated/grouped by namespace and service.",
+            "x-f5xc-constraints": {
+              "constraintType": "array",
+              "category": "discovery",
+              "maxItems": 16,
+              "uniqueItems": true,
+              "deterministic": true,
+              "metadata": {
+                "source": "discovery",
+                "confidence": 0.99,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "is_trend_request": {
+            "type": "boolean",
+            "description": "Trend value computation requested by the user\nOptional: default is false.",
+            "x-displayname": "Trend calculation requested by the user.",
+            "x-ves-example": "True",
+            "x-f5xc-example": "true",
+            "x-f5xc-description-short": "Trend value computation requested by the user Optional: default is false.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "label_filter": {
+            "type": "array",
+            "description": "List of label filter expressions of the form \"label key\" QueryOp \"value\".\nResponse will only contain data that matches all the conditions specified in the label_filter.",
+            "title": "Label Filter",
+            "maxItems": 64,
+            "items": {
+              "$ref": "#/components/schemas/tmm_sessionLabelFilter"
+            },
+            "x-displayname": "Label Filter.",
+            "x-ves-validation-rules": {
+              "ves.io.schema.rules.repeated.max_items": "64",
+              "ves.io.schema.rules.repeated.unique": "true"
+            },
+            "x-validation-rules": {
+              "ves.io.schema.rules.repeated.max_items": "64",
+              "ves.io.schema.rules.repeated.unique": "true"
+            },
+            "x-f5xc-description-short": "List of label filter expressions of the form \"label key\" QueryOp \"value\".",
+            "x-f5xc-description-medium": "List of label filter expressions of the form \"label key\" QueryOp \"value\". Response will only contain data that matches all the conditions specified in the label_filter.",
+            "x-f5xc-constraints": {
+              "constraintType": "array",
+              "category": "discovery",
+              "maxItems": 64,
+              "uniqueItems": true,
+              "deterministic": true,
+              "metadata": {
+                "source": "discovery",
+                "confidence": 0.99,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "namespace": {
+            "type": "string",
+            "description": "Namespace is used to scope session metrics. Only virtual server in given namespace will be considered.",
+            "title": "Namespace",
+            "x-displayname": "Namespace",
+            "x-ves-example": "Value",
+            "x-f5xc-example": "value",
+            "x-f5xc-description-short": "Namespace is used to scope session metrics. Only virtual server in given namespace will be considered.",
+            "x-f5xc-description-medium": "Namespace is used to scope session metrics. Only virtual server in given namespace will be considered.",
+            "maxLength": 63,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "naming",
+              "maxLength": 63,
+              "minLength": 1,
+              "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+              "characterSet": {
+                "allowed": "[a-z0-9-]",
+                "restricted": "[^a-z0-9-]",
+                "required": "[a-z0-9]",
+                "description": "Lowercase letter start, alphanumeric with hyphens, alphanumeric end"
+              },
+              "format": "dns-label",
+              "formatDescription": "DNS-1035 label: must start with a lowercase letter",
+              "validation": {
+                "rfc": "RFC 1035",
+                "standard": "DNS-1035 label (alpha-first)"
+              },
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.99,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              },
+              "deterministic": true
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "minLength": 1,
+            "x-reconciled-from-discovery": true,
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00",
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
+          },
+          "start_time": {
+            "type": "string",
+            "description": "Start time of metric collection from which data will be considered to build metrics dashboard.\nFormat: unix_timestamp|RFC 3339\n\nOptional: If not specified, then the start_time will be evaluated to end_time-10m\nIf end_time is not specified, then the start_time will be evaluated to <current time>-10m.",
+            "title": "Start time",
+            "x-displayname": "Start Time.",
+            "x-ves-example": "1570194000.",
+            "x-ves-validation-rules": {
+              "ves.io.schema.rules.string.query_time": "true"
+            },
+            "x-f5xc-example": "1570194000",
+            "x-validation-rules": {
+              "ves.io.schema.rules.string.query_time": "true"
+            },
+            "x-f5xc-description-short": "Start time of metric collection from which data will be considered to build metrics dashboard.",
+            "x-f5xc-description-medium": "Start time of metric collection from which data will be considered to build metrics dashboard. Format: unix_timestamp|RFC 3339 Optional: If not specified, then the start_time will be evaluated to end_time-10m If end_time is not specified, then the start_time will be evaluated to <current time>-10m.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "step": {
+            "type": "string",
+            "description": "Step is the resolution width, which determines the number of the data points [x-axis (time)] to be returned in the response.\nThe timestamps in the response will be t1=start_time, t2=t1+step, ... Tn=tn-1+step, where tn <= end_time.\nFormat: [0-9][smhd], where s - seconds, m - minutes, h - hours, d - days\n\nOptional: If not specified, then step size is evaluated to <end_time - start_time>",
+            "title": "Step",
+            "x-displayname": "Step",
+            "x-ves-example": "5m",
+            "x-ves-validation-rules": {
+              "ves.io.schema.rules.string.query_step": "true"
+            },
+            "x-f5xc-example": "5m",
+            "x-validation-rules": {
+              "ves.io.schema.rules.string.query_step": "true"
+            },
+            "x-f5xc-description-short": "Step is the resolution width, which determines the number of the data points [x-axis (time)] to be returned in the response.",
+            "x-f5xc-description-medium": "Step is the resolution width, which determines the number of the data points [x-axis (time)] to be returned in the response. The timestamps in the response will be t1=start_time, t2=t1+step, ... Tn=tn-1+step, where tn <= end_time.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          }
+        },
+        "x-f5xc-description-short": "TMM session API is used to GET session metrics.",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for tmm_sessionTMMSessionMetricsRequest",
+          "required_fields": [],
+          "mutually_exclusive_groups": [],
+          "example_json": "{}",
+          "example_yaml": "{}"
+        },
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": false
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
+      },
+      "tmm_sessionTMMSessionMetricsResponse": {
+        "type": "object",
+        "description": "Response for tmm_session response metrics and their correspond values.\nIf the group_by field in the Request it will return the response at corresponding field level.",
+        "title": "TMM Session Response",
+        "x-displayname": "TMM Session Response.",
+        "x-ves-proto-message": "ves.io.schema.tmm_session.TMMSessionMetricsResponse",
+        "properties": {
+          "data": {
+            "type": "array",
+            "description": "Data contains time-series TMM Session data.",
+            "title": "Data",
+            "items": {
+              "$ref": "#/components/schemas/tmm_sessionTMMSessionData"
+            },
+            "x-displayname": "Data",
+            "x-f5xc-example": "{\"key\": \"value\"}",
+            "x-f5xc-description-short": "Data contains time-series TMM Session data.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "step": {
+            "type": "string",
+            "description": "Actual step size used in the response. It could be higher than the requested step due to metric rollups and the query duration.\nFormat: [0-9][smhd], where s - seconds, m - minutes, h - hours, d - days.",
+            "title": "step",
+            "x-displayname": "Step",
+            "x-ves-example": "30m",
+            "x-ves-validation-rules": {
+              "ves.io.schema.rules.string.time_interval": "true"
+            },
+            "x-f5xc-example": "30m",
+            "x-validation-rules": {
+              "ves.io.schema.rules.string.time_interval": "true"
+            },
+            "x-f5xc-description-short": "Actual step size used in the response. It could be higher than the requested step due to metric rollups and the query duration.",
+            "x-f5xc-description-medium": "Actual step size used in the response. It could be higher than the requested step due to metric rollups and the query duration. Format: [0-9][smhd], where s - seconds, m - minutes, h - hours, d - days.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          }
+        },
+        "x-f5xc-description-short": "Response for tmm_session response metrics and their correspond values.",
+        "x-f5xc-description-medium": "Response for tmm_session response metrics and their correspond values. If the group_by field in the Request it will return the response at corresponding field level.",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for tmm_sessionTMMSessionMetricsResponse",
+          "required_fields": [],
+          "mutually_exclusive_groups": [],
+          "example_json": "{}",
+          "example_yaml": "{}"
+        },
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": false
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
+      },
       "bigcneiruleGlobalSpecType": {
         "type": "object",
         "description": "Desired state of iRule specification.",
@@ -2337,7 +6692,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true
             },
@@ -2349,7 +6704,7 @@
             },
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00"
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00"
           },
           "dns_proxies": {
             "type": "array",
@@ -2374,7 +6729,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -2410,7 +6765,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -2639,7 +6994,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -2651,7 +7006,7 @@
             "readOnly": true,
             "minLength": 12,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00"
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00"
           },
           "name": {
             "type": "string",
@@ -2670,7 +7025,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -2681,7 +7036,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00"
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00"
           },
           "namespace": {
             "type": "string",
@@ -2714,7 +7069,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true
             },
@@ -2726,7 +7081,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00",
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "tenant": {
@@ -2746,7 +7101,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -2759,7 +7114,7 @@
             "x-field-mutability": "read-only",
             "minLength": 12,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00"
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00"
           },
           "uid": {
             "type": "string",
@@ -2778,7 +7133,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -2792,7 +7147,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00"
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00"
           }
         },
         "x-f5xc-description-short": "Type establishes a 'direct reference' from one object(the referrer) to another(the referred).",
@@ -2861,7 +7216,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true
             },
@@ -2873,7 +7228,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00",
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           }
         },
@@ -3037,7 +7392,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "byteLength": {
                 "max": 1200
@@ -3052,13 +7407,12 @@
             },
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00"
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00"
           },
           "disable": {
             "type": "boolean",
             "description": "A value of true will administratively disable the object.",
             "title": "disable",
-            "format": "boolean",
             "x-displayname": "Disable",
             "x-ves-example": "True",
             "x-f5xc-example": "true",
@@ -3127,7 +7481,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true
             },
@@ -3139,7 +7493,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00",
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace": {
@@ -3173,7 +7527,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true
             },
@@ -3185,7 +7539,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00",
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "uid": {
@@ -3205,7 +7559,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -3219,7 +7573,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00"
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00"
           }
         },
         "x-f5xc-description-short": "ObjectMetaType is metadata(common attributes) of an object that all configuration objects will have.",
@@ -3294,7 +7648,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -3305,7 +7659,7 @@
             },
             "minLength": 27,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00"
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00"
           },
           "status": {
             "type": "string",
@@ -3323,7 +7677,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -3334,7 +7688,7 @@
             },
             "minLength": 17,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00"
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00"
           }
         },
         "x-f5xc-description-short": "Status is a return value for calls that don't return other objects.",
@@ -3390,7 +7744,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -3418,7 +7772,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -3447,7 +7801,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -3474,7 +7828,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -3503,7 +7857,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -3528,7 +7882,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -3604,7 +7958,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -3642,7 +7996,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -3654,7 +8008,7 @@
             "maxLength": 6,
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00"
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00"
           },
           "object_index": {
             "type": "integer",
@@ -3714,7 +8068,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -3728,7 +8082,6 @@
             "type": "boolean",
             "description": "This should be set to true If F5XC/SRE operator wants to suppress an object from being\npresented to business-logic of a daemon(e.g. Due to bad-form/issue-causing Object).\nThis is meant only to be used in temporary situations for operational continuity till\na fix is rolled out in business-logic.",
             "title": "sre_disable",
-            "format": "boolean",
             "x-displayname": "SRE Disable.",
             "x-ves-example": "True",
             "x-f5xc-example": "true",
@@ -3758,7 +8111,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -3771,7 +8124,7 @@
             "x-field-mutability": "read-only",
             "minLength": 12,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00"
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00"
           },
           "trace_info": {
             "type": "string",
@@ -3790,7 +8143,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -3817,7 +8170,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -3831,7 +8184,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00"
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00"
           },
           "vtrp_id": {
             "type": "string",
@@ -3846,7 +8199,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -3861,7 +8214,6 @@
             "type": "boolean",
             "description": "Indicate whether mars deems this object to be stale via graceful restart timer information.",
             "title": "vtrp_stale",
-            "format": "boolean",
             "x-displayname": "VTRP Stale.",
             "x-f5xc-description-short": "Indicate whether mars deems this object to be stale via graceful restart timer information.",
             "x-f5xc-required-for": {
@@ -3994,7 +8346,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4005,7 +8357,7 @@
             },
             "minLength": 12,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00"
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00"
           },
           "name": {
             "type": "string",
@@ -4038,7 +8390,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true
             },
@@ -4050,7 +8402,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00",
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace": {
@@ -4084,7 +8436,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true
             },
@@ -4096,7 +8448,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00",
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "uid": {
@@ -4114,7 +8466,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4127,7 +8479,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00"
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00"
           }
         },
         "x-f5xc-description-short": "ViewRefType represents a reference to a view.",
@@ -4574,7 +8926,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {

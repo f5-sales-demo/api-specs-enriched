@@ -9,7 +9,7 @@ Threat recognition with behavioral analysis and device fingerprinting. Mobile SD
 
 - **Category**: Security
 - **Complexity**: advanced
-- **Paths**: 287 | **Schemas**: 876
+- **Paths**: 265 | **Schemas**: 838
 - **Tier**: Advanced
 - **Related domains**: `bot_defense`, `virtual`
 
@@ -23,7 +23,6 @@ Threat recognition with behavioral analysis and device fingerprinting. Mobile SD
 ## Primary Resources
 
 - **shape_app_firewall**: Shape application firewall for advanced protection
-- **shape_recognizer**: Shape recognizer for traffic pattern analysis
 
 ## Endpoints
 
@@ -58,6 +57,8 @@ Threat recognition with behavioral analysis and device fingerprinting. Mobile SD
 | GET | `/api/shape/alerts/namespaces/&#123;namespace&#125;/alert_templates/&#123;name&#125;` | GET Protected Domain. |
 | DELETE | `/api/shape/alerts/namespaces/&#123;namespace&#125;/alert_templates/&#123;name&#125;` | DELETE BRM Alerts Alert Template. |
 | POST | `/api/shape/alerts/namespaces/&#123;namespace&#125;/alert_templates/&#123;name&#125;/clone` | Clone Alert Template. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/artifact-registry-token` | GET Artifact Registry Token. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/suggest-values` | Suggest Values. |
 | POST | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_detection_rules` | Deploy Bot Detection Rules. |
 | GET | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_detection_rules/deployments` | GET list of bot detection rule deployments. |
 | GET | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_detection_rules/deployments/&#123;deployment_id&#125;` | GET details of a bot detection rule deployment. |
@@ -157,6 +158,15 @@ Threat recognition with behavioral analysis and device fingerprinting. Mobile SD
 | DELETE | `/api/shape/bot/namespaces/&#123;namespace&#125;/certificate/&#123;cert_id&#125;` | DELETE Certificate By ID. |
 | PUT | `/api/shape/bot/namespaces/&#123;namespace&#125;/certificate/&#123;cert_id&#125;/archive` | Archive Certificate By ID. |
 | PUT | `/api/shape/bot/namespaces/&#123;namespace&#125;/certificate/&#123;cert_id&#125;/unarchive` | Unarchive Certificate By ID. |
+| POST | `/api/device-intelligence/namespaces/&#123;namespace&#125;/analytics/devices/multi-account` | GET Multi-Account Devices. |
+| POST | `/api/device-intelligence/namespaces/&#123;namespace&#125;/analytics/devices/risk-score-distribution` | GET Risk Score Distribution. |
+| POST | `/api/device-intelligence/namespaces/&#123;namespace&#125;/analytics/summary` | GET Summary. |
+| POST | `/api/device-intelligence/namespaces/&#123;namespace&#125;/analytics/transactions/high-risk` | GET High-Risk Transactions. |
+| POST | `/api/device-intelligence/namespaces/&#123;namespace&#125;/devices` | List Devices. |
+| POST | `/api/device-intelligence/namespaces/&#123;namespace&#125;/devices/&#123;device_id&#125;/history` | GET Device History. |
+| POST | `/api/device-intelligence/namespaces/&#123;namespace&#125;/devices/&#123;device_id&#125;/summary` | GET Device Summary. |
+| POST | `/api/device-intelligence/namespaces/system/device-intelligence/addon/subscribe` | Subscribe to Device Intelligence. |
+| POST | `/api/device-intelligence/namespaces/system/device-intelligence/addon/unsubscribe` | Unsubscribe to Device Intelligence. |
 | POST | `/api/mobile/app-shield/namespaces/system/mobile-app-shield/addon/subscribe` | Subscribe to Mobile App Shield. |
 | POST | `/api/mobile/app-shield/namespaces/system/mobile-app-shield/addon/unsubscribe` | Unsubscribe to Mobile App Shield. |
 | POST | `/api/mobile/integrator/namespaces/system/mobile-integrator/addon/subscribe` | Subscribe to Mobile Integrator. |
@@ -253,6 +263,11 @@ Threat recognition with behavioral analysis and device fingerprinting. Mobile SD
 | POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/malicious/transactions/ip` | Malicious Report Transactions IP V2. |
 | POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/malicious/transactions/os` | Malicious Report Transactions OS V2. |
 | POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/malicious/transactions/ua` | Malicious Report Transactions UA V2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/peers/check` | Check Peer Status V2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/peers/threat-types` | Peergroup By Threat Types V2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/peers/top-good-bots` | Peer Group Top Good Bots V2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/peers/top-reason-codes` | Peergroup Top Reason Codes V2. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/peers/traffic/overview` | Peer Group Traffic Overview V2. |
 | POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/good` | Top Good Bots V2. |
 | POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/human/dimension/browser` | Top Human Browser V2. |
 | POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/v2/reporting/top/type/human/dimension/device` | Top Human Device V2. |
@@ -293,48 +308,6 @@ Threat recognition with behavioral analysis and device fingerprinting. Mobile SD
 | POST | `/api/shape/bot/namespaces/system/bot-defense/addon/unsubscribe` | Unsubscribe to Shape Bot Defense. |
 | POST | `/api/shape/bot/subscribe` | Subscribe to Shape Bot Defense. |
 | POST | `/api/shape/bot/unsubscribe` | Unsubscribe to Shape Bot Defense. |
-| POST | `/api/shape/recognize/namespaces/system/recognize/addon/dashboard/channel` | Channel Dashboard. |
-| POST | `/api/shape/recognize/namespaces/system/recognize/addon/dashboard/conversion` | Conversion Dashboard. |
-| POST | `/api/shape/recognize/namespaces/system/recognize/addon/dashboard/enjoy` | Enjoy Dashboard. |
-| POST | `/api/shape/recognize/namespaces/system/recognize/addon/dashboard/friction_aggregation` | Friction Aggregation Dashboard. |
-| POST | `/api/shape/recognize/namespaces/system/recognize/addon/dashboard/friction_histogram` | Friction Histogram Dashboard. |
-| GET | `/api/shape/recognize/namespaces/system/recognize/addon/dashboard/health` | Health Check. |
-| POST | `/api/shape/recognize/namespaces/system/recognize/addon/dashboard/lift` | Lift Dashboard. |
-| POST | `/api/shape/recognize/namespaces/system/recognize/addon/dashboard/rescue` | Rescue Dashboard. |
-| POST | `/api/shape/recognize/namespaces/system/recognize/addon/dashboard/top_reason_code` | Top Reason Codes. |
-| GET | `/api/shape/recognize/namespaces/system/recognize/addon/provision` | GET Recognize Provision Status Addon. |
-| GET | `/api/shape/recognize/namespaces/system/recognize/addon/state` | State |
-| POST | `/api/shape/recognize/namespaces/system/recognize/addon/subscribe` | Subscribe to Shape Recognize. |
-| POST | `/api/shape/recognize/namespaces/system/recognize/addon/unsubscribe` | Unsubscribe to Shape Recognize. |
-| POST | `/api/shape/recognize/namespaces/system/recognize/addon/validate/src_tag_injection` | ValidateSrcTagInjection Addon. |
-| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/block/audit` | GET SAFE Block table list. |
-| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/block/csv/audit` | GET SAFE Analyst Block Audit as a CSV file. |
-| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/block/csv/table` | GET SAFE Analyst Block Table as a CSV file. |
-| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/block/details` | GET SAFE Block Details. |
-| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/block/feedback` | PostSafeBlockFeedback. |
-| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/block/rule` | PostSafeBlockRule. |
-| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/block/table` | GET SAFE Block table list. |
-| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/ep` | PostSafeEp. |
-| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/feedback` | Update Fraud Feedback. |
-| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/general_feedback` | Update Fraud Feedback. |
-| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/health` | GetHealthRequest. |
-| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/provision` | PostSafeProvision. |
-| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/stats/overview` | GET SAFE Overview. |
-| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/stats/overview` | PostSafeOverview. |
-| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/stats/top_locations` | GET SAFE Top Locations. |
-| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/stats/top_locations` | POST SAFE Top Locations. |
-| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/stats/top_sources` | GET SAFE Top Sources. |
-| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/stats/top_sources` | POST SAFE Top Sources. |
-| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/stats/transactions_over_time` | PostSafeTransactionsOverTime. |
-| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/summary` | GET SAFE Analyst Summary. |
-| GET | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/transaction_details` | GET SAFE Anayst Transaction Details. |
-| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/transaction_details` | PostSafeTransactionDetails. |
-| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/transaction_device_history` | PostSafeTransactionDeviceHistory. |
-| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/transaction_locations` | PostSafeTransactionLocations. |
-| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/transaction_related_sessions` | PostSafeTransactionRelatedSessions. |
-| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/transaction_timeline` | PostSafeTransactionTimeline. |
-| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/transactions` | List SAFE Analyst Transactions. |
-| POST | `/api/shape/safe/namespaces/&#123;namespace&#125;/safe/sas/transactions_csv` | GET SAFE Analyst Transactions as a CSV file. |
 
 ## Links
 

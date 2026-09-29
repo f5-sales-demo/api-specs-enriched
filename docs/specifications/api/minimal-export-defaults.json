@@ -278,6 +278,9 @@
         "spec.detection_settings.signature_selection_setting.default_attack_type_settings": [
           "attack_type_settings"
         ],
+        "spec.detection_settings.signature_selection_setting.default_signature_setting": [
+          "signature_settings_by_accuracy"
+        ],
         "spec.detection_settings.signature_selection_setting.high_medium_accuracy_signatures": [
           "high_medium_low_accuracy_signatures",
           "only_high_accuracy_signatures"
@@ -289,6 +292,9 @@
         "spec.detection_settings.signature_selection_setting.only_high_accuracy_signatures": [
           "high_medium_accuracy_signatures",
           "high_medium_low_accuracy_signatures"
+        ],
+        "spec.detection_settings.signature_selection_setting.signature_settings_by_accuracy": [
+          "default_signature_setting"
         ],
         "spec.detection_settings.stage_new_and_updated_signatures": [
           "disable_staging",
@@ -1041,6 +1047,12 @@
         ],
         "spec.voltstack_cluster_ar.storage_class_list": [
           "default_storage"
+        ],
+        "spec.waf_signatures.automatic": [
+          "manual"
+        ],
+        "spec.waf_signatures.manual": [
+          "automatic"
         ]
       },
       "fieldDefaults": {
@@ -2174,6 +2186,9 @@
     },
     "healthcheck": {
       "fieldConflicts": {
+        "spec.default_jitter": [
+          "jitter_percent"
+        ],
         "spec.http_health_check": [
           "tcp_health_check",
           "udp_icmp_health_check"
@@ -2183,6 +2198,9 @@
         ],
         "spec.http_health_check.use_origin_server_name": [
           "host_header"
+        ],
+        "spec.jitter_percent": [
+          "default_jitter"
         ],
         "spec.tcp_health_check": [
           "http_health_check",
@@ -2226,18 +2244,38 @@
           "service_policies_from_namespace"
         ],
         "spec.advertise_custom": [
+          "advertise_dualstack_on_public",
           "advertise_on_public",
           "advertise_on_public_default_vip",
+          "advertise_v6_on_public",
+          "do_not_advertise"
+        ],
+        "spec.advertise_dualstack_on_public": [
+          "advertise_custom",
+          "advertise_on_public",
+          "advertise_on_public_default_vip",
+          "advertise_v6_on_public",
           "do_not_advertise"
         ],
         "spec.advertise_on_public": [
           "advertise_custom",
+          "advertise_dualstack_on_public",
           "advertise_on_public_default_vip",
+          "advertise_v6_on_public",
           "do_not_advertise"
         ],
         "spec.advertise_on_public_default_vip": [
           "advertise_custom",
+          "advertise_dualstack_on_public",
           "advertise_on_public",
+          "advertise_v6_on_public",
+          "do_not_advertise"
+        ],
+        "spec.advertise_v6_on_public": [
+          "advertise_custom",
+          "advertise_dualstack_on_public",
+          "advertise_on_public",
+          "advertise_on_public_default_vip",
           "do_not_advertise"
         ],
         "spec.api_rate_limit": [
@@ -2358,7 +2396,7 @@
           "disable_waf"
         ],
         "spec.bot_defense": [
-          "bot_defense_advanced",
+          "bot_defense_advanced_protection",
           "disable_bot_defense"
         ],
         "spec.bot_defense.disable_cors_support": [
@@ -2393,35 +2431,67 @@
         "spec.bot_defense.policy.mobile_sdk_config": [
           "disable_mobile_sdk"
         ],
-        "spec.bot_defense_advanced": [
+        "spec.bot_defense_advanced_protection": [
           "bot_defense",
           "disable_bot_defense"
         ],
-        "spec.bot_defense_advanced.disable_js_insert": [
+        "spec.bot_defense_advanced_protection.both_web_and_mobile": [
+          "mobile_only",
+          "web_only"
+        ],
+        "spec.bot_defense_advanced_protection.both_web_and_mobile.disable_js_insert": [
           "js_insert_all_pages",
           "js_insert_all_pages_except",
           "js_insertion_rules"
         ],
-        "spec.bot_defense_advanced.disable_mobile_sdk": [
+        "spec.bot_defense_advanced_protection.both_web_and_mobile.disable_mobile_sdk": [
           "mobile_sdk_config"
         ],
-        "spec.bot_defense_advanced.js_insert_all_pages": [
+        "spec.bot_defense_advanced_protection.both_web_and_mobile.js_insert_all_pages": [
           "disable_js_insert",
           "js_insert_all_pages_except",
           "js_insertion_rules"
         ],
-        "spec.bot_defense_advanced.js_insert_all_pages_except": [
+        "spec.bot_defense_advanced_protection.both_web_and_mobile.js_insert_all_pages_except": [
           "disable_js_insert",
           "js_insert_all_pages",
           "js_insertion_rules"
         ],
-        "spec.bot_defense_advanced.js_insertion_rules": [
+        "spec.bot_defense_advanced_protection.both_web_and_mobile.js_insertion_rules": [
           "disable_js_insert",
           "js_insert_all_pages",
           "js_insert_all_pages_except"
         ],
-        "spec.bot_defense_advanced.mobile_sdk_config": [
+        "spec.bot_defense_advanced_protection.both_web_and_mobile.mobile_sdk_config": [
           "disable_mobile_sdk"
+        ],
+        "spec.bot_defense_advanced_protection.mobile_only": [
+          "both_web_and_mobile",
+          "web_only"
+        ],
+        "spec.bot_defense_advanced_protection.web_only": [
+          "both_web_and_mobile",
+          "mobile_only"
+        ],
+        "spec.bot_defense_advanced_protection.web_only.disable_js_insert": [
+          "js_insert_all_pages",
+          "js_insert_all_pages_except",
+          "js_insertion_rules"
+        ],
+        "spec.bot_defense_advanced_protection.web_only.js_insert_all_pages": [
+          "disable_js_insert",
+          "js_insert_all_pages_except",
+          "js_insertion_rules"
+        ],
+        "spec.bot_defense_advanced_protection.web_only.js_insert_all_pages_except": [
+          "disable_js_insert",
+          "js_insert_all_pages",
+          "js_insertion_rules"
+        ],
+        "spec.bot_defense_advanced_protection.web_only.js_insertion_rules": [
+          "disable_js_insert",
+          "js_insert_all_pages",
+          "js_insert_all_pages_except"
         ],
         "spec.caching_policy": [
           "disable_caching"
@@ -2732,7 +2802,7 @@
         ],
         "spec.disable_bot_defense": [
           "bot_defense",
-          "bot_defense_advanced"
+          "bot_defense_advanced_protection"
         ],
         "spec.disable_caching": [
           "caching_policy"
@@ -2764,8 +2834,10 @@
         ],
         "spec.do_not_advertise": [
           "advertise_custom",
+          "advertise_dualstack_on_public",
           "advertise_on_public",
-          "advertise_on_public_default_vip"
+          "advertise_on_public_default_vip",
+          "advertise_v6_on_public"
         ],
         "spec.enable_api_discovery": [
           "disable_api_discovery"
@@ -3476,7 +3548,9 @@
       "minimumConfigFields": [
         "spec.active_service_policies.policies",
         "spec.advertise_custom.advertise_where",
+        "spec.advertise_dualstack_on_public.public_ip.name",
         "spec.advertise_on_public.public_ip.name",
+        "spec.advertise_v6_on_public.public_ip.name",
         "spec.api_rate_limit.custom_ip_allowed_list.rate_limiter_allowed_prefixes",
         "spec.api_specification.api_definition.name",
         "spec.api_specification.validation_all_spec_endpoints.fall_through_mode.fall_through_mode_custom.open_api_validation_rules",
@@ -3488,9 +3562,12 @@
         "spec.app_firewall.name",
         "spec.bot_defense.policy.js_insertion_rules.rules",
         "spec.bot_defense.policy.protected_app_endpoints",
-        "spec.bot_defense_advanced.js_insertion_rules.rules",
-        "spec.bot_defense_advanced.mobile.name",
-        "spec.bot_defense_advanced.web.name",
+        "spec.bot_defense_advanced_protection.both_web_and_mobile.js_insertion_rules.rules",
+        "spec.bot_defense_advanced_protection.both_web_and_mobile.mobile.name",
+        "spec.bot_defense_advanced_protection.both_web_and_mobile.web.name",
+        "spec.bot_defense_advanced_protection.mobile_only.mobile.name",
+        "spec.bot_defense_advanced_protection.web_only.js_insertion_rules.rules",
+        "spec.bot_defense_advanced_protection.web_only.web.name",
         "spec.captcha_challenge.cookie_expiry",
         "spec.client_side_defense.policy.js_insertion_rules.rules",
         "spec.cookie_stickiness.name",
@@ -4132,6 +4209,7 @@
         "spec.aws": [
           "azure",
           "baremetal",
+          "eks_k8s",
           "equinix",
           "gcp",
           "kvm",
@@ -4144,6 +4222,7 @@
         "spec.azure": [
           "aws",
           "baremetal",
+          "eks_k8s",
           "equinix",
           "gcp",
           "kvm",
@@ -4156,6 +4235,7 @@
         "spec.baremetal": [
           "aws",
           "azure",
+          "eks_k8s",
           "equinix",
           "gcp",
           "kvm",
@@ -4172,7 +4252,8 @@
           "block_all_services"
         ],
         "spec.custom_proxy": [
-          "f5_proxy"
+          "f5_proxy",
+          "private_adn"
         ],
         "spec.custom_proxy.disable_re_tunnel": [
           "enable_re_tunnel"
@@ -4223,6 +4304,25 @@
         "spec.dns_ntp_config.f5_ntp_default": [
           "custom_ntp"
         ],
+        "spec.eks_k8s": [
+          "aws",
+          "azure",
+          "baremetal",
+          "equinix",
+          "gcp",
+          "kvm",
+          "nutanix",
+          "oci",
+          "openshift_virtualization",
+          "openstack",
+          "vmware"
+        ],
+        "spec.eks_k8s.disable_anti_affinity": [
+          "enable_anti_affinity"
+        ],
+        "spec.eks_k8s.enable_anti_affinity": [
+          "disable_anti_affinity"
+        ],
         "spec.enable_advanced_delivery": [
           "disable_advanced_delivery"
         ],
@@ -4242,6 +4342,7 @@
           "aws",
           "azure",
           "baremetal",
+          "eks_k8s",
           "gcp",
           "kvm",
           "nutanix",
@@ -4251,12 +4352,14 @@
           "vmware"
         ],
         "spec.f5_proxy": [
-          "custom_proxy"
+          "custom_proxy",
+          "private_adn"
         ],
         "spec.gcp": [
           "aws",
           "azure",
           "baremetal",
+          "eks_k8s",
           "equinix",
           "kvm",
           "nutanix",
@@ -4269,6 +4372,7 @@
           "aws",
           "azure",
           "baremetal",
+          "eks_k8s",
           "equinix",
           "gcp",
           "nutanix",
@@ -4345,6 +4449,7 @@
           "aws",
           "azure",
           "baremetal",
+          "eks_k8s",
           "equinix",
           "gcp",
           "kvm",
@@ -4357,6 +4462,7 @@
           "aws",
           "azure",
           "baremetal",
+          "eks_k8s",
           "equinix",
           "gcp",
           "kvm",
@@ -4375,6 +4481,7 @@
           "aws",
           "azure",
           "baremetal",
+          "eks_k8s",
           "equinix",
           "gcp",
           "kvm",
@@ -4387,6 +4494,7 @@
           "aws",
           "azure",
           "baremetal",
+          "eks_k8s",
           "equinix",
           "gcp",
           "kvm",
@@ -4412,6 +4520,10 @@
         ],
         "spec.performance_enhancement_mode.perf_mode_l7_enhanced.jumbo_enabled": [
           "jumbo_disabled"
+        ],
+        "spec.private_adn": [
+          "custom_proxy",
+          "f5_proxy"
         ],
         "spec.re_select.geo_proximity": [
           "specific_geography",
@@ -4453,6 +4565,12 @@
         "spec.software_settings.sw.volterra_software_version": [
           "default_sw_version"
         ],
+        "spec.software_settings.waf_signatures.automatic": [
+          "manual"
+        ],
+        "spec.software_settings.waf_signatures.manual": [
+          "automatic"
+        ],
         "spec.upgrade_settings.kubernetes_upgrade_drain.disable_upgrade_drain": [
           "enable_upgrade_drain"
         ],
@@ -4475,6 +4593,7 @@
           "aws",
           "azure",
           "baremetal",
+          "eks_k8s",
           "equinix",
           "gcp",
           "kvm",
@@ -4496,11 +4615,13 @@
         "spec.custom_proxy.proxy_port",
         "spec.dc_cluster_group_sli.name",
         "spec.dc_cluster_group_slo.name",
+        "spec.eks_k8s.enable_anti_affinity.rules",
         "spec.local_vrf.sli_config.static_routes.static_routes",
         "spec.local_vrf.sli_config.static_v6_routes.static_routes",
         "spec.local_vrf.slo_config.static_routes.static_routes",
         "spec.local_vrf.slo_config.static_v6_routes.static_routes",
         "spec.log_receiver_with_net.log_receiver.name",
+        "spec.private_adn.private_adn",
         "spec.site_mesh_group_on_slo.site_mesh_group.name",
         "spec.upgrade_settings.kubernetes_upgrade_drain.enable_upgrade_drain.drain_node_timeout"
       ],
@@ -5210,5 +5331,5 @@
       "serverDefaultFields": []
     }
   },
-  "version": "8.0.3"
+  "version": "9.0.0"
 }

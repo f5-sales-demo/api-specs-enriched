@@ -1,0 +1,113 @@
+# Upstream contract changes
+
+- Baseline: `v2026.09.25-1` / `api-specs-v2026.09.25-1.zip` / `sha256:858cf7a10206d6c7773c0c6153a11eaf7a06b83affc618cf4660c15230e2ce18`
+- Target: `v2026.09.28-2` / `api-specs-v2026.09.28-2.zip` / `sha256:23b91d734893fcacf7bd7acdc50df39f49996341010e3a77e2d580a14b8215fd`
+- Operations: 1851 baseline, 1840 target, 44 added, 55 removed
+- Schema properties: 497 added, 401 removed, 972 modified
+
+## Added operations
+
+- `POST /api/config/dns/namespaces/system/dns_zone/add_cryptokey`
+- `POST /api/config/dns/namespaces/system/dns_zone/delete_cryptokey`
+- `POST /api/config/dns/namespaces/system/dns_zone/edit_cryptokey`
+- `POST /api/config/dns/namespaces/system/dns_zone/get_cryptokeys`
+- `POST /api/config/namespaces/{metadata.namespace}/cloud_user_accounts`
+- `PUT /api/config/namespaces/{metadata.namespace}/cloud_user_accounts/{metadata.name}`
+- `GET /api/config/namespaces/{namespace}/cloud_user_accounts`
+- `DELETE /api/config/namespaces/{namespace}/cloud_user_accounts/{name}`
+- `GET /api/config/namespaces/{namespace}/cloud_user_accounts/{name}`
+- `POST /api/config/namespaces/{namespace}/oidc_oauth_discovery`
+- `POST /api/config/namespaces/{namespace}/sites-signatures/update`
+- `GET /api/data/namespaces/{namespace}/access/active-sessions`
+- `POST /api/data/namespaces/{namespace}/access/active-sessions/terminate`
+- `DELETE /api/data/namespaces/{namespace}/access/active-sessions/{id}`
+- `GET /api/data/namespaces/{namespace}/access/active-sessions/{id}`
+- `POST /api/data/namespaces/{namespace}/app_security/evidence`
+- `POST /api/data/namespaces/{namespace}/tmm_session/metrics`
+- `POST /api/device-intelligence/namespaces/system/device-intelligence/addon/subscribe`
+- `POST /api/device-intelligence/namespaces/system/device-intelligence/addon/unsubscribe`
+- `POST /api/device-intelligence/namespaces/{namespace}/analytics/devices/multi-account`
+- `POST /api/device-intelligence/namespaces/{namespace}/analytics/devices/risk-score-distribution`
+- `POST /api/device-intelligence/namespaces/{namespace}/analytics/summary`
+- `POST /api/device-intelligence/namespaces/{namespace}/analytics/transactions/high-risk`
+- `POST /api/device-intelligence/namespaces/{namespace}/devices`
+- `POST /api/device-intelligence/namespaces/{namespace}/devices/{device_id}/history`
+- `POST /api/device-intelligence/namespaces/{namespace}/devices/{device_id}/summary`
+- `GET /api/infraprotect/namespaces/{namespace}/infraprotect/mitigation/{mitigation_id}/ips/download`
+- `POST /api/infraprotect/namespaces/{namespace}/infraprotect/synchronize-configuration`
+- `GET /api/maurice/namespaces/system/sites/{site}/download-kubernetes-manifests`
+- `GET /api/shape/bot/namespaces/{namespace}/artifact-registry-token`
+- `POST /api/shape/bot/namespaces/{namespace}/suggest-values`
+- `POST /api/shape/bot/namespaces/{namespace}/v2/reporting/peers/check`
+- `POST /api/shape/bot/namespaces/{namespace}/v2/reporting/peers/threat-types`
+- `POST /api/shape/bot/namespaces/{namespace}/v2/reporting/peers/top-good-bots`
+- `POST /api/shape/bot/namespaces/{namespace}/v2/reporting/peers/top-reason-codes`
+- `POST /api/shape/bot/namespaces/{namespace}/v2/reporting/peers/traffic/overview`
+- `GET /api/waf/attack-signatures`
+- `GET /api/waf/bot-signatures`
+- `GET /api/waf/latest-signatures-version`
+- `GET /api/waf/threat-campaigns`
+- `POST /api/waf/threats`
+- `GET /api/web/namespaces/system/customer_support/{name}/comments`
+- `GET /api/web/namespaces/system/managed_client/customer_support/{tp_id}/comments`
+- `GET /api/web/namespaces/system/partner-management/customer_support/{tp_id}/comments`
+
+## Removed operations
+
+- `POST /api/shape/recognize/namespaces/system/recognize/addon/dashboard/channel`
+- `POST /api/shape/recognize/namespaces/system/recognize/addon/dashboard/conversion`
+- `POST /api/shape/recognize/namespaces/system/recognize/addon/dashboard/enjoy`
+- `POST /api/shape/recognize/namespaces/system/recognize/addon/dashboard/friction_aggregation`
+- `POST /api/shape/recognize/namespaces/system/recognize/addon/dashboard/friction_histogram`
+- `GET /api/shape/recognize/namespaces/system/recognize/addon/dashboard/health`
+- `POST /api/shape/recognize/namespaces/system/recognize/addon/dashboard/lift`
+- `POST /api/shape/recognize/namespaces/system/recognize/addon/dashboard/rescue`
+- `POST /api/shape/recognize/namespaces/system/recognize/addon/dashboard/top_reason_code`
+- `GET /api/shape/recognize/namespaces/system/recognize/addon/provision`
+- `GET /api/shape/recognize/namespaces/system/recognize/addon/state`
+- `POST /api/shape/recognize/namespaces/system/recognize/addon/subscribe`
+- `POST /api/shape/recognize/namespaces/system/recognize/addon/unsubscribe`
+- `POST /api/shape/recognize/namespaces/system/recognize/addon/validate/src_tag_injection`
+- `GET /api/shape/safe/namespaces/{namespace}/safe/sas/block/audit`
+- `GET /api/shape/safe/namespaces/{namespace}/safe/sas/block/csv/audit`
+- `GET /api/shape/safe/namespaces/{namespace}/safe/sas/block/csv/table`
+- `GET /api/shape/safe/namespaces/{namespace}/safe/sas/block/details`
+- `POST /api/shape/safe/namespaces/{namespace}/safe/sas/block/feedback`
+- `POST /api/shape/safe/namespaces/{namespace}/safe/sas/block/rule`
+- `GET /api/shape/safe/namespaces/{namespace}/safe/sas/block/table`
+- `POST /api/shape/safe/namespaces/{namespace}/safe/sas/ep`
+- `POST /api/shape/safe/namespaces/{namespace}/safe/sas/feedback`
+- `POST /api/shape/safe/namespaces/{namespace}/safe/sas/general_feedback`
+- `GET /api/shape/safe/namespaces/{namespace}/safe/sas/health`
+- `POST /api/shape/safe/namespaces/{namespace}/safe/sas/provision`
+- `GET /api/shape/safe/namespaces/{namespace}/safe/sas/stats/overview`
+- `POST /api/shape/safe/namespaces/{namespace}/safe/sas/stats/overview`
+- `GET /api/shape/safe/namespaces/{namespace}/safe/sas/stats/top_locations`
+- `POST /api/shape/safe/namespaces/{namespace}/safe/sas/stats/top_locations`
+- `GET /api/shape/safe/namespaces/{namespace}/safe/sas/stats/top_sources`
+- `POST /api/shape/safe/namespaces/{namespace}/safe/sas/stats/top_sources`
+- `POST /api/shape/safe/namespaces/{namespace}/safe/sas/stats/transactions_over_time`
+- `GET /api/shape/safe/namespaces/{namespace}/safe/sas/summary`
+- `GET /api/shape/safe/namespaces/{namespace}/safe/sas/transaction_details`
+- `POST /api/shape/safe/namespaces/{namespace}/safe/sas/transaction_details`
+- `POST /api/shape/safe/namespaces/{namespace}/safe/sas/transaction_device_history`
+- `POST /api/shape/safe/namespaces/{namespace}/safe/sas/transaction_locations`
+- `POST /api/shape/safe/namespaces/{namespace}/safe/sas/transaction_related_sessions`
+- `POST /api/shape/safe/namespaces/{namespace}/safe/sas/transaction_timeline`
+- `POST /api/shape/safe/namespaces/{namespace}/safe/sas/transactions`
+- `POST /api/shape/safe/namespaces/{namespace}/safe/sas/transactions_csv`
+- `POST /api/web/namespaces/system/customer_support/tax_exempt_request`
+- `POST /api/web/namespaces/{namespace}/billing/payment_method/{name}/primary`
+- `POST /api/web/namespaces/{namespace}/billing/payment_method/{name}/secondary`
+- `POST /api/web/namespaces/{namespace}/billing/payment_method/{name}/swap-primary`
+- `POST /api/web/namespaces/{namespace}/billing/payment_methods`
+- `DELETE /api/web/namespaces/{namespace}/billing/payment_methods/{name}`
+- `POST /api/web/namespaces/{namespace}/current_usage`
+- `POST /api/web/namespaces/{namespace}/hourly_usage_details`
+- `POST /api/web/namespaces/{namespace}/monthly_usage`
+- `GET /api/web/namespaces/{namespace}/subscriptions/custom_list`
+- `GET /api/web/namespaces/{namespace}/usage/invoice_pdf`
+- `GET /api/web/namespaces/{namespace}/usage/invoices/custom_list`
+- `POST /api/web/namespaces/{namespace}/usage_details`
+
+The complete sorted operation inventories and schema-property additions, removals, and modifications (including full before/after values) are in `upstream-contract-changes.json`.

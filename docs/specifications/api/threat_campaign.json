@@ -3,7 +3,7 @@
   "info": {
     "title": "Threat Campaign",
     "description": "APIs for configuring detection policies and attack tracking. Supports campaign analysis, risk assessment, and automated mitigation rule generation across security domains.",
-    "version": "8.0.3",
+    "version": "9.0.0",
     "contact": {
       "name": "F5 Distributed Cloud",
       "url": "https://docs.cloud.f5.com"
@@ -251,6 +251,16 @@
                 }
               }
             }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_ai_assistant"
+                }
+              }
+            }
           }
         },
         "parameters": [
@@ -333,6 +343,220 @@
           "p50_ms": 200,
           "p95_ms": 800,
           "p99_ms": 2000,
+          "sample_count": 0,
+          "source": "estimate"
+        }
+      },
+      "x-displayname": "Application Security Monitoring APIs.",
+      "x-ves-proto-service": "ves.io.schema.app_security.ThreatCampaignAPI",
+      "x-ves-proto-service-type": "CUSTOM_PUBLIC"
+    },
+    "/api/waf/threats": {
+      "post": {
+        "summary": "GET Threats.",
+        "description": "Returns a list of threats tracked by F5 XC Threat Intelligence. A threat is a rollup of articles.\nAn article originates from a public web page or blog POST discussing a cybersecurity threat campaign,\nthreat actor (or both combined). The public source is fed through a content pipeline to extract\nthreat intelligence information that could be valuable.",
+        "operationId": "ves.io.schema.app_security.ThreatCampaignAPI.GetThreats",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/app_securityThreatsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Returned when operation is not authorized.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Returned when there is no permission to access resource.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Returned when resource is not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Returned when operation on resource is conflicting with current value.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Returned when operation has been rejected as it is happening too frequently.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Returned when server encountered an error in processing API.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Returned when service is unavailable temporarily.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Returned when server timed out processing request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_ai_assistant"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/app_securityThreatsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "externalDocs": {
+          "description": "Examples of this operation.",
+          "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/cdn/"
+        },
+        "x-ves-proto-rpc": "ves.io.schema.app_security.ThreatCampaignAPI.GetThreats",
+        "tags": [
+          "waf"
+        ],
+        "x-f5xc-operation-metadata": {
+          "purpose": "Resource creation operation",
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace"
+          ],
+          "optional_fields": [],
+          "field_docs": {},
+          "conditions": {
+            "prerequisites": [],
+            "postconditions": [
+              "Threat resource created",
+              "Resource assigned unique identifier"
+            ]
+          },
+          "side_effects": {
+            "creates": [
+              "threat"
+            ]
+          },
+          "danger_level": "medium",
+          "confirmation_required": false,
+          "common_errors": [
+            {
+              "code": 401,
+              "message": "Authentication required",
+              "solution": "Provide valid API credentials"
+            },
+            {
+              "code": 403,
+              "message": "Permission denied",
+              "solution": "Check access permissions for this operation"
+            },
+            {
+              "code": 404,
+              "message": "Resource not found",
+              "solution": "Verify resource name, namespace, and path"
+            },
+            {
+              "code": 409,
+              "message": "Resource already exists",
+              "solution": "Use different name or update existing resource"
+            },
+            {
+              "code": 429,
+              "message": "Rate limit exceeded",
+              "solution": "Wait before retrying the operation"
+            },
+            {
+              "code": 500,
+              "message": "Server error",
+              "solution": "Retry operation or contact support"
+            }
+          ],
+          "performance_impact": {
+            "latency": "low",
+            "resource_usage": "low"
+          }
+        },
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace"
+        ],
+        "x-f5xc-danger-level": "medium",
+        "x-f5xc-side-effects": {
+          "creates": [
+            "threat"
+          ]
+        },
+        "x-f5xc-discovered-response-time": {
+          "p50_ms": 1000,
+          "p95_ms": 3000,
+          "p99_ms": 8000,
           "sample_count": 0,
           "source": "estimate"
         }
@@ -533,7 +757,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -557,7 +781,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -575,6 +799,89 @@
           "mutually_exclusive_groups": [],
           "example_json": "{}",
           "example_yaml": "{}"
+        },
+        "x-f5xc-cli-domain": "virtual",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": false
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
+      },
+      "app_securityCVEIDList": {
+        "type": "object",
+        "description": "A list of CVE IDs.",
+        "title": "CVEIDList",
+        "x-displayname": "CVE ID List.",
+        "x-ves-proto-message": "ves.io.schema.app_security.CVEIDList",
+        "properties": {
+          "ids": {
+            "type": "array",
+            "description": "A list of CVE IDs.",
+            "title": "ids",
+            "minItems": 1,
+            "maxItems": 16,
+            "items": {
+              "type": "string"
+            },
+            "x-displayname": "IDs",
+            "x-ves-example": "CVE-2021-44228.",
+            "x-ves-required": "true",
+            "x-ves-validation-rules": {
+              "ves.io.schema.rules.message.required": "true",
+              "ves.io.schema.rules.repeated.max_items": "16",
+              "ves.io.schema.rules.repeated.min_items": "1",
+              "ves.io.schema.rules.repeated.unique": "true"
+            },
+            "x-f5xc-example": "CVE-2021-44228",
+            "x-validation-rules": {
+              "ves.io.schema.rules.message.required": "true",
+              "ves.io.schema.rules.repeated.max_items": "16",
+              "ves.io.schema.rules.repeated.min_items": "1",
+              "ves.io.schema.rules.repeated.unique": "true"
+            },
+            "x-f5xc-constraints": {
+              "constraintType": "array",
+              "category": "discovery",
+              "minItems": 1,
+              "maxItems": 16,
+              "uniqueItems": true,
+              "deterministic": true,
+              "metadata": {
+                "source": "discovery",
+                "confidence": 0.99,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": true,
+              "create": true,
+              "update": false,
+              "read": false
+            }
+          }
+        },
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for app_securityCVEIDList",
+          "required_fields": [
+            "ids"
+          ],
+          "mutually_exclusive_groups": [],
+          "example_json": "{\n  \"ids\": [\n    \"value\"\n  ]\n}",
+          "example_yaml": "ids:\n- value"
         },
         "x-f5xc-cli-domain": "virtual",
         "x-f5xc-namespace-profile": {
@@ -649,7 +956,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true
             },
@@ -661,7 +968,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00",
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace": {
@@ -694,7 +1001,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true
             },
@@ -706,7 +1013,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00",
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "path": {
@@ -738,7 +1045,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true
             },
@@ -875,7 +1182,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -913,7 +1220,7 @@
               "metadata": {
                 "source": "api-probed",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -949,7 +1256,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -989,7 +1296,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true
             },
@@ -1001,7 +1308,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00",
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace": {
@@ -1034,7 +1341,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true
             },
@@ -1046,7 +1353,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00",
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "user_id": {
@@ -1071,7 +1378,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -1166,7 +1473,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true
             },
@@ -1178,7 +1485,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00",
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "rule": {
@@ -1272,7 +1579,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -1339,7 +1646,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true
             },
@@ -1351,7 +1658,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00",
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace": {
@@ -1384,7 +1691,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true
             },
@@ -1396,7 +1703,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00",
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "tls_fingerprint_matcher": {
@@ -1494,7 +1801,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -1603,7 +1910,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true
             },
@@ -1615,7 +1922,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00",
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace": {
@@ -1648,7 +1955,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true
             },
@@ -1660,7 +1967,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00",
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "path": {
@@ -1692,7 +1999,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true
             },
@@ -1873,7 +2180,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true
             },
@@ -1885,7 +2192,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00",
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace": {
@@ -1918,7 +2225,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true
             },
@@ -1930,7 +2237,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00",
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "path": {
@@ -1961,7 +2268,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true
             },
@@ -2121,7 +2428,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true
             },
@@ -2133,7 +2440,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00",
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace": {
@@ -2166,7 +2473,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true
             },
@@ -2178,7 +2485,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00",
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "path": {
@@ -2209,7 +2516,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true
             },
@@ -2346,7 +2653,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -2384,7 +2691,7 @@
               "metadata": {
                 "source": "api-probed",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -2420,7 +2727,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -2434,7 +2741,6 @@
             "type": "boolean",
             "description": "Indicates whether the security event is IP reputation.",
             "title": "IP Reputation Security Event",
-            "format": "boolean",
             "x-displayname": "IP Reputation Security Event.",
             "x-ves-example": "True",
             "x-f5xc-example": "true",
@@ -2476,7 +2782,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true
             },
@@ -2488,7 +2794,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00",
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace": {
@@ -2521,7 +2827,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true
             },
@@ -2533,7 +2839,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00",
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "sec_event_name": {
@@ -2551,7 +2857,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -2590,7 +2896,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -2604,7 +2910,6 @@
             "type": "boolean",
             "description": "Indicates whether the security event is threat mesh.",
             "title": "Threat Mesh Security Event",
-            "format": "boolean",
             "x-displayname": "Threat Mesh Security Event.",
             "x-ves-example": "True",
             "x-f5xc-example": "true",
@@ -2638,7 +2943,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -2733,7 +3038,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true
             },
@@ -2745,7 +3050,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00",
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "rule": {
@@ -2838,7 +3143,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -2850,7 +3155,7 @@
             "minLength": 26,
             "format": "hostname",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00"
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00"
           },
           "exclude_bot_names": {
             "type": "array",
@@ -2881,7 +3186,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -2920,7 +3225,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -2959,7 +3264,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -2999,7 +3304,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true
             },
@@ -3011,7 +3316,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00",
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace": {
@@ -3044,7 +3349,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true
             },
@@ -3056,7 +3361,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00",
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "req_path": {
@@ -3081,7 +3386,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -3115,7 +3420,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -3206,7 +3511,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true
             },
@@ -3218,7 +3523,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00",
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "waf_exclusion_policy": {
@@ -3324,7 +3629,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true
             },
@@ -3336,7 +3641,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00",
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace": {
@@ -3368,7 +3673,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true
             },
@@ -3380,7 +3685,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00",
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "request_data": {
@@ -3464,7 +3769,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -3492,7 +3797,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -3520,7 +3825,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -3582,7 +3887,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -3697,7 +4002,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -3709,7 +4014,7 @@
             "maxLength": 15,
             "minLength": 3,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00"
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00"
           }
         },
         "x-f5xc-description-short": "Metric label filter can be specified to query specific metrics based on label match.",
@@ -3854,7 +4159,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -3894,7 +4199,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true
             },
@@ -3906,7 +4211,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00",
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           }
         },
@@ -4087,7 +4392,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4127,7 +4432,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true
             },
@@ -4139,7 +4444,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00",
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "query": {
@@ -4160,7 +4465,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.75,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4193,7 +4498,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4272,7 +4577,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4342,7 +4647,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4416,7 +4721,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true
             },
@@ -4428,7 +4733,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00",
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "start_time": {
@@ -4454,7 +4759,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4487,7 +4792,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4573,7 +4878,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4637,7 +4942,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4665,7 +4970,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4693,7 +4998,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4776,7 +5081,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4805,7 +5110,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.75,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4845,7 +5150,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true
             },
@@ -4857,7 +5162,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00",
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "query": {
@@ -4878,7 +5183,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.75,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4892,7 +5197,6 @@
             "type": "boolean",
             "description": "Scroll is used to retrieve large number of security events (or all security events) that matches the query.\nIf scroll is set to true, the scroll_id in the response can be used in the scroll API to fetch the next\nbatch of security events until there are no more security events left to return. The number of messages in each batch is determined\nby the limit field.\nNote: Scroll is used for processing large amount of data and therefore is not intended for real time user request.\nOptional: default is false.",
             "title": "scroll",
-            "format": "boolean",
             "x-displayname": "Scroll",
             "x-ves-example": "True",
             "x-f5xc-example": "true",
@@ -4909,7 +5213,6 @@
             "type": "boolean",
             "description": "Search After is used to retrieve large number of log messages (or all log messages) that matches the query.\nIf search_after is set to true, the sort_values in the response can be used in the API to fetch the next\nbatch of logs. The number of messages in each batch is determined by the limit field.\nNote: Search After is used for processing large amount of data and therefore is not intended for real time user request.\nOptional: default is false.",
             "title": "search after",
-            "format": "boolean",
             "x-displayname": "Search After.",
             "x-ves-example": "True",
             "x-f5xc-example": "true",
@@ -4951,7 +5254,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -4998,7 +5301,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5107,7 +5410,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5136,7 +5439,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5213,7 +5516,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true
             },
@@ -5225,7 +5528,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00",
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "scroll_id": {
@@ -5244,7 +5547,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5260,6 +5563,404 @@
         "x-f5xc-description-medium": "Scroll request is used to fetch large number of security events in multiple batches with each SecurityEventsResponse containing no more than 500 messages. To scroll through more than 500 or all WAF security events, one can use the SecurityEventScrollRequest. Use the scroll_id returned in the...",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for app_securitySecurityEventsScrollRequest",
+          "required_fields": [],
+          "mutually_exclusive_groups": [],
+          "example_json": "{}",
+          "example_yaml": "{}"
+        },
+        "x-f5xc-cli-domain": "virtual",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": false
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
+      },
+      "app_securitySecurityEvidenceRequest": {
+        "type": "object",
+        "description": "Request to fetch security evidence.",
+        "title": "Security Evidence Request",
+        "x-displayname": "Security Evidence Request.",
+        "x-ves-proto-message": "ves.io.schema.app_security.SecurityEvidenceRequest",
+        "properties": {
+          "aggs": {
+            "type": "object",
+            "description": "Aggregations provide summary/analytics data over the security evidence response. If the number of security evidence that matched the query\nis large and cannot be returned in a single response message, user can GET helpful insights/summary using aggregations.\nThe aggregations are key'ed by user-defined aggregation name. The response will be key'ed with the same name.\nOptional.",
+            "title": "aggregations",
+            "x-displayname": "Aggregations.",
+            "x-f5xc-description-short": "Aggregations provide summary/analytics data over the security evidence response.",
+            "x-f5xc-description-medium": "Aggregations provide summary/analytics data over the security evidence response. If the number of security evidence that matched the query is large and cannot be returned in a single response message, user can GET helpful insights/summary using aggregations. The aggregations are key'ed by...",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "end_time": {
+            "type": "string",
+            "description": "Fetch security evidence whose timestamp <= end_time\nformat: unix_timestamp|RFC 3339\n\nOptional: If not specified, then the end_time will be evaluated to start_time+10m\nIf start_time is not specified, then the end_time will be evaluated to <current time>",
+            "title": "end time",
+            "x-displayname": "End Time",
+            "x-ves-example": "1570007981.",
+            "x-ves-validation-rules": {
+              "ves.io.schema.rules.string.query_time": "true"
+            },
+            "x-f5xc-example": "1570007981",
+            "x-validation-rules": {
+              "ves.io.schema.rules.string.query_time": "true"
+            },
+            "x-f5xc-description-short": "Fetch security evidence whose timestamp <= end_time format: unix_timestamp|RFC 3339 Optional: If not specified, then the end_time will be...",
+            "x-f5xc-description-medium": "Fetch security evidence whose timestamp <= end_time format: unix_timestamp|RFC 3339 Optional: If not specified, then the end_time will be evaluated to start_time+10m If start_time is not specified, then the end_time will be evaluated to <current time>.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Limits the number of security evidence returned in the response\nOptional: If not specified, first or last 500 security evidence that matches the query (depending on the sort order) will be returned in the response.\nThe maximum value for limit is 500.",
+            "title": "limit",
+            "format": "int32",
+            "x-displayname": "Limit",
+            "x-ves-example": "100",
+            "x-f5xc-example": "100",
+            "x-f5xc-description-short": "Limits the number of security evidence returned in the response Optional: If not specified, first or last 500 security evidence that matches the...",
+            "x-f5xc-description-medium": "Limits the number of security evidence returned in the response Optional: If not specified, first or last 500 security evidence that matches the query (depending on the sort order) will be returned in the response. The maximum value for limit is 500.",
+            "x-f5xc-constraints": {
+              "constraintType": "number",
+              "category": "policy",
+              "minimum": 1,
+              "maximum": 1000000,
+              "multipleOf": 1,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.75,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "namespace": {
+            "type": "string",
+            "description": "Fetch security evidence for a given namespace.",
+            "title": "namespace",
+            "x-displayname": "Namespace",
+            "x-ves-example": "Bloggin-app-namespace-1.",
+            "x-f5xc-example": "bloggin-app-namespace-1",
+            "x-f5xc-description-short": "Fetch security evidence for a given namespace.",
+            "maxLength": 63,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "naming",
+              "maxLength": 63,
+              "minLength": 1,
+              "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+              "characterSet": {
+                "allowed": "[a-z0-9-]",
+                "restricted": "[^a-z0-9-]",
+                "required": "[a-z0-9]",
+                "description": "Lowercase letter start, alphanumeric with hyphens, alphanumeric end"
+              },
+              "format": "dns-label",
+              "formatDescription": "DNS-1035 label: must start with a lowercase letter",
+              "validation": {
+                "rfc": "RFC 1035",
+                "standard": "DNS-1035 label (alpha-first)"
+              },
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.99,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              },
+              "deterministic": true
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "minLength": 1,
+            "x-reconciled-from-discovery": true,
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00",
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
+          },
+          "query": {
+            "type": "string",
+            "description": "Query is used to specify the list of matchers\nsyntax for query := {[<matcher>]}\n<matcher> := <field_name><operator>\"<value>\"\n<field_name> := string\nOne or more of these fields in the security evidence may be specified in the query.\nDomain - domain\nendpoint - endpoint\nevidence_id - evidence ID\n<value> := string\n<operator> := [\"=\"|\"!=\"|\"=~\"|\"!~\"]\n= : equal to\n!= : not equal to\n=~ : regex match\n!~ : not regex match\nWhen more than one matcher is specified in the query, then security evidence matching ALL the matchers will be returned in the response.\nExample: query={evidence_id=\"evd_2026021315_abc123\", endpoint=\"/cart_api/cart\"} will return all security evidence with evidence ID evd_2026021315_abc123 and endoint /cart_api/cart.\n\nOptional: If not specified, all the security evidence matching the given tenant and namespace will be returned in the response.",
+            "title": "query",
+            "x-displayname": "Query",
+            "x-ves-example": "Query={evidence_id=\"evd_2026021315_abc123\"}",
+            "x-f5xc-example": "\"query={evidence_id=\"evd_2026021315_abc123\"}\"",
+            "x-f5xc-description-short": "Query is used to specify the list of matchers syntax for query := {[<matcher>]} <matcher> := <field_name><operator>\"<value>\" <field_name> :=...",
+            "x-f5xc-description-medium": "Query is used to specify the list of matchers syntax for query := {[<matcher>]} <matcher> := <field_name><operator>\"<value>\" <field_name> := string One or more of these fields in the security evidence may be specified in the query. Domain - domain endpoint - endpoint evidence_id - evidence ID...",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "content",
+              "maxLength": 1024,
+              "minLength": 0,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.75,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "search_after": {
+            "type": "boolean",
+            "description": "Search After is used to retrieve large number of log messages (or all log messages) that matches the query.\nIf search_after is set to true, the sort_values in the response can be used in the API to fetch the next\nbatch of logs. The number of messages in each batch is determined by the limit field.\nNote: Search After is used for processing large amount of data and therefore is not intended for real time user request.\nOptional: default is false.",
+            "title": "search after",
+            "x-displayname": "Search After.",
+            "x-ves-example": "True",
+            "x-f5xc-example": "true",
+            "x-f5xc-description-short": "Search After is used to retrieve large number of log messages (or all log messages) that matches the query.",
+            "x-f5xc-description-medium": "Search After is used to retrieve large number of log messages (or all log messages) that matches the query. If search_after is set to true, the sort_values in the response can be used in the API to fetch the next batch of logs. The number of messages in each batch is determined by the limit field.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "sort": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaSortOrder"
+              }
+            ],
+            "x-f5xc-example": "{\"key\": \"value\"}",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "sort_by": {
+            "type": "string",
+            "description": "Optional: default is sort by last_event_time.",
+            "title": "sort by",
+            "x-displayname": "Sort By",
+            "x-f5xc-example": "{\"key\": \"value\"}",
+            "x-f5xc-description-short": "Optional: default is sort by last_event_time.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "sort_values": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/app_securitySearchAfterSortValues"
+              }
+            ],
+            "x-f5xc-example": "{\"key\": \"value\"}",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "start_time": {
+            "type": "string",
+            "description": "Fetch security evidence whose timestamp >= start_time\nformat: unix_timestamp|RFC 3339\n\nOptional: If not specified, then the start_time will be evaluated to end_time-10m\nIf end_time is not specified, then the start_time will be evaluated to <current time>-10m.",
+            "title": "start time",
+            "x-displayname": "Start Time.",
+            "x-ves-example": "1570007981.",
+            "x-ves-validation-rules": {
+              "ves.io.schema.rules.string.query_time": "true"
+            },
+            "x-f5xc-example": "1570007981",
+            "x-validation-rules": {
+              "ves.io.schema.rules.string.query_time": "true"
+            },
+            "x-f5xc-description-short": "Fetch security evidence whose timestamp >= start_time format: unix_timestamp|RFC 3339 Optional: If not specified, then the start_time will be...",
+            "x-f5xc-description-medium": "Fetch security evidence whose timestamp >= start_time format: unix_timestamp|RFC 3339 Optional: If not specified, then the start_time will be evaluated to end_time-10m If end_time is not specified, then the start_time will be evaluated to <current time>-10m.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          }
+        },
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for app_securitySecurityEvidenceRequest",
+          "required_fields": [],
+          "mutually_exclusive_groups": [],
+          "example_json": "{}",
+          "example_yaml": "{}"
+        },
+        "x-f5xc-cli-domain": "virtual",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": false
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
+      },
+      "app_securitySecurityEvidenceResponse": {
+        "type": "object",
+        "description": "Response message for SecurityEvidenceRequest.",
+        "title": "Security Evidence Response",
+        "x-displayname": "Security Incidents Response.",
+        "x-ves-proto-message": "ves.io.schema.app_security.SecurityEvidenceResponse",
+        "properties": {
+          "aggs": {
+            "type": "object",
+            "description": "Aggregations provide summary/analytics data over the security evidences response. If the number of security evidences\nthat matched the query is large and cannot be returned in a single response message, user can GET helpful\ninsights/summary using aggregations.",
+            "title": "aggregations",
+            "x-displayname": "Aggregations.",
+            "x-f5xc-description-short": "Aggregations provide summary/analytics data over the security evidences response.",
+            "x-f5xc-description-medium": "Aggregations provide summary/analytics data over the security evidences response. If the number of security evidences that matched the query is large and cannot be returned in a single response message, user can GET helpful insights/summary using aggregations.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "evidences": {
+            "type": "array",
+            "description": "List of security evidences that matched the query. Contains no more than 500 messages.",
+            "title": "evidences",
+            "items": {
+              "type": "string"
+            },
+            "x-displayname": "Evidences",
+            "x-ves-example": "Value",
+            "x-f5xc-example": "value",
+            "x-f5xc-description-short": "List of security evidences that matched the query. Contains no more than 500 messages.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "last_sort_values": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/app_securitySearchAfterSortValues"
+              }
+            ],
+            "x-f5xc-example": "{\"key\": \"value\"}",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "total_hits": {
+            "type": "string",
+            "description": "Total number of security events that matched the query.",
+            "title": "total hits",
+            "format": "uint64",
+            "x-displayname": "Total Hits.",
+            "x-ves-example": "0",
+            "x-f5xc-example": "0",
+            "x-f5xc-description-short": "Total number of security events that matched the query.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "format": "uint64",
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          }
+        },
+        "x-f5xc-description-short": "Response message for SecurityEvidenceRequest.",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for app_securitySecurityEvidenceResponse",
           "required_fields": [],
           "mutually_exclusive_groups": [],
           "example_json": "{}",
@@ -5330,7 +6031,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5370,7 +6071,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true
             },
@@ -5382,7 +6083,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00",
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "query": {
@@ -5403,7 +6104,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.75,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5436,7 +6137,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5515,7 +6216,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5599,7 +6300,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5628,7 +6329,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.75,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5668,7 +6369,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true
             },
@@ -5680,7 +6381,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00",
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "query": {
@@ -5701,7 +6402,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.75,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5715,7 +6416,6 @@
             "type": "boolean",
             "description": "Scroll is used to retrieve large number of security incidents (or all security incidents) that matches the query.\nIf scroll is set to true, the scroll_id in the response can be used in the scroll API to fetch the next\nbatch of security events until there are no more security events left to return. The number of messages in each\nbatch is determined by the limit field.\nNote: Scroll is used for processing large amount of data and therefore is not intended for real time user request.\nOptional: default is false.",
             "title": "scroll",
-            "format": "boolean",
             "x-displayname": "Scroll",
             "x-ves-example": "True",
             "x-f5xc-example": "true",
@@ -5732,7 +6432,6 @@
             "type": "boolean",
             "description": "Search After is used to retrieve large number of log messages (or all log messages) that matches the query.\nIf search_after is set to true, the sort_values in the response can be used in the API to fetch the next\nbatch of logs. The number of messages in each batch is determined by the limit field.\nNote: Search After is used for processing large amount of data and therefore is not intended for real time user request.\nOptional: default is false.",
             "title": "search after",
-            "format": "boolean",
             "x-displayname": "Search After.",
             "x-ves-example": "True",
             "x-f5xc-example": "true",
@@ -5774,7 +6473,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5821,7 +6520,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5930,7 +6629,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5959,7 +6658,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6036,7 +6735,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true
             },
@@ -6048,7 +6747,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00",
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "scroll_id": {
@@ -6067,7 +6766,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6153,7 +6852,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6193,7 +6892,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true
             },
@@ -6205,7 +6904,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00",
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "query": {
@@ -6226,7 +6925,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.75,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6259,7 +6958,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6338,7 +7037,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6422,7 +7121,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6451,7 +7150,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.75,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6491,7 +7190,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true
             },
@@ -6503,7 +7202,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00",
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "query": {
@@ -6524,7 +7223,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.75,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6538,7 +7237,6 @@
             "type": "boolean",
             "description": "Scroll is used to retrieve large number of logs (or all logs) that matches the query.\nIf scroll is set to true, the scroll_id in the response can be used in the scroll API to fetch the next\nbatch of logs until there are no logs left to return. The number of logs in each batch is determined\nby the limit field.\nNote: Scroll is used for processing large amount of data and therefore is not intended for real time user request.\nOptional: default is false.",
             "title": "scroll",
-            "format": "boolean",
             "x-displayname": "Scroll",
             "x-ves-example": "True",
             "x-f5xc-example": "true",
@@ -6555,7 +7253,6 @@
             "type": "boolean",
             "description": "Search After is used to retrieve large number of log messages (or all log messages) that matches the query.\nIf search_after is set to true, the sort_values in the response can be used in the API to fetch the next\nbatch of logs. The number of messages in each batch is determined by the limit field.\nNote: Search After is used for processing large amount of data and therefore is not intended for real time user request.\nOptional: default is false.",
             "title": "search after",
-            "format": "boolean",
             "x-displayname": "Search After.",
             "x-ves-example": "True",
             "x-f5xc-example": "true",
@@ -6597,7 +7294,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6644,7 +7341,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6753,7 +7450,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6782,7 +7479,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6859,7 +7556,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true
             },
@@ -6871,7 +7568,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00",
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "scroll_id": {
@@ -6890,7 +7587,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6954,7 +7651,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6983,7 +7680,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.8,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6994,7 +7691,7 @@
             },
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00"
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00"
           },
           "id": {
             "type": "string",
@@ -7018,7 +7715,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7043,7 +7740,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7075,7 +7772,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7145,7 +7842,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true
             },
@@ -7157,7 +7854,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00",
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "references": {
@@ -7199,7 +7896,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7248,6 +7945,247 @@
           "mutually_exclusive_groups": [],
           "example_json": "{\n  \"id\": \"cmp5641a5adbeabaf2708ce7663ad937df8\",\n  \"last_update\": \"2022/11/29 20:19:17\",\n  \"malwares\": [\n    \"value\"\n  ],\n  \"name\": \"Drupal 'Drupalgeddon2' RCE - exec48ne\",\n  \"risk\": \"High\",\n  \"systems\": [\n    \"value\"\n  ]\n}",
           "example_yaml": "id: cmp5641a5adbeabaf2708ce7663ad937df8\nlast_update: 2022/11/29 20:19:17\nmalwares:\n- value\nname: Drupal 'Drupalgeddon2' RCE - exec48ne\nrisk: High\nsystems:\n- value"
+        },
+        "x-f5xc-cli-domain": "virtual",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": false
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
+      },
+      "app_securityThreatsRequest": {
+        "type": "object",
+        "description": "Returns threats associated with the given CVE IDs, which can be supplied explicitly or\nderived from a WAF security event.",
+        "title": "ThreatsRequest",
+        "x-displayname": "ThreatsRequest.",
+        "x-ves-oneof-field-threats_filter": "[\"cve_ids\",\"primary_tag\",\"waf_sec_event_id\"]",
+        "x-ves-proto-message": "ves.io.schema.app_security.ThreatsRequest",
+        "properties": {
+          "cursor": {
+            "type": "string",
+            "description": "Opaque pagination cursor returned from previous response.",
+            "title": "Cursor",
+            "x-displayname": "Cursor",
+            "x-ves-example": "EyJpZCI6ICJjbnBjNTg0ODg1LWU4YjAtNDQ5ZC05YjA4LWFhYjA4ZDEyZDYifQ==.",
+            "x-f5xc-example": "eyJpZCI6ICJjbnBjNTg0ODg1LWU4YjAtNDQ5ZC05YjA4LWFhYjA4ZDEyZDYifQ==",
+            "x-f5xc-description-short": "Opaque pagination cursor returned from previous response.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "cve_ids": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/app_securityCVEIDList"
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-field-mutability": "read-only",
+            "x-f5xc-conflicts-with": [
+              "primary_tag",
+              "waf_sec_event_id"
+            ]
+          },
+          "primary_tag": {
+            "type": "string",
+            "description": "Exclusive with [cve_ids waf_sec_event_id]\nPrimary tag to filter threats. A primary tag is a high level categorization of a threat,\nsuch as an associated threat actor, malware family or CVE.",
+            "title": "Primary Tag",
+            "x-displayname": "Primary Tag.",
+            "x-ves-example": "APT42",
+            "x-f5xc-example": "APT42",
+            "x-f5xc-description-short": "Exclusive with [cve_ids waf_sec_event_id] Primary tag to filter threats.",
+            "x-f5xc-description-medium": "Exclusive with [cve_ids waf_sec_event_id] Primary tag to filter threats. A primary tag is a high level categorization of a threat, such as an associated threat actor, malware family or CVE.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "cve_ids",
+              "waf_sec_event_id"
+            ]
+          },
+          "report_fields": {
+            "type": "array",
+            "description": "Optional list of fields to include in threat representation.",
+            "title": "Report Fields",
+            "items": {
+              "type": "string"
+            },
+            "x-displayname": "Report Fields.",
+            "x-ves-example": "['title', 'severity', 'summary']",
+            "x-f5xc-example": "['title', 'severity', 'summary']",
+            "x-f5xc-description-short": "Optional list of fields to include in threat representation.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "waf_sec_event_id": {
+            "type": "string",
+            "description": "Exclusive with [cve_ids primary_tag]\nWAF Security Event ID to GET associated threats information.",
+            "title": "WAFSecEventID",
+            "x-displayname": "WAF Security Event ID.",
+            "x-ves-example": "00000000-0000-4000-8000-a3a9e1ed9732.",
+            "x-f5xc-example": "00000000-0000-4000-8000-a3a9e1ed9732",
+            "x-f5xc-description-short": "Exclusive with [cve_ids primary_tag] WAF Security Event ID to GET associated threats information.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-field-mutability": "read-only",
+            "x-f5xc-conflicts-with": [
+              "cve_ids",
+              "primary_tag"
+            ]
+          }
+        },
+        "x-f5xc-description-short": "Returns threats associated with the given CVE IDs, which can be supplied explicitly or derived from a WAF security event.",
+        "x-f5xc-description-medium": "Returns threats associated with the given CVE IDs, which can be supplied explicitly or derived from a WAF security event.",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for app_securityThreatsRequest",
+          "required_fields": [],
+          "mutually_exclusive_groups": [],
+          "example_json": "{}",
+          "example_yaml": "{}"
+        },
+        "x-f5xc-cli-domain": "virtual",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": false
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
+      },
+      "app_securityThreatsResponse": {
+        "type": "object",
+        "description": "Returns a list of threats tracked by F5 XC Threat Intelligence that match the query.",
+        "title": "ThreatsResponse",
+        "x-displayname": "ThreatsResponse.",
+        "x-ves-proto-message": "ves.io.schema.app_security.ThreatsResponse",
+        "properties": {
+          "next_cursor": {
+            "type": "string",
+            "description": "Opaque cursor for fetching next page.",
+            "title": "Next Cursor",
+            "x-displayname": "Next Cursor.",
+            "x-ves-example": "EyJpZCI6ICJjbnBjNTg0ODg1LWU4YjAtNDQ5ZC05YjA4LWFhYjA4ZDEyZDYifQ==.",
+            "x-f5xc-example": "eyJpZCI6ICJjbnBjNTg0ODg1LWU4YjAtNDQ5ZC05YjA4LWFhYjA4ZDEyZDYifQ==",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "threats": {
+            "type": "array",
+            "description": "A list of threats that match the query.",
+            "title": "threats",
+            "items": {
+              "type": "string"
+            },
+            "x-displayname": "Threats",
+            "x-f5xc-example": "{\"key\": \"value\"}",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          }
+        },
+        "x-f5xc-description-short": "Returns a list of threats tracked by F5 XC Threat Intelligence that match the query.",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for app_securityThreatsResponse",
+          "required_fields": [],
+          "mutually_exclusive_groups": [],
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "virtual",
         "x-f5xc-namespace-profile": {
@@ -7322,7 +8260,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7455,7 +8393,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7603,7 +8541,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7681,7 +8619,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7833,7 +8771,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7871,7 +8809,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true
             },
@@ -7978,7 +8916,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8087,7 +9025,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8214,7 +9152,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8357,7 +9295,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8396,7 +9334,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8490,7 +9428,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true
             },
@@ -8597,7 +9535,7 @@
               "metadata": {
                 "source": "api-probed",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true
             },
@@ -9118,7 +10056,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9241,7 +10179,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9348,7 +10286,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9387,7 +10325,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9439,7 +10377,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9516,14 +10454,14 @@
             "x-displayname": "Actions",
             "x-ves-required": "true",
             "x-ves-validation-rules": {
-              "ves.io.schema.rules.enum.defined_only": "true",
               "ves.io.schema.rules.message.required": "true",
+              "ves.io.schema.rules.repeated.items.enum.defined_only": "true",
               "ves.io.schema.rules.repeated.max_items": "10",
               "ves.io.schema.rules.repeated.unique": "true"
             },
             "x-validation-rules": {
-              "ves.io.schema.rules.enum.defined_only": "true",
               "ves.io.schema.rules.message.required": "true",
+              "ves.io.schema.rules.repeated.items.enum.defined_only": "true",
               "ves.io.schema.rules.repeated.max_items": "10",
               "ves.io.schema.rules.repeated.unique": "true"
             },
@@ -9537,7 +10475,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9574,7 +10512,7 @@
               "metadata": {
                 "source": "api-probed",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9632,7 +10570,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9684,7 +10622,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9722,7 +10660,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9791,7 +10729,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -10033,7 +10971,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -10209,7 +11147,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -10227,7 +11165,6 @@
             "type": "boolean",
             "description": "Invert the result of the match to detect missing header or non-matching value.",
             "title": "invert_match",
-            "format": "boolean",
             "x-displayname": "NOT of match.",
             "x-f5xc-description-short": "Invert the result of the match to detect missing header or non-matching value.",
             "x-f5xc-required-for": {
@@ -10280,7 +11217,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true,
               "byteLength": {
@@ -10300,7 +11237,6 @@
             "type": "boolean",
             "description": "Exclusive with [exact regex]\nIf true, check for presence of header.",
             "title": "presence",
-            "format": "boolean",
             "x-displayname": "Presence",
             "x-f5xc-description-short": "Exclusive with [exact regex] If true, check for presence of header.",
             "x-f5xc-required-for": {
@@ -10322,12 +11258,10 @@
             "x-displayname": "Regex",
             "x-ves-validation-rules": {
               "ves.io.schema.rules.string.max_bytes": "256",
-              "ves.io.schema.rules.string.not_empty": "true",
               "ves.io.schema.rules.string.regex": "true"
             },
             "x-validation-rules": {
               "ves.io.schema.rules.string.max_bytes": "256",
-              "ves.io.schema.rules.string.not_empty": "true",
               "ves.io.schema.rules.string.regex": "true"
             },
             "x-f5xc-description-short": "Exclusive with [exact presence] Regex match of the header value in re2 format.",
@@ -10339,7 +11273,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "byteLength": {
                 "max": 256
@@ -10414,7 +11348,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -10426,7 +11360,7 @@
             "readOnly": true,
             "minLength": 12,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00"
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00"
           },
           "name": {
             "type": "string",
@@ -10445,7 +11379,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -10456,7 +11390,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00"
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00"
           },
           "namespace": {
             "type": "string",
@@ -10489,7 +11423,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true
             },
@@ -10501,7 +11435,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00",
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "tenant": {
@@ -10521,7 +11455,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -10534,7 +11468,7 @@
             "x-field-mutability": "read-only",
             "minLength": 12,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00"
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00"
           },
           "uid": {
             "type": "string",
@@ -10553,7 +11487,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -10567,7 +11501,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00"
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00"
           }
         },
         "x-f5xc-description-short": "Type establishes a 'direct reference' from one object(the referrer) to another(the referred).",
@@ -10703,7 +11637,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true
             },
@@ -10715,7 +11649,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00",
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "sec_event_type": {
@@ -10733,7 +11667,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -10758,7 +11692,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -10783,7 +11717,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -10808,7 +11742,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -10939,7 +11873,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -10950,7 +11884,7 @@
             },
             "minLength": 3,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00"
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00"
           }
         },
         "x-f5xc-description-short": "Label based filtering for Security Events metrics. Security Events metrics are tagged with labels mentioned in MetricLabel.",
@@ -11060,7 +11994,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11071,7 +12005,7 @@
             },
             "minLength": 3,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00"
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00"
           }
         },
         "x-f5xc-description-short": "Value returned for a Security Events Metrics query.",
@@ -11146,7 +12080,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11233,7 +12167,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11271,7 +12205,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11308,7 +12242,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11345,7 +12279,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11430,7 +12364,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11470,7 +12404,7 @@
               "metadata": {
                 "source": "api-probed",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11557,7 +12491,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11656,7 +12590,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11733,7 +12667,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11804,7 +12738,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -12097,7 +13031,6 @@
             "type": "boolean",
             "description": "Invert Match of the expression defined.",
             "title": "invert_matcher",
-            "format": "boolean",
             "x-displayname": "Invert Matcher.",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -12121,7 +13054,7 @@
             "maxLength": 26,
             "minLength": 15,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00",
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00",
             "x-f5xc-conflicts-with": [
               "check_not_present",
               "check_present"
@@ -12165,7 +13098,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true,
               "byteLength": {
@@ -12180,7 +13113,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00",
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           }
         },
@@ -12566,7 +13499,6 @@
             "type": "boolean",
             "description": "Invert the match result.",
             "title": "invert_matcher",
-            "format": "boolean",
             "x-displayname": "Invert Method Matcher.",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -12606,7 +13538,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -12709,7 +13641,6 @@
             "type": "boolean",
             "description": "Invert the match result.",
             "title": "invert_matcher",
-            "format": "boolean",
             "x-displayname": "Invert IP Matcher.",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -12745,7 +13676,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -12824,7 +13755,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -12914,7 +13845,6 @@
             "type": "boolean",
             "description": "Invert the match result.",
             "title": "invert_matcher",
-            "format": "boolean",
             "x-displayname": "Invert Matcher.",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -12938,7 +13868,7 @@
             "maxLength": 26,
             "minLength": 15,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00",
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00",
             "x-f5xc-conflicts-with": [
               "check_not_present",
               "check_present"
@@ -12982,7 +13912,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true,
               "byteLength": {
@@ -12997,7 +13927,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00",
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           }
         },
@@ -13127,7 +14057,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -13173,7 +14103,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -13211,7 +14141,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -13263,7 +14193,6 @@
             "type": "boolean",
             "description": "Invert the match result.",
             "title": "invert_matcher",
-            "format": "boolean",
             "x-displayname": "Invert Match Result.",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -13304,7 +14233,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -13376,7 +14305,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -13413,7 +14342,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true
             },
@@ -13449,7 +14378,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -13484,7 +14413,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -13615,7 +14544,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -13648,7 +14577,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -13702,7 +14631,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -13738,7 +14667,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -13781,7 +14710,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -13826,7 +14755,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -13922,7 +14851,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -13963,7 +14892,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -14005,7 +14934,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -14093,6 +15022,90 @@
           }
         }
       },
+      "protobufAny__ves_io_schema_ai_assistant": {
+        "type": "object",
+        "description": "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form\nof utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\nFoo foo = ...;\nAny any;\nany.packfrom(foo);\n...\nIf (any.unpackto(&foo)) {\n...\n}\n\nExample 2: Pack and unpack a message in Java.\n\nFoo foo = ...;\nAny any = any.pack(foo);\n...\nIf (any.is(foo.class)) {\nfoo = any.unpack(foo.class);\n}\n\nExample 3: Pack and unpack a message in Python.\n\nFoo = Foo(...)\nany = Any()\nany.pack(foo)\n...\nIf any.is(foo.descriptor):\nany.unpack(foo)\n...\n\nExample 4: Pack and unpack a message in Go\n\nfoo := &pb.foo{...}\nany, err := ptypes.marshalany(foo)\n...\nFoo := &pb.foo{}\nif err := ptypes.unmarshalany(any, foo); err != nil {\n...\n}\n\nThe pack methods provided by protobuf library will by default use\n'type.googleapis.com/full.type.name' as the type URL and the unpack\nmethods only use the fully qualified type name after the last '/'\nin the type URL, for example \"foo.example.com/x/y.z\" will yield type\nname \"y.z\".\n\nJSON\n====\nThe JSON representation of an `Any` value uses the regular\nrepresentation of the deserialized, embedded message, with an\nadditional field `@type` which contains the type URL. Example:\n\npackage google.profile;\nmessage Person {\nstring first_name = 1;\nstring last_name = 2;\n}\n\n{\n\"@type\": \"type.googleapis.com/google.profile.person\",\n\"firstName\": <string>,\n\"lastName\": <string>\n}\n\nIf the embedded message type is well-known and has a custom JSON\nrepresentation, that representation will be embedded adding a field\n`value` which holds the custom JSON in addition to the `@type`\nfield. Example (for message [google.protobuf.duration][]):\n\n{\n\"@type\": \"type.googleapis.com/google.protobuf.duration\",\n\"value\": \"1.212s\"\n}",
+        "properties": {
+          "type_url": {
+            "type": "string",
+            "description": "A URL/resource name that uniquely identifies the type of the serialized\nprotocol buffer message. This string must contain at least\none \"/\" character. The last segment of the URL's path must represent\nthe fully qualified name of the type (as in\n`path/google.protobuf.duration`). The name should be in a canonical form\n(e.g., leading \".\" is not accepted).\n\nIn practice, teams usually precompile into the binary all types that they\nexpect it to use in the context of Any. However, for URLs which use the\nscheme `HTTP`, `HTTPS`, or no scheme, one can optionally set up a type\nserver that maps type URLs to message definitions as follows:\n\n* If no scheme is provided, `HTTPS` is assumed.\n* An HTTP GET on the URL must yield a [google.protobuf.type][]\nvalue in binary format, or produce an error.\n* Applications are allowed to cache lookup results based on the\nURL, or have them precompiled into a binary to avoid any\nlookup. Therefore, binary compatibility needs to be preserved\non changes to types. (Use versioned type names to manage\nbreaking changes.)\n\nNote: this functionality is not currently available in the official\nprotobuf release, and it is not used for type URLs beginning with\ntype.googleapis.com.\n\nSchemes other than `HTTP`, `HTTPS` (or the empty scheme) might be\nused with implementation specific semantics.",
+            "x-f5xc-description-short": "URL identifying the protocol buffer message type.",
+            "x-f5xc-description-medium": "URL/resource name that uniquely identifies the type of the serialized protocol buffer message. This string must contain at least one \"/\" character. The last segment of the URL's path must represent the fully qualified name of the type (as in ).",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "value": {
+            "type": "string",
+            "description": "Must be a valid serialized protocol buffer of the above specified type.",
+            "format": "byte",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "format": "byte",
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "minLength": 3,
+            "x-reconciled-from-discovery": true,
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00"
+          }
+        },
+        "x-f5xc-description-short": "Contains an arbitrary serialized protocol buffer message along with a URL that describes the type of the serialized message.",
+        "x-f5xc-description-medium": "Contains an arbitrary serialized protocol buffer message along with a URL that describes the type of the serialized message. Protobuf library provides support to pack/unpack Any values in the form of utility functions or additional generated methods of the Any type. Example 1: Pack and unpack a...",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for protobufAny",
+          "required_fields": [],
+          "mutually_exclusive_groups": [],
+          "example_json": "{}",
+          "example_yaml": "{}"
+        },
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": false
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
+      },
       "rate_limiterRateLimitPeriodUnit": {
         "type": "string",
         "description": "Unit for the period per which the rate limit is applied.\n\n- SECOND: Second\n\nRate limit period unit is seconds\n- MINUTE: Minute\n\nRate limit period unit is minutes\n- HOUR: Hour\n\nRate limit period unit is hours\n- DAY: Day\n\nRate limit period unit is days.",
@@ -14132,6 +15145,104 @@
           "classification": {
             "category": "security",
             "multi_tenant_pattern": "shared-ref"
+          }
+        }
+      },
+      "runtimeError__ves_io_schema_ai_assistant": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Configuration parameter for code",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "details": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/protobufAny__ves_io_schema_ai_assistant"
+            },
+            "description": "Configuration parameter for details",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "error": {
+            "type": "string",
+            "description": "Configuration parameter for error",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "message": {
+            "type": "string",
+            "description": "Configuration parameter for message",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-09-29T03:20:54+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          }
+        },
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for runtimeError",
+          "required_fields": [],
+          "mutually_exclusive_groups": [],
+          "example_json": "{}",
+          "example_yaml": "{}"
+        },
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": false
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "application",
+            "multi_tenant_pattern": "per-tenant"
           }
         }
       },
@@ -14262,7 +15373,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -14335,7 +15446,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true
             },
@@ -14347,7 +15458,7 @@
             },
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00"
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00"
           },
           "name": {
             "type": "string",
@@ -14391,7 +15502,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true
             },
@@ -14572,7 +15683,6 @@
             "type": "boolean",
             "description": "Invert the match result.",
             "title": "invert_matcher",
-            "format": "boolean",
             "x-displayname": "Invert Header Matcher.",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -14596,7 +15706,7 @@
             "maxLength": 26,
             "minLength": 15,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00",
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00",
             "x-f5xc-conflicts-with": [
               "check_not_present",
               "check_present"
@@ -14642,7 +15752,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true,
               "byteLength": {
@@ -14657,7 +15767,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00",
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           }
         },
@@ -14732,7 +15842,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -14822,7 +15932,6 @@
             "type": "boolean",
             "description": "Invert the match result.",
             "title": "invert_matcher",
-            "format": "boolean",
             "x-displayname": "Invert Query Parameter Matcher.",
             "x-f5xc-required-for": {
               "minimum_config": false,
@@ -14846,7 +15955,7 @@
             "maxLength": 26,
             "minLength": 15,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00",
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00",
             "x-f5xc-conflicts-with": [
               "check_not_present",
               "check_present"
@@ -14881,7 +15990,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -14892,7 +16001,7 @@
             },
             "minLength": 7,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00"
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00"
           }
         },
         "x-f5xc-description-short": "Query parameter matcher specifies the name of a single query parameter and the criteria for the input request to match it.",
@@ -14969,7 +16078,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -15016,7 +16125,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               },
               "deterministic": true,
               "byteLength": {
@@ -15031,7 +16140,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00",
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "tenant": {
@@ -15061,7 +16170,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-09-26T10:39:30+00:00"
+                "validatedAt": "2026-09-29T03:20:54+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -15074,7 +16183,7 @@
             "x-field-mutability": "read-only",
             "minLength": 12,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-09-26T10:39:30+00:00"
+            "x-reconciled-at": "2026-09-29T03:20:54+00:00"
           }
         },
         "x-f5xc-description-short": "Type establishes a direct reference from one object(the referrer) to another(the referred).",

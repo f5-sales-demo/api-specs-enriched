@@ -1,4 +1,4 @@
-"""Gate and publish removals between consecutive stable upstream releases."""
+"""Gate upstream removals and publish deterministic contract-change evidence."""
 
 from __future__ import annotations
 
@@ -9,26 +9,27 @@ import os
 import re
 import tempfile
 from dataclasses import asdict, dataclass
-from datetime import UTC, date, datetime
+from datetime import date, datetime, timezone
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
-
-if TYPE_CHECKING:
-    from collections.abc import Iterable
+from typing import Any
+from urllib.parse import quote
 
 import requests
 import yaml
 
 from scripts.download import extract_zip, load_config, verify_release_asset_digest
 from scripts.utils.canonical_merge import canonical_merge_sources
-from scripts.utils.github_release import download_release_asset, find_release_asset
+from scripts.utils.github_release import download_release_asset
 
 STABLE_TAG = re.compile(r"^v\d{4}\.\d{2}\.\d{2}-\d+$")
+SHA256 = re.compile(r"^[0-9a-f]{64}$")
 ISSUE = re.compile(r"^(?:[\w.-]+/[\w.-]+)?#\d+$")
+HTTP_METHODS = frozenset({"get", "put", "post", "delete", "options", "head", "patch", "trace"})
+GITHUB_API = "https://api.github.com"
 
 
 class UpstreamRemovalError(ValueError):
-    """Raised when upstream release history or removal acknowledgement is unsafe."""
+    """Raised when upstream evidence or removal acknowledgement is unsafe."""
 
 
 @dataclass(frozen=True)
@@ -48,50 +49,78 @@ def _fingerprint(category: str, pointer: str, value: Any) -> str:
     return f"sha256:{hashlib.sha256(payload).hexdigest()}"
 
 
-def select_previous_stable_release(
-    releases: Iterable[dict[str, Any]], current_tag: str
+def load_release_receipt(path: Path) -> dict[str, Any]:
+    """Load and strictly validate a committed upstream release receipt."""
+    try:
+        receipt = json.loads(path.read_text())
+    except (OSError, json.JSONDecodeError) as error:
+        raise UpstreamRemovalError(
+            f"cannot read upstream release receipt {path}: {error}"
+        ) from error
+    if not isinstance(receipt, dict):
+        raise UpstreamRemovalError(f"upstream release receipt {path} must be an object")
+    tag = receipt.get("tag_name")
+    if not isinstance(tag, str) or not STABLE_TAG.fullmatch(tag):
+        raise UpstreamRemovalError(f"upstream release receipt {path} has an invalid stable tag")
+    if receipt.get("version") != tag.removeprefix("v"):
+        raise UpstreamRemovalError(f"upstream release receipt {path} version does not match tag")
+    expected_asset = f"api-specs-{tag}.zip"
+    if receipt.get("asset_name") != expected_asset:
+        raise UpstreamRemovalError(
+            f"upstream release receipt {path} asset name does not match tag: {expected_asset}"
+        )
+    digest = receipt.get("asset_sha256")
+    if not isinstance(digest, str) or not SHA256.fullmatch(digest):
+        raise UpstreamRemovalError(f"upstream release receipt {path} has an invalid SHA-256")
+    if not isinstance(receipt.get("asset_size"), int) or receipt["asset_size"] < 1:
+        raise UpstreamRemovalError(f"upstream release receipt {path} has an invalid asset size")
+    if not isinstance(receipt.get("published_at"), str):
+        raise UpstreamRemovalError(f"upstream release receipt {path} has no publication time")
+    return receipt
+
+
+def fetch_release_by_tag(
+    owner: str, repository: str, tag: str, token: str | None = None
 ) -> dict[str, Any]:
-    """Select the stable release immediately preceding the pinned release."""
-    stable = [
-        release
-        for release in releases
-        if release.get("draft") is False
-        and release.get("prerelease") is False
-        and isinstance(release.get("tag_name"), str)
-        and STABLE_TAG.fullmatch(release["tag_name"])
-        and isinstance(release.get("published_at"), str)
-    ]
-    current = next((release for release in stable if release["tag_name"] == current_tag), None)
-    if current is None:
-        raise UpstreamRemovalError(f"pinned stable upstream release not found: {current_tag}")
-    earlier = [release for release in stable if release["published_at"] < current["published_at"]]
-    if not earlier:
-        raise UpstreamRemovalError(f"no stable release precedes {current_tag}")
-    return max(earlier, key=lambda release: (release["published_at"], release["tag_name"]))
-
-
-def fetch_releases(owner: str, repository: str, token: str | None = None) -> list[dict[str, Any]]:
-    """Fetch all release pages needed to resolve a pinned release predecessor."""
+    """Fetch the exact GitHub release named by a receipt."""
     headers = {"Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28"}
     if token:
         headers["Authorization"] = f"Bearer {token}"
-    releases: list[dict[str, Any]] = []
-    page = 1
-    while True:
-        response = requests.get(
-            f"https://api.github.com/repos/{owner}/{repository}/releases",
-            headers=headers,
-            params={"per_page": 100, "page": page},
-            timeout=30,
+    response = requests.get(
+        f"{GITHUB_API}/repos/{owner}/{repository}/releases/tags/{quote(tag, safe='')}",
+        headers=headers,
+        timeout=30,
+    )
+    response.raise_for_status()
+    release = response.json()
+    if not isinstance(release, dict):
+        raise UpstreamRemovalError(f"GitHub release response for {tag} is malformed")
+    return release
+
+
+def validate_receipt_asset(receipt: dict[str, Any], release: dict[str, Any]) -> dict[str, Any]:
+    """Bind a receipt to one exact GitHub release asset or fail closed."""
+    tag = receipt["tag_name"]
+    if release.get("tag_name") != tag:
+        raise UpstreamRemovalError(f"GitHub release tag does not match receipt {tag}")
+    assets = release.get("assets")
+    if not isinstance(assets, list):
+        raise UpstreamRemovalError(f"GitHub release {tag} has a malformed asset list")
+    matches = [asset for asset in assets if asset.get("name") == receipt["asset_name"]]
+    if len(matches) != 1:
+        raise UpstreamRemovalError(
+            f"GitHub release {tag} does not contain exactly one {receipt['asset_name']} asset"
         )
-        response.raise_for_status()
-        batch = response.json()
-        if not isinstance(batch, list):
-            raise UpstreamRemovalError("GitHub releases response is malformed")
-        releases.extend(batch)
-        if len(batch) < 100:
-            return releases
-        page += 1
+    asset = matches[0]
+    expected_digest = f"sha256:{receipt['asset_sha256']}"
+    if asset.get("digest") != expected_digest:
+        raise UpstreamRemovalError(f"GitHub release {tag} asset digest does not match receipt")
+    if asset.get("size") != receipt["asset_size"]:
+        raise UpstreamRemovalError(f"GitHub release {tag} asset size does not match receipt")
+    url = asset.get("browser_download_url")
+    if not isinstance(url, str) or not url.startswith("https://github.com/"):
+        raise UpstreamRemovalError(f"GitHub release {tag} asset URL is invalid")
+    return asset
 
 
 def _load_source_graph(directory: Path) -> dict[str, Any]:
@@ -151,13 +180,12 @@ def find_removals(previous: dict[str, Any], current: dict[str, Any]) -> list[Rem
     previous_paths = previous.get("paths", {})
     current_paths = current.get("paths", {})
     findings.extend(_removed_map_entries("path", "/paths", previous_paths, current_paths))
-    methods = {"get", "put", "post", "delete", "options", "head", "patch", "trace"}
     for path in sorted(previous_paths.keys() & current_paths.keys()):
         before_item = previous_paths[path]
         after_item = current_paths[path]
         if not isinstance(before_item, dict) or not isinstance(after_item, dict):
             continue
-        for method in sorted((before_item.keys() - after_item.keys()) & methods):
+        for method in sorted((before_item.keys() - after_item.keys()) & HTTP_METHODS):
             pointer = f"/paths/{_escape(path)}/{method}"
             value = before_item[method]
             findings.append(
@@ -216,7 +244,7 @@ def load_acknowledgements(path: Path) -> dict[str, dict[str, str]]:
             raise UpstreamRemovalError(
                 f"acknowledgements[{index}] has invalid acknowledgement date"
             ) from error
-        if acknowledged_date > datetime.now(UTC).date():
+        if acknowledged_date > datetime.now(timezone.utc).date():
             raise UpstreamRemovalError(f"acknowledgements[{index}] is future-dated")
         if fingerprint in result:
             raise UpstreamRemovalError(f"duplicate acknowledgement: {fingerprint}")
@@ -251,8 +279,110 @@ def build_report(
     }
 
 
-def render_markdown(report: dict[str, Any]) -> str:
-    """Render the release-note summary for the complete JSON asset."""
+def _receipt_identity(receipt: dict[str, Any]) -> dict[str, str]:
+    return {
+        "tag_name": receipt["tag_name"],
+        "asset_name": receipt["asset_name"],
+        "sha256": f"sha256:{receipt['asset_sha256']}",
+    }
+
+
+def operation_inventory(document: dict[str, Any]) -> list[dict[str, str]]:
+    """Return sorted path-plus-method identities for every HTTP operation."""
+    inventory: list[dict[str, str]] = []
+    paths = document.get("paths", {})
+    if not isinstance(paths, dict):
+        return inventory
+    for path, item in paths.items():
+        if not isinstance(item, dict):
+            continue
+        inventory.extend(
+            {"path": path, "method": method.upper()}
+            for method in HTTP_METHODS
+            if isinstance(item.get(method), dict)
+        )
+    return sorted(inventory, key=lambda operation: (operation["path"], operation["method"]))
+
+
+def _property_inventory(document: dict[str, Any]) -> dict[tuple[str, str], Any]:
+    inventory: dict[tuple[str, str], Any] = {}
+    schemas = document.get("components", {}).get("schemas", {})
+    if not isinstance(schemas, dict):
+        return inventory
+    for schema_name, schema in schemas.items():
+        if not isinstance(schema, dict) or not isinstance(schema.get("properties"), dict):
+            continue
+        for property_name, value in schema["properties"].items():
+            inventory[(schema_name, property_name)] = value
+    return inventory
+
+
+def build_change_report(
+    baseline_receipt: dict[str, Any],
+    target_receipt: dict[str, Any],
+    baseline: dict[str, Any],
+    target: dict[str, Any],
+) -> dict[str, Any]:
+    """Build a stable, complete upstream operation and schema-property diff."""
+    baseline_operations = operation_inventory(baseline)
+    target_operations = operation_inventory(target)
+    baseline_keys = {(item["path"], item["method"]) for item in baseline_operations}
+    target_keys = {(item["path"], item["method"]) for item in target_operations}
+
+    def operation(key: tuple[str, str]) -> dict[str, str]:
+        return {"path": key[0], "method": key[1]}
+
+    before_properties = _property_inventory(baseline)
+    after_properties = _property_inventory(target)
+    before_keys = set(before_properties)
+    after_keys = set(after_properties)
+    added = [
+        {"schema": schema, "property": prop, "value": after_properties[(schema, prop)]}
+        for schema, prop in sorted(after_keys - before_keys)
+    ]
+    removed = [
+        {"schema": schema, "property": prop, "value": before_properties[(schema, prop)]}
+        for schema, prop in sorted(before_keys - after_keys)
+    ]
+    modified = [
+        {
+            "schema": schema,
+            "property": prop,
+            "before": before_properties[(schema, prop)],
+            "after": after_properties[(schema, prop)],
+        }
+        for schema, prop in sorted(before_keys & after_keys)
+        if before_properties[(schema, prop)] != after_properties[(schema, prop)]
+    ]
+    operation_additions = [operation(key) for key in sorted(target_keys - baseline_keys)]
+    operation_removals = [operation(key) for key in sorted(baseline_keys - target_keys)]
+    return {
+        "schema_version": 1,
+        "baseline": _receipt_identity(baseline_receipt),
+        "target": _receipt_identity(target_receipt),
+        "operations": {
+            "baseline_count": len(baseline_operations),
+            "target_count": len(target_operations),
+            "addition_count": len(operation_additions),
+            "removal_count": len(operation_removals),
+            "baseline": baseline_operations,
+            "target": target_operations,
+            "additions": operation_additions,
+            "removals": operation_removals,
+        },
+        "schema_properties": {
+            "addition_count": len(added),
+            "removal_count": len(removed),
+            "modification_count": len(modified),
+            "added": added,
+            "removed": removed,
+            "modified": modified,
+        },
+    }
+
+
+def render_removals_markdown(report: dict[str, Any]) -> str:
+    """Render the acknowledged-removal gate summary."""
     lines = [
         "# Upstream contract removals",
         "",
@@ -272,52 +402,106 @@ def render_markdown(report: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
+def render_change_markdown(report: dict[str, Any]) -> str:
+    """Render release-note evidence while the JSON asset carries full inventories."""
+    operations = report["operations"]
+    properties = report["schema_properties"]
+    lines = [
+        "# Upstream contract changes",
+        "",
+        f"- Baseline: `{report['baseline']['tag_name']}` / `{report['baseline']['asset_name']}` / `{report['baseline']['sha256']}`",
+        f"- Target: `{report['target']['tag_name']}` / `{report['target']['asset_name']}` / `{report['target']['sha256']}`",
+        f"- Operations: {operations['baseline_count']} baseline, {operations['target_count']} target, {operations['addition_count']} added, {operations['removal_count']} removed",
+        f"- Schema properties: {properties['addition_count']} added, {properties['removal_count']} removed, {properties['modification_count']} modified",
+        "",
+        "## Added operations",
+        "",
+    ]
+    lines.extend(f"- `{item['method']} {item['path']}`" for item in operations["additions"])
+    if not operations["additions"]:
+        lines.append("- None")
+    lines.extend(["", "## Removed operations", ""])
+    lines.extend(f"- `{item['method']} {item['path']}`" for item in operations["removals"])
+    if not operations["removals"]:
+        lines.append("- None")
+    lines.extend(
+        [
+            "",
+            "The complete sorted operation inventories and schema-property additions, removals, and modifications (including full before/after values) are in `upstream-contract-changes.json`.",
+            "",
+        ]
+    )
+    return "\n".join(lines)
+
+
 def main() -> int:
-    """Resolve the predecessor, compare it with the pinned source, and emit reports."""
+    """Compare the explicit consumed and target receipts and emit evidence."""
     parser = argparse.ArgumentParser()
     parser.add_argument("--current-dir", type=Path, default=Path("specs/original"))
-    parser.add_argument("--release-receipt", type=Path, default=Path(".github_release"))
+    parser.add_argument("--previous-receipt", type=Path, required=True)
+    parser.add_argument("--current-receipt", type=Path, required=True)
     parser.add_argument(
         "--acknowledgements", type=Path, default=Path("config/upstream_contract_removals.yaml")
     )
     parser.add_argument(
-        "--report", type=Path, default=Path("release/upstream-contract-removals.json")
+        "--removals-report", type=Path, default=Path("release/upstream-contract-removals.json")
     )
     parser.add_argument(
-        "--markdown", type=Path, default=Path("release/upstream-contract-removals.md")
+        "--removals-markdown", type=Path, default=Path("release/upstream-contract-removals.md")
+    )
+    parser.add_argument(
+        "--changes-report", type=Path, default=Path("release/upstream-contract-changes.json")
+    )
+    parser.add_argument(
+        "--changes-markdown", type=Path, default=Path("release/upstream-contract-changes.md")
     )
     args = parser.parse_args()
-    receipt = json.loads(args.release_receipt.read_text())
-    current_tag = receipt.get("tag_name")
-    if not isinstance(current_tag, str) or not STABLE_TAG.fullmatch(current_tag):
-        raise UpstreamRemovalError("upstream release receipt has an invalid stable tag")
+
+    previous_receipt = load_release_receipt(args.previous_receipt)
+    current_receipt = load_release_receipt(args.current_receipt)
     token = os.getenv("GITHUB_TOKEN")
-    releases = fetch_releases("f5-sales-demo", "api-specs", token)
-    previous = select_previous_stable_release(releases, current_tag)
-    asset = find_release_asset(previous, "api-specs-v*.zip")
-    if not asset:
-        raise UpstreamRemovalError(f"{previous['tag_name']} has no API specification asset")
-    with tempfile.TemporaryDirectory(prefix="upstream-removals-") as temporary:
+    previous_release = fetch_release_by_tag(
+        "f5-sales-demo", "api-specs", previous_receipt["tag_name"], token
+    )
+    current_release = fetch_release_by_tag(
+        "f5-sales-demo", "api-specs", current_receipt["tag_name"], token
+    )
+    previous_asset = validate_receipt_asset(previous_receipt, previous_release)
+    validate_receipt_asset(current_receipt, current_release)
+
+    with tempfile.TemporaryDirectory(prefix="upstream-contract-") as temporary:
         root = Path(temporary)
-        archive = root / "previous.zip"
-        if not download_release_asset(asset["browser_download_url"], archive, token=token):
-            raise UpstreamRemovalError("failed to securely download previous release")
-        verify_release_asset_digest(archive, asset)
+        archive = root / previous_receipt["asset_name"]
+        if not download_release_asset(previous_asset["browser_download_url"], archive, token=token):
+            raise UpstreamRemovalError("failed to securely download baseline release")
+        actual_digest = verify_release_asset_digest(archive, previous_asset)
+        if actual_digest != previous_receipt["asset_sha256"]:
+            raise UpstreamRemovalError("downloaded baseline digest does not match receipt")
         previous_dir = root / "previous"
         extract_zip(archive, previous_dir, load_config(Path("config/download.yaml")))
-        removals = find_removals(
-            _load_source_graph(previous_dir), _load_source_graph(args.current_dir)
-        )
-    report = build_report(
-        previous["tag_name"],
-        current_tag,
-        removals,
+        previous_graph = _load_source_graph(previous_dir)
+        current_graph = _load_source_graph(args.current_dir)
+
+    changes_report = build_change_report(
+        previous_receipt, current_receipt, previous_graph, current_graph
+    )
+    args.changes_report.parent.mkdir(parents=True, exist_ok=True)
+    args.changes_report.write_text(json.dumps(changes_report, indent=2, sort_keys=True) + "\n")
+    args.changes_markdown.write_text(render_change_markdown(changes_report))
+    removals_report = build_report(
+        previous_receipt["tag_name"],
+        current_receipt["tag_name"],
+        find_removals(previous_graph, current_graph),
         load_acknowledgements(args.acknowledgements),
     )
-    args.report.parent.mkdir(parents=True, exist_ok=True)
-    args.report.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n")
-    args.markdown.write_text(render_markdown(report))
-    print(f"Recorded {report['removal_count']} acknowledged upstream contract removals")
+    args.removals_report.parent.mkdir(parents=True, exist_ok=True)
+    args.removals_report.write_text(json.dumps(removals_report, indent=2, sort_keys=True) + "\n")
+    args.removals_markdown.write_text(render_removals_markdown(removals_report))
+    print(
+        f"Recorded {removals_report['removal_count']} acknowledged removals; "
+        f"operations: {changes_report['operations']['addition_count']} added, "
+        f"{changes_report['operations']['removal_count']} removed"
+    )
     return 0
 
 

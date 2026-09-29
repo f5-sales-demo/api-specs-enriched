@@ -1,15 +1,15 @@
 # Changelog
 
-## Version 8.0.3 (2026-09-26)
+## Version 9.0.0 (2026-09-29)
 
 ### Version Information
-- **Full Version**: 8.0.3
+- **Full Version**: 9.0.0
 - **Upstream Timestamp**: unknown
 - **Upstream ETag**: unknown
-- **Enriched Version**: 8.0.3
+- **Enriched Version**: 9.0.0
 
 ### Release Type
-- **patch** release
+- **major** release
 
 ### Changes
 - Updated API specifications from F5 Distributed Cloud
@@ -27,8 +27,9 @@
 ### Statistics
 - Original specs: 284
 - Domains: 38
-- Total paths: 1676
-- Total schemas: 8625
+- Total paths: 1655
+- Total operations: 1826
+- Total schemas: 8721
 
 ### API Discovery Enrichment
 - Discovery timestamp: 2025-12-20T19:39:20.211392+00:00
@@ -45,7 +46,7 @@ docs/specifications/api/
 \`\`\`
 
 ### Download
-- ZIP Package: F5xc-api-(unknown-8.0.3).zip
+- ZIP Package: F5xc-api-(unknown-9.0.0).zip
 
 ### Source
 - Source: F5 Distributed Cloud OpenAPI specifications
