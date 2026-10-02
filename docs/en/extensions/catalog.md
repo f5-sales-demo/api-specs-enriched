@@ -52,7 +52,6 @@ stubby as long as the `### x-name` header exists and the
 - **Example:** `"x-f5xc-network-allowlist": {"source_url": "https://docs.cloud.f5.com/docs-v2/downloads/platform/reference/network-cloud-ref/ips-domains.json", "sha256": "...", "manifest": {"manifest_type": "firewall_proxy_allowlist", "services": {}, "customer_edge": {}}}`
 - **Pass-through from upstream:** no
 
-
 ### x-f5xc-cli-domain
 
 - **Applied at:** info
@@ -234,6 +233,23 @@ stubby as long as the `### x-name` header exists and the
 - **Pass-through from upstream:** no
 
 ## Injected — schema-level (component schemas)
+
+### x-f5xc-immutable-oneof-groups
+
+- **Applied at:** schema
+- **Purpose:** Declares immutable oneof selection after resource creation, while child settings retain their existing mutability.
+- **Consumers:** terraform, cli, docs
+- **Value type:** object mapping group names to complete member arrays
+- **Value schema:** `{"type": "object", "additionalProperties": {"type": "array", "items": {"type": "string"}, "minItems": 2, "uniqueItems": true}}`
+- **Injected by:** scripts/utils/schema_override_enricher.py
+- **Driven by config:** config/schema_overrides.yaml
+- **Example:** `"x-f5xc-immutable-oneof-groups": {"loadbalancer_type": ["http", "https", "https_auto_cert"]}`
+- **Pass-through from upstream:** no
+
+For HTTP load balancers, switching between HTTP, HTTPS with supplied certificates, and HTTPS with automatic certificates requires recreation and may interrupt service. Certificate rotation and other supported edits within the selected type remain updates. Omitted selection is distinct from a known member; a recommendation does not establish an API default.
+Unknown member presence prevents proving unchanged selection, while unknown child values alone do not change selection.
+
+Terraform consumers must expose replacement paths and preserve `prevent_destroy` and the user's replacement ordering. This metadata does not authorize deletion inside Update. See [provider implementation #2344](https://github.com/f5-sales-demo/terraform-provider-xcsh/issues/2344).
 
 ### x-f5xc-minimum-configuration
 

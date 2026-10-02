@@ -1386,3 +1386,33 @@ def test_smsv2_selection_and_drain_preserve_current_api_fields(
     assert schema["properties"][field]["type"] == field_type
     assert set(json.loads(schema[choice])) == {*siblings, field}
     assert enricher.enrich_spec(result) == result
+
+
+def test_http_loadbalancer_selection_is_immutable_but_children_are_mutable(enricher):
+    """Type changes recreate the LB; same-type settings remain mutable."""
+    members = ["http", "https", "https_auto_cert"]
+    schema_names = [
+        f"viewshttp_loadbalancer{operation}SpecType" for operation in ("Create", "Replace", "Get")
+    ]
+    spec = {
+        "components": {
+            "schemas": {
+                name: {
+                    "type": "object",
+                    "x-ves-oneof-field-loadbalancer_type": members,
+                    "properties": {
+                        member: {"type": "object", "properties": {"port": {"type": "integer"}}}
+                        for member in members
+                    },
+                }
+                for name in schema_names
+            }
+        }
+    }
+    result = enricher.enrich_spec(spec, canonical_only=True)
+    for name in schema_names:
+        schema = result["components"]["schemas"][name]
+        assert schema["x-f5xc-immutable-oneof-groups"] == {"loadbalancer_type": members}
+        assert schema["properties"] == spec["components"]["schemas"][name]["properties"]
+        assert "required" not in schema
+    assert enricher.enrich_spec(result, canonical_only=True) == result
