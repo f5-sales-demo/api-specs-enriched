@@ -1,15 +1,15 @@
 # Changelog
 
-## Version 9.0.2 (2026-10-03)
+## Version 10.0.0 (2026-10-03)
 
 ### Version Information
-- **Full Version**: 9.0.2
+- **Full Version**: 10.0.0
 - **Upstream Timestamp**: unknown
 - **Upstream ETag**: unknown
-- **Enriched Version**: 9.0.2
+- **Enriched Version**: 10.0.0
 
 ### Release Type
-- **patch** release
+- **major** release
 
 ### Changes
 - Updated API specifications from F5 Distributed Cloud
@@ -46,7 +46,7 @@ docs/specifications/api/
 \`\`\`
 
 ### Download
-- ZIP Package: F5xc-api-(unknown-9.0.2).zip
+- ZIP Package: F5xc-api-(unknown-10.0.0).zip
 
 ### Source
 - Source: F5 Distributed Cloud OpenAPI specifications

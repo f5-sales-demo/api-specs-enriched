@@ -1,9 +1,9 @@
 # Upstream contract changes
 
-- Baseline: `v2026.09.28-2` / `api-specs-v2026.09.28-2.zip` / `sha256:23b91d734893fcacf7bd7acdc50df39f49996341010e3a77e2d580a14b8215fd`
+- Baseline: `v2026.10.02-1` / `api-specs-v2026.10.02-1.zip` / `sha256:8a4290416988e79dbba1c05a093c25956759867c0f43296795e5329782110907`
 - Target: `v2026.10.02-1` / `api-specs-v2026.10.02-1.zip` / `sha256:8a4290416988e79dbba1c05a093c25956759867c0f43296795e5329782110907`
 - Operations: 1840 baseline, 1840 target, 0 added, 0 removed
-- Schema properties: 0 added, 0 removed, 85 modified
+- Schema properties: 0 added, 0 removed, 0 modified
 
 ## Added operations
 
