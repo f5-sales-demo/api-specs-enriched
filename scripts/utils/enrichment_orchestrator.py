@@ -75,6 +75,24 @@ def validate_stage_inventory() -> None:
         ):
             if key not in entry:
                 raise ValueError(f"Enricher {name} lacks {key}")
+    production = ast.parse(Path("scripts/pipeline.py").read_text())
+    calls = {
+        node.func.id
+        for node in ast.walk(production)
+        if isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
+    }
+    calls.update(
+        node.func.value.id
+        for node in ast.walk(production)
+        if isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Attribute)
+        and isinstance(node.func.value, ast.Name)
+    )
+    active = {name for name, entry in registry.items() if entry["status"] == "active"}
+    source_names = {stage.__name__ for stage in SOURCE_STAGES}
+    missing_calls = active - source_names - calls
+    if missing_calls:
+        raise ValueError(f"Active enrichers omitted from production: {sorted(missing_calls)}")
     declared = {
         name
         for name, entry in registry.items()

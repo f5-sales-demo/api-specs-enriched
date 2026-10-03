@@ -11,7 +11,14 @@ from typing import Any
 import yaml
 
 from scripts.compile_catalog import _walk_schema, normalize_path_placeholders
-from scripts.utils.map_constraints import map_rules, normalize_map, schema_nodes
+from scripts.utils.map_constraints import (
+    NATIVE_VALUE_KEYS,
+    PREFIX,
+    RULES,
+    map_rules,
+    normalize_map,
+    schema_nodes,
+)
 
 HTTP_METHODS = frozenset({"get", "put", "post", "delete", "patch", "head", "options", "trace"})
 
@@ -31,11 +38,50 @@ def inventory(spec: dict[str, Any], catalog: dict[str, Any]) -> dict[str, Any]:
             continue
         families.update(rules.keys())
         normalized = normalize_map(node)
+        assert normalized is not None
         native = {
             key: node[key]
             for key in ("minProperties", "maxProperties", "additionalProperties")
             if key in node
         }
+        dispositions = []
+        for rule, original in rules.items():
+            scope, keyword = RULES[rule[len(PREFIX) :]]
+            expected_value = normalized.get(scope, {}).get(keyword)
+            if scope == "cardinality":
+                equivalent = node.get(keyword) == expected_value
+                classification = "exact-native" if equivalent else "missing-native"
+                reason = (
+                    "Native object pair bound"
+                    if equivalent
+                    else "Canonical native bound requires upstream correction"
+                )
+            elif scope == "values" and keyword in NATIVE_VALUE_KEYS:
+                additional = node.get("additionalProperties")
+                equivalent = (
+                    isinstance(additional, dict) and additional.get(keyword) == expected_value
+                )
+                classification = "exact-native" if equivalent else "extension-only"
+                reason = (
+                    "Native string map-value bound"
+                    if equivalent
+                    else "Typed/ref/composed value requires contract-compatible native projection"
+                )
+            else:
+                classification = "extension-only"
+                reason = (
+                    "OpenAPI 3.0 has no exact property-name/cross-entry or agreed format contract"
+                )
+            dispositions.append(
+                {
+                    "rule": rule,
+                    "originalValue": original,
+                    "scope": scope,
+                    "classification": classification,
+                    "reason": reason,
+                    "owner": "f5-sales-demo/api-specs-enriched#1854",
+                }
+            )
         sites.append(
             {
                 "path": path,
@@ -43,6 +89,7 @@ def inventory(spec: dict[str, Any], catalog: dict[str, Any]) -> dict[str, Any]:
                 "normalized": node.get("x-f5xc-constraints"),
                 "expected": normalized,
                 "native": native,
+                "dispositions": dispositions,
             }
         )
     # Object identity ties expanded catalog/request traversal to physical source sites.
@@ -169,6 +216,11 @@ def export_coverage(master_path: Path, catalog_path: Path, output_path: Path) ->
     from scripts.utils.enrichment_orchestrator import validate_stage_inventory  # noqa: PLC0415
 
     validate_stage_inventory()
+    console_config = yaml.safe_load(Path("config/console_field_metadata.yaml").read_text())
+    report["consoleTargets"] = {
+        "configured": sum(len(fields) for fields in console_config["resources"].values()),
+        "exclusions": console_config.get("exclusions", {}),
+    }
     report["stages"] = yaml.safe_load(Path("config/enrichment_stages.yaml").read_text())
     output_path.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n")
     markdown = [
