@@ -25,9 +25,11 @@ from typing import Any, ClassVar
 import yaml
 
 from .build_stamp import artifact_timestamp
+from .map_constraints import normalize_map, schema_nodes
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
+
 logger = logging.getLogger(__name__)
 
 
@@ -391,10 +393,29 @@ class ConstraintEnricher:
         """
         logger.info("Starting constraint enrichment")
 
+        # Physical component sites include every local reference target exactly once.
+        # Inline request/response nodes are traversed independently of component reachability.
+        for path, node in schema_nodes(spec):
+            normalized = normalize_map(node)
+            if normalized is not None:
+                existing = node.get("x-f5xc-constraints")
+                if existing and existing.get("constraintType") != "map":
+                    raise ValueError(f"Conflicting existing map constraints at {path}")
+                if existing and any(
+                    key in normalized and normalized[key] != value
+                    for key, value in existing.items()
+                ):
+                    raise ValueError(f"Conflicting existing map constraints at {path}")
+                if not existing:
+                    self.stats["constraints_added"] += 1
+                self.stats["properties_analyzed"] += 1
+                node["x-f5xc-constraints"] = {**(existing or {}), **normalized}
+                continue
+            if "/properties/" in path:
+                owner = path.split("/")[3] if path.startswith("#/components/schemas/") else ""
+                self._enrich_property(path.rsplit("/", 1)[-1], node, schema_name=owner)
+
         # Process all schemas
-        if "components" in spec and "schemas" in spec["components"]:
-            for schema_name, schema in spec["components"]["schemas"].items():
-                self._enrich_schema(schema_name, schema)
 
         logger.info(
             "Constraint enrichment complete. Added %d constraints",

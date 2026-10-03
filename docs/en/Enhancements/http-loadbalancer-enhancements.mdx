@@ -486,3 +486,16 @@ metadata.uid:
 | ------- | ---------- | ----------------------------------------------------------------------------------------------- |
 | 2.0.46  | 2026-04-18 | Added server-applied defaults, guided workflow integration, and expanded minimum config section |
 | 2.0.45  | 2026-01-20 | Initial http_loadbalancer enrichments documentation                                             |
+
+## Custom Error Value Budget
+
+The optional `spec.more_option.custom_errors` map allows 16 pairs. Each complete
+URI-reference value has a 65,536-character maximum, including the ten-character
+`string:///` prefix. Standard padded Base64 fits at most 49,143 decoded bytes:
+`10 + 4 * ceil(N / 3) <= 65536`. The 49,143-byte case uses 65,534 URI characters;
+49,144 bytes require 65,538 characters. Budget UTF-8 encoded bytes for HTML.
+The limit applies to the complete value string, separately from total JSON
+request size, pair count and key domain `3,4,5,300-599`.
+
+See [map constraints and enrichment coverage](../map-constraints/) for the
+structured key, value, cardinality and cross-entry contract.

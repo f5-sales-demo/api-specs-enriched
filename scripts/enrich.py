@@ -23,29 +23,11 @@ from rich.console import Console
 from rich.progress import BarColumn, Progress, SpinnerColumn, TextColumn, TimeElapsedColumn
 from rich.table import Table
 
+from scripts.pipeline import enrich_spec, print_summary as pipeline_summary, run_pipeline
 from scripts.utils import (
-    AcronymNormalizer,
-    BrandingNormalizer,
-    BrandingTransformer,
-    BrandingValidator,
-    ConsistencyValidator,
-    ConstraintEnricher,
-    DeprecatedTierEnricher,
-    DescriptionEnricher,
-    DescriptionStructureTransformer,
-    DescriptionValidator,
     DiscoveryEnricher,
-    ExternalDocsEnricher,
-    FieldMetadataEnricher,
-    GrammarImprover,
-    MinimumConfigurationEnricher,
-    NamespaceProfileEnricher,
-    ProseSpellingTransformer,
     SchemaFixer,
-    UniquenessEnricher,
 )
-from scripts.utils.console_ui_enricher import ConsoleUIEnricher
-from scripts.utils.deprecated_operations import remove_deprecated_operations
 from scripts.utils.json_writer import write_json_file
 
 console = Console()
@@ -254,203 +236,15 @@ def count_text_fields(spec: dict[str, Any], target_fields: list[str]) -> int:
     return count
 
 
-def enrich_spec_file(
-    spec_path: Path,
-    output_path: Path,
-    config: dict,
-) -> EnrichmentResult:
-    """Enrich a single specification file.
-
-    Args:
-        spec_path: Path to the original specification file.
-        output_path: Path to save the enriched specification.
-        config: Enrichment configuration.
-
-    Returns:
-        EnrichmentResult with processing details.
-    """
-    filename = spec_path.name
-
+def enrich_spec_file(spec_path: Path, output_path: Path, config: dict) -> EnrichmentResult:
+    """Run the shared production source stages for a single diagnostic input."""
     try:
-        # Load specification
-        spec = load_spec(spec_path)
-        deprecated_stats = remove_deprecated_operations(spec)
-        original_field_count = count_text_fields(spec, config.get("target_fields", []))
-
-        # Initialize enrichment utilities
-        acronym_normalizer = AcronymNormalizer()
-        branding_transformer = BrandingTransformer()
-        deprecated_tier_enricher = DeprecatedTierEnricher()
-        description_structure_transformer = DescriptionStructureTransformer()
-        schema_fixer = SchemaFixer()
-        field_metadata_enricher = FieldMetadataEnricher()
-        minimum_configuration_enricher = MinimumConfigurationEnricher()
-        description_validator = DescriptionValidator()
-        consistency_validator = ConsistencyValidator()
-        constraint_enricher = ConstraintEnricher(
-            config_path=Path("config/constraint_patterns.yaml"),
-        )
-
-        grammar_config = config.get("grammar", {})
-        grammar_improver = GrammarImprover(
-            capitalize_sentences=grammar_config.get("capitalize_sentences", True),
-            ensure_punctuation=grammar_config.get("ensure_punctuation", True),
-            normalize_whitespace=grammar_config.get("normalize_whitespace", True),
-            fix_double_spaces=grammar_config.get("fix_double_spaces", True),
-            trim_whitespace=grammar_config.get("trim_whitespace", True),
-            use_language_tool=True,
-        )
-
-        target_fields = config.get(
-            "target_fields",
-            ["description", "summary", "title", "x-displayname"],
-        )
-
-        # Initialize XKS/XCS branding normalizer
-        branding_normalizer = BrandingNormalizer()
-
-        # Apply enrichments in order
-        # 0. Deprecated tier transformation (BASIC→STANDARD, PREMIUM→ADVANCED)
-        spec = deprecated_tier_enricher.enrich(spec)
-
-        # 1. Branding transformations first (most specific)
-        # 1a. Legacy Volterra→F5 branding
-        spec = branding_transformer.transform_spec(spec, target_fields)
-        spec = ProseSpellingTransformer().transform_spec(spec)
-        # 1b. Industry-standard XKS/XCS terminology normalization
-        spec = branding_normalizer.normalize_spec(spec, target_fields)
-
-        # 2. Description structure normalization (extract examples, validation rules, X-required)
-        spec = description_structure_transformer.transform_spec(spec, target_fields)
-
-        # 3. Schema fixes (add missing type field where format exists)
-        spec = schema_fixer.fix_spec(spec)
-
-        # 4. Field metadata enrichment (add unified x-f5xc-* field-level metadata)
-        spec = field_metadata_enricher.enrich_spec(spec)
-
-        # 4.5. Minimum configuration enrichment (add x-f5xc-minimum-configuration)
-        spec = minimum_configuration_enricher.enrich_spec(spec)
-
-        # 4.6. Namespace profile enrichment (add x-f5xc-namespace-profile)
-        namespace_profile_enricher = NamespaceProfileEnricher()
-        spec = namespace_profile_enricher.enrich_spec(spec)
-
-        # 4.6.5. Uniqueness enrichment (add x-f5xc-uniqueness derived from namespace scope)
-        uniqueness_enricher = UniquenessEnricher()
-        spec = uniqueness_enricher.enrich_spec(spec)
-
-        # 4.6.6. Console UI enrichment (add x-f5xc-console navigation and form metadata)
-        console_ui_enricher = ConsoleUIEnricher()
-        spec = console_ui_enricher.enrich_spec(spec)
-
-        # 4.7. External docs enrichment (add externalDocs with F5 documentation links)
-        external_docs_enricher = ExternalDocsEnricher()
-        spec = external_docs_enricher.enrich_spec(spec, filename=spec_path.name)
-
-        # 4.8. Domain description enrichment (apply DRY descriptions from config)
-        description_enricher = DescriptionEnricher()
-        spec = description_enricher.enrich_spec(spec)
-
-        # 4.9. Constraint enrichment (add x-f5xc-constraints from patterns)
-        spec = constraint_enricher.enrich_spec(spec)
-
-        # 5. Acronym normalization
-        spec = acronym_normalizer.normalize_spec(spec, target_fields)
-
-        # 6. Grammar improvements
-        spec = grammar_improver.improve_spec(spec, target_fields)
-
-        # 7. Description validation and generation (auto-generate missing descriptions)
-        spec = description_validator.validate_and_generate(spec)
-
-        # 9. Discovery enrichment (add x-discovered-* extensions)
-        discovery_enrichments = 0
-        discovery_enricher = load_discovery_enricher(config)
-        if discovery_enricher:
-            spec = discovery_enricher.enrich_with_discoveries(spec)
-            discovery_stats = discovery_enricher.get_stats()
-            discovery_enrichments = discovery_stats.get("fields_enriched", 0)
-
-        # Close grammar improver resources
-        grammar_improver.close()
-
-        # Run consistency validation (read-only, generates report)
-        consistency_validator.validate(spec)
-
-        # Validate branding was applied correctly
-        branding_validator = BrandingValidator()
-        legacy_findings = branding_validator.validate_spec(spec, target_fields)
-
-        # Validate enriched spec
-        validation_config = config.get("validation", {})
-        validation_passed = True
-        validation_error = None
-
-        if validation_config.get("validate_after_enrichment", True):
-            validation_passed, validation_error = validate_spec(spec)
-
-        # Save enriched specification
-        output_config = config.get("output", {})
-        save_spec(
-            spec,
-            output_path,
-            indent=output_config.get("json_indent", 2),
-            sort_keys=output_config.get("sort_keys", False),
-        )
-
-        # Collect stats from all transformers
-        deprecated_tier_stats = deprecated_tier_enricher.get_stats()
-        branding_normalizer_stats = branding_normalizer.get_stats()
-        schema_stats = schema_fixer.get_stats()
-        desc_stats = description_validator.get_stats()
-        consistency_stats = consistency_validator.get_stats()
-        minimum_config_stats = minimum_configuration_enricher.get_stats()
-        namespace_profile_stats = namespace_profile_enricher.get_stats()
-        constraint_stats = constraint_enricher.get_stats()
-        _ = console_ui_enricher.get_stats()
-
-        return EnrichmentResult(
-            filename=filename,
-            success=True,
-            changes={
-                "text_fields_processed": original_field_count,
-                "legacy_branding_remaining": len(legacy_findings),
-                "deprecated_tiers_transformed": deprecated_tier_stats.get(
-                    "values_transformed",
-                    0,
-                ),
-                "managed_k8s_transformations": branding_normalizer_stats.get(
-                    "managed_k8s_transformations", 0
-                ),
-                "virtual_k8s_transformations": branding_normalizer_stats.get(
-                    "virtual_k8s_transformations", 0
-                ),
-                "glossary_terms_added": branding_normalizer_stats.get("glossary_terms_added", 0),
-                "schemas_fixed": schema_stats.get("fixes_applied", 0),
-                "descriptions_generated": desc_stats.get("operations_generated", 0),
-                "consistency_issues": consistency_stats.get("total_issues", 0),
-                "minimum_configs_added": minimum_config_stats.get("minimum_configs_added", 0),
-                "namespace_profiles_added": namespace_profile_stats.get("specs_enriched", 0),
-                "discovery_enrichments": discovery_enrichments,
-                "constraints_added": constraint_stats.get("constraints_added", 0),
-                "constraint_coverage": constraint_stats.get("coverage_percentage", 0),
-                "constraint_pattern_matches": constraint_stats.get("pattern_matches", 0),
-                "constraint_avg_confidence": constraint_stats.get("average_confidence", 0),
-                "deprecated_operations_removed": deprecated_stats.operations_removed,
-                "deprecated_paths_removed": deprecated_stats.paths_removed,
-            },
-            validation_passed=validation_passed,
-            error=validation_error if not validation_passed else None,
-        )
-
-    except Exception as e:
-        return EnrichmentResult(
-            filename=filename,
-            success=False,
-            error=str(e),
-            validation_passed=False,
-        )
+        spec, changes = enrich_spec(load_spec(spec_path), config)
+        validation_passed, error = validate_spec(spec)
+        save_spec(spec, output_path)
+        return EnrichmentResult(spec_path.name, True, changes, validation_passed, error)
+    except Exception as error:
+        return EnrichmentResult(spec_path.name, False, error=str(error))
 
 
 def process_spec_wrapper(args: tuple) -> EnrichmentResult:
@@ -681,7 +475,6 @@ def main() -> int:
     # Determine directories
     input_dir = args.input_dir or Path(config["paths"]["original"])
     output_dir = args.output_dir or Path(config["paths"]["enriched"])
-    report_dir = args.report_dir or Path(config["paths"]["reports"])
 
     # Override workers if specified
     if args.workers:
@@ -723,30 +516,10 @@ def main() -> int:
         console.print(f"\n[green]Passed: {passed}[/green], [red]Failed: {failed}[/red]")
         return 0 if failed == 0 else 1
 
-    # Run enrichment pipeline
-    stats = enrich_all_specs(
-        input_dir=input_dir,
-        output_dir=output_dir,
-        config=config,
-        parallel=not args.no_parallel,
-    )
-
-    # Generate report
-    report_path = report_dir / "enrichment-report.json"
-    generate_report(stats, report_path)
-
-    # Print summary
-    print_summary(stats)
-
-    # Exit with error if any files failed
-    if stats.files_failed > 0:
-        console.print(f"\n[yellow]Completed with {stats.files_failed} failures[/yellow]")
-        return 1 if not config.get("processing", {}).get("continue_on_error", True) else 0
-
-    console.print(
-        f"\n[bold green]Successfully enriched {stats.files_succeeded} specifications![/bold green]",
-    )
-    return 0
+    # Both production entrypoints run the same canonical staged pipeline.
+    pipeline_stats = run_pipeline(input_dir, output_dir, config, dry_run=False)
+    pipeline_summary(pipeline_stats)
+    return 1 if pipeline_stats.files_failed else 0
 
 
 if __name__ == "__main__":

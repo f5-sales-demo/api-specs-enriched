@@ -351,6 +351,7 @@ def _resolve_schema_ref(
 _ENRICHMENT_KEYS = frozenset(
     {
         "x-f5xc-constraints",
+        "x-f5xc-console-field",
         "x-f5xc-required-for",
         "x-f5xc-server-default",
         "x-f5xc-recommended-value",
@@ -420,6 +421,13 @@ def _walk_schema(
     if isinstance(items, dict):
         path = f"{prefix}[]" if prefix else "[]"
         nodes.extend(_walk_schema(items, components, prefix=path, active_refs=refs))
+    additional = resolved.get("additionalProperties")
+    if isinstance(additional, dict):
+        nodes.extend(_walk_schema(additional, components, prefix=f"{prefix}{{}}", active_refs=refs))
+    for composition in ("oneOf", "anyOf"):
+        for member in resolved.get(composition, []):
+            if isinstance(member, dict):
+                nodes.extend(_walk_schema(member, components, prefix=prefix, active_refs=refs))
     return nodes
 
 
@@ -466,9 +474,22 @@ def validate_payload_against_schema(
         properties = resolved.get("properties") or {}
         if isinstance(properties, dict):
             unknown = sorted(set(payload) - set(properties))
-            errors.extend(
-                f"{path}.{name} is not declared by the request schema" for name in unknown
-            )
+            additional = resolved.get("additionalProperties")
+            if additional is None or additional is False:
+                errors.extend(
+                    f"{path}.{name} is not declared by the request schema" for name in unknown
+                )
+            elif isinstance(additional, dict):
+                for name in unknown:
+                    errors.extend(
+                        validate_payload_against_schema(
+                            payload[name],
+                            additional,
+                            components,
+                            path=f"{path}.{name}",
+                            active_refs=refs,
+                        )
+                    )
             required = set(resolved.get("required") or [])
             for name, child in properties.items():
                 if isinstance(child, dict):
@@ -548,6 +569,9 @@ def _extract_field_metadata(
         requires = prop_resolved.get("x-f5xc-requires")
         if requires:
             entry["requires"] = requires
+        console_field = prop_resolved.get("x-f5xc-console-field")
+        if console_field:
+            entry["console"] = console_field
         wire_name = prop_resolved.get("x-f5xc-wire-name")
         if wire_name:
             entry["wireName"] = wire_name
@@ -1176,6 +1200,7 @@ def compile_catalog(openapi: dict[str, Any]) -> dict[str, Any]:
         "categories": categories,
         "apiOperations": api_operations,
         "apiExclusions": api_exclusions,
+        "consoleNavigation": openapi.get("info", {}).get("x-f5xc-console-navigation", {}),
     }
 
 

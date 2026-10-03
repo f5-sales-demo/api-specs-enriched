@@ -458,6 +458,8 @@ Terraform consumers must expose replacement paths and preserve `prevent_destroy`
 - **Example:** `"x-f5xc-defaults": {"value": "default"}`
 - **Pass-through from upstream:** no
 
+Lifecycle: superseded. The inactive generic `FieldMetadataEnricher` produced this extension; specialized defaults, requiredness and deprecation contracts own production semantics.
+
 ### x-f5xc-required-for-operations
 
 - **Applied at:** schema property
@@ -469,6 +471,8 @@ Terraform consumers must expose replacement paths and preserve `prevent_destroy`
 - **Driven by config:** config/field_metadata.yaml
 - **Example:** `"x-f5xc-required-for-operations": ["POST", "PUT"]`
 - **Pass-through from upstream:** no
+
+Lifecycle: superseded. The inactive generic `FieldMetadataEnricher` produced this extension; specialized defaults, requiredness and deprecation contracts own production semantics.
 
 ### x-f5xc-required-for
 
@@ -505,6 +509,8 @@ Terraform consumers must expose replacement paths and preserve `prevent_destroy`
 - **Driven by config:** config/field_metadata.yaml
 - **Example:** `"x-f5xc-deprecated": {"since": "3.0.0", "use": "new_field"}`
 - **Pass-through from upstream:** no
+
+Lifecycle: superseded. The inactive generic `FieldMetadataEnricher` produced this extension; specialized defaults, requiredness and deprecation contracts own production semantics.
 
 ### x-f5xc-server-default
 
@@ -614,6 +620,8 @@ Terraform consumers must expose replacement paths and preserve `prevent_destroy`
 - **Example:** `"x-f5xc-constraints": {"min": 1, "max": 65535, "source": "live-api"}`
 - **Pass-through from upstream:** no
 
+Production shape: `constraintType: map` separates `keys`, `values`, `cardinality`, `crossEntry` and exact `originalRules`. Scalar constraint contracts remain flat. Producer: `ConstraintEnricher`; lifecycle: active.
+
 ### x-f5xc-uniqueness
 
 - **Applied at:** schema property
@@ -639,6 +647,8 @@ Terraform consumers must expose replacement paths and preserve `prevent_destroy`
 - **Pass-through from upstream:** no
 
 ## Injected — operation-level
+
+Production shape: `resources` maps resource kinds to exact configured field widget metadata. Producer: `ConsoleUIEnricher`; lifecycle: active.
 
 ### x-f5xc-operation-aliases
 
