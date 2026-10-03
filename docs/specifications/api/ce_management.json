@@ -3,7 +3,7 @@
   "info": {
     "title": "Ce Management",
     "description": "Customer edge node lifecycle through secure enrollment tokens and downloadable deployment images. Network connectivity options span exclusive, common, and administrative pathways with DHCP address pools supporting both IPv4 and IPv6. Bulk grouping consolidates configuration across distributed locations. Compatibility verification runs before software updates, with rollout tracking for version progression across the infrastructure.",
-    "version": "9.0.2",
+    "version": "10.0.0",
     "contact": {
       "name": "F5 Distributed Cloud",
       "url": "https://docs.cloud.f5.com"
@@ -85,6 +85,50 @@
       "classification": {
         "category": "infrastructure",
         "multi_tenant_pattern": "none"
+      }
+    },
+    "x-f5xc-console-navigation": {
+      "workspaces": {
+        "web-app-and-api-protection": {
+          "label": "Web App & API Protection",
+          "route_prefix": "/web/workspaces/web-app-and-api-protection"
+        },
+        "multi-cloud-app-connect": {
+          "label": "Multi-Cloud App Connect",
+          "route_prefix": "/web/workspaces/multi-cloud-app-connect"
+        },
+        "multi-cloud-network-connect": {
+          "label": "Multi-Cloud Network Connect",
+          "route_prefix": "/web/workspaces/multi-cloud-network-connect"
+        },
+        "distributed-apps": {
+          "label": "Distributed Apps",
+          "route_prefix": "/web/workspaces/distributed-apps"
+        },
+        "dns-management": {
+          "label": "DNS Management",
+          "route_prefix": "/web/workspaces/dns-management"
+        },
+        "content-delivery-network": {
+          "label": "Content Delivery Network",
+          "route_prefix": "/web/workspaces/content-delivery-network"
+        },
+        "observability": {
+          "label": "Observability",
+          "route_prefix": "/web/workspaces/observability"
+        },
+        "shared-configuration": {
+          "label": "Shared Configuration",
+          "route_prefix": "/web/workspaces/shared-configuration"
+        },
+        "audit-logs-and-alerts": {
+          "label": "Audit Logs & Alerts",
+          "route_prefix": "/web/workspaces/audit-logs-and-alerts"
+        },
+        "administration": {
+          "label": "Administration",
+          "route_prefix": "/web/workspaces/administration"
+        }
       }
     }
   },
@@ -8898,7 +8942,18 @@
             "additionalProperties": {
               "type": "string",
               "maxLength": 128,
-              "minLength": 1
+              "minLength": 1,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 128,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-f5xc-example": "\"{\"rack\"\"22\"}\"",
             "x-validation-rules": {
@@ -8910,13 +8965,28 @@
             },
             "x-f5xc-description-short": "Specifies labels optional, and can be any key-value pair for use with the PSO \"fleet\" provisioner.",
             "x-f5xc-constraints": {
-              "constraintType": "object",
-              "category": "general",
-              "maxProperties": 20,
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.75,
-                "validatedAt": "2026-10-03T05:10:26+00:00"
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.keys.string.max_len": "128",
+                "ves.io.schema.rules.map.keys.string.min_len": "1",
+                "ves.io.schema.rules.map.max_pairs": "20",
+                "ves.io.schema.rules.map.values.string.max_len": "128",
+                "ves.io.schema.rules.map.values.string.min_len": "1"
+              },
+              "keys": {
+                "maxLength": 128,
+                "type": "string",
+                "minLength": 1
+              },
+              "cardinality": {
+                "maxProperties": 20
+              },
+              "values": {
+                "maxLength": 128,
+                "type": "string",
+                "minLength": 1
               }
             },
             "x-f5xc-required-for": {
@@ -9359,7 +9429,18 @@
             "additionalProperties": {
               "type": "string",
               "maxLength": 128,
-              "minLength": 1
+              "minLength": 1,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 128,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-f5xc-example": "\"{\"rack\"\"22\"}\"",
             "x-validation-rules": {
@@ -9371,13 +9452,28 @@
             },
             "x-f5xc-description-short": "Specifies labels optional, and can be any key-value pair for use with the PSO \"fleet\" provisioner.",
             "x-f5xc-constraints": {
-              "constraintType": "object",
-              "category": "general",
-              "maxProperties": 20,
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.75,
-                "validatedAt": "2026-10-03T05:10:26+00:00"
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.keys.string.max_len": "128",
+                "ves.io.schema.rules.map.keys.string.min_len": "1",
+                "ves.io.schema.rules.map.max_pairs": "20",
+                "ves.io.schema.rules.map.values.string.max_len": "128",
+                "ves.io.schema.rules.map.values.string.min_len": "1"
+              },
+              "keys": {
+                "maxLength": 128,
+                "type": "string",
+                "minLength": 1
+              },
+              "cardinality": {
+                "maxProperties": 20
+              },
+              "values": {
+                "maxLength": 128,
+                "type": "string",
+                "minLength": 1
               }
             },
             "x-f5xc-required-for": {
@@ -9731,7 +9827,17 @@
             "maxItems": 8,
             "items": {
               "type": "string",
-              "maxLength": 64
+              "maxLength": 64,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "maxLength": 64,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Member Ethernet Devices.",
             "x-ves-example": "Eth0",
@@ -10337,7 +10443,18 @@
             "additionalProperties": {
               "type": "string",
               "maxLength": 128,
-              "minLength": 1
+              "minLength": 1,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 128,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-f5xc-example": "value",
             "x-validation-rules": {
@@ -10348,13 +10465,28 @@
               "ves.io.schema.rules.map.values.string.min_len": "1"
             },
             "x-f5xc-constraints": {
-              "constraintType": "object",
-              "category": "general",
-              "maxProperties": 64,
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.75,
-                "validatedAt": "2026-10-03T05:10:26+00:00"
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.keys.string.max_len": "128",
+                "ves.io.schema.rules.map.keys.string.min_len": "1",
+                "ves.io.schema.rules.map.max_pairs": "64",
+                "ves.io.schema.rules.map.values.string.max_len": "128",
+                "ves.io.schema.rules.map.values.string.min_len": "1"
+              },
+              "keys": {
+                "maxLength": 128,
+                "type": "string",
+                "minLength": 1
+              },
+              "cardinality": {
+                "maxProperties": 64
+              },
+              "values": {
+                "maxLength": 128,
+                "type": "string",
+                "minLength": 1
               }
             },
             "x-f5xc-required-for": {
@@ -10746,7 +10878,18 @@
             "additionalProperties": {
               "type": "string",
               "maxLength": 128,
-              "minLength": 1
+              "minLength": 1,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 128,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-f5xc-example": "value",
             "x-validation-rules": {
@@ -10757,13 +10900,28 @@
               "ves.io.schema.rules.map.values.string.min_len": "1"
             },
             "x-f5xc-constraints": {
-              "constraintType": "object",
-              "category": "general",
-              "maxProperties": 64,
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.75,
-                "validatedAt": "2026-10-03T05:10:26+00:00"
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.keys.string.max_len": "128",
+                "ves.io.schema.rules.map.keys.string.min_len": "1",
+                "ves.io.schema.rules.map.max_pairs": "64",
+                "ves.io.schema.rules.map.values.string.max_len": "128",
+                "ves.io.schema.rules.map.values.string.min_len": "1"
+              },
+              "keys": {
+                "maxLength": 128,
+                "type": "string",
+                "minLength": 1
+              },
+              "cardinality": {
+                "maxProperties": 64
+              },
+              "values": {
+                "maxLength": 128,
+                "type": "string",
+                "minLength": 1
               }
             },
             "x-f5xc-required-for": {
@@ -11740,7 +11898,18 @@
             "additionalProperties": {
               "type": "string",
               "maxLength": 128,
-              "minLength": 1
+              "minLength": 1,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 128,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-f5xc-example": "\"{\"department\":\"finance\", \"creditpoints\":\"6000\"}\"",
             "x-validation-rules": {
@@ -11753,13 +11922,28 @@
             "x-f5xc-description-short": "List of labels for Storage Device used in NetApp ONTAP. It is used for storage class label match selection.",
             "x-f5xc-description-medium": "List of labels for Storage Device used in NetApp ONTAP. It is used for storage class label match selection.",
             "x-f5xc-constraints": {
-              "constraintType": "object",
-              "category": "general",
-              "maxProperties": 20,
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.75,
-                "validatedAt": "2026-10-03T05:10:26+00:00"
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.keys.string.max_len": "128",
+                "ves.io.schema.rules.map.keys.string.min_len": "1",
+                "ves.io.schema.rules.map.max_pairs": "20",
+                "ves.io.schema.rules.map.values.string.max_len": "128",
+                "ves.io.schema.rules.map.values.string.min_len": "1"
+              },
+              "keys": {
+                "maxLength": 128,
+                "type": "string",
+                "minLength": 1
+              },
+              "cardinality": {
+                "maxProperties": 20
+              },
+              "values": {
+                "maxLength": 128,
+                "type": "string",
+                "minLength": 1
               }
             },
             "x-f5xc-required-for": {
@@ -14024,7 +14208,18 @@
             "additionalProperties": {
               "type": "string",
               "maxLength": 128,
-              "minLength": 1
+              "minLength": 1,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 128,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-f5xc-example": "\"{\"store\":\"nas_store\"}\"",
             "x-validation-rules": {
@@ -14036,13 +14231,28 @@
             },
             "x-f5xc-description-short": "List of labels for Storage Device used in NetApp ONTAP. It is used for storage class selection.",
             "x-f5xc-constraints": {
-              "constraintType": "object",
-              "category": "general",
-              "maxProperties": 20,
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.75,
-                "validatedAt": "2026-10-03T05:10:26+00:00"
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.keys.string.max_len": "128",
+                "ves.io.schema.rules.map.keys.string.min_len": "1",
+                "ves.io.schema.rules.map.max_pairs": "20",
+                "ves.io.schema.rules.map.values.string.max_len": "128",
+                "ves.io.schema.rules.map.values.string.min_len": "1"
+              },
+              "keys": {
+                "maxLength": 128,
+                "type": "string",
+                "minLength": 1
+              },
+              "cardinality": {
+                "maxProperties": 20
+              },
+              "values": {
+                "maxLength": 128,
+                "type": "string",
+                "minLength": 1
               }
             },
             "x-f5xc-required-for": {
@@ -14699,7 +14909,18 @@
             "additionalProperties": {
               "type": "string",
               "maxLength": 128,
-              "minLength": 1
+              "minLength": 1,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 128,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-f5xc-example": "\"{\"store\":\"nas_store\"}\"",
             "x-validation-rules": {
@@ -14711,13 +14932,28 @@
             },
             "x-f5xc-description-short": "List of labels for Storage Device used in NetApp ONTAP. It is used for storage class selection.",
             "x-f5xc-constraints": {
-              "constraintType": "object",
-              "category": "general",
-              "maxProperties": 20,
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.75,
-                "validatedAt": "2026-10-03T05:10:26+00:00"
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.keys.string.max_len": "128",
+                "ves.io.schema.rules.map.keys.string.min_len": "1",
+                "ves.io.schema.rules.map.max_pairs": "20",
+                "ves.io.schema.rules.map.values.string.max_len": "128",
+                "ves.io.schema.rules.map.values.string.min_len": "1"
+              },
+              "keys": {
+                "maxLength": 128,
+                "type": "string",
+                "minLength": 1
+              },
+              "cardinality": {
+                "maxProperties": 20
+              },
+              "values": {
+                "maxLength": 128,
+                "type": "string",
+                "minLength": 1
               }
             },
             "x-f5xc-required-for": {
@@ -17313,7 +17549,18 @@
             "additionalProperties": {
               "type": "string",
               "maxLength": 1024,
-              "minLength": 1
+              "minLength": 1,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 1024,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-f5xc-example": "value",
             "x-validation-rules": {
@@ -17324,6 +17571,27 @@
             },
             "x-f5xc-description-short": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata.",
             "x-f5xc-description-medium": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata. They are not queryable and should be preserved when modifying objects.",
+            "x-f5xc-constraints": {
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.keys.string.max_len": "64",
+                "ves.io.schema.rules.map.keys.string.min_len": "1",
+                "ves.io.schema.rules.map.values.string.max_len": "1024",
+                "ves.io.schema.rules.map.values.string.min_len": "1"
+              },
+              "keys": {
+                "maxLength": 64,
+                "type": "string",
+                "minLength": 1
+              },
+              "values": {
+                "maxLength": 1024,
+                "type": "string",
+                "minLength": 1
+              }
+            },
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -17372,7 +17640,26 @@
             },
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-03T05:10:26+00:00"
+            "x-reconciled-at": "2026-10-03T05:10:26+00:00",
+            "x-f5xc-console-field": {
+              "resources": {
+                "network_interface": {
+                  "widget_type": "textbox",
+                  "label": "Description",
+                  "form_section": "metadata"
+                },
+                "fleet": {
+                  "widget_type": "textbox",
+                  "label": "Description",
+                  "form_section": "metadata"
+                },
+                "usb_policy": {
+                  "widget_type": "textbox",
+                  "label": "Description",
+                  "form_section": "metadata"
+                }
+              }
+            }
           },
           "disable": {
             "type": "boolean",
@@ -17401,6 +17688,25 @@
               "create": false,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "network_interface": {
+                  "widget_type": "key-value-pairs",
+                  "label": "Labels",
+                  "form_section": "metadata"
+                },
+                "fleet": {
+                  "widget_type": "key-value-pairs",
+                  "label": "Labels",
+                  "form_section": "metadata"
+                },
+                "usb_policy": {
+                  "widget_type": "key-value-pairs",
+                  "label": "Labels",
+                  "form_section": "metadata"
+                }
+              }
             }
           },
           "name": {
@@ -17454,7 +17760,29 @@
             "minLength": 1,
             "x-reconciled-from-discovery": true,
             "x-reconciled-at": "2026-10-03T05:10:26+00:00",
-            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+            "x-f5xc-console-field": {
+              "resources": {
+                "network_interface": {
+                  "widget_type": "textbox",
+                  "label": "Name",
+                  "required": true,
+                  "form_section": "metadata"
+                },
+                "fleet": {
+                  "widget_type": "textbox",
+                  "label": "Name",
+                  "required": true,
+                  "form_section": "metadata"
+                },
+                "usb_policy": {
+                  "widget_type": "textbox",
+                  "label": "Name",
+                  "required": true,
+                  "form_section": "metadata"
+                }
+              }
+            }
           },
           "namespace": {
             "type": "string",
@@ -17554,7 +17882,18 @@
             "additionalProperties": {
               "type": "string",
               "maxLength": 1024,
-              "minLength": 1
+              "minLength": 1,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 1024,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-f5xc-example": "value",
             "x-validation-rules": {
@@ -17565,6 +17904,27 @@
             },
             "x-f5xc-description-short": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata.",
             "x-f5xc-description-medium": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata. They are not queryable and should be preserved when modifying objects.",
+            "x-f5xc-constraints": {
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.keys.string.max_len": "64",
+                "ves.io.schema.rules.map.keys.string.min_len": "1",
+                "ves.io.schema.rules.map.values.string.max_len": "1024",
+                "ves.io.schema.rules.map.values.string.min_len": "1"
+              },
+              "keys": {
+                "maxLength": 64,
+                "type": "string",
+                "minLength": 1
+              },
+              "values": {
+                "maxLength": 1024,
+                "type": "string",
+                "minLength": 1
+              }
+            },
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -17797,7 +18157,18 @@
             "additionalProperties": {
               "type": "string",
               "maxLength": 1024,
-              "minLength": 1
+              "minLength": 1,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 1024,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-f5xc-example": "value",
             "x-validation-rules": {
@@ -17808,6 +18179,27 @@
             },
             "x-f5xc-description-short": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata.",
             "x-f5xc-description-medium": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata. They are not queryable and should be preserved when modifying objects.",
+            "x-f5xc-constraints": {
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.keys.string.max_len": "64",
+                "ves.io.schema.rules.map.keys.string.min_len": "1",
+                "ves.io.schema.rules.map.values.string.max_len": "1024",
+                "ves.io.schema.rules.map.values.string.min_len": "1"
+              },
+              "keys": {
+                "maxLength": 64,
+                "type": "string",
+                "minLength": 1
+              },
+              "values": {
+                "maxLength": 1024,
+                "type": "string",
+                "minLength": 1
+              }
+            },
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -19737,6 +20129,15 @@
               "create": false,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "fleet": {
+                  "widget_type": "table",
+                  "label": "Network Connectors",
+                  "form_section": "network-connectors"
+                }
+              }
             }
           },
           "network_firewall": {
@@ -19771,6 +20172,15 @@
               "create": false,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "fleet": {
+                  "widget_type": "listbox",
+                  "label": "Network Firewall",
+                  "form_section": "network-firewall"
+                }
+              }
             }
           },
           "no_bond_devices": {
@@ -19890,6 +20300,15 @@
               "create": false,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "fleet": {
+                  "widget_type": "textbox",
+                  "label": "Operating System Version",
+                  "form_section": "fleet-configuration"
+                }
+              }
             }
           },
           "outside_virtual_network": {
@@ -22891,7 +23310,17 @@
               "dedicated_management_interface",
               "layer2_interface",
               "tunnel_interface"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "network_interface": {
+                  "widget_type": "listbox",
+                  "label": "Ethernet Interface",
+                  "required": true,
+                  "form_section": "interface-type"
+                }
+              }
+            }
           },
           "layer2_interface": {
             "allOf": [
@@ -22959,6 +23388,55 @@
           "classification": {
             "category": "networking",
             "multi_tenant_pattern": "none"
+          }
+        },
+        "x-f5xc-console": {
+          "workspace": "multi-cloud-network-connect",
+          "workspace_label": "Multi-Cloud Network Connect",
+          "route_prefix": "/web/workspaces/multi-cloud-network-connect",
+          "menu_path": [
+            "Manage",
+            "Networking",
+            "Legacy Network Configuration",
+            "Network Interfaces"
+          ],
+          "route_pattern": "/manage/networking/legacy_network_configuration/network_interfaces",
+          "breadcrumbs": [
+            "Home",
+            "Multi-Cloud Network Connect",
+            "Manage",
+            "Networking",
+            "Legacy Network Configuration",
+            "Network Interfaces"
+          ],
+          "add_action": {
+            "type": "tab",
+            "label": "Add Network Interface"
+          },
+          "save_action": {
+            "label": "Add Network Interface"
+          },
+          "form_tabs": [
+            "Form",
+            "Documentation",
+            "JSON"
+          ],
+          "namespace_scoped": false,
+          "form_sections": [
+            {
+              "id": "metadata",
+              "label": "Metadata",
+              "api_fields": [
+                "metadata.name",
+                "metadata.labels",
+                "metadata.description"
+              ]
+            }
+          ],
+          "metadata": {
+            "confidence": "validated",
+            "discovered_at": "2026-06-16",
+            "console_version": "2025.06"
           }
         }
       },
@@ -23300,13 +23778,28 @@
             "x-f5xc-description-short": "Fixed MAC address to IPv6 assignments, Key: MAC address, Value: IPv6 Address Assign fixed IPv6 addresses based on the MAC Address of the DHCP Client.",
             "x-f5xc-description-medium": "Fixed MAC address to IPv6 assignments, Key: MAC address, Value: IPv6 Address Assign fixed IPv6 addresses based on the MAC Address of the DHCP Client.",
             "x-f5xc-constraints": {
-              "constraintType": "object",
-              "category": "general",
-              "maxProperties": 128,
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.75,
-                "validatedAt": "2026-10-03T05:10:26+00:00"
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.keys.string.mac": "true",
+                "ves.io.schema.rules.map.max_pairs": "128",
+                "ves.io.schema.rules.map.unique_values": "true",
+                "ves.io.schema.rules.map.values.string.ipv6": "true"
+              },
+              "keys": {
+                "format": "mac-address",
+                "type": "string"
+              },
+              "cardinality": {
+                "maxProperties": 128
+              },
+              "crossEntry": {
+                "uniqueValues": true
+              },
+              "values": {
+                "format": "ipv6",
+                "type": "string"
               }
             },
             "x-f5xc-required-for": {
@@ -23394,13 +23887,26 @@
             },
             "x-f5xc-description-short": "Specify static IPv4 addresses per site:node.",
             "x-f5xc-constraints": {
-              "constraintType": "object",
-              "category": "general",
-              "maxProperties": 64,
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.75,
-                "validatedAt": "2026-10-03T05:10:26+00:00"
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.keys.string.max_len": "128",
+                "ves.io.schema.rules.map.keys.string.min_len": "1",
+                "ves.io.schema.rules.map.max_pairs": "64",
+                "ves.io.schema.rules.map.values.string.ipv4": "true"
+              },
+              "keys": {
+                "maxLength": 128,
+                "type": "string",
+                "minLength": 1
+              },
+              "cardinality": {
+                "maxProperties": 64
+              },
+              "values": {
+                "format": "ipv4",
+                "type": "string"
               }
             },
             "x-f5xc-required-for": {
@@ -23468,13 +23974,26 @@
               "ves.io.schema.rules.map.values.string.ipv6": "true"
             },
             "x-f5xc-constraints": {
-              "constraintType": "object",
-              "category": "general",
-              "maxProperties": 64,
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.75,
-                "validatedAt": "2026-10-03T05:10:26+00:00"
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.keys.string.max_len": "128",
+                "ves.io.schema.rules.map.keys.string.min_len": "1",
+                "ves.io.schema.rules.map.max_pairs": "64",
+                "ves.io.schema.rules.map.values.string.ipv6": "true"
+              },
+              "keys": {
+                "maxLength": 128,
+                "type": "string",
+                "minLength": 1
+              },
+              "cardinality": {
+                "maxProperties": 64
+              },
+              "values": {
+                "format": "ipv6",
+                "type": "string"
               }
             },
             "x-f5xc-required-for": {
@@ -24020,13 +24539,28 @@
             },
             "x-f5xc-description-short": "Assign fixed IPv4 addresses based on the MAC Address of the DHCP Client.",
             "x-f5xc-constraints": {
-              "constraintType": "object",
-              "category": "general",
-              "maxProperties": 128,
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.75,
-                "validatedAt": "2026-10-03T05:10:26+00:00"
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.keys.string.mac": "true",
+                "ves.io.schema.rules.map.max_pairs": "128",
+                "ves.io.schema.rules.map.unique_values": "true",
+                "ves.io.schema.rules.map.values.string.ipv4": "true"
+              },
+              "keys": {
+                "format": "mac-address",
+                "type": "string"
+              },
+              "cardinality": {
+                "maxProperties": 128
+              },
+              "crossEntry": {
+                "uniqueValues": true
+              },
+              "values": {
+                "format": "ipv4",
+                "type": "string"
               }
             },
             "x-f5xc-required-for": {
@@ -25544,13 +26078,26 @@
             "x-f5xc-description-short": "Map of Site:Node to IP address offset. Key:Node, Value:Map Value of 192.0.2.173 with network prefix 24, offset is 192.0.2.96.",
             "x-f5xc-description-medium": "Map of Site:Node to IP address offset. Key:Node, Value:Map Value of 192.0.2.173 with network prefix 24, offset is 192.0.2.96.",
             "x-f5xc-constraints": {
-              "constraintType": "object",
-              "category": "general",
-              "maxProperties": 64,
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.75,
-                "validatedAt": "2026-10-03T05:10:26+00:00"
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.keys.string.max_len": "128",
+                "ves.io.schema.rules.map.keys.string.min_len": "1",
+                "ves.io.schema.rules.map.max_pairs": "64",
+                "ves.io.schema.rules.map.values.string.ipv4": "true"
+              },
+              "keys": {
+                "maxLength": 128,
+                "type": "string",
+                "minLength": 1
+              },
+              "cardinality": {
+                "maxProperties": 64
+              },
+              "values": {
+                "format": "ipv4",
+                "type": "string"
               }
             },
             "x-f5xc-required-for": {
@@ -28428,13 +28975,21 @@
             },
             "x-f5xc-description-short": "Map of Node to Static IP configuration value, Key:Node, Value:IP Address.",
             "x-f5xc-constraints": {
-              "constraintType": "object",
-              "category": "general",
-              "maxProperties": 128,
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.75,
-                "validatedAt": "2026-10-03T05:10:26+00:00"
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.keys.string.max_len": "128",
+                "ves.io.schema.rules.map.keys.string.min_len": "1",
+                "ves.io.schema.rules.map.max_pairs": "128"
+              },
+              "keys": {
+                "maxLength": 128,
+                "type": "string",
+                "minLength": 1
+              },
+              "cardinality": {
+                "maxProperties": 128
               }
             },
             "x-f5xc-required-for": {
@@ -29249,7 +29804,17 @@
             "maxItems": 8,
             "items": {
               "type": "string",
-              "maxLength": 64
+              "maxLength": 64,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "maxLength": 64,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Member Interfaces.",
             "x-ves-example": "Eth0",
@@ -32485,6 +33050,27 @@
             },
             "x-f5xc-description-short": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata.",
             "x-f5xc-description-medium": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata. They are not queryable and should be preserved when modifying objects.",
+            "x-f5xc-constraints": {
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.keys.string.max_len": "64",
+                "ves.io.schema.rules.map.keys.string.min_len": "1",
+                "ves.io.schema.rules.map.values.string.max_len": "1024",
+                "ves.io.schema.rules.map.values.string.min_len": "1"
+              },
+              "keys": {
+                "maxLength": 64,
+                "type": "string",
+                "minLength": 1
+              },
+              "values": {
+                "maxLength": 1024,
+                "type": "string",
+                "minLength": 1
+              }
+            },
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -37183,6 +37769,17 @@
               "create": true,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "usb_policy": {
+                  "required": true,
+                  "label": "Allowed USB devices",
+                  "form_section": "basic-configuration",
+                  "description": "Server-required: Minimum items of 1",
+                  "widget_type": "configurable"
+                }
+              }
             }
           }
         },
@@ -37211,6 +37808,55 @@
           "classification": {
             "category": "application",
             "multi_tenant_pattern": "per-tenant"
+          }
+        },
+        "x-f5xc-console": {
+          "workspace": "multi-cloud-network-connect",
+          "workspace_label": "Multi-Cloud Network Connect",
+          "route_prefix": "/web/workspaces/multi-cloud-network-connect",
+          "menu_path": [
+            "Manage",
+            "Site Management",
+            "Other Configurations",
+            "USB Policies"
+          ],
+          "route_pattern": "/manage/site_management/other_configs/usb_policies",
+          "breadcrumbs": [
+            "Home",
+            "Multi-Cloud Network Connect",
+            "Manage",
+            "Site Management",
+            "Other Configurations",
+            "USB Policies"
+          ],
+          "add_action": {
+            "type": "tab",
+            "label": "Add USB Policy"
+          },
+          "save_action": {
+            "label": "Add USB Policy"
+          },
+          "form_tabs": [
+            "Form",
+            "Documentation",
+            "JSON"
+          ],
+          "namespace_scoped": false,
+          "form_sections": [
+            {
+              "id": "metadata",
+              "label": "Metadata",
+              "api_fields": [
+                "metadata.name",
+                "metadata.labels",
+                "metadata.description"
+              ]
+            }
+          ],
+          "metadata": {
+            "confidence": "validated",
+            "discovered_at": "2026-06-17",
+            "console_version": "2025.06"
           }
         }
       },

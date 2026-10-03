@@ -296,7 +296,9 @@ jobs:
         run: python -m scripts.network_allowlist
 
       - name: Compile API catalog
-        run: python -m scripts.compile_catalog --input docs/specifications/api/openapi.json --output release/api-catalog.json
+        run: |
+          python -m scripts.compile_catalog --input docs/specifications/api/openapi.json --output release/api-catalog.json
+          python -m scripts.enrichment_coverage
 
       - name: Gate and report upstream contract changes
         env:
@@ -382,6 +384,10 @@ jobs:
             mv /tmp/catalog.json release/api-catalog.json
             echo "Catalog version aligned to $VERSION"
           fi
+
+      - name: Align enrichment coverage with final artifacts
+        if: steps.detect.outputs.has_changes == 'true'
+        run: python -m scripts.enrichment_coverage
 
       - name: Verify source version coherence
         if: steps.detect.outputs.has_changes == 'true'
@@ -625,7 +631,7 @@ jobs:
           else
             # Create a new release PR only when this version has no prior PR.
             git checkout -b "$BRANCH"
-            git add -f CHANGELOG.md .github_release release/api-catalog.json release/upstream-contract-removals.json release/upstream-contract-removals.md release/upstream-contract-changes.json release/upstream-contract-changes.md docs/specifications/api/ docs/api-reference/
+            git add -f CHANGELOG.md .github_release release/api-catalog.json release/enrichment-coverage.json release/enrichment-coverage.md release/upstream-contract-removals.json release/upstream-contract-removals.md release/upstream-contract-changes.json release/upstream-contract-changes.md docs/specifications/api/ docs/api-reference/
             if git diff --staged --quiet; then
               echo "::error::Release detector requested v${VERSION}, but no generated output is staged"
               exit 1
@@ -730,6 +736,8 @@ jobs:
           # Copy metadata index
           cp docs/specifications/api/index.json "$RELEASE_DIR/"
 
+          cp release/enrichment-coverage.json release/enrichment-coverage.md "$RELEASE_DIR/"
+
           # Copy changelog
           cp CHANGELOG.md "$RELEASE_DIR/"
 
@@ -784,6 +792,7 @@ jobs:
             docs/specifications/api/concurrency_contracts.json
             docs/specifications/api/smsv2_parity_manifest.json
             release/api-catalog.json
+            release/enrichment-coverage.json
             release/upstream-contract-removals.json
             release/upstream-contract-changes.json
             release-package/smsv2-contract.json

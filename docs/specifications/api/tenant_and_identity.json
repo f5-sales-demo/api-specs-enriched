@@ -3,7 +3,7 @@
   "info": {
     "title": "Tenant And Identity",
     "description": "Profile images and display customizations for personalized dashboard experiences. Federated authentication toggles controlling SSO behavior across organizational boundaries. Session lifecycle tracking with real-time visibility into active connections and timeout policies. Support ticket workflows including attachment handling and closure procedures for managed client escalations. Initial access provisioning sequences for new user onboarding.",
-    "version": "9.0.2",
+    "version": "10.0.0",
     "contact": {
       "name": "F5 Distributed Cloud",
       "url": "https://docs.cloud.f5.com"
@@ -85,6 +85,50 @@
       "classification": {
         "category": "application",
         "multi_tenant_pattern": "none"
+      }
+    },
+    "x-f5xc-console-navigation": {
+      "workspaces": {
+        "web-app-and-api-protection": {
+          "label": "Web App & API Protection",
+          "route_prefix": "/web/workspaces/web-app-and-api-protection"
+        },
+        "multi-cloud-app-connect": {
+          "label": "Multi-Cloud App Connect",
+          "route_prefix": "/web/workspaces/multi-cloud-app-connect"
+        },
+        "multi-cloud-network-connect": {
+          "label": "Multi-Cloud Network Connect",
+          "route_prefix": "/web/workspaces/multi-cloud-network-connect"
+        },
+        "distributed-apps": {
+          "label": "Distributed Apps",
+          "route_prefix": "/web/workspaces/distributed-apps"
+        },
+        "dns-management": {
+          "label": "DNS Management",
+          "route_prefix": "/web/workspaces/dns-management"
+        },
+        "content-delivery-network": {
+          "label": "Content Delivery Network",
+          "route_prefix": "/web/workspaces/content-delivery-network"
+        },
+        "observability": {
+          "label": "Observability",
+          "route_prefix": "/web/workspaces/observability"
+        },
+        "shared-configuration": {
+          "label": "Shared Configuration",
+          "route_prefix": "/web/workspaces/shared-configuration"
+        },
+        "audit-logs-and-alerts": {
+          "label": "Audit Logs & Alerts",
+          "route_prefix": "/web/workspaces/audit-logs-and-alerts"
+        },
+        "administration": {
+          "label": "Administration",
+          "route_prefix": "/web/workspaces/administration"
+        }
       }
     }
   },
@@ -53361,7 +53405,18 @@
             "items": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Namespaces.",
             "x-ves-example": "Ns1",
@@ -54687,7 +54742,18 @@
             "additionalProperties": {
               "type": "string",
               "maxLength": 1024,
-              "minLength": 1
+              "minLength": 1,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 1024,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-f5xc-example": "value",
             "x-validation-rules": {
@@ -54698,6 +54764,27 @@
             },
             "x-f5xc-description-short": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata.",
             "x-f5xc-description-medium": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata. They are not queryable and should be preserved when modifying objects.",
+            "x-f5xc-constraints": {
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.keys.string.max_len": "64",
+                "ves.io.schema.rules.map.keys.string.min_len": "1",
+                "ves.io.schema.rules.map.values.string.max_len": "1024",
+                "ves.io.schema.rules.map.values.string.min_len": "1"
+              },
+              "keys": {
+                "maxLength": 64,
+                "type": "string",
+                "minLength": 1
+              },
+              "values": {
+                "maxLength": 1024,
+                "type": "string",
+                "minLength": 1
+              }
+            },
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -54746,7 +54833,26 @@
             },
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-03T05:10:26+00:00"
+            "x-reconciled-at": "2026-10-03T05:10:26+00:00",
+            "x-f5xc-console-field": {
+              "resources": {
+                "namespace": {
+                  "widget_type": "textbox",
+                  "label": "Description",
+                  "form_section": "metadata"
+                },
+                "user_identification": {
+                  "widget_type": "textbox",
+                  "label": "Description",
+                  "form_section": "metadata"
+                },
+                "authorization_server": {
+                  "widget_type": "textbox",
+                  "label": "Description",
+                  "form_section": "metadata"
+                }
+              }
+            }
           },
           "disable": {
             "type": "boolean",
@@ -54775,6 +54881,20 @@
               "create": false,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "user_identification": {
+                  "widget_type": "key-value-pairs",
+                  "label": "Labels",
+                  "form_section": "metadata"
+                },
+                "authorization_server": {
+                  "widget_type": "key-value-pairs",
+                  "label": "Labels",
+                  "form_section": "metadata"
+                }
+              }
             }
           },
           "name": {
@@ -54828,7 +54948,38 @@
             "minLength": 1,
             "x-reconciled-from-discovery": true,
             "x-reconciled-at": "2026-10-03T05:10:26+00:00",
-            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+            "x-f5xc-console-field": {
+              "resources": {
+                "namespace": {
+                  "widget_type": "textbox",
+                  "label": "Namespace Name",
+                  "required": true,
+                  "form_section": "metadata",
+                  "notes": "System-level resource — no namespace scope",
+                  "description": "Live form uses aria-label \"Namespace Name\" (not standard \"Name\")"
+                },
+                "user_identification": {
+                  "widget_type": "textbox",
+                  "label": "Name",
+                  "required": true,
+                  "form_section": "metadata"
+                },
+                "authorization_server": {
+                  "widget_type": "textbox",
+                  "label": "Name",
+                  "required": true,
+                  "form_section": "metadata"
+                },
+                "role": {
+                  "widget_type": "textbox",
+                  "label": "Role Name",
+                  "required": true,
+                  "form_section": "metadata",
+                  "description": "Form uses aria-label \"Role Name\" (not standard \"Name\")"
+                }
+              }
+            }
           },
           "namespace": {
             "type": "string",
@@ -54928,7 +55079,18 @@
             "additionalProperties": {
               "type": "string",
               "maxLength": 1024,
-              "minLength": 1
+              "minLength": 1,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 1024,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-f5xc-example": "value",
             "x-validation-rules": {
@@ -54939,6 +55101,27 @@
             },
             "x-f5xc-description-short": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata.",
             "x-f5xc-description-medium": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata. They are not queryable and should be preserved when modifying objects.",
+            "x-f5xc-constraints": {
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.keys.string.max_len": "64",
+                "ves.io.schema.rules.map.keys.string.min_len": "1",
+                "ves.io.schema.rules.map.values.string.max_len": "1024",
+                "ves.io.schema.rules.map.values.string.min_len": "1"
+              },
+              "keys": {
+                "maxLength": 64,
+                "type": "string",
+                "minLength": 1
+              },
+              "values": {
+                "maxLength": 1024,
+                "type": "string",
+                "minLength": 1
+              }
+            },
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -55171,7 +55354,18 @@
             "additionalProperties": {
               "type": "string",
               "maxLength": 1024,
-              "minLength": 1
+              "minLength": 1,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 1024,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-f5xc-example": "value",
             "x-validation-rules": {
@@ -55182,6 +55376,27 @@
             },
             "x-f5xc-description-short": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata.",
             "x-f5xc-description-medium": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata. They are not queryable and should be preserved when modifying objects.",
+            "x-f5xc-constraints": {
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.keys.string.max_len": "64",
+                "ves.io.schema.rules.map.keys.string.min_len": "1",
+                "ves.io.schema.rules.map.values.string.max_len": "1024",
+                "ves.io.schema.rules.map.values.string.min_len": "1"
+              },
+              "keys": {
+                "maxLength": 64,
+                "type": "string",
+                "minLength": 1
+              },
+              "values": {
+                "maxLength": 1024,
+                "type": "string",
+                "minLength": 1
+              }
+            },
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -59945,6 +60160,17 @@
               "create": true,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "authorization_server": {
+                  "widget_type": "textbox",
+                  "label": "JWKS URI",
+                  "required": true,
+                  "form_section": "spec",
+                  "description": "Feedback loop: 'Field JWKS URI in Spec must be a valid absolute URI'"
+                }
+              }
             }
           }
         },
@@ -59974,6 +60200,53 @@
           "classification": {
             "category": "application",
             "multi_tenant_pattern": "per-tenant"
+          }
+        },
+        "x-f5xc-console": {
+          "workspace": "web-app-and-api-protection",
+          "workspace_label": "Web App & API Protection",
+          "route_prefix": "/web/workspaces/web-app-and-api-protection",
+          "menu_path": [
+            "Manage",
+            "Shared Objects",
+            "Authorization Server"
+          ],
+          "route_pattern": "/namespaces/{namespace}/manage/shared_objects/authorization_server",
+          "breadcrumbs": [
+            "Home",
+            "Web App & API Protection",
+            "{namespace}",
+            "Manage",
+            "Shared Objects",
+            "Authorization Server"
+          ],
+          "add_action": {
+            "type": "tab",
+            "label": "Add Authorization Server"
+          },
+          "save_action": {
+            "label": "Add Authorization Server"
+          },
+          "form_tabs": [
+            "Form",
+            "Documentation",
+            "JSON"
+          ],
+          "form_sections": [
+            {
+              "id": "metadata",
+              "label": "Metadata",
+              "api_fields": [
+                "metadata.name",
+                "metadata.labels",
+                "metadata.description"
+              ]
+            }
+          ],
+          "metadata": {
+            "confidence": "validated",
+            "discovered_at": "2026-06-16",
+            "console_version": "2025.06"
           }
         }
       },
@@ -65773,7 +66046,17 @@
             "maxItems": 32,
             "items": {
               "type": "string",
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Managed Tenant Groups.",
             "x-ves-example": "User-group1.",
@@ -67725,7 +68008,17 @@
             "maxItems": 32,
             "items": {
               "type": "string",
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Child Tenant User Groups.",
             "x-ves-example": "User-group1.",
@@ -70177,7 +70470,17 @@
             "maxProperties": 40,
             "additionalProperties": {
               "type": "string",
-              "maxLength": 255
+              "maxLength": 255,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "maxLength": 255,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-f5xc-example": "envstaging",
             "x-validation-rules": {
@@ -70187,13 +70490,24 @@
             },
             "x-f5xc-description-short": "Session tags are key-value pair attributes that you pass when you assume an IAM role.",
             "x-f5xc-constraints": {
-              "constraintType": "object",
-              "category": "general",
-              "maxProperties": 40,
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.75,
-                "validatedAt": "2026-10-03T05:10:26+00:00"
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.keys.string.max_len": "127",
+                "ves.io.schema.rules.map.max_pairs": "40",
+                "ves.io.schema.rules.map.values.string.max_len": "255"
+              },
+              "keys": {
+                "maxLength": 127,
+                "type": "string"
+              },
+              "cardinality": {
+                "maxProperties": 40
+              },
+              "values": {
+                "maxLength": 255,
+                "type": "string"
               }
             },
             "x-f5xc-required-for": {
@@ -87703,6 +88017,51 @@
             "category": "identity",
             "multi_tenant_pattern": "none"
           }
+        },
+        "x-f5xc-console": {
+          "workspace": "administration",
+          "workspace_label": "Administration",
+          "route_prefix": "/web/workspaces/administration",
+          "menu_path": [
+            "IAM",
+            "Roles"
+          ],
+          "route_pattern": "/iam/roles",
+          "breadcrumbs": [
+            "Home",
+            "Administration",
+            "IAM",
+            "Roles"
+          ],
+          "add_action": {
+            "type": "tab",
+            "label": "Add Role"
+          },
+          "save_action": {
+            "label": "Add Role"
+          },
+          "form_tabs": [
+            "Form",
+            "Documentation",
+            "JSON"
+          ],
+          "namespace_scoped": false,
+          "form_sections": [
+            {
+              "id": "metadata",
+              "label": "Metadata",
+              "api_fields": [
+                "metadata.name",
+                "metadata.labels",
+                "metadata.description"
+              ]
+            }
+          ],
+          "metadata": {
+            "confidence": "validated",
+            "discovered_at": "2026-06-16",
+            "console_version": "2025.06"
+          }
         }
       },
       "roleCustomCreateRequest": {
@@ -89671,6 +90030,27 @@
             },
             "x-f5xc-description-short": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata.",
             "x-f5xc-description-medium": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata. They are not queryable and should be preserved when modifying objects.",
+            "x-f5xc-constraints": {
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.keys.string.max_len": "64",
+                "ves.io.schema.rules.map.keys.string.min_len": "1",
+                "ves.io.schema.rules.map.values.string.max_len": "1024",
+                "ves.io.schema.rules.map.values.string.min_len": "1"
+              },
+              "keys": {
+                "maxLength": 64,
+                "type": "string",
+                "minLength": 1
+              },
+              "values": {
+                "maxLength": 1024,
+                "type": "string",
+                "minLength": 1
+              }
+            },
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -106937,6 +107317,18 @@
               "ves.io.schema.rules.message.required": "true"
             },
             "x-f5xc-description-short": "List of all the roles for the entity in the namespaces.",
+            "x-f5xc-constraints": {
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.keys.string.max_len": "256"
+              },
+              "keys": {
+                "maxLength": 256,
+                "type": "string"
+              }
+            },
             "x-f5xc-required-for": {
               "minimum_config": true,
               "create": true,
@@ -112955,6 +113347,17 @@
               "create": true,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "user_identification": {
+                  "required": true,
+                  "label": "Rules",
+                  "form_section": "basic-configuration",
+                  "description": "Server-required: Minimum items of 1",
+                  "widget_type": "configurable"
+                }
+              }
             }
           }
         },
@@ -112989,6 +113392,53 @@
           "classification": {
             "category": "security",
             "multi_tenant_pattern": "shared-ref"
+          }
+        },
+        "x-f5xc-console": {
+          "workspace": "web-app-and-api-protection",
+          "workspace_label": "Web App & API Protection",
+          "route_prefix": "/web/workspaces/web-app-and-api-protection",
+          "menu_path": [
+            "Manage",
+            "Shared Objects",
+            "User Identifications"
+          ],
+          "route_pattern": "/namespaces/{namespace}/manage/shared_objects/user_identification",
+          "breadcrumbs": [
+            "Home",
+            "Web App & API Protection",
+            "{namespace}",
+            "Manage",
+            "Shared Objects",
+            "User Identifications"
+          ],
+          "add_action": {
+            "type": "tab",
+            "label": "Add User Identification"
+          },
+          "save_action": {
+            "label": "Add User Identification"
+          },
+          "form_tabs": [
+            "Form",
+            "Documentation",
+            "JSON"
+          ],
+          "form_sections": [
+            {
+              "id": "metadata",
+              "label": "Metadata",
+              "api_fields": [
+                "metadata.name",
+                "metadata.labels",
+                "metadata.description"
+              ]
+            }
+          ],
+          "metadata": {
+            "confidence": "validated",
+            "discovered_at": "2026-06-16",
+            "console_version": "2025.06"
           }
         }
       },

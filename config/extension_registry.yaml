@@ -1,224 +1,236 @@
-# Extension Registry - Single source of truth for x-f5xc-* namespace
-#
-# This file documents all custom OpenAPI extensions added by the enrichment pipeline.
-# All extensions use the x-f5xc-* namespace to clearly distinguish from:
-# - F5 native extensions (x-ves-proto-*, x-displayname) - preserved unchanged
-# - OpenAPI standard fields - used when available
-#
-# Consumers: f5xc-api-mcp, f5xc-xcsh, vscode-xcsh
-#
-# Version: 2.1.0
-# Issue: #314
-# Last Updated: 2026-01-04
-#
-# History:
-# - v2.0.0 (2026-01-04): Initial x-f5xc-* namespace migration (#292)
-# - v2.0.4 (2026-01-05): Removed x-f5xc-aliases, x-f5xc-cli-aliases (#306)
-# - v2.1.0 (2026-01-04): Added best practices, guided workflows, acronyms, and discovery extensions (#314)
-#
-# All extensions are now unified under x-f5xc-* namespace.
-
-version: "3.5"
-namespace: "x-f5xc-"
-
-# =============================================================================
-# SPEC-LEVEL EXTENSIONS (info section)
-# =============================================================================
+version: '4.0'
+namespace: x-f5xc-
 spec_level:
   x-f5xc-cli-domain:
     type: string
     purpose: Domain classification for CLI routing and organization
-    consumers: [mcp, cli, ide]
-    example: "virtual"
-    migrated_from: "x-ves-cli-domain"
-
+    consumers:
+      - mcp
+      - cli
+      - ide
+    example: virtual
+    migrated_from: x-ves-cli-domain
   x-f5xc-upstream-timestamp:
     type: string
     format: iso8601
     purpose: Timestamp when spec was downloaded from F5 source
-    consumers: [pipeline]
-    example: "2025-01-04T12:00:00Z"
-    migrated_from: "x-upstream-timestamp"
-
+    consumers:
+      - pipeline
+    example: '2025-01-04T12:00:00Z'
+    migrated_from: x-upstream-timestamp
   x-f5xc-upstream-etag:
     type: string
     purpose: ETag from F5 source for cache validation
-    consumers: [pipeline]
-    example: "\"abc123\""
-    migrated_from: "x-upstream-etag"
-
+    consumers:
+      - pipeline
+    example: '"abc123"'
+    migrated_from: x-upstream-etag
   x-f5xc-enriched-version:
     type: string
     purpose: Version of enrichment pipeline that processed this spec
-    consumers: [pipeline, mcp]
-    example: "3.0.0"
-    migrated_from: "x-enriched-version"
-
+    consumers:
+      - pipeline
+      - mcp
+    example: 3.0.0
+    migrated_from: x-enriched-version
   x-f5xc-glossary:
     type: object
     purpose: Domain-specific terminology and acronym definitions
-    consumers: [mcp, ide, docs]
-    added_in: "3.0.0"
-
+    consumers:
+      - mcp
+      - ide
+      - docs
+    added_in: 3.0.0
   x-f5xc-cli-metadata:
     type: object
     purpose: CLI-specific metadata for command generation
-    consumers: [cli, mcp]
-    added_in: "3.0.0"
-    note: "Migrated from non-prefixed cli_metadata in v3.0.0"
-
+    consumers:
+      - cli
+      - mcp
+    added_in: 3.0.0
+    note: Migrated from non-prefixed cli_metadata in v3.0.0
   x-f5xc-discovered-at:
     type: string
     format: iso8601
     purpose: Timestamp when endpoint was discovered via live API
-    consumers: [discovery]
-    added_in: "3.0.0"
-
+    consumers:
+      - discovery
+    added_in: 3.0.0
   x-f5xc-api-url:
     type: string
     format: uri
     purpose: API URL used during discovery
-    consumers: [discovery]
-    added_in: "3.0.0"
-
+    consumers:
+      - discovery
+    added_in: 3.0.0
   x-f5xc-response-time-ms:
     type: number
     purpose: Response time in milliseconds during discovery
-    consumers: [discovery]
-    added_in: "3.0.0"
-
+    consumers:
+      - discovery
+    added_in: 3.0.0
   x-f5xc-summary:
     type: string
     max_length: 150
     purpose: Concise domain summary for CLI banners and tooltips
-    consumers: [cli, ide, docs]
-    added_in: "4.1.0"
-
+    consumers:
+      - cli
+      - ide
+      - docs
+    added_in: 4.1.0
   x-f5xc-best-practices:
     type: object
     purpose: Domain-specific operational knowledge and guidance
-    consumers: [mcp, cli, ide, docs]
+    consumers:
+      - mcp
+      - cli
+      - ide
+      - docs
     properties:
-      common_errors: "Array of common error scenarios with resolutions"
-      security_notes: "Security best practices for the domain"
-      performance_tips: "Performance optimization recommendations"
-    added_in: "3.1.0"
-    issue: "#314"
-
+      common_errors: Array of common error scenarios with resolutions
+      security_notes: Security best practices for the domain
+      performance_tips: Performance optimization recommendations
+    added_in: 3.1.0
+    issue: '#314'
   x-f5xc-guided-workflows:
     type: array
     items: object
     purpose: Step-by-step deployment workflows for the domain
-    consumers: [mcp, cli, ide]
+    consumers:
+      - mcp
+      - cli
+      - ide
     properties:
-      id: "Unique workflow identifier"
-      name: "Human-readable workflow name"
-      description: "Workflow purpose and outcome"
-      steps: "Array of sequential steps with actions"
-    added_in: "3.1.0"
-    issue: "#314"
-
+      id: Unique workflow identifier
+      name: Human-readable workflow name
+      description: Workflow purpose and outcome
+      steps: Array of sequential steps with actions
+    added_in: 3.1.0
+    issue: '#314'
   x-f5xc-acronyms:
     type: object
     purpose: Domain-specific acronym expansions and terminology
-    consumers: [mcp, ide, docs]
+    consumers:
+      - mcp
+      - ide
+      - docs
     example:
-      WAAP: "Web Application and API Protection"
-      RE: "Regional Edge"
-      CE: "Customer Edge"
-    added_in: "3.1.0"
-    issue: "#314"
-
+      WAAP: Web Application and API Protection
+      RE: Regional Edge
+      CE: Customer Edge
+    added_in: 3.1.0
+    issue: '#314'
   x-f5xc-console-navigation:
     type: object
     purpose: Global console navigation tree — workspace and menu hierarchy
-    consumers: [console-catalog, xcsh, browser-automation]
-    added_in: "3.5.0"
-    issue: "#679"
+    consumers:
+      - console-catalog
+      - xcsh
+      - browser-automation
+    added_in: 3.5.0
+    issue: '#679'
     properties:
       workspaces: Workspace definitions with route prefixes
       tree: Navigation tree nodes with routes and children
-
-# =============================================================================
-# SCHEMA-LEVEL EXTENSIONS (component schemas)
-# =============================================================================
 schema_level:
   x-f5xc-immutable-oneof-groups:
     type: object
-    purpose: Oneof selection is immutable after creation; child settings retain their mutability
-    consumers: [terraform, cli, docs]
+    purpose: Oneof selection is immutable after creation; child settings retain their
+      mutability
+    consumers:
+      - terraform
+      - cli
+      - docs
     example:
-      loadbalancer_type: [http, https, https_auto_cert]
-
+      loadbalancer_type:
+        - http
+        - https
+        - https_auto_cert
   x-f5xc-cli-domain:
     type: string
     purpose: Domain classification for resource type routing
-    consumers: [mcp, cli, ide]
-    example: "waf"
-    migrated_from: "x-ves-cli-domain"
-
+    consumers:
+      - mcp
+      - cli
+      - ide
+    example: waf
+    migrated_from: x-ves-cli-domain
   x-f5xc-minimum-configuration:
     type: object
     purpose: Minimum viable configuration for resource creation
-    consumers: [mcp, ide]
+    consumers:
+      - mcp
+      - ide
     properties:
-      description: "Text description of minimum config"
-      required_fields: "Array of required field names"
-      example_yaml: "YAML example configuration"
-    migrated_from: "x-ves-minimum-configuration"
-
+      description: Text description of minimum config
+      required_fields: Array of required field names
+      example_yaml: YAML example configuration
+    migrated_from: x-ves-minimum-configuration
   x-f5xc-namespace-profile:
     type: object
     purpose: Rich namespace constraint, recommendation, and classification profile
-    consumers: [cli, mcp, ide, terraform]
-    notes: >-
-      constraint.enforced is verification-gated: it is true ONLY when the resource's
+    consumers:
+      - cli
+      - mcp
+      - ide
+      - terraform
+    notes: 'constraint.enforced is verification-gated: it is true ONLY when the resource''s
       namespace constraint is verified (a live CRUD probe or a strong spec signal;
-      _verification.status == 'verified'). Assumed/restricted/unverified classifications
+      _verification.status == ''verified''). Assumed/restricted/unverified classifications
       emit enforced=false so consumers (e.g. the Terraform provider) treat them as
-      advisory and do not over-restrict a namespace on an unverified guess.
+      advisory and do not over-restrict a namespace on an unverified guess.'
     example:
       constraint:
-        allowed: ["custom", "default", "shared"]
+        allowed:
+          - custom
+          - default
+          - shared
         enforced: false
       recommendation:
-        primary: "custom"
+        primary: custom
         alternatives: []
-        rationale: "Standard tenant resource"
+        rationale: Standard tenant resource
       classification:
-        category: "application"
-        multi_tenant_pattern: "per-tenant"
-    migrated_from: "x-f5xc-namespace-scope"
-
+        category: application
+        multi_tenant_pattern: per-tenant
+    migrated_from: x-f5xc-namespace-scope
   x-f5xc-displayorder:
     type: integer
     purpose: UI display ordering hint
-    consumers: [ide]
+    consumers:
+      - ide
     example: 10
-    migrated_from: "x-ves-displayorder"
-
+    migrated_from: x-ves-displayorder
   x-f5xc-terraform-resource:
     type: string
     purpose: Corresponding Terraform resource name
-    consumers: [ide, mcp]
-    example: "volterra_http_loadbalancer"
+    consumers:
+      - ide
+      - mcp
+    example: volterra_http_loadbalancer
     new_field: true
-
   x-f5xc-display-name:
     type: string
     purpose: Human-friendly resource name
-    consumers: [ide, cli, mcp]
-    example: "HTTP Load Balancer"
+    consumers:
+      - ide
+      - cli
+      - mcp
+    example: HTTP Load Balancer
     new_field: true
-
   x-f5xc-console:
     type: object
     purpose: Console UI navigation, routing, and form structure for this resource
-    consumers: [console-catalog, xcsh, vscode-xcsh, browser-automation]
-    added_in: "3.5.0"
-    issue: "#679"
+    consumers:
+      - console-catalog
+      - xcsh
+      - vscode-xcsh
+      - browser-automation
+    added_in: 3.5.0
+    issue: '#679'
     properties:
-      workspace: Workspace ID (web-app-and-api-protection, multi-cloud-app-connect, administration)
+      workspace: Workspace ID (web-app-and-api-protection, multi-cloud-app-connect,
+        administration)
       menu_path: Sidebar navigation path array
       route_pattern: URL path relative to workspace route_prefix
       breadcrumbs: Full breadcrumb trail with namespace placeholder
@@ -228,571 +240,723 @@ schema_level:
       form_sections: Ordered sections with API field references
       metadata: Discovery confidence, date, console version
     example:
-      workspace: "web-app-and-api-protection"
-      menu_path: ["Manage", "Load Balancers", "HTTP Load Balancers"]
-      route_pattern: "/namespaces/{namespace}/manage/load_balancers/http_loadbalancers"
-
+      workspace: web-app-and-api-protection
+      menu_path:
+        - Manage
+        - Load Balancers
+        - HTTP Load Balancers
+      route_pattern: /namespaces/{namespace}/manage/load_balancers/http_loadbalancers
   x-f5xc-action:
     type: string
-    purpose: >-
-      Marks a request schema whose operation is an action-style resource so
-      downstream codegen emits an action resource (Create=action POST,
-      Read=object Get, Delete=no-op) instead of CRUD.
-    consumers: [terraform]
-    example: "approve"
-
-# =============================================================================
-# PROPERTY-LEVEL EXTENSIONS (schema properties)
+    purpose: Marks a request schema whose operation is an action-style resource so
+      downstream codegen emits an action resource (Create=action POST, Read=object
+      Get, Delete=no-op) instead of CRUD.
+    consumers:
+      - terraform
+    example: approve
   x-f5xc-upstream-defect:
     type: string
-    purpose: Documents an upstream contract defect requiring a local compatibility stub
-    consumers: [pipeline, docs, sdk]
-    added_in: "4.1.0"
-    issue: "#1645"
-
-# =============================================================================
+    purpose: Documents an upstream contract defect requiring a local compatibility
+      stub
+    consumers:
+      - pipeline
+      - docs
+      - sdk
+    added_in: 4.1.0
+    issue: '#1645'
 property_level:
   x-f5xc-concurrency-token:
     type: object
-    purpose: >-
-      Declares a server-assigned optimistic-concurrency token that a client must
-      retain from a read and echo only on the listed write operations.
-    consumers: [terraform, cli, mcp, ide]
+    purpose: Declares a server-assigned optimistic-concurrency token that a client
+      must retain from a read and echo only on the listed write operations.
+    consumers:
+      - terraform
+      - cli
+      - mcp
+      - ide
     properties:
-      server_assigned: "Token is assigned by the API and is not user configuration"
-      echo_on_operations: "Write operations that accept the token"
+      server_assigned: Token is assigned by the API and is not user configuration
+      echo_on_operations: Write operations that accept the token
     example:
       server_assigned: true
-      echo_on_operations: [replace]
-    added_in: "3.6.0"
-    issue: "#1159"
-
+      echo_on_operations:
+        - replace
+    added_in: 3.6.0
+    issue: '#1159'
   x-f5xc-sensitive:
     type: boolean
-    purpose: >-
-      Marks a credential, secret, signed URL, or other value that consumers must
-      redact from routine output and diagnostics.
-    consumers: [terraform, cli, mcp, ide]
+    purpose: Marks a credential, secret, signed URL, or other value that consumers
+      must redact from routine output and diagnostics.
+    consumers:
+      - terraform
+      - cli
+      - mcp
+      - ide
     example: true
-
   x-f5xc-description:
     type: string
     purpose: Enhanced field description with context
-    consumers: [ide, mcp]
-    migrated_from: "x-ves-description"
-
+    consumers:
+      - ide
+      - mcp
+    migrated_from: x-ves-description
   x-f5xc-validation:
     type: object
     purpose: Field validation constraints beyond JSON Schema
-    consumers: [cli, ide]
+    consumers:
+      - cli
+      - ide
     properties:
-      pattern: "Regex pattern"
-      min_length: "Minimum string length"
-      max_length: "Maximum string length"
-      allowed_values: "Enumerated allowed values"
-    migrated_from: "x-ves-validation"
-
+      pattern: Regex pattern
+      min_length: Minimum string length
+      max_length: Maximum string length
+      allowed_values: Enumerated allowed values
+    migrated_from: x-ves-validation
+    lifecycle: superseded
+    producer: FieldMetadataEnricher (inactive)
+    note: Generic inference retired; specialized constraints, defaults, examples and
+      requiredness contracts own production semantics
   x-f5xc-examples:
     type: array
     items: any
     purpose: Multiple example values for the field
-    consumers: [ide, mcp]
-    migrated_from: "x-ves-examples"
-
+    consumers:
+      - ide
+      - mcp
+    migrated_from: x-ves-examples
+    lifecycle: superseded
+    producer: FieldMetadataEnricher (inactive)
+    note: Generic inference retired; specialized constraints, defaults, examples and
+      requiredness contracts own production semantics
   x-f5xc-example:
     type: any
     purpose: Single example value for the field
-    consumers: [ide, mcp]
-    migrated_from: "x-ves-example"
-
+    consumers:
+      - ide
+      - mcp
+    migrated_from: x-ves-example
   x-f5xc-completion:
     type: object
     purpose: IDE autocompletion hints
-    consumers: [ide]
+    consumers:
+      - ide
     properties:
-      suggestions: "Array of completion suggestions"
-      dynamic: "Whether completions are dynamic"
-    migrated_from: "x-ves-completion"
-
+      suggestions: Array of completion suggestions
+      dynamic: Whether completions are dynamic
+    migrated_from: x-ves-completion
+    lifecycle: superseded
+    producer: FieldMetadataEnricher (inactive)
+    note: Generic inference retired; specialized constraints, defaults, examples and
+      requiredness contracts own production semantics
   x-f5xc-defaults:
     type: any
     purpose: Default value for the field
-    consumers: [cli, ide, mcp]
-    migrated_from: "x-ves-defaults"
-
+    consumers:
+      - cli
+      - ide
+      - mcp
+    migrated_from: x-ves-defaults
+    lifecycle: superseded
+    producer: FieldMetadataEnricher (inactive)
+    note: Generic inference retired; specialized constraints, defaults, examples and
+      requiredness contracts own production semantics
   x-f5xc-required-for-operations:
-    type: array
-    items: string
+    type: object
     purpose: Operations that require this field
-    consumers: [cli, mcp]
-    example: ["create", "update"]
-    migrated_from: "x-ves-required-for-operations"
-
+    consumers:
+      - cli
+      - mcp
+    example:
+      - create
+      - update
+    migrated_from: x-ves-required-for-operations
+    lifecycle: superseded
+    producer: FieldMetadataEnricher (inactive)
+    note: Generic inference retired; specialized constraints, defaults, examples and
+      requiredness contracts own production semantics
   x-f5xc-required-for:
     type: object
     purpose: Context-specific field requirements
-    consumers: [cli, mcp]
+    consumers:
+      - cli
+      - mcp
     properties:
-      minimum_config: "Required for minimum configuration"
-      create: "Required for create operation"
-      update: "Required for update operation"
-      read: "Required for read operation"
-    migrated_from: "x-ves-required-for"
-
+      minimum_config: Required for minimum configuration
+      create: Required for create operation
+      update: Required for update operation
+      read: Required for read operation
+    migrated_from: x-ves-required-for
   x-f5xc-conditions:
     type: object
     purpose: Conditional field visibility/requirements
-    consumers: [ide, cli]
-    migrated_from: "x-ves-conditions"
-
+    consumers:
+      - ide
+      - cli
+    migrated_from: x-ves-conditions
+    lifecycle: superseded
+    producer: FieldMetadataEnricher (inactive)
+    note: Generic inference retired; specialized constraints, defaults, examples and
+      requiredness contracts own production semantics
   x-f5xc-deprecated:
     type: boolean
     purpose: Field deprecation indicator
-    consumers: [ide, cli, mcp]
-    migrated_from: "x-ves-deprecated"
-
+    consumers:
+      - ide
+      - cli
+      - mcp
+    migrated_from: x-ves-deprecated
+    lifecycle: superseded
+    producer: FieldMetadataEnricher (inactive)
+    note: Generic inference retired; specialized constraints, defaults, examples and
+      requiredness contracts own production semantics
   x-f5xc-server-default:
     type: boolean
     purpose: Marker indicating value is server-applied when field omitted
-    consumers: [cli, mcp, ide]
-    added_in: "3.1.0"
-    issue: "#449"
-
+    consumers:
+      - cli
+      - mcp
+      - ide
+    added_in: 3.1.0
+    issue: '#449'
   x-f5xc-recommended-value:
     type: any
     purpose: UI-recommended value for fields (matches F5 XC web interface defaults)
-    consumers: [cli, mcp, ide]
-    added_in: "3.1.0"
-    issue: "#449"
-
+    consumers:
+      - cli
+      - mcp
+      - ide
+    added_in: 3.1.0
+    issue: '#449'
   x-f5xc-recommended-oneof-variant:
     type: object
     purpose: Recommended OneOf variant for schema with mutually exclusive fields
-    consumers: [cli, mcp, ide]
+    consumers:
+      - cli
+      - mcp
+      - ide
     properties:
-      "{oneof_group}": "Recommended variant name for this OneOf group"
+      '{oneof_group}': Recommended variant name for this OneOf group
     example:
-      health_check: "http_health_check"
-    added_in: "3.1.0"
-    issue: "#449"
-
+      health_check: http_health_check
+    added_in: 3.1.0
+    issue: '#449'
   x-f5xc-conflicts-with:
     type: array
     items: string
     purpose: Declares mutual exclusivity with other OneOf group properties
-    consumers: [terraform, cli, mcp, ide]
-    source: "Auto-derived from x-ves-oneof-field-* extensions"
-    example: ["use_origin_server_name"]
-    added_in: "3.2.0"
-    issue: "#494"
-    note: "Enables downstream tools to validate conflicts at schema level rather than runtime"
-
+    consumers:
+      - terraform
+      - cli
+      - mcp
+      - ide
+    source: Auto-derived from x-ves-oneof-field-* extensions
+    example:
+      - use_origin_server_name
+    added_in: 3.2.0
+    issue: '#494'
+    note: Enables downstream tools to validate conflicts at schema level rather than
+      runtime
   x-f5xc-required-oneof-groups:
     type: object
     purpose: Declares OneOf groups for which consumers must select exactly one member
-    consumers: [terraform, cli, mcp, ide]
-    source: "Curated from live API validation where x-ves-oneof-field-* only declares exclusivity"
+    consumers:
+      - terraform
+      - cli
+      - mcp
+      - ide
+    source: Curated from live API validation where x-ves-oneof-field-* only declares
+      exclusivity
     properties:
-      "{oneof_group}": "Ordered list of member property names"
+      '{oneof_group}': Ordered list of member property names
     example:
-      next_hop_choice: [default_gateway, ip_address, node_interface]
-    added_in: "6.1.2"
-    issue: "#1741"
-    note: "Pair with x-f5xc-conflicts-with to enforce exactly one selection"
-
+      next_hop_choice:
+        - default_gateway
+        - ip_address
+        - node_interface
+    added_in: 6.1.2
+    issue: '#1741'
+    note: Pair with x-f5xc-conflicts-with to enforce exactly one selection
   x-f5xc-references:
     type: array
     items: object
-    purpose: Declares resource references (ObjectRefType fields) to other resources that must exist first — enables deterministic CRUD ordering
-    consumers: [terraform, cli, mcp, ide, ai-assistants]
-    source: "Derived from ObjectRefType allOf refs + curated config/resource_references.yaml (F5 specs do not carry the target kind); oneOf gating from x-ves-oneof-field-*"
+    purpose: Declares resource references (ObjectRefType fields) to other resources
+      that must exist first — enables deterministic CRUD ordering
+    consumers:
+      - terraform
+      - cli
+      - mcp
+      - ide
+      - ai-assistants
+    source: Derived from ObjectRefType allOf refs + curated config/resource_references.yaml
+      (F5 specs do not carry the target kind); oneOf gating from x-ves-oneof-field-*
     example:
       - resource_kind: app_firewall
         field_path: app_firewall
-        gated_by: {choice: waf_choice}
+        gated_by:
+          choice: waf_choice
         required: false
         cardinality: single
-    added_in: "3.5.0"
-    issue: "#TBD"
-    note: "resource_kind null = unresolved (curate in resource_references.yaml, never guessed). The coarse resource_dependency_graph.json is a projection of these."
-
+    added_in: 3.5.0
+    issue: '#TBD'
+    note: resource_kind null = unresolved (curate in resource_references.yaml, never
+      guessed). The coarse resource_dependency_graph.json is a projection of these.
   x-f5xc-constraints:
     type: object
-    purpose: Comprehensive constraint metadata for deterministic AI generation and validation
-    consumers: [terraform, cli, mcp, ide, ai-assistants]
-    note: "Flat object structure (no nested type wrappers) to avoid Spectral array-items violations"
+    purpose: Comprehensive constraint metadata for deterministic AI generation and
+      validation
+    consumers:
+      - terraform
+      - cli
+      - mcp
+      - ide
+      - ai-assistants
+    producer: ConstraintEnricher
+    lifecycle: active
+    note: Scalar contracts remain flat; map contracts separate key, value, cardinality
+      and cross-entry scopes
     properties:
-      constraintType: "Field type (string, array, number, object)"
-      deterministic: "Boolean flag for high-confidence constraints (>= 0.9)"
-      category: "Constraint category (length, size, range, pattern, character, format)"
-      # String constraint keys (when constraintType=string)
-      minLength: "Minimum string length"
-      maxLength: "Maximum string length"
-      pattern: "Regular expression pattern"
+      constraintType: Field type (string, array, number, object, map)
+      keys: Map property-name rules including exact uint32-string ranges
+      values: Map value type, length, pattern and format constraints
+      cardinality: Native-equivalent minProperties and maxProperties bounds
+      crossEntry: Object value uniqueness semantics without native uniqueItems
+      originalRules: Exact deduplicated vendor map-rule names and values
+      deterministic: Boolean flag for high-confidence constraints (>= 0.9)
+      category: Constraint category (length, size, range, pattern, character, format)
+      minLength: Minimum string length
+      maxLength: Maximum string length
+      pattern: Regular expression pattern
       characterSet:
-        allowed: "Character set allowed (regex)"
-        restricted: "Character set restricted (regex)"
-        required: "Character set required (regex)"
-        description: "Natural language description of character set"
-      format: "String format (dns-label, fqdn, email, url, uuid, date-time, etc.)"
-      formatDescription: "Format-specific validation rules and standards"
+        allowed: Character set allowed (regex)
+        restricted: Character set restricted (regex)
+        required: Character set required (regex)
+        description: Natural language description of character set
+      format: String format (dns-label, fqdn, email, url, uuid, date-time, etc.)
+      formatDescription: Format-specific validation rules and standards
       byteLength:
-        min: "Minimum byte length"
-        max: "Maximum byte length"
+        min: Minimum byte length
+        max: Maximum byte length
       validation:
-        rfc: "RFC standard reference"
-        standard: "Industry standard reference (ISO 8601, E.164, PEM)"
-        customRule: "Additional validation logic description"
-      # Array constraint keys (when constraintType=array)
-      minItems: "Minimum array items"
-      maxItems: "Maximum array items"
-      uniqueItems: "Boolean requiring unique items"
-      # Numeric constraint keys (when constraintType=number)
-      minimum: "Minimum numeric value (contiguous range)"
-      maximum: "Maximum numeric value (contiguous range)"
-      ranges: "Array of {minimum, maximum} objects for non-contiguous valid ranges. When present, replaces top-level minimum/maximum."
-      multipleOf: "Value must be multiple of this number"
-      exclusiveMinimum: "Exclusive minimum boundary"
-      exclusiveMaximum: "Exclusive maximum boundary"
-      # Metadata
+        rfc: RFC standard reference
+        standard: Industry standard reference (ISO 8601, E.164, PEM)
+        customRule: Additional validation logic description
+      minItems: Minimum array items
+      maxItems: Maximum array items
+      uniqueItems: Boolean requiring unique items
+      minimum: Minimum numeric value (contiguous range)
+      maximum: Maximum numeric value (contiguous range)
+      ranges: Array of {minimum, maximum} objects for non-contiguous valid ranges.
+        When present, replaces top-level minimum/maximum.
+      multipleOf: Value must be multiple of this number
+      exclusiveMinimum: Exclusive minimum boundary
+      exclusiveMaximum: Exclusive maximum boundary
       metadata:
-        source: "Constraint source (discovery, inferred, explicit)"
-        confidence: "Confidence score 0.0-1.0"
-        validatedAt: "ISO 8601 timestamp of validation"
-    added_in: "3.3.0"
-    issue: "#TBD"
-    source: "Pattern matching, discovery data, and x-ves-validation-rules mapping"
-    reconciliation: "EXISTING > DISCOVERY > INFERRED priority"
+        source: Constraint source (discovery, inferred, explicit)
+        confidence: Confidence score 0.0-1.0
+        validatedAt: ISO 8601 timestamp of validation
+    added_in: 3.3.0
+    issue: '#TBD'
+    source: Pattern matching, discovery data, and x-ves-validation-rules mapping
+    reconciliation: EXISTING > DISCOVERY > INFERRED priority
     example:
-      constraintType: "string"
+      constraintType: string
       deterministic: true
-      category: "naming"
+      category: naming
       minLength: 1
       maxLength: 63
-      pattern: "^[a-z]([-a-z0-9]*[a-z0-9])?$"
+      pattern: ^[a-z]([-a-z0-9]*[a-z0-9])?$
       characterSet:
-        allowed: "[a-z0-9-]"
-        restricted: "[^a-z0-9-]"
-        required: "[a-z0-9]"
-        description: "Lowercase letter start, alphanumeric with hyphens, alphanumeric end"
-      format: "dns-label"
-      formatDescription: "DNS-1035 label: must start with a lowercase letter, may contain lowercase alphanumeric and hyphens, must end with alphanumeric"
+        allowed: '[a-z0-9-]'
+        restricted: '[^a-z0-9-]'
+        required: '[a-z0-9]'
+        description: Lowercase letter start, alphanumeric with hyphens, alphanumeric
+          end
+      format: dns-label
+      formatDescription: 'DNS-1035 label: must start with a lowercase letter, may
+        contain lowercase alphanumeric and hyphens, must end with alphanumeric'
       validation:
-        rfc: "RFC 1035"
-        standard: "DNS-1035 label (alpha-first)"
+        rfc: RFC 1035
+        standard: DNS-1035 label (alpha-first)
       metadata:
-        source: "inferred"
+        source: inferred
         confidence: 0.95
-        validatedAt: "2026-01-19T00:00:00Z"
-
+        validatedAt: '2026-01-19T00:00:00Z'
   x-f5xc-wire-name:
     type: string
-    purpose: >-
-      Original upstream property key that must be used on the wire. The buffer
-      zone (api-specs) renames F5's misspelled property names and records the
-      original key here; the F5 server accepts only the original spelling.
-    consumers: [terraform]
-    source: "upstream pass-through from f5-sales-demo/api-specs (never injected here)"
-    example: "blocked_sevice"
-    issue: "api-specs#686"
-    note: >-
-      Code generators that build API requests must send this key, not the
-      presented property name. Emitting the corrected name makes F5 silently
-      discard the field (terraform-provider-xcsh#1257).
-
+    purpose: Original upstream property key that must be used on the wire. The buffer
+      zone (api-specs) renames F5's misspelled property names and records the original
+      key here; the F5 server accepts only the original spelling.
+    consumers:
+      - terraform
+    source: upstream pass-through from f5-sales-demo/api-specs (never injected here)
+    example: blocked_sevice
+    issue: api-specs#686
+    note: Code generators that build API requests must send this key, not the presented
+      property name. Emitting the corrected name makes F5 silently discard the field
+      (terraform-provider-xcsh#1257).
   x-f5xc-console-field:
     type: object
-    purpose: Console form widget metadata for this API property
-    consumers: [console-catalog, xcsh, browser-automation]
-    added_in: "3.5.0"
-    issue: "#679"
+    purpose: Resource-scoped console form widget metadata at the exact API field location
+    producer: ConsoleUIEnricher
+    lifecycle: active
+    consumers:
+      - console-catalog
+      - xcsh
+      - vscode-xcsh
     properties:
-      widget_type: Console widget type (textbox, listbox, spinbutton, checkbox, etc.)
-      label: Console display label when different from schema title
-      default: Console default value
-      selector: Text/aria selector for browser automation
-      form_section: Which form section this field appears in
-      show_when: Conditional visibility rule
-      advanced: Hidden behind Show Advanced Fields toggle
-
-# =============================================================================
-# OPERATION-LEVEL EXTENSIONS (path operations)
-# =============================================================================
+      resources: Resource-kind keys mapping to configured widget, label, default and
+        visibility metadata
+    added_in: 10.0.0
+    issue: '#1854'
 operation_level:
   x-f5xc-operation-aliases:
     type: array
     items: string
-    purpose: Equivalent upstream operation identities sharing this canonical route and method
-    consumers: [terraform, cli, mcp]
-    added_in: "3.6.0"
-    issue: "#1237"
-
+    purpose: Equivalent upstream operation identities sharing this canonical route
+      and method
+    consumers:
+      - terraform
+      - cli
+      - mcp
+    added_in: 3.6.0
+    issue: '#1237'
   x-f5xc-operation-role:
     type: string
-    purpose: >-
-      Classifies an operation whose HTTP method does not communicate its API
-      semantics. Query and collection operations retrieve data without changing
-      tenant state, issuance returns a new credential, and action requests a
-      one-shot mutation of an existing object.
-    consumers: [terraform, cli, mcp]
-    allowed_values: [query, issuance, collection, action]
-    example: "query"
-
+    purpose: Classifies an operation whose HTTP method does not communicate its API
+      semantics. Query and collection operations retrieve data without changing tenant
+      state, issuance returns a new credential, and action requests a one-shot mutation
+      of an existing object.
+    consumers:
+      - terraform
+      - cli
+      - mcp
+    allowed_values:
+      - query
+      - issuance
+      - collection
+      - action
+    example: query
   x-f5xc-terraform-name:
     type: string
-    purpose: Stable source-owned Terraform name for a response operation, without the provider prefix
-    consumers: [terraform]
-    pattern: "^[a-z][a-z0-9_]*$"
-    example: "site_registrations_by_site"
-
+    purpose: Stable source-owned Terraform name for a response operation, without
+      the provider prefix
+    consumers:
+      - terraform
+    pattern: ^[a-z][a-z0-9_]*$
+    example: site_registrations_by_site
   x-f5xc-required-fields:
     type: array
     items: string
     purpose: Fields required for this operation
-    consumers: [cli, mcp]
-    migrated_from: "x-ves-required-fields"
-
+    consumers:
+      - cli
+      - mcp
+    migrated_from: x-ves-required-fields
   x-f5xc-prerequisites:
     type: array
     items: object
-    purpose: >-
-      Typed external or API-enforced prerequisites required before an operation
-      can succeed. These document dependency contracts without implying that
-      the prerequisite has a writable API surface.
-    consumers: [terraform, cli, mcp]
+    purpose: Typed external or API-enforced prerequisites required before an operation
+      can succeed. These document dependency contracts without implying that the prerequisite
+      has a writable API surface.
+    consumers:
+      - terraform
+      - cli
+      - mcp
     properties:
-      id: "Stable prerequisite identifier"
-      resource: "Referenced prerequisite resource or tenant configuration"
-      cardinality: "Required cardinality constraint"
-      enforcement: "Where the prerequisite is enforced"
-      availability: "Whether a consumer can manage the prerequisite"
-      lookup_scope: "Unknown unless independently proven by immutable evidence"
-      lookup_count: "Unknown when a runtime error only reports a cardinality mismatch"
-      reason: "Actionable explanation of the requirement"
-      source: "Immutable provenance for the requirement"
+      id: Stable prerequisite identifier
+      resource: Referenced prerequisite resource or tenant configuration
+      cardinality: Required cardinality constraint
+      enforcement: Where the prerequisite is enforced
+      availability: Whether a consumer can manage the prerequisite
+      lookup_scope: Unknown unless independently proven by immutable evidence
+      lookup_count: Unknown when a runtime error only reports a cardinality mismatch
+      reason: Actionable explanation of the requirement
+      source: Immutable provenance for the requirement
     example:
-      - id: "maurice_config_cardinality_exactly_one"
-        resource: "maurice_config"
-        cardinality: {exactly: 1}
-        enforcement: "server"
-        availability: "unresolved_server_lookup"
-        lookup_scope: "unknown"
-        lookup_count: "unknown"
-        reason: "The server reported a lookup cardinality mismatch; scope and count are unverified"
+      - id: maurice_config_cardinality_exactly_one
+        resource: maurice_config
+        cardinality:
+          exactly: 1
+        enforcement: server
+        availability: unresolved_server_lookup
+        lookup_scope: unknown
+        lookup_count: unknown
+        reason: The server reported a lookup cardinality mismatch; scope and count
+          are unverified
         source:
-          kind: "runtime_api_error"
-          operation: "ves.io.schema.registration.CustomAPI.GetImageDownloadUrl"
+          kind: runtime_api_error
+          operation: ves.io.schema.registration.CustomAPI.GetImageDownloadUrl
           immutable: true
           receipt_path: config/evidence/kvm-image-sequence-20260919.json
           receipt_sha256: 5de747a7d201a3c5b9a20a689d5c6c11ab0489f883a8a6900b5236b98b88a965
           source_commit: 5c33dcf51eb8bee24e2ca1856e32cb5fef2a286f
           spec_sha256: d056d904285a39889b66e3933b2ff0766eb1443649bdc5f81310bc27666d39e7
-
   x-f5xc-danger-level:
     type: string
-    enum: [low, medium, high]
+    enum:
+      - low
+      - medium
+      - high
     purpose: Risk classification for destructive operations
-    consumers: [cli]
-    example: "high"
-    migrated_from: "x-ves-danger-level"
-
+    consumers:
+      - cli
+    example: high
+    migrated_from: x-ves-danger-level
   x-f5xc-confirmation-required:
     type: boolean
     purpose: Whether operation requires user confirmation
-    consumers: [cli]
-    migrated_from: "x-ves-confirmation-required"
-
+    consumers:
+      - cli
+    migrated_from: x-ves-confirmation-required
   x-f5xc-side-effects:
     type: array
     items: string
     purpose: Side effects of the operation
-    consumers: [cli, mcp]
-    example: ["Deletes associated origin pools", "Invalidates CDN cache"]
-    migrated_from: "x-ves-side-effects"
-
+    consumers:
+      - cli
+      - mcp
+    example:
+      - Deletes associated origin pools
+      - Invalidates CDN cache
+    migrated_from: x-ves-side-effects
   x-f5xc-operation-metadata:
     type: object
     purpose: Comprehensive operation metadata for CLI tooling and AI assistants
-    consumers: [cli, mcp, ide]
+    consumers:
+      - cli
+      - mcp
+      - ide
     properties:
-      purpose: "Human-readable operation purpose (e.g., 'Create new http_loadbalancer')"
-      required_fields: "Array of required field paths"
-      optional_fields: "Array of optional field paths"
-      field_docs: "Object mapping field names to descriptions"
-      conditions: "Prerequisites and postconditions"
-      side_effects: "Creates/modifies/deletes arrays"
-      danger_level: "Risk classification (low/medium/high)"
-      confirmation_required: "Boolean for high-risk operations"
-      common_errors: "Array of error documentation objects"
-      performance_impact: "Latency and resource usage estimates"
-    migrated_from: "x-ves-operation-metadata"
-    added_in: "3.0.0"
-    issue: "#292"
-
+      purpose: Human-readable operation purpose (e.g., 'Create new http_loadbalancer')
+      required_fields: Array of required field paths
+      optional_fields: Array of optional field paths
+      field_docs: Object mapping field names to descriptions
+      conditions: Prerequisites and postconditions
+      side_effects: Creates/modifies/deletes arrays
+      danger_level: Risk classification (low/medium/high)
+      confirmation_required: Boolean for high-risk operations
+      common_errors: Array of error documentation objects
+      performance_impact: Latency and resource usage estimates
+    migrated_from: x-ves-operation-metadata
+    added_in: 3.0.0
+    issue: '#292'
   x-f5xc-discovered-response-time:
     type: object
     purpose: Statistical response time data from live API discovery
-    consumers: [mcp, cli, docs]
+    consumers:
+      - mcp
+      - cli
+      - docs
     properties:
-      p50: "50th percentile response time in milliseconds"
-      p95: "95th percentile response time in milliseconds"
-      p99: "99th percentile response time in milliseconds"
-      sample_count: "Number of samples collected"
-      last_measured: "ISO 8601 timestamp of last measurement"
-    added_in: "3.1.0"
-    issue: "#314"
-
+      p50: 50th percentile response time in milliseconds
+      p95: 95th percentile response time in milliseconds
+      p99: 99th percentile response time in milliseconds
+      sample_count: Number of samples collected
+      last_measured: ISO 8601 timestamp of last measurement
+    added_in: 3.1.0
+    issue: '#314'
   x-f5xc-discovered-rate-limits:
     type: object
     purpose: Rate limiting behavior discovered from live API
-    consumers: [mcp, cli]
+    consumers:
+      - mcp
+      - cli
     properties:
-      requests_per_minute: "Maximum requests per minute"
-      requests_per_second: "Maximum requests per second"
-      burst_limit: "Burst capacity if applicable"
-      retry_after_header: "Whether API returns Retry-After header"
-      discovered_at: "ISO 8601 timestamp of discovery"
-    added_in: "3.1.0"
-    issue: "#314"
-
+      requests_per_minute: Maximum requests per minute
+      requests_per_second: Maximum requests per second
+      burst_limit: Burst capacity if applicable
+      retry_after_header: Whether API returns Retry-After header
+      discovered_at: ISO 8601 timestamp of discovery
+    added_in: 3.1.0
+    issue: '#314'
   x-f5xc-discovered-error-catalog:
     type: array
     items: object
     purpose: Catalog of error responses discovered from live API
-    consumers: [mcp, cli, ide]
+    consumers:
+      - mcp
+      - cli
+      - ide
     properties:
-      status_code: "HTTP status code"
-      error_type: "Error classification"
-      message_pattern: "Common message patterns"
-      resolution: "Suggested resolution"
-      frequency: "How often this error was encountered"
-    added_in: "3.1.0"
-    issue: "#314"
-
-# =============================================================================
-# INDEX-LEVEL EXTENSIONS (index.json metadata)
-# =============================================================================
+      status_code: HTTP status code
+      error_type: Error classification
+      message_pattern: Common message patterns
+      resolution: Suggested resolution
+      frequency: How often this error was encountered
+    added_in: 3.1.0
+    issue: '#314'
 index_level:
   x-f5xc-category:
     type: string
     purpose: Unified category classification (DRY consolidation)
-    consumers: [mcp, cli, ide]
-    example: "virtual"
-    migrated_from: ["domain_category", "ui_category"]
-    note: "Single field replaces domain_category and ui_category"
-
+    consumers:
+      - mcp
+      - cli
+      - ide
+    example: virtual
+    migrated_from:
+      - domain_category
+      - ui_category
+    note: Single field replaces domain_category and ui_category
   x-f5xc-critical-resources:
     type: array
     items: string
     purpose: Critical resources requiring special handling
-    consumers: [cli, mcp]
-    source: "config/critical_resources.yaml"
-
+    consumers:
+      - cli
+      - mcp
+    source: config/critical_resources.yaml
   x-f5xc-primary-resources:
     type: array
     items: object
     purpose: Primary resource metadata for the domain
-    consumers: [mcp, cli, ide, terraform, vscode]
-    migrated_from: "primary_resources"
+    consumers:
+      - mcp
+      - cli
+      - ide
+      - terraform
+      - vscode
+    migrated_from: primary_resources
     item_fields:
-      name: {type: string, purpose: "Resource identifier (e.g. http_loadbalancer)"}
-      description: {type: string, purpose: "Long description"}
-      description_short: {type: string, purpose: "Short label (max 60 chars)"}
-      tier: {type: string, purpose: "Required subscription tier"}
-      icon: {type: string, purpose: "Emoji icon"}
-      category: {type: string, purpose: "Resource category"}
-      supports_logs: {type: boolean, purpose: "Whether resource emits logs"}
-      supports_metrics: {type: boolean, purpose: "Whether resource emits metrics"}
-      dependencies: {type: object, purpose: "required/optional dependency lists"}
-      relationship_hints: {type: array, items: string, purpose: "Human-readable relationship descriptions"}
+      name:
+        type: string
+        purpose: Resource identifier (e.g. http_loadbalancer)
+      description:
+        type: string
+        purpose: Long description
+      description_short:
+        type: string
+        purpose: Short label (max 60 chars)
+      tier:
+        type: string
+        purpose: Required subscription tier
+      icon:
+        type: string
+        purpose: Emoji icon
+      category:
+        type: string
+        purpose: Resource category
+      supports_logs:
+        type: boolean
+        purpose: Whether resource emits logs
+      supports_metrics:
+        type: boolean
+        purpose: Whether resource emits metrics
+      dependencies:
+        type: object
+        purpose: required/optional dependency lists
+      relationship_hints:
+        type: array
+        items: string
+        purpose: Human-readable relationship descriptions
       schema_components:
         type: array
         items: string
-        purpose: "Dotted operationId component names (e.g. views.http_loadbalancer). Empty array for conceptual resources."
-        consumers: [mcp, cli, ide, terraform, vscode]
-        example: ["views.http_loadbalancer"]
+        purpose: Dotted operationId component names (e.g. views.http_loadbalancer).
+          Empty array for conceptual resources.
+        consumers:
+          - mcp
+          - cli
+          - ide
+          - terraform
+          - vscode
+        example:
+          - views.http_loadbalancer
       api_paths:
         type: array
         items: string
-        purpose: "Primary CRUD path patterns with {namespace} placeholder. Empty array for conceptual resources."
-        consumers: [mcp, cli, ide, terraform, vscode]
-        example: ["/api/config/namespaces/{namespace}/http_loadbalancers"]
-
+        purpose: Primary CRUD path patterns with {namespace} placeholder. Empty array
+          for conceptual resources.
+        consumers:
+          - mcp
+          - cli
+          - ide
+          - terraform
+          - vscode
+        example:
+          - /api/config/namespaces/{namespace}/http_loadbalancers
   x-f5xc-description-short:
     type: string
     max_length: 60
     purpose: Short description for CLI columns and badges
-    consumers: [cli]
-    example: "HTTP/HTTPS load balancing and traffic management"
-    migrated_from: "description_short"
-
+    consumers:
+      - cli
+    example: HTTP/HTTPS load balancing and traffic management
+    migrated_from: description_short
   x-f5xc-description-medium:
     type: string
     max_length: 150
     purpose: Medium description for tooltips and summaries
-    consumers: [ide]
-    migrated_from: "description_medium"
-
+    consumers:
+      - ide
+    migrated_from: description_medium
   x-f5xc-complexity:
     type: string
-    enum: [low, medium, high]
+    enum:
+      - low
+      - medium
+      - high
     purpose: Resource complexity indicator
-    consumers: [ide, mcp]
-    migrated_from: "complexity"
-
+    consumers:
+      - ide
+      - mcp
+    migrated_from: complexity
   x-f5xc-requires-tier:
     type: string
     purpose: Required subscription tier
-    consumers: [cli, mcp]
-    example: "Standard"
-    migrated_from: "requires_tier"
-
+    consumers:
+      - cli
+      - mcp
+    example: Standard
+    migrated_from: requires_tier
   x-f5xc-is-preview:
     type: boolean
     purpose: Whether feature is in preview
-    consumers: [cli, ide, mcp]
-    migrated_from: "is_preview"
-
+    consumers:
+      - cli
+      - ide
+      - mcp
+    migrated_from: is_preview
   x-f5xc-use-cases:
     type: array
     items: string
     purpose: Common use cases for the domain
-    consumers: [mcp, ide]
-    migrated_from: "use_cases"
-
+    consumers:
+      - mcp
+      - ide
+    migrated_from: use_cases
   x-f5xc-icon:
     type: string
     purpose: Icon identifier for UI display
-    consumers: [ide]
-    migrated_from: "icon"
-
+    consumers:
+      - ide
+    migrated_from: icon
   x-f5xc-logo-svg:
     type: string
     purpose: SVG logo for UI display
-    consumers: [ide]
-    migrated_from: "logo_svg"
-
+    consumers:
+      - ide
+    migrated_from: logo_svg
   x-f5xc-related-domains:
     type: array
     items: string
     purpose: Related domain references
-    consumers: [ide, mcp]
-    migrated_from: "related_domains"
-
+    consumers:
+      - ide
+      - mcp
+    migrated_from: related_domains
   x-f5xc-doc-section:
     type: string
     purpose: Documentation navigation section
-    consumers: [ide]
+    consumers:
+      - ide
     new_field: true
-
-# =============================================================================
-# PRESERVED F5 NATIVE EXTENSIONS (DO NOT MODIFY)
-# =============================================================================
 preserved_native:
-  description: |
-    These extensions come from F5 upstream and MUST be preserved unchanged.
+  description: 'These extensions come from F5 upstream and MUST be preserved unchanged.
+
     The enrichment pipeline should never modify these fields.
 
+    '
   fields:
     - x-ves-proto-package
     - x-ves-proto-file
@@ -803,15 +967,13 @@ preserved_native:
     - x-ves-oneof
     - x-ves-default
     - x-ves-required
-
-# =============================================================================
-# WRAPPER FIELDS (NOT EXTENSIONS) - DEPRECATED IN v3.0.0
-# =============================================================================
 wrapper_fields:
-  description: |
-    In v3.0.0, all wrapper fields have been migrated to the x-f5xc-* namespace.
+  description: 'In v3.0.0, all wrapper fields have been migrated to the x-f5xc-* namespace.
+
     The cli_metadata wrapper field is now x-f5xc-cli-metadata.
+
 
     This section is retained for historical reference only.
 
-  fields: []  # All migrated to x-f5xc-* namespace in v3.0.0
+    '
+  fields: []

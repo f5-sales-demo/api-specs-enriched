@@ -3,7 +3,7 @@
   "info": {
     "title": "Managed Kubernetes",
     "description": "Role-based access controls with cluster-scoped permissions and namespace bindings. Pod security admission levels enforce baseline, restricted, or privileged profiles. Container registry credentials support private image pulls across hybrid deployments. Policy rules define resource verbs, groups, and non-resource URL access patterns.",
-    "version": "9.0.2",
+    "version": "10.0.0",
     "contact": {
       "name": "F5 Distributed Cloud",
       "url": "https://docs.cloud.f5.com"
@@ -87,6 +87,50 @@
       "classification": {
         "category": "infrastructure",
         "multi_tenant_pattern": "per-tenant"
+      }
+    },
+    "x-f5xc-console-navigation": {
+      "workspaces": {
+        "web-app-and-api-protection": {
+          "label": "Web App & API Protection",
+          "route_prefix": "/web/workspaces/web-app-and-api-protection"
+        },
+        "multi-cloud-app-connect": {
+          "label": "Multi-Cloud App Connect",
+          "route_prefix": "/web/workspaces/multi-cloud-app-connect"
+        },
+        "multi-cloud-network-connect": {
+          "label": "Multi-Cloud Network Connect",
+          "route_prefix": "/web/workspaces/multi-cloud-network-connect"
+        },
+        "distributed-apps": {
+          "label": "Distributed Apps",
+          "route_prefix": "/web/workspaces/distributed-apps"
+        },
+        "dns-management": {
+          "label": "DNS Management",
+          "route_prefix": "/web/workspaces/dns-management"
+        },
+        "content-delivery-network": {
+          "label": "Content Delivery Network",
+          "route_prefix": "/web/workspaces/content-delivery-network"
+        },
+        "observability": {
+          "label": "Observability",
+          "route_prefix": "/web/workspaces/observability"
+        },
+        "shared-configuration": {
+          "label": "Shared Configuration",
+          "route_prefix": "/web/workspaces/shared-configuration"
+        },
+        "audit-logs-and-alerts": {
+          "label": "Audit Logs & Alerts",
+          "route_prefix": "/web/workspaces/audit-logs-and-alerts"
+        },
+        "administration": {
+          "label": "Administration",
+          "route_prefix": "/web/workspaces/administration"
+        }
       }
     }
   },
@@ -6297,6 +6341,15 @@
               "create": false,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "container_registry": {
+                  "widget_type": "textbox",
+                  "label": "Email",
+                  "form_section": "email"
+                }
+              }
             }
           },
           "password": {
@@ -6311,6 +6364,18 @@
               "create": false,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "container_registry": {
+                  "widget_type": "configurable",
+                  "label": "Password",
+                  "required": true,
+                  "form_section": "password",
+                  "secret": true,
+                  "description": "Secret field: click Configure (a link), enter the value in the secret TEXTAREA (Secret Type defaults are fine), then Apply. Verified live: create 200."
+                }
+              }
             }
           },
           "registry": {
@@ -6381,6 +6446,16 @@
               "create": true,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "container_registry": {
+                  "widget_type": "textbox",
+                  "label": "User Name",
+                  "required": true,
+                  "form_section": "user-name"
+                }
+              }
             }
           }
         },
@@ -6412,6 +6487,51 @@
           "classification": {
             "category": "infrastructure",
             "multi_tenant_pattern": "per-tenant"
+          }
+        },
+        "x-f5xc-console": {
+          "workspace": "distributed-apps",
+          "workspace_label": "Distributed Apps",
+          "route_prefix": "/web/workspaces/distributed-apps",
+          "menu_path": [
+            "Manage",
+            "Container Registries"
+          ],
+          "route_pattern": "/namespaces/{namespace}/applications/container_registries",
+          "breadcrumbs": [
+            "Home",
+            "Distributed Apps",
+            "{namespace}",
+            "Manage",
+            "Container Registries"
+          ],
+          "add_action": {
+            "type": "tab",
+            "label": "Add Container Registry"
+          },
+          "save_action": {
+            "label": "Add Container Registry"
+          },
+          "form_tabs": [
+            "Form",
+            "Documentation",
+            "JSON"
+          ],
+          "form_sections": [
+            {
+              "id": "metadata",
+              "label": "Metadata",
+              "api_fields": [
+                "metadata.name",
+                "metadata.labels",
+                "metadata.description"
+              ]
+            }
+          ],
+          "metadata": {
+            "confidence": "inferred",
+            "discovered_at": "2026-06-16",
+            "console_version": "2025.06"
           }
         }
       },
@@ -8645,7 +8765,18 @@
             "additionalProperties": {
               "type": "string",
               "maxLength": 1024,
-              "minLength": 1
+              "minLength": 1,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 1024,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-f5xc-example": "value",
             "x-validation-rules": {
@@ -8656,6 +8787,27 @@
             },
             "x-f5xc-description-short": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata.",
             "x-f5xc-description-medium": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata. They are not queryable and should be preserved when modifying objects.",
+            "x-f5xc-constraints": {
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.keys.string.max_len": "64",
+                "ves.io.schema.rules.map.keys.string.min_len": "1",
+                "ves.io.schema.rules.map.values.string.max_len": "1024",
+                "ves.io.schema.rules.map.values.string.min_len": "1"
+              },
+              "keys": {
+                "maxLength": 64,
+                "type": "string",
+                "minLength": 1
+              },
+              "values": {
+                "maxLength": 1024,
+                "type": "string",
+                "minLength": 1
+              }
+            },
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -8704,7 +8856,16 @@
             },
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-03T05:10:26+00:00"
+            "x-reconciled-at": "2026-10-03T05:10:26+00:00",
+            "x-f5xc-console-field": {
+              "resources": {
+                "container_registry": {
+                  "widget_type": "textbox",
+                  "label": "Description",
+                  "form_section": "metadata"
+                }
+              }
+            }
           },
           "disable": {
             "type": "boolean",
@@ -8733,6 +8894,15 @@
               "create": false,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "container_registry": {
+                  "widget_type": "key-value-pairs",
+                  "label": "Labels",
+                  "form_section": "metadata"
+                }
+              }
             }
           },
           "name": {
@@ -8786,7 +8956,17 @@
             "minLength": 1,
             "x-reconciled-from-discovery": true,
             "x-reconciled-at": "2026-10-03T05:10:26+00:00",
-            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+            "x-f5xc-console-field": {
+              "resources": {
+                "container_registry": {
+                  "widget_type": "textbox",
+                  "label": "Name",
+                  "required": true,
+                  "form_section": "metadata"
+                }
+              }
+            }
           },
           "namespace": {
             "type": "string",
@@ -8888,7 +9068,18 @@
             "additionalProperties": {
               "type": "string",
               "maxLength": 1024,
-              "minLength": 1
+              "minLength": 1,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 1024,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-f5xc-example": "value",
             "x-validation-rules": {
@@ -8899,6 +9090,27 @@
             },
             "x-f5xc-description-short": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata.",
             "x-f5xc-description-medium": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata. They are not queryable and should be preserved when modifying objects.",
+            "x-f5xc-constraints": {
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.keys.string.max_len": "64",
+                "ves.io.schema.rules.map.keys.string.min_len": "1",
+                "ves.io.schema.rules.map.values.string.max_len": "1024",
+                "ves.io.schema.rules.map.values.string.min_len": "1"
+              },
+              "keys": {
+                "maxLength": 64,
+                "type": "string",
+                "minLength": 1
+              },
+              "values": {
+                "maxLength": 1024,
+                "type": "string",
+                "minLength": 1
+              }
+            },
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -9343,7 +9555,18 @@
             "additionalProperties": {
               "type": "string",
               "maxLength": 1024,
-              "minLength": 1
+              "minLength": 1,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 1024,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-f5xc-example": "value",
             "x-validation-rules": {
@@ -9354,6 +9577,27 @@
             },
             "x-f5xc-description-short": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata.",
             "x-f5xc-description-medium": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata. They are not queryable and should be preserved when modifying objects.",
+            "x-f5xc-constraints": {
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.keys.string.max_len": "64",
+                "ves.io.schema.rules.map.keys.string.min_len": "1",
+                "ves.io.schema.rules.map.values.string.max_len": "1024",
+                "ves.io.schema.rules.map.values.string.min_len": "1"
+              },
+              "keys": {
+                "maxLength": 64,
+                "type": "string",
+                "minLength": 1
+              },
+              "values": {
+                "maxLength": 1024,
+                "type": "string",
+                "minLength": 1
+              }
+            },
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -11640,7 +11884,17 @@
             "maxItems": 16,
             "items": {
               "type": "string",
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Non Resource URL(s)",
             "x-ves-example": "Value",
@@ -11689,7 +11943,17 @@
             "maxItems": 16,
             "items": {
               "type": "string",
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Allowed Verbs.",
             "x-ves-example": "GET",
@@ -12138,7 +12402,17 @@
             "maxItems": 16,
             "items": {
               "type": "string",
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "API Groups.",
             "x-ves-example": "rbac.authorization.K8s.I/O.",
@@ -12186,7 +12460,17 @@
             "maxItems": 16,
             "items": {
               "type": "string",
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Resource Instances.",
             "x-ves-example": "Admin",
@@ -12229,7 +12513,17 @@
             "maxItems": 16,
             "items": {
               "type": "string",
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Resource Types.",
             "x-ves-example": "Role",
@@ -12278,7 +12572,17 @@
             "maxItems": 16,
             "items": {
               "type": "string",
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Allowed Verbs.",
             "x-ves-example": "GET",
@@ -12445,7 +12749,18 @@
             "items": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 4096
+              "maxLength": 4096,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 4096,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Selector Expression.",
             "x-ves-example": "Region in (us-west1, us-west2),tier in (staging)",
@@ -17515,7 +17830,18 @@
             "items": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 64
+              "maxLength": 64,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 64,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Allowed CSI drivers.",
             "x-ves-example": "Value",
@@ -17560,7 +17886,18 @@
             "items": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 64
+              "maxLength": 64,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 64,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Allowed Flex Volumes.",
             "x-ves-example": "Value",
@@ -18118,7 +18455,18 @@
             "items": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 64
+              "maxLength": 64,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 64,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Volume",
             "x-ves-example": "GitRepo",

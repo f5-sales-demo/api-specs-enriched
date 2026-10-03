@@ -3,7 +3,7 @@
   "info": {
     "title": "Statistics",
     "description": "Alert policies with custom matchers, label groupings, and notification parameters. Log receivers for centralized collection with confirmation and verification workflows. Flow analytics, historical trend data, and namespace-scoped dashboards. Topology discovery and site-level health indicators for operational visibility.",
-    "version": "9.0.2",
+    "version": "10.0.0",
     "contact": {
       "name": "F5 Distributed Cloud",
       "url": "https://docs.cloud.f5.com"
@@ -87,6 +87,50 @@
       "classification": {
         "category": "observability",
         "multi_tenant_pattern": "per-tenant"
+      }
+    },
+    "x-f5xc-console-navigation": {
+      "workspaces": {
+        "web-app-and-api-protection": {
+          "label": "Web App & API Protection",
+          "route_prefix": "/web/workspaces/web-app-and-api-protection"
+        },
+        "multi-cloud-app-connect": {
+          "label": "Multi-Cloud App Connect",
+          "route_prefix": "/web/workspaces/multi-cloud-app-connect"
+        },
+        "multi-cloud-network-connect": {
+          "label": "Multi-Cloud Network Connect",
+          "route_prefix": "/web/workspaces/multi-cloud-network-connect"
+        },
+        "distributed-apps": {
+          "label": "Distributed Apps",
+          "route_prefix": "/web/workspaces/distributed-apps"
+        },
+        "dns-management": {
+          "label": "DNS Management",
+          "route_prefix": "/web/workspaces/dns-management"
+        },
+        "content-delivery-network": {
+          "label": "Content Delivery Network",
+          "route_prefix": "/web/workspaces/content-delivery-network"
+        },
+        "observability": {
+          "label": "Observability",
+          "route_prefix": "/web/workspaces/observability"
+        },
+        "shared-configuration": {
+          "label": "Shared Configuration",
+          "route_prefix": "/web/workspaces/shared-configuration"
+        },
+        "audit-logs-and-alerts": {
+          "label": "Audit Logs & Alerts",
+          "route_prefix": "/web/workspaces/audit-logs-and-alerts"
+        },
+        "administration": {
+          "label": "Administration",
+          "route_prefix": "/web/workspaces/administration"
+        }
       }
     }
   },
@@ -20835,13 +20879,14 @@
             "x-f5xc-description-short": "\"namespace\": \"system\", \"tenant\" :\"example-tenant\", \"alertname\": \"podXcrash\", \"group\": \"IaaS\", \"severity\": \"critical\" }, Alert labels to find match...",
             "x-f5xc-description-medium": "\"namespace\": \"system\", \"tenant\" :\"example-tenant\", \"alertname\": \"podXcrash\", \"group\": \"IaaS\", \"severity\": \"critical\" }, Alert labels to find match against alert policies requires tenant and namespace to be defined labels map.",
             "x-f5xc-constraints": {
-              "constraintType": "object",
-              "category": "general",
-              "maxProperties": 50,
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.75,
-                "validatedAt": "2026-10-03T05:10:26+00:00"
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.max_pairs": "50"
+              },
+              "cardinality": {
+                "maxProperties": 50
               }
             },
             "x-f5xc-required-for": {
@@ -21223,6 +21268,18 @@
               "create": true,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "alert_policy": {
+                  "widget_type": "resource-selector",
+                  "label": "Alert Receivers",
+                  "required": true,
+                  "form_section": "basic",
+                  "resource_type": "alert_receiver",
+                  "description": "Server-required: at least one Alert Receiver reference. Depends on an existing alert_receiver object (create one first)."
+                }
+              }
             }
           },
           "routes": {
@@ -21260,6 +21317,18 @@
               "create": true,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "alert_policy": {
+                  "widget_type": "nested-resource-list",
+                  "label": "Policy Rules",
+                  "required": true,
+                  "add_action": "Add Item",
+                  "form_section": "basic",
+                  "description": "Server-required: at least one alert policy rule (Field Policy Rules in Spec is required)."
+                }
+              }
             }
           }
         },
@@ -21291,6 +21360,55 @@
           "classification": {
             "category": "observability",
             "multi_tenant_pattern": "per-tenant"
+          }
+        },
+        "x-f5xc-console": {
+          "workspace": "multi-cloud-network-connect",
+          "workspace_label": "Multi-Cloud Network Connect",
+          "route_prefix": "/web/workspaces/multi-cloud-network-connect",
+          "menu_path": [
+            "Multi-Cloud Network Connect",
+            "Manage",
+            "Alerts Management",
+            "Alert Policies"
+          ],
+          "route_pattern": "/manage/alert_config/alert_policies",
+          "breadcrumbs": [
+            "Home",
+            "Shared Configuration",
+            "shared",
+            "Manage",
+            "Alert Policies"
+          ],
+          "add_action": {
+            "type": "tab",
+            "label": "Add Alert Policy"
+          },
+          "save_action": {
+            "label": "Add Alert Policy"
+          },
+          "form_tabs": [
+            "Form",
+            "Documentation",
+            "JSON"
+          ],
+          "namespace_scoped": false,
+          "form_sections": [
+            {
+              "id": "metadata",
+              "label": "Metadata",
+              "api_fields": [
+                "metadata.name",
+                "metadata.labels",
+                "metadata.description"
+              ]
+            }
+          ],
+          "metadata": {
+            "confidence": "validated",
+            "discovered_at": "2026-06-16",
+            "console_version": "2025.06",
+            "notes": "Validated via URL probe against live staging console"
           }
         }
       },
@@ -21400,13 +21518,23 @@
             },
             "x-f5xc-description-short": "AlertLabel to configure the alert policy rule.",
             "x-f5xc-constraints": {
-              "constraintType": "object",
-              "category": "general",
-              "maxProperties": 3,
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.75,
-                "validatedAt": "2026-10-03T05:10:26+00:00"
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.keys.string.max_len": "64",
+                "ves.io.schema.rules.map.keys.string.min_len": "1",
+                "ves.io.schema.rules.map.keys.string.pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$",
+                "ves.io.schema.rules.map.max_pairs": "3"
+              },
+              "keys": {
+                "maxLength": 64,
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$"
+              },
+              "cardinality": {
+                "maxProperties": 3
               }
             },
             "x-f5xc-required-for": {
@@ -24158,7 +24286,18 @@
             "additionalProperties": {
               "type": "string",
               "maxLength": 1024,
-              "minLength": 1
+              "minLength": 1,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 1024,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-f5xc-example": "value",
             "x-validation-rules": {
@@ -24169,6 +24308,27 @@
             },
             "x-f5xc-description-short": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata.",
             "x-f5xc-description-medium": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata. They are not queryable and should be preserved when modifying objects.",
+            "x-f5xc-constraints": {
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.keys.string.max_len": "64",
+                "ves.io.schema.rules.map.keys.string.min_len": "1",
+                "ves.io.schema.rules.map.values.string.max_len": "1024",
+                "ves.io.schema.rules.map.values.string.min_len": "1"
+              },
+              "keys": {
+                "maxLength": 64,
+                "type": "string",
+                "minLength": 1
+              },
+              "values": {
+                "maxLength": 1024,
+                "type": "string",
+                "minLength": 1
+              }
+            },
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -24217,7 +24377,31 @@
             },
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-03T05:10:26+00:00"
+            "x-reconciled-at": "2026-10-03T05:10:26+00:00",
+            "x-f5xc-console-field": {
+              "resources": {
+                "alert_policy": {
+                  "widget_type": "textbox",
+                  "label": "Description",
+                  "form_section": "metadata"
+                },
+                "alert_receiver": {
+                  "widget_type": "textbox",
+                  "label": "Description",
+                  "form_section": "metadata"
+                },
+                "global_log_receiver": {
+                  "widget_type": "textbox",
+                  "label": "Description",
+                  "form_section": "metadata"
+                },
+                "log_receiver": {
+                  "widget_type": "textbox",
+                  "label": "Description",
+                  "form_section": "metadata"
+                }
+              }
+            }
           },
           "disable": {
             "type": "boolean",
@@ -24246,6 +24430,30 @@
               "create": false,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "alert_policy": {
+                  "widget_type": "key-value-pairs",
+                  "label": "Labels",
+                  "form_section": "metadata"
+                },
+                "alert_receiver": {
+                  "widget_type": "key-value-pairs",
+                  "label": "Labels",
+                  "form_section": "metadata"
+                },
+                "global_log_receiver": {
+                  "widget_type": "key-value-pairs",
+                  "label": "Labels",
+                  "form_section": "metadata"
+                },
+                "log_receiver": {
+                  "widget_type": "key-value-pairs",
+                  "label": "Labels",
+                  "form_section": "metadata"
+                }
+              }
             }
           },
           "name": {
@@ -24299,7 +24507,35 @@
             "minLength": 1,
             "x-reconciled-from-discovery": true,
             "x-reconciled-at": "2026-10-03T05:10:26+00:00",
-            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+            "x-f5xc-console-field": {
+              "resources": {
+                "alert_policy": {
+                  "widget_type": "textbox",
+                  "label": "Name",
+                  "required": true,
+                  "form_section": "metadata"
+                },
+                "alert_receiver": {
+                  "widget_type": "textbox",
+                  "label": "Name",
+                  "required": true,
+                  "form_section": "metadata"
+                },
+                "global_log_receiver": {
+                  "widget_type": "textbox",
+                  "label": "Name",
+                  "required": true,
+                  "form_section": "metadata"
+                },
+                "log_receiver": {
+                  "widget_type": "textbox",
+                  "label": "Name",
+                  "required": true,
+                  "form_section": "metadata"
+                }
+              }
+            }
           },
           "namespace": {
             "type": "string",
@@ -24401,7 +24637,18 @@
             "additionalProperties": {
               "type": "string",
               "maxLength": 1024,
-              "minLength": 1
+              "minLength": 1,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 1024,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-f5xc-example": "value",
             "x-validation-rules": {
@@ -24412,6 +24659,27 @@
             },
             "x-f5xc-description-short": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata.",
             "x-f5xc-description-medium": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata. They are not queryable and should be preserved when modifying objects.",
+            "x-f5xc-constraints": {
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.keys.string.max_len": "64",
+                "ves.io.schema.rules.map.keys.string.min_len": "1",
+                "ves.io.schema.rules.map.values.string.max_len": "1024",
+                "ves.io.schema.rules.map.values.string.min_len": "1"
+              },
+              "keys": {
+                "maxLength": 64,
+                "type": "string",
+                "minLength": 1
+              },
+              "values": {
+                "maxLength": 1024,
+                "type": "string",
+                "minLength": 1
+              }
+            },
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -24856,7 +25124,18 @@
             "additionalProperties": {
               "type": "string",
               "maxLength": 1024,
-              "minLength": 1
+              "minLength": 1,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 1024,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-f5xc-example": "value",
             "x-validation-rules": {
@@ -24867,6 +25146,27 @@
             },
             "x-f5xc-description-short": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata.",
             "x-f5xc-description-medium": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata. They are not queryable and should be preserved when modifying objects.",
+            "x-f5xc-constraints": {
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.keys.string.max_len": "64",
+                "ves.io.schema.rules.map.keys.string.min_len": "1",
+                "ves.io.schema.rules.map.values.string.max_len": "1024",
+                "ves.io.schema.rules.map.values.string.min_len": "1"
+              },
+              "keys": {
+                "maxLength": 64,
+                "type": "string",
+                "minLength": 1
+              },
+              "values": {
+                "maxLength": 1024,
+                "type": "string",
+                "minLength": 1
+              }
+            },
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -26674,6 +26974,55 @@
           "classification": {
             "category": "observability",
             "multi_tenant_pattern": "none"
+          }
+        },
+        "x-f5xc-console": {
+          "workspace": "multi-cloud-network-connect",
+          "workspace_label": "Multi-Cloud Network Connect",
+          "route_prefix": "/web/workspaces/multi-cloud-network-connect",
+          "menu_path": [
+            "Multi-Cloud Network Connect",
+            "Manage",
+            "Alerts Management",
+            "Alert Receivers"
+          ],
+          "route_pattern": "/manage/alert_config/alert_receivers",
+          "breadcrumbs": [
+            "Home",
+            "Audit Logs & Alerts",
+            "system",
+            "Manage",
+            "Alert Receivers"
+          ],
+          "add_action": {
+            "type": "tab",
+            "label": "Add Alert Receiver"
+          },
+          "save_action": {
+            "label": "Add Alert Receiver"
+          },
+          "form_tabs": [
+            "Form",
+            "Documentation",
+            "JSON"
+          ],
+          "namespace_scoped": false,
+          "form_sections": [
+            {
+              "id": "metadata",
+              "label": "Metadata",
+              "api_fields": [
+                "metadata.name",
+                "metadata.labels",
+                "metadata.description"
+              ]
+            }
+          ],
+          "metadata": {
+            "confidence": "validated",
+            "discovered_at": "2026-06-16",
+            "console_version": "2025.06",
+            "notes": "Validated via URL probe against live staging console"
           }
         }
       },
@@ -45666,6 +46015,55 @@
             "category": "observability",
             "multi_tenant_pattern": "none"
           }
+        },
+        "x-f5xc-console": {
+          "workspace": "multi-cloud-network-connect",
+          "workspace_label": "Multi-Cloud Network Connect",
+          "route_prefix": "/web/workspaces/multi-cloud-network-connect",
+          "menu_path": [
+            "Multi-Cloud Network Connect",
+            "Manage",
+            "Log Management",
+            "Log Receivers"
+          ],
+          "route_pattern": "/manage/log_management/log_receivers",
+          "breadcrumbs": [
+            "Home",
+            "Audit Logs & Alerts",
+            "system",
+            "Manage",
+            "Global Log Receivers"
+          ],
+          "add_action": {
+            "type": "tab",
+            "label": "Add Global Log Receiver"
+          },
+          "save_action": {
+            "label": "Add Global Log Receiver"
+          },
+          "form_tabs": [
+            "Form",
+            "Documentation",
+            "JSON"
+          ],
+          "namespace_scoped": false,
+          "form_sections": [
+            {
+              "id": "metadata",
+              "label": "Metadata",
+              "api_fields": [
+                "metadata.name",
+                "metadata.labels",
+                "metadata.description"
+              ]
+            }
+          ],
+          "metadata": {
+            "confidence": "validated",
+            "discovered_at": "2026-06-16",
+            "console_version": "2025.06",
+            "notes": "Validated via URL probe against live staging console"
+          }
         }
       },
       "global_log_receiverDatadogConfig": {
@@ -47605,7 +48003,17 @@
             "maxItems": 8,
             "items": {
               "type": "string",
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Kafka Bootstrap Servers List.",
             "x-ves-example": "kafka-01.example.com:9093.",
@@ -50669,6 +51077,53 @@
           "classification": {
             "category": "observability",
             "multi_tenant_pattern": "none"
+          }
+        },
+        "x-f5xc-console": {
+          "workspace": "multi-cloud-network-connect",
+          "workspace_label": "Multi-Cloud Network Connect",
+          "route_prefix": "/web/workspaces/multi-cloud-network-connect",
+          "menu_path": [
+            "Manage",
+            "Log Management",
+            "Log Receivers"
+          ],
+          "route_pattern": "/manage/log_management/log_receivers",
+          "breadcrumbs": [
+            "Home",
+            "Multi-Cloud Network Connect",
+            "Manage",
+            "Log Management",
+            "Log Receivers"
+          ],
+          "add_action": {
+            "type": "tab",
+            "label": "Add Log Receiver"
+          },
+          "save_action": {
+            "label": "Add Log Receiver"
+          },
+          "form_tabs": [
+            "Form",
+            "Documentation",
+            "JSON"
+          ],
+          "namespace_scoped": false,
+          "form_sections": [
+            {
+              "id": "metadata",
+              "label": "Metadata",
+              "api_fields": [
+                "metadata.name",
+                "metadata.labels",
+                "metadata.description"
+              ]
+            }
+          ],
+          "metadata": {
+            "confidence": "validated",
+            "discovered_at": "2026-06-17",
+            "console_version": "2025.06"
           }
         }
       },
@@ -62417,6 +62872,27 @@
             },
             "x-f5xc-description-short": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata.",
             "x-f5xc-description-medium": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata. They are not queryable and should be preserved when modifying objects.",
+            "x-f5xc-constraints": {
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.keys.string.max_len": "64",
+                "ves.io.schema.rules.map.keys.string.min_len": "1",
+                "ves.io.schema.rules.map.values.string.max_len": "1024",
+                "ves.io.schema.rules.map.values.string.min_len": "1"
+              },
+              "keys": {
+                "maxLength": 64,
+                "type": "string",
+                "minLength": 1
+              },
+              "values": {
+                "maxLength": 1024,
+                "type": "string",
+                "minLength": 1
+              }
+            },
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,

@@ -3,7 +3,7 @@
   "info": {
     "title": "Network Security",
     "description": "Perimeter defense through firewall configurations, address translation, and ingress/egress policies. Traffic steering directs packets according to defined criteria including origin, target, and service type. Segment boundaries create workload isolation zones while HTTP intermediaries manage client requests to external destinations. Port mappings employ static and dynamic address pools for flexible translation scenarios across multi-tenant environments.",
-    "version": "9.0.2",
+    "version": "10.0.0",
     "contact": {
       "name": "F5 Distributed Cloud",
       "url": "https://docs.cloud.f5.com"
@@ -87,6 +87,50 @@
       "classification": {
         "category": "security",
         "multi_tenant_pattern": "shared-ref"
+      }
+    },
+    "x-f5xc-console-navigation": {
+      "workspaces": {
+        "web-app-and-api-protection": {
+          "label": "Web App & API Protection",
+          "route_prefix": "/web/workspaces/web-app-and-api-protection"
+        },
+        "multi-cloud-app-connect": {
+          "label": "Multi-Cloud App Connect",
+          "route_prefix": "/web/workspaces/multi-cloud-app-connect"
+        },
+        "multi-cloud-network-connect": {
+          "label": "Multi-Cloud Network Connect",
+          "route_prefix": "/web/workspaces/multi-cloud-network-connect"
+        },
+        "distributed-apps": {
+          "label": "Distributed Apps",
+          "route_prefix": "/web/workspaces/distributed-apps"
+        },
+        "dns-management": {
+          "label": "DNS Management",
+          "route_prefix": "/web/workspaces/dns-management"
+        },
+        "content-delivery-network": {
+          "label": "Content Delivery Network",
+          "route_prefix": "/web/workspaces/content-delivery-network"
+        },
+        "observability": {
+          "label": "Observability",
+          "route_prefix": "/web/workspaces/observability"
+        },
+        "shared-configuration": {
+          "label": "Shared Configuration",
+          "route_prefix": "/web/workspaces/shared-configuration"
+        },
+        "audit-logs-and-alerts": {
+          "label": "Audit Logs & Alerts",
+          "route_prefix": "/web/workspaces/audit-logs-and-alerts"
+        },
+        "administration": {
+          "label": "Administration",
+          "route_prefix": "/web/workspaces/administration"
+        }
       }
     }
   },
@@ -22294,7 +22338,18 @@
             "items": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 4096
+              "maxLength": 4096,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 4096,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Selector Expression.",
             "x-ves-example": "Region in (us-west1, us-west2),tier in (staging)",
@@ -22652,7 +22707,18 @@
             "additionalProperties": {
               "type": "string",
               "maxLength": 1024,
-              "minLength": 1
+              "minLength": 1,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 1024,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-f5xc-example": "value",
             "x-validation-rules": {
@@ -22663,6 +22729,27 @@
             },
             "x-f5xc-description-short": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata.",
             "x-f5xc-description-medium": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata. They are not queryable and should be preserved when modifying objects.",
+            "x-f5xc-constraints": {
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.keys.string.max_len": "64",
+                "ves.io.schema.rules.map.keys.string.min_len": "1",
+                "ves.io.schema.rules.map.values.string.max_len": "1024",
+                "ves.io.schema.rules.map.values.string.min_len": "1"
+              },
+              "keys": {
+                "maxLength": 64,
+                "type": "string",
+                "minLength": 1
+              },
+              "values": {
+                "maxLength": 1024,
+                "type": "string",
+                "minLength": 1
+              }
+            },
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -22711,7 +22798,46 @@
             },
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-03T05:10:26+00:00"
+            "x-reconciled-at": "2026-10-03T05:10:26+00:00",
+            "x-f5xc-console-field": {
+              "resources": {
+                "service_policy": {
+                  "widget_type": "textbox",
+                  "label": "Description",
+                  "form_section": "metadata"
+                },
+                "forward_proxy_policy": {
+                  "widget_type": "textbox",
+                  "label": "Description",
+                  "form_section": "metadata"
+                },
+                "network_policy": {
+                  "widget_type": "textbox",
+                  "label": "Description",
+                  "form_section": "metadata"
+                },
+                "network_firewall": {
+                  "widget_type": "textbox",
+                  "label": "Description",
+                  "form_section": "metadata"
+                },
+                "segment": {
+                  "widget_type": "textbox",
+                  "label": "Description",
+                  "form_section": "metadata"
+                },
+                "nat_policy": {
+                  "widget_type": "textbox",
+                  "label": "Description",
+                  "form_section": "metadata"
+                },
+                "fast_acl": {
+                  "widget_type": "textbox",
+                  "label": "Description",
+                  "form_section": "metadata"
+                }
+              }
+            }
           },
           "disable": {
             "type": "boolean",
@@ -22740,6 +22866,45 @@
               "create": false,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "service_policy": {
+                  "widget_type": "key-value-pairs",
+                  "label": "Labels",
+                  "form_section": "metadata"
+                },
+                "forward_proxy_policy": {
+                  "widget_type": "key-value-pairs",
+                  "label": "Labels",
+                  "form_section": "metadata"
+                },
+                "network_policy": {
+                  "widget_type": "key-value-pairs",
+                  "label": "Labels",
+                  "form_section": "metadata"
+                },
+                "network_firewall": {
+                  "widget_type": "key-value-pairs",
+                  "label": "Labels",
+                  "form_section": "metadata"
+                },
+                "segment": {
+                  "widget_type": "key-value-pairs",
+                  "label": "Labels",
+                  "form_section": "metadata"
+                },
+                "nat_policy": {
+                  "widget_type": "key-value-pairs",
+                  "label": "Labels",
+                  "form_section": "metadata"
+                },
+                "fast_acl": {
+                  "widget_type": "key-value-pairs",
+                  "label": "Labels",
+                  "form_section": "metadata"
+                }
+              }
             }
           },
           "name": {
@@ -22793,7 +22958,53 @@
             "minLength": 1,
             "x-reconciled-from-discovery": true,
             "x-reconciled-at": "2026-10-03T05:10:26+00:00",
-            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+            "x-f5xc-console-field": {
+              "resources": {
+                "service_policy": {
+                  "widget_type": "textbox",
+                  "label": "Name",
+                  "required": true,
+                  "form_section": "metadata"
+                },
+                "forward_proxy_policy": {
+                  "widget_type": "textbox",
+                  "label": "Name",
+                  "required": true,
+                  "form_section": "metadata"
+                },
+                "network_policy": {
+                  "widget_type": "textbox",
+                  "label": "Name",
+                  "required": true,
+                  "form_section": "metadata"
+                },
+                "network_firewall": {
+                  "widget_type": "textbox",
+                  "label": "Name",
+                  "required": true,
+                  "form_section": "metadata"
+                },
+                "segment": {
+                  "widget_type": "textbox",
+                  "label": "Name",
+                  "required": true,
+                  "form_section": "metadata"
+                },
+                "nat_policy": {
+                  "widget_type": "textbox",
+                  "label": "Name",
+                  "required": true,
+                  "form_section": "metadata"
+                },
+                "fast_acl": {
+                  "widget_type": "textbox",
+                  "label": "Name",
+                  "required": true,
+                  "form_section": "metadata"
+                }
+              }
+            }
           },
           "namespace": {
             "type": "string",
@@ -22895,7 +23106,18 @@
             "additionalProperties": {
               "type": "string",
               "maxLength": 1024,
-              "minLength": 1
+              "minLength": 1,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 1024,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-f5xc-example": "value",
             "x-validation-rules": {
@@ -22906,6 +23128,27 @@
             },
             "x-f5xc-description-short": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata.",
             "x-f5xc-description-medium": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata. They are not queryable and should be preserved when modifying objects.",
+            "x-f5xc-constraints": {
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.keys.string.max_len": "64",
+                "ves.io.schema.rules.map.keys.string.min_len": "1",
+                "ves.io.schema.rules.map.values.string.max_len": "1024",
+                "ves.io.schema.rules.map.values.string.min_len": "1"
+              },
+              "keys": {
+                "maxLength": 64,
+                "type": "string",
+                "minLength": 1
+              },
+              "values": {
+                "maxLength": 1024,
+                "type": "string",
+                "minLength": 1
+              }
+            },
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -23140,7 +23383,18 @@
             "additionalProperties": {
               "type": "string",
               "maxLength": 1024,
-              "minLength": 1
+              "minLength": 1,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 1024,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-f5xc-example": "value",
             "x-validation-rules": {
@@ -23151,6 +23405,27 @@
             },
             "x-f5xc-description-short": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata.",
             "x-f5xc-description-medium": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata. They are not queryable and should be preserved when modifying objects.",
+            "x-f5xc-constraints": {
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.keys.string.max_len": "64",
+                "ves.io.schema.rules.map.keys.string.min_len": "1",
+                "ves.io.schema.rules.map.values.string.max_len": "1024",
+                "ves.io.schema.rules.map.values.string.min_len": "1"
+              },
+              "keys": {
+                "maxLength": 64,
+                "type": "string",
+                "minLength": 1
+              },
+              "values": {
+                "maxLength": 1024,
+                "type": "string",
+                "minLength": 1
+              }
+            },
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -24855,7 +25130,17 @@
               "drp_http_connect",
               "network_connector",
               "proxy_label_selector"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "forward_proxy_policy": {
+                  "widget_type": "listbox",
+                  "label": "Proxy",
+                  "default": "Any Proxy",
+                  "form_section": "basic"
+                }
+              }
+            }
           },
           "deny_list": {
             "allOf": [
@@ -24992,6 +25277,55 @@
           "classification": {
             "category": "security",
             "multi_tenant_pattern": "shared-ref"
+          }
+        },
+        "x-f5xc-console": {
+          "workspace": "multi-cloud-network-connect",
+          "workspace_label": "Multi-Cloud Network Connect",
+          "route_prefix": "/web/workspaces/multi-cloud-network-connect",
+          "menu_path": [
+            "Multi-Cloud Network Connect",
+            "Manage",
+            "Firewall",
+            "Forward Proxy Policies"
+          ],
+          "route_pattern": "/manage/firewall/forward_proxy_policy",
+          "breadcrumbs": [
+            "Home",
+            "Multi-Cloud App Connect",
+            "{namespace}",
+            "Manage",
+            "Security",
+            "Forward Proxy Policies"
+          ],
+          "add_action": {
+            "type": "tab",
+            "label": "Add Forward Proxy Policy"
+          },
+          "save_action": {
+            "label": "Add Forward Proxy Policy"
+          },
+          "form_tabs": [
+            "Form",
+            "Documentation",
+            "JSON"
+          ],
+          "form_sections": [
+            {
+              "id": "metadata",
+              "label": "Metadata",
+              "api_fields": [
+                "metadata.name",
+                "metadata.labels",
+                "metadata.description"
+              ]
+            }
+          ],
+          "metadata": {
+            "confidence": "validated",
+            "discovered_at": "2026-06-16",
+            "console_version": "2025.06",
+            "notes": "Validated via URL probe against live staging console"
           }
         }
       },
@@ -27997,7 +28331,18 @@
             "items": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 64
+              "maxLength": 64,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 64,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Keys",
             "x-ves-example": "['environment', 'location', 'deployment']",
@@ -35901,6 +36246,27 @@
             },
             "x-f5xc-description-short": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata.",
             "x-f5xc-description-medium": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata. They are not queryable and should be preserved when modifying objects.",
+            "x-f5xc-constraints": {
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.keys.string.max_len": "64",
+                "ves.io.schema.rules.map.keys.string.min_len": "1",
+                "ves.io.schema.rules.map.values.string.max_len": "1024",
+                "ves.io.schema.rules.map.values.string.min_len": "1"
+              },
+              "keys": {
+                "maxLength": 64,
+                "type": "string",
+                "minLength": 1
+              },
+              "values": {
+                "maxLength": 1024,
+                "type": "string",
+                "minLength": 1
+              }
+            },
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -36965,6 +37331,15 @@
               "create": false,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "nat_policy": {
+                  "widget_type": "table",
+                  "label": "Site",
+                  "form_section": "applies-to"
+                }
+              }
             }
           }
         },
@@ -36994,6 +37369,55 @@
           "classification": {
             "category": "networking",
             "multi_tenant_pattern": "none"
+          }
+        },
+        "x-f5xc-console": {
+          "workspace": "multi-cloud-network-connect",
+          "workspace_label": "Multi-Cloud Network Connect",
+          "route_prefix": "/web/workspaces/multi-cloud-network-connect",
+          "menu_path": [
+            "Manage",
+            "Networking",
+            "Network Configuration",
+            "NAT Policies"
+          ],
+          "route_pattern": "/manage/networking/network_configuration/nat_policy",
+          "breadcrumbs": [
+            "Home",
+            "Multi-Cloud Network Connect",
+            "Manage",
+            "Networking",
+            "Network Configuration",
+            "NAT Policies"
+          ],
+          "add_action": {
+            "type": "tab",
+            "label": "Add NAT Policy"
+          },
+          "save_action": {
+            "label": "Add NAT Policy"
+          },
+          "form_tabs": [
+            "Form",
+            "Documentation",
+            "JSON"
+          ],
+          "namespace_scoped": false,
+          "form_sections": [
+            {
+              "id": "metadata",
+              "label": "Metadata",
+              "api_fields": [
+                "metadata.name",
+                "metadata.labels",
+                "metadata.description"
+              ]
+            }
+          ],
+          "metadata": {
+            "confidence": "validated",
+            "discovered_at": "2026-06-16",
+            "console_version": "2025.06"
           }
         }
       },
@@ -39914,6 +40338,53 @@
           "classification": {
             "category": "security",
             "multi_tenant_pattern": "none"
+          }
+        },
+        "x-f5xc-console": {
+          "workspace": "multi-cloud-network-connect",
+          "workspace_label": "Multi-Cloud Network Connect",
+          "route_prefix": "/web/workspaces/multi-cloud-network-connect",
+          "menu_path": [
+            "Manage",
+            "Firewall",
+            "Network Firewalls"
+          ],
+          "route_pattern": "/manage/firewall/network_firewall",
+          "breadcrumbs": [
+            "Home",
+            "Multi-Cloud Network Connect",
+            "Manage",
+            "Firewall",
+            "Network Firewalls"
+          ],
+          "add_action": {
+            "type": "tab",
+            "label": "Add Network Firewall"
+          },
+          "save_action": {
+            "label": "Add Network Firewall"
+          },
+          "form_tabs": [
+            "Form",
+            "Documentation",
+            "JSON"
+          ],
+          "namespace_scoped": false,
+          "form_sections": [
+            {
+              "id": "metadata",
+              "label": "Metadata",
+              "api_fields": [
+                "metadata.name",
+                "metadata.labels",
+                "metadata.description"
+              ]
+            }
+          ],
+          "metadata": {
+            "confidence": "validated",
+            "discovered_at": "2026-06-16",
+            "console_version": "2025.06"
           }
         }
       },
@@ -43274,6 +43745,17 @@
               "create": false,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "network_policy": {
+                  "widget_type": "configurable",
+                  "label": "Endpoint(s)",
+                  "form_section": "basic",
+                  "required": true,
+                  "description": "Server-required: Field should be not nil"
+                }
+              }
             }
           },
           "rules": {
@@ -43783,6 +44265,17 @@
               "create": false,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "network_policy_rule": {
+                  "required": true,
+                  "label": "Protocol",
+                  "form_section": "basic-configuration",
+                  "description": "Server-required: Must be ALL/TCP/UDP/ICMP",
+                  "widget_type": "configurable"
+                }
+              }
             }
           }
         },
@@ -43813,6 +44306,53 @@
           "classification": {
             "category": "networking",
             "multi_tenant_pattern": "none"
+          }
+        },
+        "x-f5xc-console": {
+          "workspace": "distributed-apps",
+          "workspace_label": "Distributed Apps",
+          "route_prefix": "/web/workspaces/distributed-apps",
+          "menu_path": [
+            "Manage",
+            "vK8s Network Policies",
+            "Network Policy Rules"
+          ],
+          "route_pattern": "/namespaces/{namespace}/manage/network_policies/network_policy_rules",
+          "breadcrumbs": [
+            "Home",
+            "Distributed Apps",
+            "{namespace}",
+            "Manage",
+            "vK8s Network Policies",
+            "Network Policy Rules"
+          ],
+          "add_action": {
+            "type": "tab",
+            "label": "Add Network Policy Rule"
+          },
+          "save_action": {
+            "label": "Add Network Policy Rule"
+          },
+          "form_tabs": [
+            "Form",
+            "Documentation",
+            "JSON"
+          ],
+          "form_sections": [
+            {
+              "id": "metadata",
+              "label": "Metadata",
+              "api_fields": [
+                "metadata.name",
+                "metadata.labels",
+                "metadata.description"
+              ]
+            }
+          ],
+          "metadata": {
+            "confidence": "validated",
+            "discovered_at": "2026-06-17",
+            "console_version": "2025.06"
           }
         }
       },
@@ -53376,7 +53916,17 @@
             "maxItems": 64,
             "items": {
               "type": "string",
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Exact Values.",
             "x-ves-example": "['new york', 'london', 'sydney', 'tokyo', 'cairo']",
@@ -53420,7 +53970,17 @@
             "maxItems": 16,
             "items": {
               "type": "string",
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Regex Values.",
             "x-ves-example": "['^new .*$', 'san f.*', '.* del .*']",
@@ -53542,7 +54102,17 @@
             "maxItems": 64,
             "items": {
               "type": "string",
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Exact Values.",
             "x-ves-example": "['new york', 'london', 'sydney', 'tokyo', 'cairo']",
@@ -53586,7 +54156,17 @@
             "maxItems": 16,
             "items": {
               "type": "string",
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Regex Values.",
             "x-ves-example": "['^new .*$', 'san f.*', '.* del .*']",
@@ -54739,7 +55319,17 @@
             "maxItems": 64,
             "items": {
               "type": "string",
-              "maxLength": 63
+              "maxLength": 63,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "maxLength": 63,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Exact Values.",
             "x-ves-example": "['new york', 'london', 'sydney', 'tokyo', 'cairo']",
@@ -55425,7 +56015,17 @@
             "maxItems": 16,
             "items": {
               "type": "string",
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Exact Values.",
             "x-ves-example": "['/API/web/namespaces/project179/users/user1', '/API/config/configconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfignamespaces/accounting/bgps', '/API/data/datadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatanamespaces/project443/virtual_host_101']",
@@ -55483,7 +56083,17 @@
             "maxItems": 16,
             "items": {
               "type": "string",
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Prefix Values.",
             "x-ves-example": "['/API/web/namespaces/project179/users/', '/API/config/configconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfignamespaces/', '/API/data/datadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatanamespaces/']",
@@ -55529,7 +56139,17 @@
             "maxItems": 16,
             "items": {
               "type": "string",
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Regex Values.",
             "x-ves-example": "['^/API/web/namespaces/abc/users/([a-z]([-a-z0-9]*[a-z0-9])?)$', '/API/data/datadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatanamespaces/proj404/virtual_hosts/([a-z]([-a-z0-9]*[a-z0-9])?)$']",
@@ -55575,7 +56195,17 @@
             "maxItems": 64,
             "items": {
               "type": "string",
-              "maxLength": 64
+              "maxLength": 64,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "maxLength": 64,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Suffix Values.",
             "x-ves-example": "['.exe', '.shtml', '.wmz']",
@@ -55900,7 +56530,22 @@
               "server_name",
               "server_name_matcher",
               "server_selector"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "service_policy": {
+                  "widget_type": "listbox",
+                  "label": "Any Server",
+                  "default": "Any Server",
+                  "form_section": "servers",
+                  "mutually_exclusive_with": [
+                    "spec.server_name",
+                    "spec.server_name_matcher",
+                    "spec.server_selector"
+                  ]
+                }
+              }
+            }
           },
           "deny_all_requests": {
             "allOf": [
@@ -55962,7 +56607,23 @@
               "allow_list",
               "deny_all_requests",
               "deny_list"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "service_policy": {
+                  "widget_type": "listbox",
+                  "label": "Custom Rule List",
+                  "form_section": "rules",
+                  "mutually_exclusive_with": [
+                    "spec.allow_all_requests",
+                    "spec.deny_all_requests",
+                    "spec.allow_list",
+                    "spec.deny_list"
+                  ],
+                  "notes": "Opens nested rule editor with match conditions and actions"
+                }
+              }
+            }
           },
           "server_name": {
             "type": "string",

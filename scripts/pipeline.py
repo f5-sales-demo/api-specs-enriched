@@ -81,7 +81,6 @@ from scripts.utils import (
     ConflictsWithEnricher,
     ConsistencyValidator,
     ConstrainedFieldsEnricher,
-    ConstraintEnricher,
     ConstraintReconciler,
     DefaultValueEnricher,
     DependencyEnricher,
@@ -92,23 +91,16 @@ from scripts.utils import (
     ErrorResolutionEnricher,
     ExampleFieldEnricher,
     ExternalDocsEnricher,
-    FieldDescriptionEnricher,
     GrammarImprover,
     GuidedWorkflowEnricher,
     InterfaceContractEnricher,
-    MinimumConfigurationEnricher,
     NamespaceProfileEnricher,
-    OperationDescriptionEnricher,
-    OperationMetadataEnricher,
-    PropertyDescriptionShortEnricher,
     ProseSpellingTransformer,
-    ReadOnlyEnricher,
     ReferencesEnricher,
     ResourceExamplesEnricher,
     SchemaConstraintProjector,
     SchemaFixer,
     SchemaOverrideEnricher,
-    ValidationEnricher,
     ValidationExporter,
     categorize_spec,
     get_version_from_tags,
@@ -120,6 +112,7 @@ from scripts.utils.canonical_merge import (
     canonical_merge_sources,
     rewrite_sources_with_schema_keys,
 )
+from scripts.utils.console_ui_enricher import ConsoleUIEnricher
 from scripts.utils.deprecated_operations import remove_deprecated_operations
 from scripts.utils.domain_metadata import (
     calculate_complexity,
@@ -127,6 +120,7 @@ from scripts.utils.domain_metadata import (
     get_metadata,
     get_primary_resources_metadata,
 )
+from scripts.utils.enrichment_orchestrator import run_source_stages, validate_stage_inventory
 from scripts.utils.extension_constants import (
     X_F5XC_CATEGORY,
     X_F5XC_CLI_DOMAIN,
@@ -367,47 +361,15 @@ def enrich_spec(spec: dict[str, Any], config: dict) -> tuple[dict[str, Any], dic
     consistency_validator.validate(spec)
     consistency_stats = consistency_validator.get_stats()
 
-    # 11. Field-level description enrichment (add realistic descriptions and examples)
-    field_description_enricher = FieldDescriptionEnricher()
-    spec = field_description_enricher.enrich_spec(spec)
-    field_desc_stats = field_description_enricher.get_stats()
-    print(f"DEBUG: Field description enricher stats: {field_desc_stats}")
-
-    # 12. Property short description enrichment (Issue #330)
-    # Generate 80-150 char descriptions for properties with long descriptions (>300 chars)
-    prop_desc_short_enricher = PropertyDescriptionShortEnricher()
-    spec = prop_desc_short_enricher.enrich_spec(spec)
-    prop_desc_short_stats = prop_desc_short_enricher.get_stats()
-
-    # 13. Field-level validation rule enrichment (add min/max, patterns, formats)
-    validation_enricher = ValidationEnricher()
-    spec = validation_enricher.enrich_spec(spec)
-    validation_stats = validation_enricher.get_stats()
-
-    # 13.5. Constraint enrichment (add x-f5xc-constraints from patterns)
-    constraint_enricher = ConstraintEnricher(config_path=Path("config/constraint_patterns.yaml"))
-    spec = constraint_enricher.enrich_spec(spec)
-    constraint_stats = constraint_enricher.get_stats()
-
-    # 14. Operation description enrichment (DRY-compliant, noun-first purpose descriptions)
-    operation_description_enricher = OperationDescriptionEnricher()
-    spec = operation_description_enricher.enrich_spec(spec)
-    op_desc_stats = operation_description_enricher.get_stats()
-
-    # 15. Operation metadata enrichment (add danger levels, required fields, side effects)
-    operation_metadata_enricher = OperationMetadataEnricher()
-    spec = operation_metadata_enricher.enrich_spec(spec)
-    op_stats = operation_metadata_enricher.get_stats()
-
-    # 16. Minimum configuration enrichment (add x-ves-minimum-configuration extensions)
-    minimum_config_enricher = MinimumConfigurationEnricher()
-    spec = minimum_config_enricher.enrich_spec(spec)
-    min_config_stats = minimum_config_enricher.get_stats()
-
-    # 17. ReadOnly field enrichment (mark API-computed fields as readOnly)
-    readonly_enricher = ReadOnlyEnricher()
-    spec = readonly_enricher.enrich_spec(spec)
-    readonly_stats = readonly_enricher.get_stats()
+    spec, stage_stats = run_source_stages(spec)
+    field_desc_stats = stage_stats["FieldDescriptionEnricher"]
+    prop_desc_short_stats = stage_stats["PropertyDescriptionShortEnricher"]
+    validation_stats = stage_stats["ValidationEnricher"]
+    constraint_stats = stage_stats["ConstraintEnricher"]
+    op_desc_stats = stage_stats["OperationDescriptionEnricher"]
+    op_stats = stage_stats["OperationMetadataEnricher"]
+    min_config_stats = stage_stats["MinimumConfigurationEnricher"]
+    readonly_stats = stage_stats["ReadOnlyEnricher"]
 
     # Note: Namespace profile enrichment runs in merge_specs_by_domain() since
     # the pipeline merges individual specs into domain files and creates new info sections.
@@ -1550,6 +1512,8 @@ def merge_specs_by_domain(
         stats["namespace_profiles_added"] += np_stats.get("specs_enriched", 0)
         namespace_profile_enricher_domain.reset_stats()
 
+        ConsoleUIEnricher().enrich_spec(merged_spec)
+
         # Final cleanup: strip any $ref siblings introduced by enrichers
         merged_spec, _ = _remove_ref_siblings(merged_spec)
 
@@ -1610,6 +1574,7 @@ def create_master_spec(
 
     master["tags"] = sorted(unique_tags, key=get_tag_name)
 
+    ConsoleUIEnricher().enrich_spec(master)
     return master
 
 
@@ -1789,6 +1754,7 @@ def run_pipeline(
     dry_run: bool = False,
 ) -> PipelineStats:
     """Build in an isolated directory and publish only a complete successful result."""
+    validate_stage_inventory()
     output_dir = output_dir.resolve()
     output_dir.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(

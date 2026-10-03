@@ -113,6 +113,7 @@ api-viewer:
 catalog: ## Compile API catalog from the canonical OpenAPI master
 	@echo "Compiling API catalog..."
 	$(PYTHON) -m scripts.compile_catalog --input docs/specifications/api/openapi.json --output release/api-catalog.json
+	$(PYTHON) -m scripts.enrichment_coverage
 	@echo "Catalog compiled to release/api-catalog.json"
 
 # Run the pytest suite (honours pyproject.toml addopts, including coverage)

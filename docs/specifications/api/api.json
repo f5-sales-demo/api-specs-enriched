@@ -3,7 +3,7 @@
   "info": {
     "title": "Api",
     "description": "Structured classification systems with versioning support for contract evolution. Hierarchical groupings segment resources by operational role or security boundaries. Behavioral verification confirms authentication flows and permission constraints. Token and key safeguards protect sensitive credentials. Traffic inspection through connected load balancers and firewalls enables threat detection at network perimeters.",
-    "version": "9.0.2",
+    "version": "10.0.0",
     "contact": {
       "name": "F5 Distributed Cloud",
       "url": "https://docs.cloud.f5.com"
@@ -85,6 +85,50 @@
       "classification": {
         "category": "security",
         "multi_tenant_pattern": "none"
+      }
+    },
+    "x-f5xc-console-navigation": {
+      "workspaces": {
+        "web-app-and-api-protection": {
+          "label": "Web App & API Protection",
+          "route_prefix": "/web/workspaces/web-app-and-api-protection"
+        },
+        "multi-cloud-app-connect": {
+          "label": "Multi-Cloud App Connect",
+          "route_prefix": "/web/workspaces/multi-cloud-app-connect"
+        },
+        "multi-cloud-network-connect": {
+          "label": "Multi-Cloud Network Connect",
+          "route_prefix": "/web/workspaces/multi-cloud-network-connect"
+        },
+        "distributed-apps": {
+          "label": "Distributed Apps",
+          "route_prefix": "/web/workspaces/distributed-apps"
+        },
+        "dns-management": {
+          "label": "DNS Management",
+          "route_prefix": "/web/workspaces/dns-management"
+        },
+        "content-delivery-network": {
+          "label": "Content Delivery Network",
+          "route_prefix": "/web/workspaces/content-delivery-network"
+        },
+        "observability": {
+          "label": "Observability",
+          "route_prefix": "/web/workspaces/observability"
+        },
+        "shared-configuration": {
+          "label": "Shared Configuration",
+          "route_prefix": "/web/workspaces/shared-configuration"
+        },
+        "audit-logs-and-alerts": {
+          "label": "Audit Logs & Alerts",
+          "route_prefix": "/web/workspaces/audit-logs-and-alerts"
+        },
+        "administration": {
+          "label": "Administration",
+          "route_prefix": "/web/workspaces/administration"
+        }
       }
     }
   },
@@ -15432,7 +15476,18 @@
             "additionalProperties": {
               "type": "string",
               "maxLength": 1024,
-              "minLength": 1
+              "minLength": 1,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 1024,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-f5xc-example": "value",
             "x-validation-rules": {
@@ -15443,6 +15498,27 @@
             },
             "x-f5xc-description-short": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata.",
             "x-f5xc-description-medium": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata. They are not queryable and should be preserved when modifying objects.",
+            "x-f5xc-constraints": {
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.keys.string.max_len": "64",
+                "ves.io.schema.rules.map.keys.string.min_len": "1",
+                "ves.io.schema.rules.map.values.string.max_len": "1024",
+                "ves.io.schema.rules.map.values.string.min_len": "1"
+              },
+              "keys": {
+                "maxLength": 64,
+                "type": "string",
+                "minLength": 1
+              },
+              "values": {
+                "maxLength": 1024,
+                "type": "string",
+                "minLength": 1
+              }
+            },
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -15491,7 +15567,36 @@
             },
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-03T05:10:26+00:00"
+            "x-reconciled-at": "2026-10-03T05:10:26+00:00",
+            "x-f5xc-console-field": {
+              "resources": {
+                "api_discovery": {
+                  "widget_type": "textbox",
+                  "label": "Description",
+                  "form_section": "metadata"
+                },
+                "api_definition": {
+                  "widget_type": "textbox",
+                  "label": "Description",
+                  "form_section": "metadata"
+                },
+                "discovery": {
+                  "widget_type": "textbox",
+                  "label": "Description",
+                  "form_section": "metadata"
+                },
+                "code_base_integration": {
+                  "widget_type": "textbox",
+                  "label": "Description",
+                  "form_section": "metadata"
+                },
+                "app_api_group": {
+                  "widget_type": "textbox",
+                  "label": "Description",
+                  "form_section": "metadata"
+                }
+              }
+            }
           },
           "disable": {
             "type": "boolean",
@@ -15520,6 +15625,30 @@
               "create": false,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "api_discovery": {
+                  "widget_type": "key-value-pairs",
+                  "label": "Labels",
+                  "form_section": "metadata"
+                },
+                "api_definition": {
+                  "widget_type": "key-value-pairs",
+                  "label": "Labels",
+                  "form_section": "metadata"
+                },
+                "discovery": {
+                  "widget_type": "key-value-pairs",
+                  "label": "Labels",
+                  "form_section": "metadata"
+                },
+                "code_base_integration": {
+                  "widget_type": "key-value-pairs",
+                  "label": "Labels",
+                  "form_section": "metadata"
+                }
+              }
             }
           },
           "name": {
@@ -15573,7 +15702,41 @@
             "minLength": 1,
             "x-reconciled-from-discovery": true,
             "x-reconciled-at": "2026-10-03T05:10:26+00:00",
-            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+            "x-f5xc-console-field": {
+              "resources": {
+                "api_discovery": {
+                  "widget_type": "textbox",
+                  "label": "Name",
+                  "required": true,
+                  "form_section": "metadata"
+                },
+                "api_definition": {
+                  "widget_type": "textbox",
+                  "label": "Name",
+                  "required": true,
+                  "form_section": "metadata"
+                },
+                "discovery": {
+                  "widget_type": "textbox",
+                  "label": "Name",
+                  "required": true,
+                  "form_section": "metadata"
+                },
+                "code_base_integration": {
+                  "widget_type": "textbox",
+                  "label": "Name",
+                  "required": true,
+                  "form_section": "metadata"
+                },
+                "app_api_group": {
+                  "widget_type": "textbox",
+                  "label": "Name",
+                  "required": true,
+                  "form_section": "metadata"
+                }
+              }
+            }
           },
           "namespace": {
             "type": "string",
@@ -15673,7 +15836,18 @@
             "additionalProperties": {
               "type": "string",
               "maxLength": 1024,
-              "minLength": 1
+              "minLength": 1,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 1024,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-f5xc-example": "value",
             "x-validation-rules": {
@@ -15684,6 +15858,27 @@
             },
             "x-f5xc-description-short": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata.",
             "x-f5xc-description-medium": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata. They are not queryable and should be preserved when modifying objects.",
+            "x-f5xc-constraints": {
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.keys.string.max_len": "64",
+                "ves.io.schema.rules.map.keys.string.min_len": "1",
+                "ves.io.schema.rules.map.values.string.max_len": "1024",
+                "ves.io.schema.rules.map.values.string.min_len": "1"
+              },
+              "keys": {
+                "maxLength": 64,
+                "type": "string",
+                "minLength": 1
+              },
+              "values": {
+                "maxLength": 1024,
+                "type": "string",
+                "minLength": 1
+              }
+            },
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -15916,7 +16111,18 @@
             "additionalProperties": {
               "type": "string",
               "maxLength": 1024,
-              "minLength": 1
+              "minLength": 1,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 1024,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-f5xc-example": "value",
             "x-validation-rules": {
@@ -15927,6 +16133,27 @@
             },
             "x-f5xc-description-short": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata.",
             "x-f5xc-description-medium": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata. They are not queryable and should be preserved when modifying objects.",
+            "x-f5xc-constraints": {
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.keys.string.max_len": "64",
+                "ves.io.schema.rules.map.keys.string.min_len": "1",
+                "ves.io.schema.rules.map.values.string.max_len": "1024",
+                "ves.io.schema.rules.map.values.string.min_len": "1"
+              },
+              "keys": {
+                "maxLength": 64,
+                "type": "string",
+                "minLength": 1
+              },
+              "values": {
+                "maxLength": 1024,
+                "type": "string",
+                "minLength": 1
+              }
+            },
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -19181,7 +19408,16 @@
               "read": false
             },
             "default": [],
-            "x-f5xc-server-default": true
+            "x-f5xc-server-default": true,
+            "x-f5xc-console-field": {
+              "resources": {
+                "api_definition": {
+                  "widget_type": "configurable",
+                  "label": "API Inventory Inclusion List",
+                  "form_section": "api-endpoints-management"
+                }
+              }
+            }
           },
           "mixed_schema_origin": {
             "allOf": [
@@ -19263,7 +19499,17 @@
             "maxItems": 20,
             "items": {
               "type": "string",
-              "maxLength": 512
+              "maxLength": 512,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "maxLength": 512,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "File Path",
             "x-ves-example": "https://example.tenant.domain/API/object_store/namespaces/example-ns/stored_objects/swagger/file-name/v1-22-01-12.",
@@ -19294,7 +19540,16 @@
               "read": false
             },
             "default": [],
-            "x-f5xc-server-default": true
+            "x-f5xc-server-default": true,
+            "x-f5xc-console-field": {
+              "resources": {
+                "api_definition": {
+                  "widget_type": "table",
+                  "label": "Swagger Specs",
+                  "form_section": "openapi-specification-files"
+                }
+              }
+            }
           }
         },
         "x-required": true,
@@ -19326,6 +19581,53 @@
           "classification": {
             "category": "security",
             "multi_tenant_pattern": "per-tenant"
+          }
+        },
+        "x-f5xc-console": {
+          "workspace": "web-app-and-api-protection",
+          "workspace_label": "Web App & API Protection",
+          "route_prefix": "/web/workspaces/web-app-and-api-protection",
+          "menu_path": [
+            "Manage",
+            "API Security",
+            "API Definition"
+          ],
+          "route_pattern": "/namespaces/{namespace}/manage/api_security/api_definition",
+          "breadcrumbs": [
+            "Home",
+            "Web App & API Protection",
+            "{namespace}",
+            "Manage",
+            "API Security",
+            "API Definition"
+          ],
+          "add_action": {
+            "type": "tab",
+            "label": "Add API Definition"
+          },
+          "save_action": {
+            "label": "Add API Definition"
+          },
+          "form_tabs": [
+            "Form",
+            "Documentation",
+            "JSON"
+          ],
+          "form_sections": [
+            {
+              "id": "metadata",
+              "label": "Metadata",
+              "api_fields": [
+                "metadata.name",
+                "metadata.labels",
+                "metadata.description"
+              ]
+            }
+          ],
+          "metadata": {
+            "confidence": "validated",
+            "discovered_at": "2026-06-16",
+            "console_version": "2025.06"
           }
         }
       },
@@ -19510,7 +19812,17 @@
             "maxItems": 20,
             "items": {
               "type": "string",
-              "maxLength": 512
+              "maxLength": 512,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "maxLength": 512,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "File Path",
             "x-ves-example": "https://example.tenant.domain/API/object_store/namespaces/example-ns/stored_objects/swagger/file-name/v1-22-01-12.",
@@ -19740,7 +20052,17 @@
             "maxItems": 20,
             "items": {
               "type": "string",
-              "maxLength": 512
+              "maxLength": 512,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "maxLength": 512,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "File Path",
             "x-ves-example": "https://example.tenant.domain/API/object_store/namespaces/example-ns/stored_objects/swagger/file-name/v1-22-01-12.",
@@ -20066,6 +20388,55 @@
           "classification": {
             "category": "security",
             "multi_tenant_pattern": "none"
+          }
+        },
+        "x-f5xc-console": {
+          "workspace": "web-app-and-api-protection",
+          "workspace_label": "Web App & API Protection",
+          "route_prefix": "/web/workspaces/web-app-and-api-protection",
+          "menu_path": [
+            "Web App & API Protection",
+            "Manage",
+            "API Security",
+            "API Discovery"
+          ],
+          "route_pattern": "/namespaces/{namespace}/manage/api_security/api_discovery",
+          "breadcrumbs": [
+            "Home",
+            "Web App & API Protection",
+            "{namespace}",
+            "Manage",
+            "API Security",
+            "API Discovery"
+          ],
+          "add_action": {
+            "type": "tab",
+            "label": "Add API Discovery Policy"
+          },
+          "save_action": {
+            "label": "Add API Discovery Policy"
+          },
+          "form_tabs": [
+            "Form",
+            "Documentation",
+            "JSON"
+          ],
+          "form_sections": [
+            {
+              "id": "metadata",
+              "label": "Metadata",
+              "api_fields": [
+                "metadata.name",
+                "metadata.labels",
+                "metadata.description"
+              ]
+            }
+          ],
+          "metadata": {
+            "confidence": "validated",
+            "discovered_at": "2026-06-16",
+            "console_version": "2025.06",
+            "notes": "Validated via URL probe against live staging console"
           }
         }
       },
@@ -26846,6 +27217,16 @@
               "create": true,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "api_credential": {
+                  "widget_type": "textbox",
+                  "label": "Password",
+                  "required": true,
+                  "form_section": "credential-form"
+                }
+              }
             }
           },
           "type": {
@@ -29574,6 +29955,18 @@
               "ves.io.schema.rules.message.required": "true"
             },
             "x-f5xc-description-short": "List of all the roles for the entity in the namespaces.",
+            "x-f5xc-constraints": {
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.keys.string.max_len": "256"
+              },
+              "keys": {
+                "maxLength": 256,
+                "type": "string"
+              }
+            },
             "x-f5xc-required-for": {
               "minimum_config": true,
               "create": true,
@@ -29773,6 +30166,27 @@
             },
             "x-f5xc-description-short": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata.",
             "x-f5xc-description-medium": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata. They are not queryable and should be preserved when modifying objects.",
+            "x-f5xc-constraints": {
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.keys.string.max_len": "64",
+                "ves.io.schema.rules.map.keys.string.min_len": "1",
+                "ves.io.schema.rules.map.values.string.max_len": "1024",
+                "ves.io.schema.rules.map.values.string.min_len": "1"
+              },
+              "keys": {
+                "maxLength": 64,
+                "type": "string",
+                "minLength": 1
+              },
+              "values": {
+                "maxLength": 1024,
+                "type": "string",
+                "minLength": 1
+              }
+            },
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -32573,7 +32987,19 @@
             "x-f5xc-conflicts-with": [
               "bigip_virtual_server",
               "cdn_loadbalancer"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "app_api_group": {
+                  "widget_type": "listbox",
+                  "label": "HTTP Load Balancer",
+                  "required": true,
+                  "form_section": "api-endpoints",
+                  "resource_type": "http_loadbalancer",
+                  "description": "Server-required (feedback loop: \"Field HTTP Load Balancer is required\"). A direct listbox that selects an EXISTING http_loadbalancer — dependency, create an http-lb first. (Removed the duplicate spec.http_load_balancer: the real API field is http_loadbalancer, and the console form shows a single listbox, not a resource-selector.)"
+                }
+              }
+            }
           }
         },
         "x-f5xc-description-short": "Create app_api_group creates a new object in the storage backend for metadata.namespace.",
@@ -32604,6 +33030,53 @@
           "classification": {
             "category": "application",
             "multi_tenant_pattern": "per-tenant"
+          }
+        },
+        "x-f5xc-console": {
+          "workspace": "web-app-and-api-protection",
+          "workspace_label": "Web App & API Protection",
+          "route_prefix": "/web/workspaces/web-app-and-api-protection",
+          "menu_path": [
+            "Manage",
+            "API Security",
+            "API Groups"
+          ],
+          "route_pattern": "/namespaces/{namespace}/manage/api_security/api_groups",
+          "breadcrumbs": [
+            "Home",
+            "Web App & API Protection",
+            "{namespace}",
+            "Manage",
+            "API Security",
+            "API Groups"
+          ],
+          "add_action": {
+            "type": "tab",
+            "label": "Add API Group"
+          },
+          "save_action": {
+            "label": "Add API Group"
+          },
+          "form_tabs": [
+            "Form",
+            "Documentation",
+            "JSON"
+          ],
+          "form_sections": [
+            {
+              "id": "metadata",
+              "label": "Metadata",
+              "api_fields": [
+                "metadata.name",
+                "metadata.labels",
+                "metadata.description"
+              ]
+            }
+          ],
+          "metadata": {
+            "confidence": "validated",
+            "discovered_at": "2026-06-17",
+            "console_version": "2025.06"
           }
         }
       },
@@ -34986,7 +35459,18 @@
             "items": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Values",
             "x-ves-example": "['user.email', 'credit_card']",
@@ -36144,7 +36628,17 @@
             "maxItems": 64,
             "items": {
               "type": "string",
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Exact Values.",
             "x-ves-example": "['new york', 'london', 'sydney', 'tokyo', 'cairo']",
@@ -36188,7 +36682,17 @@
             "maxItems": 16,
             "items": {
               "type": "string",
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Regex Values.",
             "x-ves-example": "['^new .*$', 'san f.*', '.* del .*']",
@@ -37875,7 +38379,18 @@
             "items": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 4096
+              "maxLength": 4096,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 4096,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Selector Expression.",
             "x-ves-example": "Region in (us-west1, us-west2),tier in (staging)",
@@ -39068,6 +39583,53 @@
           "classification": {
             "category": "application",
             "multi_tenant_pattern": "none"
+          }
+        },
+        "x-f5xc-console": {
+          "workspace": "web-app-and-api-protection",
+          "workspace_label": "Web App & API Protection",
+          "route_prefix": "/web/workspaces/web-app-and-api-protection",
+          "menu_path": [
+            "Manage",
+            "API Security",
+            "Code Base Integration"
+          ],
+          "route_pattern": "/namespaces/{namespace}/manage/api_security/code_base_integration",
+          "breadcrumbs": [
+            "Home",
+            "Web App & API Protection",
+            "{namespace}",
+            "Manage",
+            "API Security",
+            "Code Base Integration"
+          ],
+          "add_action": {
+            "type": "tab",
+            "label": "Add Code Base Integration"
+          },
+          "save_action": {
+            "label": "Add Code Base Integration"
+          },
+          "form_tabs": [
+            "Form",
+            "Documentation",
+            "JSON"
+          ],
+          "form_sections": [
+            {
+              "id": "metadata",
+              "label": "Metadata",
+              "api_fields": [
+                "metadata.name",
+                "metadata.labels",
+                "metadata.description"
+              ]
+            }
+          ],
+          "metadata": {
+            "confidence": "validated",
+            "discovered_at": "2026-06-17",
+            "console_version": "2025.06"
           }
         }
       },
@@ -41408,6 +41970,51 @@
             "category": "infrastructure",
             "multi_tenant_pattern": "none"
           }
+        },
+        "x-f5xc-console": {
+          "workspace": "shared-configuration",
+          "workspace_label": "Shared Configuration",
+          "route_prefix": "/web/workspaces/shared-configuration",
+          "menu_path": [
+            "Manage",
+            "Service Discoveries"
+          ],
+          "route_pattern": "/manage/discovery",
+          "breadcrumbs": [
+            "Home",
+            "Shared Configuration",
+            "Manage",
+            "Service Discoveries"
+          ],
+          "add_action": {
+            "type": "tab",
+            "label": "Add Service Discovery"
+          },
+          "save_action": {
+            "label": "Add Service Discovery"
+          },
+          "form_tabs": [
+            "Form",
+            "Documentation",
+            "JSON"
+          ],
+          "namespace_scoped": false,
+          "form_sections": [
+            {
+              "id": "metadata",
+              "label": "Metadata",
+              "api_fields": [
+                "metadata.name",
+                "metadata.labels",
+                "metadata.description"
+              ]
+            }
+          ],
+          "metadata": {
+            "confidence": "validated",
+            "discovered_at": "2026-06-17",
+            "console_version": "2025.06"
+          }
         }
       },
       "discoveryDeleteRequest": {
@@ -41639,13 +42246,19 @@
             "x-f5xc-example": "{\"key\": \"value\"}",
             "x-f5xc-description-short": "Key value pairs defined as labels for the service.",
             "x-f5xc-constraints": {
-              "constraintType": "object",
-              "category": "general",
-              "maxProperties": 16,
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.75,
-                "validatedAt": "2026-10-03T05:10:26+00:00"
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.max_pairs": "16",
+                "ves.io.schema.rules.map.values.string.k8s_label_value": "true"
+              },
+              "cardinality": {
+                "maxProperties": 16
+              },
+              "values": {
+                "format": "k8s-label-value",
+                "type": "string"
               }
             },
             "x-f5xc-required-for": {

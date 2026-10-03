@@ -65,7 +65,10 @@ def test_canonical_safe_securemesh_overrides_enter_master_contract() -> None:
     }
     canonical = canonical_merge_sources({"sites.json": source})
 
-    master = create_master_spec(canonical.sources, "1.0.0", canonical)
+    from unittest.mock import patch
+
+    with patch("scripts.pipeline.ConsoleUIEnricher"):
+        master = create_master_spec(canonical.sources, "1.0.0", canonical)
     schemas = master["components"]["schemas"]
 
     assert "resource_version" not in schemas["securemesh_site_v2CreateRequest"]["properties"]

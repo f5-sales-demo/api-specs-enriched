@@ -12,7 +12,11 @@ from scripts.utils.console_ui_enricher import ConsoleUIEnricher
 @pytest.fixture
 def enricher():
     """Create enricher with default config."""
-    return ConsoleUIEnricher()
+    instance = ConsoleUIEnricher()
+    instance.field_config = {
+        "resources": {"http_loadbalancer": {"spec.domains": {"widget_type": "table"}}}
+    }
+    return instance
 
 
 @pytest.fixture
@@ -27,13 +31,20 @@ def simple_spec():
         "paths": {"/api/config/namespaces/{namespace}/http_loadbalancers": {"post": {}}},
         "components": {
             "schemas": {
+                "http_loadbalancerCreateRequest": {
+                    "properties": {
+                        "spec": {
+                            "$ref": "#/components/schemas/viewshttp_loadbalancerCreateSpecType"
+                        }
+                    }
+                },
                 "viewshttp_loadbalancerCreateSpecType": {
                     "type": "object",
                     "properties": {
                         "domains": {"type": "array"},
                         "app_firewall": {"$ref": "#/components/schemas/SomeRef"},
                     },
-                }
+                },
             }
         },
     }
@@ -135,6 +146,7 @@ class TestIdempotency:
         spec1 = enricher.enrich_spec(simple_spec.copy())
 
         enricher2 = ConsoleUIEnricher()
+        enricher2.field_config = enricher.field_config
         spec2 = enricher2.enrich_spec(spec1)
 
         # x-f5xc-console should appear exactly once
@@ -146,6 +158,7 @@ class TestIdempotency:
         stats1 = enricher.get_stats()
 
         enricher2 = ConsoleUIEnricher()
+        enricher2.field_config = enricher.field_config
         enricher2.enrich_spec(simple_spec)
         stats2 = enricher2.get_stats()
 

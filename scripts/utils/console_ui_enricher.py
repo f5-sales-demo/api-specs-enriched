@@ -171,18 +171,21 @@ class ConsoleUIEnricher:
         """
         self.stats.specs_processed += 1
 
-        resource_kind = self._extract_resource_kind(spec)
-        if resource_kind is None or resource_kind not in self.config.get("resources", {}):
+        schemas = spec.get("components", {}).get("schemas", {})
+        for kind, ui_config in self.config.get("resources", {}).items():
+            roots = [
+                schemas[name]
+                for name in (f"views{kind}CreateRequest", f"{kind}CreateRequest")
+                if name in schemas
+            ]
+            if not roots:
+                continue
+            self._enrich_schema_level(spec, kind, ui_config)
+            self._enrich_property_level(spec, kind, roots)
+            self.stats.resources_enriched += 1
+        if not self.stats.resources_enriched:
             self.stats.skipped_no_config += 1
-            return spec
-
-        ui_config = self.config["resources"][resource_kind]
-
-        self._enrich_schema_level(spec, resource_kind, ui_config)
-        self._enrich_property_level(spec, resource_kind)
-        self._enrich_navigation(spec)
-
-        self.stats.resources_enriched += 1
+        self.enrich_navigation(spec)
         return spec
 
     def _enrich_schema_level(
@@ -203,6 +206,7 @@ class ConsoleUIEnricher:
         target_schemas = [
             f"views{kind}CreateSpecType",
             f"{kind}CreateSpecType",
+            f"{kind}CreateSpec",
         ]
 
         for candidate in target_schemas:
@@ -246,31 +250,57 @@ class ConsoleUIEnricher:
         self,
         spec: dict[str, Any],
         kind: str,
+        roots: list[dict[str, Any]],
     ) -> None:
-        """Add x-f5xc-console-field to individual API properties.
-
-        Args:
-            spec: OpenAPI specification
-            kind: Resource kind
-        """
-        field_overrides = self.field_config.get("resources", {}).get(kind, {})
-        if not field_overrides:
-            return
-
+        """Resolve exact configured request paths; never match arbitrary leaf names."""
         schemas = spec.get("components", {}).get("schemas", {})
+        overrides = self.field_config.get("resources", {}).get(kind, {})
 
-        for schema_obj in schemas.values():
-            if "properties" not in schema_obj:
-                continue
+        def resolve(
+            node: dict[str, Any], parts: list[str], active: frozenset[str]
+        ) -> list[dict[str, Any]]:
+            if not parts:
+                return [node]
+            if "$ref" in node:
+                ref = node["$ref"]
+                if ref in active or not ref.startswith("#/components/schemas/"):
+                    return []
+                target = schemas.get(ref.rsplit("/", 1)[-1])
+                return resolve(target, parts, active | {ref}) if isinstance(target, dict) else []
+            if not parts:
+                return [node]
+            candidates = []
+            child = node.get("properties", {}).get(parts[0])
+            if isinstance(child, dict):
+                candidates.extend(resolve(child, parts[1:], active))
+            for key in ("allOf", "oneOf", "anyOf"):
+                for member in node.get(key, []):
+                    candidates.extend(resolve(member, parts, active))
+            return candidates
 
-            for prop_name, prop_obj in schema_obj["properties"].items():
-                full_path = f"spec.{prop_name}"
+        for path, metadata in overrides.items():
+            targets = {
+                id(target): target
+                for root in roots
+                for target in resolve(root, path.split("."), frozenset())
+            }
+            if len(targets) != 1:
+                # Persisted exclusions are reviewed contract dispositions, not fuzzy matching.
+                exclusion = self.field_config.get("exclusions", {}).get(kind, {}).get(path)
+                if exclusion and exclusion.get("reason") and exclusion.get("owner"):
+                    continue
+                raise ValueError(f"Console target {kind}:{path} resolved {len(targets)} times")
+            target = next(iter(targets.values()))
+            if "$ref" in target:
+                target.setdefault("allOf", []).insert(0, {"$ref": target.pop("$ref")})
+            existing = target.setdefault(X_F5XC_CONSOLE_FIELD, {"resources": {}})
+            scoped = existing["resources"]
+            if kind in scoped and scoped[kind] != metadata:
+                raise ValueError(f"Conflicting console metadata at {kind}:{path}")
+            scoped[kind] = metadata
+            self.stats.fields_enriched += 1
 
-                if full_path in field_overrides and X_F5XC_CONSOLE_FIELD not in prop_obj:
-                    prop_obj[X_F5XC_CONSOLE_FIELD] = field_overrides[full_path]
-                    self.stats.fields_enriched += 1
-
-    def _enrich_navigation(self, spec: dict[str, Any]) -> None:
+    def enrich_navigation(self, spec: dict[str, Any]) -> None:
         """Add x-f5xc-console-navigation to spec info.
 
         Only applied if the config contains a navigation tree.

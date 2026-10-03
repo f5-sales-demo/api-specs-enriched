@@ -3,7 +3,7 @@
   "info": {
     "title": "Virtual",
     "description": "Load balancing for HTTP, TCP, and UDP traffic with configurable routing rules and origin pool management. Supports health checks, session persistence, and automatic failover. Enables geographic distribution, rate limiting, and service policy enforcement across load balancers and routes.",
-    "version": "9.0.2",
+    "version": "10.0.0",
     "contact": {
       "name": "F5 Distributed Cloud",
       "url": "https://docs.cloud.f5.com"
@@ -326,6 +326,50 @@
       "classification": {
         "category": "security",
         "multi_tenant_pattern": "shared-ref"
+      }
+    },
+    "x-f5xc-console-navigation": {
+      "workspaces": {
+        "web-app-and-api-protection": {
+          "label": "Web App & API Protection",
+          "route_prefix": "/web/workspaces/web-app-and-api-protection"
+        },
+        "multi-cloud-app-connect": {
+          "label": "Multi-Cloud App Connect",
+          "route_prefix": "/web/workspaces/multi-cloud-app-connect"
+        },
+        "multi-cloud-network-connect": {
+          "label": "Multi-Cloud Network Connect",
+          "route_prefix": "/web/workspaces/multi-cloud-network-connect"
+        },
+        "distributed-apps": {
+          "label": "Distributed Apps",
+          "route_prefix": "/web/workspaces/distributed-apps"
+        },
+        "dns-management": {
+          "label": "DNS Management",
+          "route_prefix": "/web/workspaces/dns-management"
+        },
+        "content-delivery-network": {
+          "label": "Content Delivery Network",
+          "route_prefix": "/web/workspaces/content-delivery-network"
+        },
+        "observability": {
+          "label": "Observability",
+          "route_prefix": "/web/workspaces/observability"
+        },
+        "shared-configuration": {
+          "label": "Shared Configuration",
+          "route_prefix": "/web/workspaces/shared-configuration"
+        },
+        "audit-logs-and-alerts": {
+          "label": "Audit Logs & Alerts",
+          "route_prefix": "/web/workspaces/audit-logs-and-alerts"
+        },
+        "administration": {
+          "label": "Administration",
+          "route_prefix": "/web/workspaces/administration"
+        }
       }
     }
   },
@@ -36189,7 +36233,19 @@
             },
             "x-f5xc-conflicts-with": [
               "default_detection_settings"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "app_firewall": {
+                  "widget_type": "configurable",
+                  "label": "Detection Settings",
+                  "required": false,
+                  "default_state": "Not configured",
+                  "configure_action": "Configure",
+                  "form_section": "security-policy-settings"
+                }
+              }
+            }
           },
           "disable_ai_enhancements": {
             "allOf": [
@@ -36317,6 +36373,71 @@
           "classification": {
             "category": "security",
             "multi_tenant_pattern": "shared-ref"
+          }
+        },
+        "x-f5xc-console": {
+          "workspace": "web-app-and-api-protection",
+          "workspace_label": "Web App & API Protection",
+          "route_prefix": "/web/workspaces/web-app-and-api-protection",
+          "menu_path": [
+            "Web App & API Protection",
+            "Manage",
+            "App Firewall"
+          ],
+          "route_pattern": "/namespaces/{namespace}/manage/app_firewall",
+          "breadcrumbs": [
+            "Home",
+            "Web App & API Protection",
+            "{namespace}",
+            "Manage",
+            "App Firewall"
+          ],
+          "add_action": {
+            "type": "tab",
+            "label": "Add App Firewall"
+          },
+          "save_action": {
+            "label": "Add App Firewall"
+          },
+          "form_tabs": [
+            "Form",
+            "Documentation",
+            "JSON"
+          ],
+          "form_sections": [
+            {
+              "id": "metadata",
+              "label": "Metadata",
+              "api_fields": [
+                "metadata.name",
+                "metadata.labels",
+                "metadata.description"
+              ]
+            },
+            {
+              "id": "enforcement-mode",
+              "label": "Enforcement Mode",
+              "api_fields": [
+                "spec.enforcement_mode"
+              ]
+            },
+            {
+              "id": "security-policy-settings",
+              "label": "Security Policy Settings",
+              "api_fields": [
+                "spec.detection_settings"
+              ]
+            },
+            {
+              "id": "advanced-configuration",
+              "label": "Advanced configuration",
+              "api_fields": []
+            }
+          ],
+          "metadata": {
+            "confidence": "validated",
+            "discovered_at": "2026-06-15",
+            "console_version": "2025.06"
           }
         }
       },
@@ -40397,7 +40518,18 @@
             "additionalProperties": {
               "type": "string",
               "maxLength": 1024,
-              "minLength": 1
+              "minLength": 1,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 1024,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-f5xc-example": "value",
             "x-validation-rules": {
@@ -40408,6 +40540,27 @@
             },
             "x-f5xc-description-short": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata.",
             "x-f5xc-description-medium": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata. They are not queryable and should be preserved when modifying objects.",
+            "x-f5xc-constraints": {
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.keys.string.max_len": "64",
+                "ves.io.schema.rules.map.keys.string.min_len": "1",
+                "ves.io.schema.rules.map.values.string.max_len": "1024",
+                "ves.io.schema.rules.map.values.string.min_len": "1"
+              },
+              "keys": {
+                "maxLength": 64,
+                "type": "string",
+                "minLength": 1
+              },
+              "values": {
+                "maxLength": 1024,
+                "type": "string",
+                "minLength": 1
+              }
+            },
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -40456,7 +40609,74 @@
             },
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-03T05:10:26+00:00"
+            "x-reconciled-at": "2026-10-03T05:10:26+00:00",
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "textbox",
+                  "label": "Description",
+                  "required": false,
+                  "form_section": "metadata"
+                },
+                "origin_pool": {
+                  "widget_type": "textbox",
+                  "label": "Description",
+                  "required": false,
+                  "form_section": "metadata"
+                },
+                "app_firewall": {
+                  "widget_type": "textbox",
+                  "label": "Description",
+                  "required": false,
+                  "form_section": "metadata"
+                },
+                "rate_limiter_policy": {
+                  "widget_type": "textbox",
+                  "label": "Description",
+                  "form_section": "metadata"
+                },
+                "waf_exclusion_policy": {
+                  "widget_type": "textbox",
+                  "label": "Description",
+                  "form_section": "metadata"
+                },
+                "service_policy": {
+                  "widget_type": "textbox",
+                  "label": "Description",
+                  "form_section": "metadata"
+                },
+                "virtual_host": {
+                  "widget_type": "textbox",
+                  "label": "Description",
+                  "form_section": "metadata"
+                },
+                "udp_loadbalancer": {
+                  "widget_type": "textbox",
+                  "label": "Description",
+                  "form_section": "metadata"
+                },
+                "enhanced_firewall_policy": {
+                  "widget_type": "textbox",
+                  "label": "Description",
+                  "form_section": "metadata"
+                },
+                "geo_location_set": {
+                  "widget_type": "textbox",
+                  "label": "Description",
+                  "form_section": "metadata"
+                },
+                "proxy": {
+                  "widget_type": "textbox",
+                  "label": "Description",
+                  "form_section": "metadata"
+                },
+                "cluster": {
+                  "widget_type": "textbox",
+                  "label": "Description",
+                  "form_section": "metadata"
+                }
+              }
+            }
           },
           "disable": {
             "type": "boolean",
@@ -40485,6 +40705,76 @@
               "create": false,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "key-value-pairs",
+                  "label": "Labels",
+                  "required": false,
+                  "add_action": "Add Label",
+                  "form_section": "metadata"
+                },
+                "origin_pool": {
+                  "widget_type": "key-value-pairs",
+                  "label": "Labels",
+                  "required": false,
+                  "add_action": "Add Label",
+                  "form_section": "metadata"
+                },
+                "app_firewall": {
+                  "widget_type": "key-value-pairs",
+                  "label": "Labels",
+                  "required": false,
+                  "add_action": "Add Label",
+                  "form_section": "metadata"
+                },
+                "rate_limiter_policy": {
+                  "widget_type": "key-value-pairs",
+                  "label": "Labels",
+                  "form_section": "metadata"
+                },
+                "waf_exclusion_policy": {
+                  "widget_type": "key-value-pairs",
+                  "label": "Labels",
+                  "form_section": "metadata"
+                },
+                "service_policy": {
+                  "widget_type": "key-value-pairs",
+                  "label": "Labels",
+                  "form_section": "metadata"
+                },
+                "virtual_host": {
+                  "widget_type": "key-value-pairs",
+                  "label": "Labels",
+                  "form_section": "metadata"
+                },
+                "udp_loadbalancer": {
+                  "widget_type": "key-value-pairs",
+                  "label": "Labels",
+                  "form_section": "metadata"
+                },
+                "enhanced_firewall_policy": {
+                  "widget_type": "key-value-pairs",
+                  "label": "Labels",
+                  "form_section": "metadata"
+                },
+                "geo_location_set": {
+                  "widget_type": "key-value-pairs",
+                  "label": "Labels",
+                  "form_section": "metadata"
+                },
+                "proxy": {
+                  "widget_type": "key-value-pairs",
+                  "label": "Labels",
+                  "form_section": "metadata"
+                },
+                "cluster": {
+                  "widget_type": "key-value-pairs",
+                  "label": "Labels",
+                  "form_section": "metadata"
+                }
+              }
             }
           },
           "name": {
@@ -40538,7 +40828,101 @@
             "minLength": 1,
             "x-reconciled-from-discovery": true,
             "x-reconciled-at": "2026-10-03T05:10:26+00:00",
-            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "textbox",
+                  "label": "Name",
+                  "required": true,
+                  "form_section": "metadata",
+                  "validation": {
+                    "pattern": "^[a-z][a-z0-9-]*$",
+                    "max_length": 64
+                  }
+                },
+                "origin_pool": {
+                  "widget_type": "textbox",
+                  "label": "Name",
+                  "required": true,
+                  "form_section": "metadata",
+                  "validation": {
+                    "pattern": "^[a-z][a-z0-9-]*$",
+                    "max_length": 64
+                  }
+                },
+                "app_firewall": {
+                  "widget_type": "textbox",
+                  "label": "Name",
+                  "required": true,
+                  "form_section": "metadata",
+                  "validation": {
+                    "pattern": "^[a-z][a-z0-9-]*$",
+                    "max_length": 64
+                  }
+                },
+                "rate_limiter_policy": {
+                  "widget_type": "textbox",
+                  "label": "Name",
+                  "required": true,
+                  "form_section": "metadata"
+                },
+                "waf_exclusion_policy": {
+                  "widget_type": "textbox",
+                  "label": "Name",
+                  "required": true,
+                  "form_section": "metadata"
+                },
+                "tcp_loadbalancer": {
+                  "widget_type": "textbox",
+                  "label": "Name",
+                  "required": true,
+                  "form_section": "metadata"
+                },
+                "service_policy": {
+                  "widget_type": "textbox",
+                  "label": "Name",
+                  "required": true,
+                  "form_section": "metadata"
+                },
+                "virtual_host": {
+                  "widget_type": "textbox",
+                  "label": "Name",
+                  "required": true,
+                  "form_section": "metadata"
+                },
+                "udp_loadbalancer": {
+                  "widget_type": "textbox",
+                  "label": "Name",
+                  "required": true,
+                  "form_section": "metadata"
+                },
+                "enhanced_firewall_policy": {
+                  "widget_type": "textbox",
+                  "label": "Name",
+                  "required": true,
+                  "form_section": "metadata"
+                },
+                "geo_location_set": {
+                  "widget_type": "textbox",
+                  "label": "Name",
+                  "required": true,
+                  "form_section": "metadata"
+                },
+                "proxy": {
+                  "widget_type": "textbox",
+                  "label": "Name",
+                  "required": true,
+                  "form_section": "metadata"
+                },
+                "cluster": {
+                  "widget_type": "textbox",
+                  "label": "Name",
+                  "required": true,
+                  "form_section": "metadata"
+                }
+              }
+            }
           },
           "namespace": {
             "type": "string",
@@ -40640,7 +41024,18 @@
             "additionalProperties": {
               "type": "string",
               "maxLength": 1024,
-              "minLength": 1
+              "minLength": 1,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 1024,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-f5xc-example": "value",
             "x-validation-rules": {
@@ -40651,6 +41046,27 @@
             },
             "x-f5xc-description-short": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata.",
             "x-f5xc-description-medium": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata. They are not queryable and should be preserved when modifying objects.",
+            "x-f5xc-constraints": {
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.keys.string.max_len": "64",
+                "ves.io.schema.rules.map.keys.string.min_len": "1",
+                "ves.io.schema.rules.map.values.string.max_len": "1024",
+                "ves.io.schema.rules.map.values.string.min_len": "1"
+              },
+              "keys": {
+                "maxLength": 64,
+                "type": "string",
+                "minLength": 1
+              },
+              "values": {
+                "maxLength": 1024,
+                "type": "string",
+                "minLength": 1
+              }
+            },
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -41095,7 +41511,18 @@
             "additionalProperties": {
               "type": "string",
               "maxLength": 1024,
-              "minLength": 1
+              "minLength": 1,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 1024,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-f5xc-example": "value",
             "x-validation-rules": {
@@ -41106,6 +41533,27 @@
             },
             "x-f5xc-description-short": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata.",
             "x-f5xc-description-medium": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata. They are not queryable and should be preserved when modifying objects.",
+            "x-f5xc-constraints": {
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.keys.string.max_len": "64",
+                "ves.io.schema.rules.map.keys.string.min_len": "1",
+                "ves.io.schema.rules.map.values.string.max_len": "1024",
+                "ves.io.schema.rules.map.values.string.min_len": "1"
+              },
+              "keys": {
+                "maxLength": 64,
+                "type": "string",
+                "minLength": 1
+              },
+              "values": {
+                "maxLength": 1024,
+                "type": "string",
+                "minLength": 1
+              }
+            },
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -52778,7 +53226,18 @@
             "items": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Values",
             "x-ves-example": "['user.email', 'credit_card']",
@@ -55875,7 +56334,17 @@
             "maxItems": 64,
             "items": {
               "type": "string",
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Exact Values.",
             "x-ves-example": "['new york', 'london', 'sydney', 'tokyo', 'cairo']",
@@ -55919,7 +56388,17 @@
             "maxItems": 16,
             "items": {
               "type": "string",
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Regex Values.",
             "x-ves-example": "['^new .*$', 'san f.*', '.* del .*']",
@@ -57007,7 +57486,18 @@
             "items": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 4096
+              "maxLength": 4096,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 4096,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Selector Expression.",
             "x-ves-example": "Region in (us-west1, us-west2),tier in (staging)",
@@ -58302,13 +58792,14 @@
             "x-f5xc-description-short": "List of key-value pairs that define default subset.",
             "x-f5xc-description-medium": "List of key-value pairs that define default subset. This subset can be referred in fallback_policy which gets used when route specifies no metadata or no subset matching the metadata exists.",
             "x-f5xc-constraints": {
-              "constraintType": "object",
-              "category": "general",
-              "maxProperties": 32,
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.75,
-                "validatedAt": "2026-10-03T05:10:26+00:00"
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.max_pairs": "32"
+              },
+              "cardinality": {
+                "maxProperties": 32
               }
             },
             "x-f5xc-required-for": {
@@ -58348,6 +58839,16 @@
               "create": false,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "cluster": {
+                  "widget_type": "listbox",
+                  "label": "Endpoint Selection",
+                  "default": "Local Endpoints Preferred",
+                  "form_section": "origin-pool-parameters"
+                }
+              }
             }
           },
           "endpoint_subsets": {
@@ -58419,6 +58920,15 @@
               "create": false,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "cluster": {
+                  "widget_type": "table",
+                  "label": "Endpoints",
+                  "form_section": "origin-servers"
+                }
+              }
             }
           },
           "fallback_policy": {
@@ -58466,6 +58976,15 @@
               "create": false,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "cluster": {
+                  "widget_type": "table",
+                  "label": "Health Checks",
+                  "form_section": "origin-pool-parameters"
+                }
+              }
             }
           },
           "http1_config": {
@@ -58549,6 +59068,16 @@
               "create": false,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "cluster": {
+                  "widget_type": "listbox",
+                  "label": "LoadBalancer Algorithm",
+                  "default": "Load Balancer Override",
+                  "form_section": "origin-pool-parameters"
+                }
+              }
             }
           },
           "max_requests_per_connection": {
@@ -58715,6 +59244,15 @@
               "create": false,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "cluster": {
+                  "widget_type": "configurable",
+                  "label": "TLS Parameters",
+                  "form_section": "origin-pool-parameters"
+                }
+              }
             }
           },
           "upstream_conn_pool_reuse_type": {
@@ -58758,6 +59296,53 @@
           "classification": {
             "category": "application",
             "multi_tenant_pattern": "per-tenant"
+          }
+        },
+        "x-f5xc-console": {
+          "workspace": "multi-cloud-app-connect",
+          "workspace_label": "Multi-Cloud App Connect",
+          "route_prefix": "/web/workspaces/multi-cloud-app-connect",
+          "menu_path": [
+            "Manage",
+            "Virtual Host",
+            "Clusters"
+          ],
+          "route_pattern": "/namespaces/{namespace}/manage/virtual_host/clusters",
+          "breadcrumbs": [
+            "Home",
+            "Multi-Cloud App Connect",
+            "{namespace}",
+            "Manage",
+            "Virtual Host",
+            "Clusters"
+          ],
+          "add_action": {
+            "type": "tab",
+            "label": "Add Cluster"
+          },
+          "save_action": {
+            "label": "Add Cluster"
+          },
+          "form_tabs": [
+            "Form",
+            "Documentation",
+            "JSON"
+          ],
+          "form_sections": [
+            {
+              "id": "metadata",
+              "label": "Metadata",
+              "api_fields": [
+                "metadata.name",
+                "metadata.labels",
+                "metadata.description"
+              ]
+            }
+          ],
+          "metadata": {
+            "confidence": "validated",
+            "discovered_at": "2026-06-17",
+            "console_version": "2025.06"
           }
         }
       },
@@ -59298,13 +59883,14 @@
             "x-f5xc-description-short": "List of key-value pairs that define default subset.",
             "x-f5xc-description-medium": "List of key-value pairs that define default subset. This subset can be referred in fallback_policy which gets used when route specifies no metadata or no subset matching the metadata exists.",
             "x-f5xc-constraints": {
-              "constraintType": "object",
-              "category": "general",
-              "maxProperties": 32,
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.75,
-                "validatedAt": "2026-10-03T05:10:26+00:00"
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.max_pairs": "32"
+              },
+              "cardinality": {
+                "maxProperties": 32
               }
             },
             "x-f5xc-required-for": {
@@ -60761,13 +61347,14 @@
             "x-f5xc-description-short": "List of key-value pairs that define default subset.",
             "x-f5xc-description-medium": "List of key-value pairs that define default subset. This subset can be referred in fallback_policy which gets used when route specifies no metadata or no subset matching the metadata exists.",
             "x-f5xc-constraints": {
-              "constraintType": "object",
-              "category": "general",
-              "maxProperties": 32,
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.75,
-                "validatedAt": "2026-10-03T05:10:26+00:00"
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.max_pairs": "32"
+              },
+              "cardinality": {
+                "maxProperties": 32
               }
             },
             "x-f5xc-required-for": {
@@ -69205,7 +69792,17 @@
             "title": "API Code Repository",
             "items": {
               "type": "string",
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "API Code Repository.",
             "x-ves-required": "true",
@@ -74418,7 +75015,17 @@
             "maxProperties": 16,
             "additionalProperties": {
               "type": "string",
-              "maxLength": 65536
+              "maxLength": 65536,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "maxLength": 65536,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-f5xc-example": "value",
             "x-validation-rules": {
@@ -74430,13 +75037,43 @@
             "x-f5xc-description-short": "Map of integer error codes as keys and string values that can be used to provide custom HTTP pages for each error code.",
             "x-f5xc-description-medium": "Map of integer error codes as keys and string values that can be used to provide custom HTTP pages for each error code. Key of the map can be either response code class or HTTP Error code. Response code classes for key is configured as follows 3 -- for 3xx response code class 4 -- for 4xx...",
             "x-f5xc-constraints": {
-              "constraintType": "object",
-              "category": "general",
-              "maxProperties": 16,
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.75,
-                "validatedAt": "2026-10-03T05:10:26+00:00"
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.keys.uint32.ranges": "3,4,5,300-599",
+                "ves.io.schema.rules.map.max_pairs": "16",
+                "ves.io.schema.rules.map.values.string.max_len": "65536",
+                "ves.io.schema.rules.map.values.string.uri_ref": "true"
+              },
+              "keys": {
+                "ranges": [
+                  [
+                    3,
+                    3
+                  ],
+                  [
+                    4,
+                    4
+                  ],
+                  [
+                    5,
+                    5
+                  ],
+                  [
+                    300,
+                    599
+                  ]
+                ],
+                "type": "uint32-string"
+              },
+              "cardinality": {
+                "maxProperties": 16
+              },
+              "values": {
+                "maxLength": 65536,
+                "type": "string",
+                "format": "uri-reference"
               }
             },
             "x-f5xc-required-for": {
@@ -74659,7 +75296,18 @@
             "items": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Remove Cookies from Cookie Header.",
             "x-ves-validation-rules": {
@@ -74740,7 +75388,18 @@
             "items": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Remove Request Headers.",
             "x-ves-example": "Host",
@@ -74823,7 +75482,18 @@
             "items": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Remove Cookies from Set-Cookie Headers.",
             "x-ves-validation-rules": {
@@ -74905,7 +75575,18 @@
             "items": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Remove Response Headers.",
             "x-ves-example": "Host",
@@ -77202,7 +77883,18 @@
             "items": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "HTTP LoadBalancer.",
             "x-ves-example": "[blogging-app]",
@@ -80021,13 +80713,14 @@
             "x-f5xc-description-short": "Upstream origin pool may be configured to divide its origin servers into subsets based on metadata attached to the origin servers.",
             "x-f5xc-description-medium": "Upstream origin pool may be configured to divide its origin servers into subsets based on metadata attached to the origin servers. Routes may then specify the metadata that a endpoint must match in order to be selected by the load balancer For origin servers which are discovered in K8s or Consul...",
             "x-f5xc-constraints": {
-              "constraintType": "object",
-              "category": "general",
-              "maxProperties": 16,
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.75,
-                "validatedAt": "2026-10-03T05:10:26+00:00"
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.max_pairs": "16"
+              },
+              "cardinality": {
+                "maxProperties": 16
               }
             },
             "x-f5xc-required-for": {
@@ -80239,7 +80932,18 @@
             "items": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Remove Cookies from Cookie Header.",
             "x-ves-validation-rules": {
@@ -80319,7 +81023,18 @@
             "items": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Remove Request Headers.",
             "x-ves-example": "Host",
@@ -80402,7 +81117,18 @@
             "items": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Remove Cookies from Set-Cookie Headers.",
             "x-ves-validation-rules": {
@@ -80483,7 +81209,18 @@
             "items": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Remove Response Headers.",
             "x-ves-example": "Host",
@@ -83019,13 +83756,14 @@
             "x-f5xc-description-short": "List of key-value pairs that define default subset. Which gets used when route specifies no metadata or no subset matching the metadata exists.",
             "x-f5xc-description-medium": "List of key-value pairs that define default subset. Which gets used when route specifies no metadata or no subset matching the metadata exists.",
             "x-f5xc-constraints": {
-              "constraintType": "object",
-              "category": "general",
-              "maxProperties": 32,
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.75,
-                "validatedAt": "2026-10-03T05:10:26+00:00"
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.max_pairs": "32"
+              },
+              "cardinality": {
+                "maxProperties": 32
               }
             },
             "x-f5xc-required-for": {
@@ -86602,7 +87340,17 @@
             "maxItems": 64,
             "items": {
               "type": "string",
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Exact Values.",
             "x-ves-example": "['new york', 'london', 'sydney', 'tokyo', 'cairo']",
@@ -86646,7 +87394,17 @@
             "maxItems": 16,
             "items": {
               "type": "string",
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Regex Values.",
             "x-ves-example": "['^new .*$', 'san f.*', '.* del .*']",
@@ -86934,7 +87692,18 @@
             "additionalProperties": {
               "type": "string",
               "maxLength": 128,
-              "minLength": 1
+              "minLength": 1,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 128,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-f5xc-example": "value",
             "x-validation-rules": {
@@ -86947,13 +87716,28 @@
             },
             "x-f5xc-description-short": "Add labels to select one or more origin servers.",
             "x-f5xc-constraints": {
-              "constraintType": "object",
-              "category": "general",
-              "maxProperties": 16,
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.75,
-                "validatedAt": "2026-10-03T05:10:26+00:00"
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.keys.string.max_len": "128",
+                "ves.io.schema.rules.map.keys.string.min_len": "1",
+                "ves.io.schema.rules.map.max_pairs": "16",
+                "ves.io.schema.rules.map.values.string.max_len": "128",
+                "ves.io.schema.rules.map.values.string.min_len": "1"
+              },
+              "keys": {
+                "maxLength": 128,
+                "type": "string",
+                "minLength": 1
+              },
+              "cardinality": {
+                "maxProperties": 16
+              },
+              "values": {
+                "maxLength": 128,
+                "type": "string",
+                "minLength": 1
               }
             },
             "x-f5xc-required-for": {
@@ -86970,7 +87754,17 @@
             "maxItems": 32,
             "items": {
               "type": "string",
-              "maxLength": 64
+              "maxLength": 64,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "maxLength": 64,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "RE Names",
             "x-ves-example": "VES-I/O-re01.",
@@ -91512,7 +92306,17 @@
             "maxItems": 16,
             "items": {
               "type": "string",
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Regex Values.",
             "x-ves-example": "['^new .*$', 'san f.*', '.* del .*']",
@@ -92410,7 +93214,18 @@
             "items": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Allow Origin.",
             "x-ves-example": "Value",
@@ -92456,7 +93271,18 @@
             "items": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Allow Origin Regex.",
             "x-ves-example": "Value",
@@ -92831,7 +93657,18 @@
             "items": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Domain names.",
             "x-ves-example": "www.example.com.",
@@ -94742,7 +95579,17 @@
             "maxItems": 16,
             "items": {
               "type": "string",
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Paths",
             "x-ves-example": "['/API/web/namespaces/project179/users/user1', '/API/config/configconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfignamespaces/accounting/bgps', '/API/data/datadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatanamespaces/project443/virtual_host_101']",
@@ -95102,7 +95949,17 @@
             "maxItems": 16,
             "items": {
               "type": "string",
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Exact Values.",
             "x-ves-example": "['/API/web/namespaces/project179/users/user1', '/API/config/configconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfignamespaces/accounting/bgps', '/API/data/datadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatanamespaces/project443/virtual_host_101']",
@@ -95160,7 +96017,17 @@
             "maxItems": 16,
             "items": {
               "type": "string",
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Prefix Values.",
             "x-ves-example": "['/API/web/namespaces/project179/users/', '/API/config/configconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfigconfignamespaces/', '/API/data/datadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatanamespaces/']",
@@ -95206,7 +96073,17 @@
             "maxItems": 16,
             "items": {
               "type": "string",
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Regex Values.",
             "x-ves-example": "['^/API/web/namespaces/abc/users/([a-z]([-a-z0-9]*[a-z0-9])?)$', '/API/data/datadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatanamespaces/proj404/virtual_hosts/([a-z]([-a-z0-9]*[a-z0-9])?)$']",
@@ -95252,7 +96129,17 @@
             "maxItems": 64,
             "items": {
               "type": "string",
-              "maxLength": 64
+              "maxLength": 64,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "maxLength": 64,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Suffix Values.",
             "x-ves-example": "['.exe', '.shtml', '.wmz']",
@@ -97833,13 +98720,14 @@
             "x-f5xc-description-short": "Upstream origin pool may be configured to divide its origin servers into subsets based on metadata attached to the origin servers.",
             "x-f5xc-description-medium": "Upstream origin pool may be configured to divide its origin servers into subsets based on metadata attached to the origin servers. Routes may then specify the metadata that a endpoint must match in order to be selected by the load balancer For origin servers which are discovered in K8s or Consul...",
             "x-f5xc-constraints": {
-              "constraintType": "object",
-              "category": "general",
-              "maxProperties": 16,
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.75,
-                "validatedAt": "2026-10-03T05:10:26+00:00"
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.max_pairs": "16"
+              },
+              "cardinality": {
+                "maxProperties": 16
               }
             },
             "x-f5xc-required-for": {
@@ -100021,7 +100909,22 @@
             "x-f5xc-conflicts-with": [
               "no_service_policies",
               "service_policies_from_namespace"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "Service Policies",
+                  "required": false,
+                  "form_section": "common-security-controls",
+                  "notes": "Apply specified service policies",
+                  "mutually_exclusive_with": [
+                    "spec.service_policies_from_namespace",
+                    "spec.no_service_policies"
+                  ]
+                }
+              }
+            }
           },
           "add_location": {
             "type": "boolean",
@@ -100036,7 +100939,18 @@
               "read": false
             },
             "default": false,
-            "x-f5xc-server-default": true
+            "x-f5xc-server-default": true,
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "checkbox",
+                  "label": "Add Location",
+                  "required": false,
+                  "default": true,
+                  "form_section": "other-settings"
+                }
+              }
+            }
           },
           "advertise_custom": {
             "allOf": [
@@ -100081,7 +100995,22 @@
                 "required": true,
                 "reason": "Each where entry needs choice oneOf: site, virtual_site, vk8s_networks, virtual_network (400 without)"
               }
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "VIP Advertisement",
+                  "form_section": "other-settings",
+                  "notes": "Custom advertisement configuration",
+                  "mutually_exclusive_with": [
+                    "spec.advertise_on_public",
+                    "spec.advertise_on_public_default_vip",
+                    "spec.do_not_advertise"
+                  ]
+                }
+              }
+            }
           },
           "advertise_dualstack_on_public": {
             "allOf": [
@@ -100123,7 +101052,28 @@
               "advertise_on_public_default_vip",
               "advertise_v6_on_public",
               "do_not_advertise"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "VIP Advertisement",
+                  "required": false,
+                  "default": "Internet",
+                  "options": [
+                    "Internet",
+                    "Internet with VIP on RE",
+                    "Custom"
+                  ],
+                  "form_section": "other-settings",
+                  "mutually_exclusive_with": [
+                    "spec.advertise_on_public_default_vip",
+                    "spec.advertise_custom",
+                    "spec.do_not_advertise"
+                  ]
+                }
+              }
+            }
           },
           "advertise_on_public_default_vip": {
             "allOf": [
@@ -100143,7 +101093,22 @@
               "advertise_on_public",
               "advertise_v6_on_public",
               "do_not_advertise"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "VIP Advertisement",
+                  "form_section": "other-settings",
+                  "notes": "Empty object sentinel — advertise on public with default VIP",
+                  "mutually_exclusive_with": [
+                    "spec.advertise_on_public",
+                    "spec.advertise_custom",
+                    "spec.do_not_advertise"
+                  ]
+                }
+              }
+            }
           },
           "advertise_v6_on_public": {
             "allOf": [
@@ -100178,6 +101143,19 @@
               "create": false,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "configurable",
+                  "label": "API Protection Rules",
+                  "required": false,
+                  "default_state": "Not configured",
+                  "configure_action": "Configure",
+                  "form_section": "api-protection",
+                  "depends_on": "spec.api_specification"
+                }
+              }
             }
           },
           "api_rate_limit": {
@@ -100198,7 +101176,19 @@
             "x-f5xc-conflicts-with": [
               "disable_rate_limit",
               "rate_limit"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "configurable",
+                  "label": "API Rate Limit",
+                  "required": false,
+                  "default_state": "Not configured",
+                  "configure_action": "Configure",
+                  "form_section": "api-protection"
+                }
+              }
+            }
           },
           "api_specification": {
             "allOf": [
@@ -100214,7 +101204,21 @@
             },
             "x-f5xc-conflicts-with": [
               "disable_api_definition"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "API Definition",
+                  "required": false,
+                  "form_section": "api-protection",
+                  "notes": "Upload or reference an API spec for schema enforcement",
+                  "mutually_exclusive_with": [
+                    "spec.disable_api_definition"
+                  ]
+                }
+              }
+            }
           },
           "api_testing": {
             "allOf": [
@@ -100230,7 +101234,25 @@
             },
             "x-f5xc-conflicts-with": [
               "disable_api_testing"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "API Testing",
+                  "required": false,
+                  "default": "Disable",
+                  "options": [
+                    "Disable",
+                    "Enable"
+                  ],
+                  "form_section": "api-protection",
+                  "mutually_exclusive_with": [
+                    "spec.disable_api_testing"
+                  ]
+                }
+              }
+            }
           },
           "app_firewall": {
             "allOf": [
@@ -100258,7 +101280,22 @@
                 "required": false,
                 "cardinality": "single"
               }
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "resource-selector",
+                  "label": "WAF",
+                  "resource_type": "app_firewall",
+                  "required": false,
+                  "form_section": "waf",
+                  "notes": "Enable WAF by selecting an App Firewall resource",
+                  "mutually_exclusive_with": [
+                    "spec.disable_waf"
+                  ]
+                }
+              }
+            }
           },
           "blocked_clients": {
             "type": "array",
@@ -100294,6 +101331,18 @@
               "create": false,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "configurable",
+                  "label": "Client Blocking Rules",
+                  "required": false,
+                  "default_state": "Not configured",
+                  "configure_action": "Configure",
+                  "form_section": "common-security-controls"
+                }
+              }
             }
           },
           "bot_defense": {
@@ -100346,7 +101395,25 @@
                 "required": true,
                 "reason": "Each endpoint requires mitigation (400 without)"
               }
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "Bot Defense",
+                  "required": false,
+                  "default": "Disable",
+                  "options": [
+                    "Disable",
+                    "Enable"
+                  ],
+                  "form_section": "bot-protection",
+                  "mutually_exclusive_with": [
+                    "spec.disable_bot_defense"
+                  ]
+                }
+              }
+            }
           },
           "bot_defense_advanced_protection": {
             "allOf": [
@@ -100364,7 +101431,19 @@
             "x-f5xc-conflicts-with": [
               "bot_defense",
               "disable_bot_defense"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "Bot Defense Advanced",
+                  "required": false,
+                  "form_section": "bot-protection",
+                  "show_advanced_fields": true,
+                  "depends_on": "spec.bot_defense"
+                }
+              }
+            }
           },
           "caching_policy": {
             "allOf": [
@@ -100401,7 +101480,22 @@
               "js_challenge",
               "no_challenge",
               "policy_based_challenge"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "Captcha Challenge",
+                  "required": false,
+                  "form_section": "dos-settings",
+                  "mutually_exclusive_with": [
+                    "spec.js_challenge",
+                    "spec.no_challenge",
+                    "spec.policy_based_challenge"
+                  ]
+                }
+              }
+            }
           },
           "client_side_defense": {
             "allOf": [
@@ -100438,7 +101532,21 @@
                 },
                 "reason": "Client-Side Defense requires a protected_domain (eTLD+1) registered in the load balancer's OWN namespace — F5 XC generates the per-namespace CSD JS configuration from it. Enabling client_side_defense without one fails with 500 'Failed to get CSD JS Configuration for <tenant>. Please ensure the domain to protect is configured in Client-Side Defense before proceeding'. Verified via live API 2026-07."
               }
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "Client-Side Defense",
+                  "form_section": "client-side-defense",
+                  "disabled": true,
+                  "disabled_reason": "Upgrade required",
+                  "mutually_exclusive_with": [
+                    "spec.disable_client_side_defense"
+                  ]
+                }
+              }
+            }
           },
           "cookie_stickiness": {
             "allOf": [
@@ -100459,7 +101567,24 @@
               "ring_hash",
               "round_robin",
               "source_ip_stickiness"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "LB Algorithm",
+                  "form_section": "other-settings",
+                  "notes": "Cookie-based stickiness with configurable cookie",
+                  "mutually_exclusive_with": [
+                    "spec.round_robin",
+                    "spec.least_active",
+                    "spec.random",
+                    "spec.ring_hash",
+                    "spec.source_ip_stickiness"
+                  ]
+                }
+              }
+            }
           },
           "cors_policy": {
             "allOf": [
@@ -100473,6 +101598,18 @@
               "create": false,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "configurable",
+                  "label": "CORS Policy",
+                  "required": false,
+                  "default_state": "Not configured",
+                  "configure_action": "Configure",
+                  "form_section": "common-security-controls"
+                }
+              }
             }
           },
           "csrf_policy": {
@@ -100487,6 +101624,18 @@
               "create": false,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "configurable",
+                  "label": "CSRF Protection",
+                  "required": false,
+                  "default_state": "Not configured",
+                  "configure_action": "Configure",
+                  "form_section": "waf"
+                }
+              }
             }
           },
           "data_guard_rules": {
@@ -100536,7 +101685,19 @@
                 "requires_field": "spec.enable_waf",
                 "reason": "Data Guard requires WAF to be enabled (400 when disable_waf is set)"
               }
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "configurable",
+                  "label": "Data Guard Rules",
+                  "required": false,
+                  "default_state": "Not configured",
+                  "configure_action": "Configure",
+                  "form_section": "waf"
+                }
+              }
+            }
           },
           "ddos_mitigation_rules": {
             "type": "array",
@@ -100572,6 +101733,18 @@
               "create": false,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "configurable",
+                  "label": "DDoS Mitigation Rules",
+                  "required": false,
+                  "default_state": "Not configured",
+                  "configure_action": "Configure",
+                  "form_section": "dos-settings"
+                }
+              }
             }
           },
           "default_pool": {
@@ -100621,7 +101794,19 @@
                 "field": "port",
                 "required": true
               }
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "resource-selector",
+                  "label": "Default Pool",
+                  "required": false,
+                  "form_section": "origins",
+                  "notes": "Alternative to default_route_pools for single pool",
+                  "resource_type": "origin_pool"
+                }
+              }
+            }
           },
           "default_pool_list": {
             "allOf": [
@@ -100637,7 +101822,17 @@
             },
             "x-f5xc-conflicts-with": [
               "default_pool"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "nested-resource-list",
+                  "label": "Default Pool List",
+                  "required": false,
+                  "form_section": "origins"
+                }
+              }
+            }
           },
           "default_route_pools": {
             "type": "array",
@@ -100673,6 +101868,19 @@
               "create": false,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "nested-resource-list",
+                  "label": "Origin Pools",
+                  "required": false,
+                  "add_action": "Add Item",
+                  "nested_resource": "origin_pool",
+                  "form_section": "origins",
+                  "resource_type": "origin_pool"
+                }
+              }
             }
           },
           "default_sensitive_data_policy": {
@@ -100693,7 +101901,21 @@
             "x-f5xc-server-default": true,
             "x-f5xc-conflicts-with": [
               "sensitive_data_policy"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "Sensitive Data Discovery",
+                  "default": "Default",
+                  "form_section": "api-protection",
+                  "notes": "Empty object sentinel — uses default sensitive data policy",
+                  "mutually_exclusive_with": [
+                    "spec.sensitive_data_policy"
+                  ]
+                }
+              }
+            }
           },
           "disable_api_definition": {
             "allOf": [
@@ -100711,7 +101933,21 @@
             "x-f5xc-server-default": true,
             "x-f5xc-conflicts-with": [
               "api_specification"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "API Definition",
+                  "default": "Disable",
+                  "form_section": "api-protection",
+                  "notes": "Empty object sentinel — presence means API definition is disabled",
+                  "mutually_exclusive_with": [
+                    "spec.api_specification"
+                  ]
+                }
+              }
+            }
           },
           "disable_api_discovery": {
             "allOf": [
@@ -100729,7 +101965,21 @@
             "x-f5xc-server-default": true,
             "x-f5xc-conflicts-with": [
               "enable_api_discovery"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "API Discovery",
+                  "default": "Disable",
+                  "form_section": "api-protection",
+                  "notes": "Empty object sentinel — presence means API discovery is disabled",
+                  "mutually_exclusive_with": [
+                    "spec.enable_api_discovery"
+                  ]
+                }
+              }
+            }
           },
           "disable_api_testing": {
             "allOf": [
@@ -100747,7 +101997,21 @@
             "x-f5xc-server-default": true,
             "x-f5xc-conflicts-with": [
               "api_testing"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "API Testing",
+                  "default": "Disable",
+                  "form_section": "api-protection",
+                  "notes": "Empty object sentinel — presence means API testing is disabled",
+                  "mutually_exclusive_with": [
+                    "spec.api_testing"
+                  ]
+                }
+              }
+            }
           },
           "disable_bot_defense": {
             "allOf": [
@@ -100767,7 +102031,22 @@
             "x-f5xc-conflicts-with": [
               "bot_defense",
               "bot_defense_advanced_protection"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "Bot Defense",
+                  "default": "Disable",
+                  "form_section": "bot-protection",
+                  "notes": "Empty object sentinel — presence means bot defense is disabled",
+                  "mutually_exclusive_with": [
+                    "spec.bot_defense",
+                    "spec.bot_defense_advanced_protection"
+                  ]
+                }
+              }
+            }
           },
           "disable_caching": {
             "allOf": [
@@ -100784,7 +102063,23 @@
             },
             "x-f5xc-conflicts-with": [
               "caching_policy"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "Caching",
+                  "required": false,
+                  "default": "Disable",
+                  "options": [
+                    "Disable",
+                    "Enable"
+                  ],
+                  "form_section": "cdn",
+                  "notes": "Empty object sentinel — presence means caching is disabled"
+                }
+              }
+            }
           },
           "disable_client_side_defense": {
             "allOf": [
@@ -100801,7 +102096,21 @@
             },
             "x-f5xc-conflicts-with": [
               "client_side_defense"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "Client-Side Defense",
+                  "form_section": "client-side-defense",
+                  "disabled": true,
+                  "disabled_reason": "Upgrade required",
+                  "mutually_exclusive_with": [
+                    "spec.client_side_defense"
+                  ]
+                }
+              }
+            }
           },
           "disable_ip_reputation": {
             "allOf": [
@@ -100819,7 +102128,21 @@
             "x-f5xc-server-default": true,
             "x-f5xc-conflicts-with": [
               "enable_ip_reputation"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "IP Reputation",
+                  "default": "Disable",
+                  "form_section": "common-security-controls",
+                  "notes": "Empty object sentinel — IP reputation disabled",
+                  "mutually_exclusive_with": [
+                    "spec.enable_ip_reputation"
+                  ]
+                }
+              }
+            }
           },
           "disable_malicious_user_detection": {
             "allOf": [
@@ -100838,7 +102161,21 @@
             "x-f5xc-server-default": true,
             "x-f5xc-conflicts-with": [
               "enable_malicious_user_detection"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "Malicious User Detection",
+                  "default": "Disable",
+                  "form_section": "common-security-controls",
+                  "notes": "Empty object sentinel — malicious user detection disabled",
+                  "mutually_exclusive_with": [
+                    "spec.enable_malicious_user_detection"
+                  ]
+                }
+              }
+            }
           },
           "disable_malware_protection": {
             "allOf": [
@@ -100857,7 +102194,21 @@
             "x-f5xc-server-default": true,
             "x-f5xc-conflicts-with": [
               "malware_protection_settings"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "Malware Protection",
+                  "form_section": "malware-protection",
+                  "disabled": true,
+                  "disabled_reason": "Upgrade required",
+                  "mutually_exclusive_with": [
+                    "spec.malware_protection_settings"
+                  ]
+                }
+              }
+            }
           },
           "disable_rate_limit": {
             "allOf": [
@@ -100877,7 +102228,21 @@
             "x-f5xc-conflicts-with": [
               "api_rate_limit",
               "rate_limit"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "Rate Limiting",
+                  "default": "Disable",
+                  "form_section": "common-security-controls",
+                  "notes": "Empty object sentinel — rate limiting disabled",
+                  "mutually_exclusive_with": [
+                    "spec.rate_limit"
+                  ]
+                }
+              }
+            }
           },
           "disable_threat_mesh": {
             "allOf": [
@@ -100896,7 +102261,21 @@
             "x-f5xc-server-default": true,
             "x-f5xc-conflicts-with": [
               "enable_threat_mesh"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "Threat Mesh",
+                  "default": "Disable",
+                  "form_section": "common-security-controls",
+                  "notes": "Empty object sentinel — threat mesh disabled",
+                  "mutually_exclusive_with": [
+                    "spec.enable_threat_mesh"
+                  ]
+                }
+              }
+            }
           },
           "disable_trust_client_ip_headers": {
             "allOf": [
@@ -100915,7 +102294,22 @@
             "x-f5xc-server-default": true,
             "x-f5xc-conflicts-with": [
               "enable_trust_client_ip_headers"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "Trusted Client IP Headers",
+                  "required": false,
+                  "default": "Disable",
+                  "form_section": "other-settings",
+                  "notes": "Empty object sentinel — trusted client IP headers disabled",
+                  "mutually_exclusive_with": [
+                    "spec.enable_trust_client_ip_headers"
+                  ]
+                }
+              }
+            }
           },
           "disable_waf": {
             "allOf": [
@@ -100934,7 +102328,21 @@
             "x-f5xc-server-default": true,
             "x-f5xc-conflicts-with": [
               "app_firewall"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "WAF",
+                  "default": "Disable",
+                  "form_section": "waf",
+                  "notes": "Empty object sentinel — presence means WAF is disabled",
+                  "mutually_exclusive_with": [
+                    "spec.app_firewall"
+                  ]
+                }
+              }
+            }
           },
           "do_not_advertise": {
             "allOf": [
@@ -100955,7 +102363,22 @@
               "advertise_on_public",
               "advertise_on_public_default_vip",
               "advertise_v6_on_public"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "VIP Advertisement",
+                  "form_section": "other-settings",
+                  "notes": "Empty object sentinel — do not advertise",
+                  "mutually_exclusive_with": [
+                    "spec.advertise_on_public",
+                    "spec.advertise_on_public_default_vip",
+                    "spec.advertise_custom"
+                  ]
+                }
+              }
+            }
           },
           "domains": {
             "type": "array",
@@ -100965,7 +102388,18 @@
             "items": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Domains",
             "x-ves-example": "www.example.com.",
@@ -101012,6 +102446,18 @@
               "create": true,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "table",
+                  "label": "Domains",
+                  "required": true,
+                  "add_action": "Add Item",
+                  "description": "One or more domains this load balancer serves",
+                  "form_section": "domains-and-lb-type"
+                }
+              }
             }
           },
           "enable_api_discovery": {
@@ -101028,7 +102474,25 @@
             },
             "x-f5xc-conflicts-with": [
               "disable_api_discovery"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "API Discovery",
+                  "required": false,
+                  "default": "Disable",
+                  "options": [
+                    "Disable",
+                    "Enable"
+                  ],
+                  "form_section": "api-protection",
+                  "mutually_exclusive_with": [
+                    "spec.disable_api_discovery"
+                  ]
+                }
+              }
+            }
           },
           "enable_challenge": {
             "allOf": [
@@ -101048,7 +102512,17 @@
               "js_challenge",
               "no_challenge",
               "policy_based_challenge"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "Challenge Settings",
+                  "required": false,
+                  "form_section": "dos-settings"
+                }
+              }
+            }
           },
           "enable_ip_reputation": {
             "allOf": [
@@ -101064,7 +102538,25 @@
             },
             "x-f5xc-conflicts-with": [
               "disable_ip_reputation"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "IP Reputation",
+                  "required": false,
+                  "default": "Disable",
+                  "options": [
+                    "Disable",
+                    "Enable"
+                  ],
+                  "form_section": "common-security-controls",
+                  "mutually_exclusive_with": [
+                    "spec.disable_ip_reputation"
+                  ]
+                }
+              }
+            }
           },
           "enable_malicious_user_detection": {
             "allOf": [
@@ -101081,7 +102573,25 @@
             },
             "x-f5xc-conflicts-with": [
               "disable_malicious_user_detection"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "Malicious User Detection",
+                  "required": false,
+                  "default": "Disable",
+                  "options": [
+                    "Disable",
+                    "Enable"
+                  ],
+                  "form_section": "common-security-controls",
+                  "mutually_exclusive_with": [
+                    "spec.disable_malicious_user_detection"
+                  ]
+                }
+              }
+            }
           },
           "enable_threat_mesh": {
             "allOf": [
@@ -101098,7 +102608,25 @@
             },
             "x-f5xc-conflicts-with": [
               "disable_threat_mesh"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "Threat Mesh",
+                  "required": false,
+                  "default": "Disable",
+                  "options": [
+                    "Disable",
+                    "Enable"
+                  ],
+                  "form_section": "common-security-controls",
+                  "mutually_exclusive_with": [
+                    "spec.disable_threat_mesh"
+                  ]
+                }
+              }
+            }
           },
           "enable_trust_client_ip_headers": {
             "allOf": [
@@ -101115,7 +102643,21 @@
             },
             "x-f5xc-conflicts-with": [
               "disable_trust_client_ip_headers"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "Trusted Client IP Headers",
+                  "required": false,
+                  "form_section": "other-settings",
+                  "notes": "Configure which headers to trust for client IP",
+                  "mutually_exclusive_with": [
+                    "spec.disable_trust_client_ip_headers"
+                  ]
+                }
+              }
+            }
           },
           "graphql_rules": {
             "type": "array",
@@ -101152,6 +102694,18 @@
               "create": false,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "configurable",
+                  "label": "GraphQL Inspection",
+                  "required": false,
+                  "default_state": "Not configured",
+                  "configure_action": "Configure",
+                  "form_section": "waf"
+                }
+              }
             }
           },
           "http": {
@@ -101181,7 +102735,22 @@
                 "required": true,
                 "reason": "HTTP lb_type requires port_choice (400 when port omitted, unlike https_auto_cert)"
               }
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "Load Balancer Type",
+                  "form_section": "domains-and-lb-type",
+                  "hidden": true,
+                  "notes": "Active when LB Type is HTTP; mutually exclusive with https variants",
+                  "mutually_exclusive_with": [
+                    "spec.https_auto_cert",
+                    "spec.https"
+                  ]
+                }
+              }
+            }
           },
           "https": {
             "allOf": [
@@ -101198,7 +102767,22 @@
             "x-f5xc-conflicts-with": [
               "http",
               "https_auto_cert"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "Load Balancer Type",
+                  "form_section": "domains-and-lb-type",
+                  "hidden": true,
+                  "notes": "Active when LB Type is HTTPS with Custom Certificate",
+                  "mutually_exclusive_with": [
+                    "spec.https_auto_cert",
+                    "spec.http"
+                  ]
+                }
+              }
+            }
           },
           "https_auto_cert": {
             "allOf": [
@@ -101216,7 +102800,28 @@
             "x-f5xc-conflicts-with": [
               "http",
               "https"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "Load Balancer Type",
+                  "required": true,
+                  "default": "HTTPS with Automatic Certificate",
+                  "options": [
+                    "HTTP",
+                    "HTTPS with Automatic Certificate",
+                    "HTTPS with Custom Certificate"
+                  ],
+                  "form_section": "domains-and-lb-type",
+                  "notes": "Selects between spec.http, spec.https, and spec.https_auto_cert",
+                  "mutually_exclusive_with": [
+                    "spec.http",
+                    "spec.https"
+                  ]
+                }
+              }
+            }
           },
           "js_challenge": {
             "allOf": [
@@ -101236,7 +102841,22 @@
               "enable_challenge",
               "no_challenge",
               "policy_based_challenge"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "JavaScript Challenge",
+                  "required": false,
+                  "form_section": "dos-settings",
+                  "mutually_exclusive_with": [
+                    "spec.captcha_challenge",
+                    "spec.no_challenge",
+                    "spec.policy_based_challenge"
+                  ]
+                }
+              }
+            }
           },
           "jwt_validation": {
             "allOf": [
@@ -101250,6 +102870,18 @@
               "create": false,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "configurable",
+                  "label": "JWT Validation",
+                  "required": false,
+                  "default_state": "Not configured",
+                  "configure_action": "Configure",
+                  "form_section": "api-protection"
+                }
+              }
             }
           },
           "l7_ddos_action_block": {
@@ -101268,7 +102900,22 @@
             "x-f5xc-conflicts-with": [
               "l7_ddos_action_default",
               "l7_ddos_action_js_challenge"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "Mitigation Action",
+                  "default": "Block",
+                  "form_section": "dos-settings",
+                  "notes": "Empty object sentinel — block mitigation action",
+                  "mutually_exclusive_with": [
+                    "spec.l7_ddos_action_default",
+                    "spec.l7_ddos_action_js_challenge"
+                  ]
+                }
+              }
+            }
           },
           "l7_ddos_action_default": {
             "allOf": [
@@ -101285,7 +102932,22 @@
             "x-f5xc-conflicts-with": [
               "l7_ddos_action_block",
               "l7_ddos_action_js_challenge"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "Mitigation Action",
+                  "default": "None",
+                  "form_section": "dos-settings",
+                  "notes": "Empty object sentinel — no mitigation action",
+                  "mutually_exclusive_with": [
+                    "spec.l7_ddos_action_block",
+                    "spec.l7_ddos_action_js_challenge"
+                  ]
+                }
+              }
+            }
           },
           "l7_ddos_action_js_challenge": {
             "allOf": [
@@ -101302,7 +102964,21 @@
             "x-f5xc-conflicts-with": [
               "l7_ddos_action_block",
               "l7_ddos_action_default"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "Mitigation Action",
+                  "default": "JavaScript Challenge",
+                  "form_section": "dos-settings",
+                  "mutually_exclusive_with": [
+                    "spec.l7_ddos_action_block",
+                    "spec.l7_ddos_action_default"
+                  ]
+                }
+              }
+            }
           },
           "l7_ddos_protection": {
             "allOf": [
@@ -101318,7 +102994,18 @@
               "read": false
             },
             "default": {},
-            "x-f5xc-server-default": true
+            "x-f5xc-server-default": true,
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "configurable",
+                  "label": "DDoS Protection",
+                  "required": false,
+                  "form_section": "dos-settings",
+                  "notes": "Contains mitigation_action, rps_threshold, and client_side_challenge settings"
+                }
+              }
+            }
           },
           "least_active": {
             "allOf": [
@@ -101338,7 +103025,24 @@
               "ring_hash",
               "round_robin",
               "source_ip_stickiness"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "LB Algorithm",
+                  "form_section": "other-settings",
+                  "notes": "Empty object sentinel — least active request",
+                  "mutually_exclusive_with": [
+                    "spec.round_robin",
+                    "spec.random",
+                    "spec.ring_hash",
+                    "spec.source_ip_stickiness",
+                    "spec.cookie_stickiness"
+                  ]
+                }
+              }
+            }
           },
           "malware_protection_settings": {
             "allOf": [
@@ -101355,7 +103059,21 @@
             },
             "x-f5xc-conflicts-with": [
               "disable_malware_protection"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "Malware Protection",
+                  "form_section": "malware-protection",
+                  "disabled": true,
+                  "disabled_reason": "Upgrade required",
+                  "mutually_exclusive_with": [
+                    "spec.disable_malware_protection"
+                  ]
+                }
+              }
+            }
           },
           "more_option": {
             "allOf": [
@@ -101369,6 +103087,17 @@
               "create": false,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "expandable",
+                  "label": "More Options",
+                  "required": false,
+                  "form_section": "other-settings",
+                  "notes": "Expands to reveal advanced configuration options"
+                }
+              }
             }
           },
           "multi_lb_app": {
@@ -101386,7 +103115,20 @@
             },
             "x-f5xc-conflicts-with": [
               "single_lb_app"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "Multi-LB Application",
+                  "form_section": "other-settings",
+                  "notes": "Empty object sentinel — multi load balancer application mode",
+                  "mutually_exclusive_with": [
+                    "spec.single_lb_app"
+                  ]
+                }
+              }
+            }
           },
           "no_challenge": {
             "allOf": [
@@ -101408,7 +103150,23 @@
               "enable_challenge",
               "js_challenge",
               "policy_based_challenge"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "Client-Side Challenge",
+                  "default": "None",
+                  "form_section": "dos-settings",
+                  "notes": "Empty object sentinel — no client-side challenge",
+                  "mutually_exclusive_with": [
+                    "spec.captcha_challenge",
+                    "spec.js_challenge",
+                    "spec.policy_based_challenge"
+                  ]
+                }
+              }
+            }
           },
           "no_service_policies": {
             "allOf": [
@@ -101426,7 +103184,21 @@
             "x-f5xc-conflicts-with": [
               "active_service_policies",
               "service_policies_from_namespace"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "Service Policies",
+                  "form_section": "common-security-controls",
+                  "notes": "Empty object sentinel — do not apply service policies",
+                  "mutually_exclusive_with": [
+                    "spec.service_policies_from_namespace",
+                    "spec.active_service_policies"
+                  ]
+                }
+              }
+            }
           },
           "origin_server_subset_rule_list": {
             "allOf": [
@@ -101440,6 +103212,19 @@
               "create": false,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "configurable",
+                  "label": "Origin Server Subset Rules",
+                  "required": false,
+                  "default_state": "Not configured",
+                  "configure_action": "Configure",
+                  "form_section": "origins",
+                  "show_advanced_fields": true
+                }
+              }
             }
           },
           "policy_based_challenge": {
@@ -101460,7 +103245,22 @@
               "enable_challenge",
               "js_challenge",
               "no_challenge"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "Policy-Based Challenge",
+                  "required": false,
+                  "form_section": "dos-settings",
+                  "mutually_exclusive_with": [
+                    "spec.captcha_challenge",
+                    "spec.js_challenge",
+                    "spec.no_challenge"
+                  ]
+                }
+              }
+            }
           },
           "protected_cookies": {
             "type": "array",
@@ -101498,6 +103298,18 @@
               "create": false,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "configurable",
+                  "label": "Cookie Protection",
+                  "required": false,
+                  "default_state": "Not configured",
+                  "configure_action": "Configure",
+                  "form_section": "waf"
+                }
+              }
             }
           },
           "random": {
@@ -101518,7 +103330,24 @@
               "ring_hash",
               "round_robin",
               "source_ip_stickiness"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "LB Algorithm",
+                  "form_section": "other-settings",
+                  "notes": "Empty object sentinel — random selection",
+                  "mutually_exclusive_with": [
+                    "spec.round_robin",
+                    "spec.least_active",
+                    "spec.ring_hash",
+                    "spec.source_ip_stickiness",
+                    "spec.cookie_stickiness"
+                  ]
+                }
+              }
+            }
           },
           "rate_limit": {
             "allOf": [
@@ -101551,7 +103380,22 @@
                 "required": true,
                 "reason": "burst_multiplier MUST be > 0 (400: 'should be greater than 0')"
               }
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "configurable",
+                  "label": "Rate Limiting",
+                  "required": false,
+                  "default_state": "Not configured",
+                  "form_section": "common-security-controls",
+                  "notes": "Enable and configure rate limiting rules",
+                  "mutually_exclusive_with": [
+                    "spec.disable_rate_limit"
+                  ]
+                }
+              }
+            }
           },
           "ring_hash": {
             "allOf": [
@@ -101571,7 +103415,24 @@
               "random",
               "round_robin",
               "source_ip_stickiness"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "LB Algorithm",
+                  "form_section": "other-settings",
+                  "notes": "Ring hash with configurable hash policy",
+                  "mutually_exclusive_with": [
+                    "spec.round_robin",
+                    "spec.least_active",
+                    "spec.random",
+                    "spec.source_ip_stickiness",
+                    "spec.cookie_stickiness"
+                  ]
+                }
+              }
+            }
           },
           "round_robin": {
             "allOf": [
@@ -101594,7 +103455,26 @@
               "random",
               "ring_hash",
               "source_ip_stickiness"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "LB Algorithm",
+                  "required": false,
+                  "default": "Round Robin",
+                  "form_section": "other-settings",
+                  "notes": "Empty object sentinel — round-robin load balancing",
+                  "mutually_exclusive_with": [
+                    "spec.least_active",
+                    "spec.random",
+                    "spec.ring_hash",
+                    "spec.source_ip_stickiness",
+                    "spec.cookie_stickiness"
+                  ]
+                }
+              }
+            }
           },
           "routes": {
             "type": "array",
@@ -101675,7 +103555,19 @@
                 "required": true,
                 "reason": "redirect_route requires route_redirect with at least proto_redirect"
               }
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "configurable",
+                  "label": "Routes",
+                  "required": false,
+                  "default_state": "Not configured",
+                  "configure_action": "Configure",
+                  "form_section": "routes"
+                }
+              }
+            }
           },
           "sensitive_data_disclosure_rules": {
             "allOf": [
@@ -101689,6 +103581,18 @@
               "create": false,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "configurable",
+                  "label": "Sensitive Data Exposure Rules",
+                  "required": false,
+                  "default_state": "Not configured",
+                  "configure_action": "Configure",
+                  "form_section": "api-protection"
+                }
+              }
             }
           },
           "sensitive_data_policy": {
@@ -101707,7 +103611,25 @@
             },
             "x-f5xc-conflicts-with": [
               "default_sensitive_data_policy"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "Sensitive Data Discovery",
+                  "required": false,
+                  "default": "Default",
+                  "options": [
+                    "Default",
+                    "Custom"
+                  ],
+                  "form_section": "api-protection",
+                  "mutually_exclusive_with": [
+                    "spec.default_sensitive_data_policy"
+                  ]
+                }
+              }
+            }
           },
           "service_policies_from_namespace": {
             "allOf": [
@@ -101727,7 +103649,23 @@
             "x-f5xc-conflicts-with": [
               "active_service_policies",
               "no_service_policies"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "Service Policies",
+                  "required": false,
+                  "default": "Apply Namespace Service Policies",
+                  "form_section": "common-security-controls",
+                  "notes": "Empty object sentinel — applies namespace-level service policies",
+                  "mutually_exclusive_with": [
+                    "spec.active_service_policies",
+                    "spec.no_service_policies"
+                  ]
+                }
+              }
+            }
           },
           "single_lb_app": {
             "allOf": [
@@ -101744,7 +103682,20 @@
             },
             "x-f5xc-conflicts-with": [
               "multi_lb_app"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "Single-LB Application",
+                  "form_section": "other-settings",
+                  "notes": "Single load balancer application settings",
+                  "mutually_exclusive_with": [
+                    "spec.multi_lb_app"
+                  ]
+                }
+              }
+            }
           },
           "slow_ddos_mitigation": {
             "allOf": [
@@ -101761,7 +103712,22 @@
             },
             "x-f5xc-conflicts-with": [
               "system_default_timeouts"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "Slow DDoS Mitigation",
+                  "required": false,
+                  "default": "Default",
+                  "options": [
+                    "Default",
+                    "Custom"
+                  ],
+                  "form_section": "dos-settings"
+                }
+              }
+            }
           },
           "source_ip_stickiness": {
             "allOf": [
@@ -101781,7 +103747,24 @@
               "random",
               "ring_hash",
               "round_robin"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "LB Algorithm",
+                  "form_section": "other-settings",
+                  "notes": "Empty object sentinel — source IP stickiness",
+                  "mutually_exclusive_with": [
+                    "spec.round_robin",
+                    "spec.least_active",
+                    "spec.random",
+                    "spec.ring_hash",
+                    "spec.cookie_stickiness"
+                  ]
+                }
+              }
+            }
           },
           "system_default_timeouts": {
             "allOf": [
@@ -101798,7 +103781,18 @@
             },
             "x-f5xc-conflicts-with": [
               "slow_ddos_mitigation"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "Timeouts",
+                  "form_section": "other-settings",
+                  "default": "Default",
+                  "notes": "Empty object sentinel — use system default timeout values"
+                }
+              }
+            }
           },
           "trusted_clients": {
             "type": "array",
@@ -101846,7 +103840,19 @@
                 "required": true,
                 "reason": "Trusted client entries require non-empty actions list (500 without)"
               }
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "configurable",
+                  "label": "Trusted Client Rules",
+                  "required": false,
+                  "default_state": "Not configured",
+                  "configure_action": "Configure",
+                  "form_section": "common-security-controls"
+                }
+              }
+            }
           },
           "user_id_client_ip": {
             "allOf": [
@@ -101866,7 +103872,22 @@
             "x-f5xc-server-default": true,
             "x-f5xc-conflicts-with": [
               "user_identification"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "User Identifier",
+                  "required": false,
+                  "default": "Client IP Address",
+                  "form_section": "common-security-controls",
+                  "notes": "Empty object sentinel — use client IP as user identifier",
+                  "mutually_exclusive_with": [
+                    "spec.user_identification"
+                  ]
+                }
+              }
+            }
           },
           "user_identification": {
             "allOf": [
@@ -101895,7 +103916,22 @@
                 "required": false,
                 "cardinality": "single"
               }
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "resource-selector",
+                  "label": "User Identifier",
+                  "required": false,
+                  "form_section": "common-security-controls",
+                  "notes": "Custom user identification policy (TLS fingerprint or custom)",
+                  "mutually_exclusive_with": [
+                    "spec.user_id_client_ip"
+                  ],
+                  "resource_type": "user_identification"
+                }
+              }
+            }
           },
           "waf_exclusion": {
             "allOf": [
@@ -101909,6 +103945,22 @@
               "create": false,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "http_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "WAF Exclusion",
+                  "required": false,
+                  "default": "Inline Rules",
+                  "options": [
+                    "Inline Rules",
+                    "Custom Rules"
+                  ],
+                  "form_section": "waf",
+                  "depends_on": "spec.app_firewall"
+                }
+              }
             }
           }
         },
@@ -101974,6 +104026,212 @@
           "classification": {
             "category": "networking",
             "multi_tenant_pattern": "per-tenant"
+          }
+        },
+        "x-f5xc-console": {
+          "workspace": "web-app-and-api-protection",
+          "workspace_label": "Web App & API Protection",
+          "route_prefix": "/web/workspaces/web-app-and-api-protection",
+          "menu_path": [
+            "Web App & API Protection",
+            "Manage",
+            "Load Balancers",
+            "HTTP Load Balancers"
+          ],
+          "route_pattern": "/namespaces/{namespace}/manage/load_balancers/http_loadbalancers",
+          "breadcrumbs": [
+            "Home",
+            "Web App & API Protection",
+            "{namespace}",
+            "Manage",
+            "Load Balancers",
+            "HTTP Load Balancers"
+          ],
+          "add_action": {
+            "type": "tab",
+            "label": "Add HTTP Load Balancer"
+          },
+          "save_action": {
+            "label": "Add HTTP Load Balancer"
+          },
+          "form_tabs": [
+            "Form",
+            "Documentation",
+            "JSON"
+          ],
+          "form_sections": [
+            {
+              "id": "metadata",
+              "label": "Metadata",
+              "api_fields": [
+                "metadata.name",
+                "metadata.labels",
+                "metadata.description"
+              ]
+            },
+            {
+              "id": "domains-and-lb-type",
+              "label": "Domains and LB Type",
+              "api_fields": [
+                "spec.domains",
+                "spec.http",
+                "spec.https",
+                "spec.https_auto_cert"
+              ]
+            },
+            {
+              "id": "origins",
+              "label": "Origins",
+              "show_advanced_fields": true,
+              "api_fields": [
+                "spec.default_route_pools",
+                "spec.default_pool",
+                "spec.default_pool_list",
+                "spec.origin_server_subset_rule_list"
+              ]
+            },
+            {
+              "id": "routes",
+              "label": "Routes",
+              "api_fields": [
+                "spec.routes"
+              ]
+            },
+            {
+              "id": "cdn",
+              "label": "CDN",
+              "api_fields": [
+                "spec.disable_caching"
+              ]
+            },
+            {
+              "id": "waf",
+              "label": "Web Application Firewall",
+              "api_fields": [
+                "spec.app_firewall",
+                "spec.disable_waf",
+                "spec.waf_exclusion",
+                "spec.data_guard_rules",
+                "spec.csrf_policy",
+                "spec.graphql_rules",
+                "spec.protected_cookies"
+              ]
+            },
+            {
+              "id": "bot-protection",
+              "label": "Bot Protection",
+              "show_advanced_fields": true,
+              "api_fields": [
+                "spec.bot_defense",
+                "spec.bot_defense_advanced_protection",
+                "spec.disable_bot_defense"
+              ]
+            },
+            {
+              "id": "api-protection",
+              "label": "API Protection",
+              "api_fields": [
+                "spec.api_specification",
+                "spec.api_protection_rules",
+                "spec.jwt_validation",
+                "spec.enable_api_discovery",
+                "spec.disable_api_discovery",
+                "spec.disable_api_definition",
+                "spec.sensitive_data_policy",
+                "spec.default_sensitive_data_policy",
+                "spec.api_rate_limit",
+                "spec.api_testing",
+                "spec.disable_api_testing",
+                "spec.sensitive_data_disclosure_rules"
+              ]
+            },
+            {
+              "id": "malware-protection",
+              "label": "Malware Protection",
+              "disabled": true,
+              "disabled_reason": "Upgrade required",
+              "api_fields": [
+                "spec.malware_protection_settings",
+                "spec.disable_malware_protection"
+              ]
+            },
+            {
+              "id": "dos-settings",
+              "label": "DoS Settings",
+              "api_fields": [
+                "spec.l7_ddos_protection",
+                "spec.l7_ddos_action_block",
+                "spec.l7_ddos_action_default",
+                "spec.l7_ddos_action_js_challenge",
+                "spec.ddos_mitigation_rules",
+                "spec.slow_ddos_mitigation",
+                "spec.captcha_challenge",
+                "spec.js_challenge",
+                "spec.no_challenge",
+                "spec.policy_based_challenge",
+                "spec.enable_challenge"
+              ]
+            },
+            {
+              "id": "client-side-defense",
+              "label": "Client-Side Defense",
+              "disabled": true,
+              "disabled_reason": "Upgrade required",
+              "api_fields": [
+                "spec.client_side_defense",
+                "spec.disable_client_side_defense"
+              ]
+            },
+            {
+              "id": "common-security-controls",
+              "label": "Common Security Controls",
+              "api_fields": [
+                "spec.active_service_policies",
+                "spec.no_service_policies",
+                "spec.service_policies_from_namespace",
+                "spec.enable_ip_reputation",
+                "spec.disable_ip_reputation",
+                "spec.enable_threat_mesh",
+                "spec.disable_threat_mesh",
+                "spec.user_id_client_ip",
+                "spec.user_identification",
+                "spec.enable_malicious_user_detection",
+                "spec.disable_malicious_user_detection",
+                "spec.rate_limit",
+                "spec.disable_rate_limit",
+                "spec.trusted_clients",
+                "spec.blocked_clients",
+                "spec.cors_policy"
+              ]
+            },
+            {
+              "id": "other-settings",
+              "label": "Other Settings",
+              "api_fields": [
+                "spec.advertise_on_public",
+                "spec.advertise_on_public_default_vip",
+                "spec.advertise_custom",
+                "spec.do_not_advertise",
+                "spec.round_robin",
+                "spec.least_active",
+                "spec.random",
+                "spec.ring_hash",
+                "spec.source_ip_stickiness",
+                "spec.cookie_stickiness",
+                "spec.disable_trust_client_ip_headers",
+                "spec.enable_trust_client_ip_headers",
+                "spec.add_location",
+                "spec.more_option",
+                "spec.multi_lb_app",
+                "spec.single_lb_app",
+                "spec.system_default_timeouts"
+              ]
+            }
+          ],
+          "metadata": {
+            "confidence": "validated",
+            "discovered_at": "2026-06-15",
+            "console_version": "2025.06"
           }
         }
       },
@@ -103127,7 +105385,18 @@
             "items": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Domains",
             "x-ves-example": "www.example.com.",
@@ -105265,7 +107534,18 @@
             "items": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Domains",
             "x-ves-example": "www.example.com.",
@@ -107228,7 +109508,18 @@
             "items": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Client IP Headers.",
             "x-ves-example": "Client-IP-Header.",
@@ -107349,7 +109640,18 @@
             "items": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Content Type.",
             "x-ves-example": "Application/JSON.",
@@ -111526,7 +113828,17 @@
               "advertise_custom",
               "advertise_on_public_default_vip",
               "do_not_advertise"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "tcp_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "Advertise On Public",
+                  "default": "Advertise On Public",
+                  "form_section": "basic-configuration"
+                }
+              }
+            }
           },
           "advertise_on_public_default_vip": {
             "allOf": [
@@ -111655,6 +113967,18 @@
               "create": false,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "tcp_loadbalancer": {
+                  "widget_type": "table",
+                  "label": "Domains",
+                  "required": true,
+                  "add_item_first": true,
+                  "form_section": "basic-configuration",
+                  "description": "TCP LB Domains table starts EMPTY (0 items) — needs Add Item click before filling. Fills via ngx-datatable grid real-typing after row creation."
+                }
+              }
             }
           },
           "hash_policy_choice_least_active": {
@@ -111801,7 +114125,17 @@
             },
             "x-f5xc-conflicts-with": [
               "port_ranges"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "tcp_loadbalancer": {
+                  "widget_type": "spinbutton",
+                  "label": "Listen Port (value)",
+                  "required": true,
+                  "form_section": "basic-configuration"
+                }
+              }
+            }
           },
           "no_service_policies": {
             "allOf": [
@@ -111838,7 +114172,19 @@
             "x-f5xc-conflicts-with": [
               "default_lb_with_sni",
               "sni"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "tcp_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "No SNI",
+                  "form_section": "basic-configuration",
+                  "mutually_exclusive_with": [
+                    "sni"
+                  ]
+                }
+              }
+            }
           },
           "origin_pools_weights": {
             "type": "array",
@@ -111874,6 +114220,16 @@
               "create": false,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "tcp_loadbalancer": {
+                  "widget_type": "nested-resource-list",
+                  "label": "Origin Pools",
+                  "add_action": "Add Item",
+                  "form_section": "basic-configuration"
+                }
+              }
             }
           },
           "port_ranges": {
@@ -111957,7 +114313,16 @@
             "x-f5xc-conflicts-with": [
               "active_service_policies",
               "no_service_policies"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "tcp_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "Apply Namespace Service Policies",
+                  "form_section": "service-policies"
+                }
+              }
+            }
           },
           "sni": {
             "allOf": [
@@ -111993,7 +114358,21 @@
             "x-f5xc-conflicts-with": [
               "tls_tcp",
               "tls_tcp_auto_cert"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "tcp_loadbalancer": {
+                  "widget_type": "listbox",
+                  "label": "TCP",
+                  "default": "TCP",
+                  "form_section": "load-balancing-control",
+                  "mutually_exclusive_with": [
+                    "tcp_proxy",
+                    "sni_based"
+                  ]
+                }
+              }
+            }
           },
           "tls_tcp": {
             "allOf": [
@@ -112071,6 +114450,83 @@
           "classification": {
             "category": "networking",
             "multi_tenant_pattern": "per-tenant"
+          }
+        },
+        "x-f5xc-console": {
+          "workspace": "multi-cloud-app-connect",
+          "workspace_label": "Multi-Cloud App Connect",
+          "route_prefix": "/web/workspaces/multi-cloud-app-connect",
+          "menu_path": [
+            "Multi-Cloud App Connect",
+            "Manage",
+            "Load Balancers",
+            "TCP Load Balancers"
+          ],
+          "route_pattern": "/namespaces/{namespace}/manage/load_balancers/tcp_loadbalancers",
+          "breadcrumbs": [
+            "Home",
+            "Multi-Cloud App Connect",
+            "{namespace}",
+            "Manage",
+            "Load Balancers",
+            "TCP Load Balancers"
+          ],
+          "add_action": {
+            "type": "tab",
+            "label": "Add TCP Load Balancer"
+          },
+          "save_action": {
+            "label": "Add TCP Load Balancer"
+          },
+          "form_tabs": [
+            "Form",
+            "Documentation",
+            "JSON"
+          ],
+          "form_sections": [
+            {
+              "id": "metadata",
+              "label": "Metadata",
+              "api_fields": [
+                "metadata.name",
+                "metadata.labels",
+                "metadata.description"
+              ]
+            },
+            {
+              "id": "basic-configuration",
+              "label": "Basic Configuration",
+              "show_advanced_fields": true,
+              "api_fields": [
+                "spec.domains",
+                "spec.listen_port",
+                "spec.sni",
+                "spec.origin_pools",
+                "spec.advertise_on_public"
+              ]
+            },
+            {
+              "id": "load-balancing-control",
+              "label": "Load Balancing Control",
+              "show_advanced_fields": true,
+              "api_fields": []
+            },
+            {
+              "id": "service-policies",
+              "label": "Service Policies",
+              "api_fields": []
+            },
+            {
+              "id": "advanced-configuration",
+              "label": "Advanced Configuration",
+              "show_advanced_fields": true,
+              "api_fields": []
+            }
+          ],
+          "metadata": {
+            "confidence": "validated",
+            "discovered_at": "2026-06-15",
+            "console_version": "2025.06"
           }
         }
       },
@@ -114653,6 +117109,16 @@
               "create": false,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "udp_loadbalancer": {
+                  "widget_type": "table",
+                  "label": "Domains",
+                  "add_action": "Add Item",
+                  "form_section": "basic"
+                }
+              }
             }
           },
           "hash_policy_choice_random": {
@@ -114774,7 +117240,16 @@
             },
             "x-f5xc-conflicts-with": [
               "port_ranges"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "udp_loadbalancer": {
+                  "widget_type": "spinbutton",
+                  "label": "Listen Port",
+                  "form_section": "basic"
+                }
+              }
+            }
           },
           "no_service_policies": {
             "allOf": [
@@ -114930,6 +117405,55 @@
           "classification": {
             "category": "networking",
             "multi_tenant_pattern": "none"
+          }
+        },
+        "x-f5xc-console": {
+          "workspace": "multi-cloud-app-connect",
+          "workspace_label": "Multi-Cloud App Connect",
+          "route_prefix": "/web/workspaces/multi-cloud-app-connect",
+          "menu_path": [
+            "Multi-Cloud App Connect",
+            "Manage",
+            "Load Balancers",
+            "UDP Load Balancers"
+          ],
+          "route_pattern": "/namespaces/{namespace}/manage/load_balancers/udp_loadbalancers",
+          "breadcrumbs": [
+            "Home",
+            "Multi-Cloud App Connect",
+            "{namespace}",
+            "Manage",
+            "Load Balancers",
+            "UDP Load Balancers"
+          ],
+          "add_action": {
+            "type": "tab",
+            "label": "Add UDP Load Balancer"
+          },
+          "save_action": {
+            "label": "Add UDP Load Balancer"
+          },
+          "form_tabs": [
+            "Form",
+            "Documentation",
+            "JSON"
+          ],
+          "form_sections": [
+            {
+              "id": "metadata",
+              "label": "Metadata",
+              "api_fields": [
+                "metadata.name",
+                "metadata.labels",
+                "metadata.description"
+              ]
+            }
+          ],
+          "metadata": {
+            "confidence": "validated",
+            "discovered_at": "2026-06-16",
+            "console_version": "2025.06",
+            "notes": "Validated via URL probe against live staging console"
           }
         }
       },
@@ -118686,7 +121210,17 @@
             "maxItems": 256,
             "items": {
               "type": "string",
-              "maxLength": 64
+              "maxLength": 64,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "maxLength": 64,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "AWS VPC List.",
             "x-ves-example": "[VPC-1234567890abcdef0, VPC-1234567890abcdef1]",
@@ -118843,7 +121377,18 @@
             "items": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 64
+              "maxLength": 64,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 64,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Keys",
             "x-ves-example": "['environment', 'location', 'deployment']",
@@ -119933,6 +122478,53 @@
           "classification": {
             "category": "security",
             "multi_tenant_pattern": "shared-ref"
+          }
+        },
+        "x-f5xc-console": {
+          "workspace": "dns-management",
+          "workspace_label": "DNS Management",
+          "route_prefix": "/web/workspaces/dns-management",
+          "menu_path": [
+            "Manage",
+            "DNS Load Balancer Management",
+            "Geo-Location Sets"
+          ],
+          "route_pattern": "/manage/dns_lb_management/geo_location_set",
+          "breadcrumbs": [
+            "Home",
+            "DNS Management",
+            "Manage",
+            "DNS Load Balancer Management",
+            "Geo-Location Sets"
+          ],
+          "add_action": {
+            "type": "tab",
+            "label": "Add Geo-Location Set"
+          },
+          "save_action": {
+            "label": "Add Geo-Location Set"
+          },
+          "form_tabs": [
+            "Form",
+            "Documentation",
+            "JSON"
+          ],
+          "namespace_scoped": false,
+          "form_sections": [
+            {
+              "id": "metadata",
+              "label": "Metadata",
+              "api_fields": [
+                "metadata.name",
+                "metadata.labels",
+                "metadata.description"
+              ]
+            }
+          ],
+          "metadata": {
+            "confidence": "validated",
+            "discovered_at": "2026-06-16",
+            "console_version": "2025.06"
           }
         }
       },
@@ -121222,7 +123814,17 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-recommended-value": 3
+            "x-f5xc-recommended-value": 3,
+            "x-f5xc-console-field": {
+              "resources": {
+                "healthcheck": {
+                  "widget_type": "spinbutton",
+                  "label": "Healthy Threshold",
+                  "default": 3,
+                  "form_section": "health-check-parameters"
+                }
+              }
+            }
           },
           "http_health_check": {
             "allOf": [
@@ -121240,7 +123842,19 @@
             "x-f5xc-conflicts-with": [
               "tcp_health_check",
               "udp_icmp_health_check"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "healthcheck": {
+                  "widget_type": "listbox",
+                  "label": "HTTP HealthCheck",
+                  "form_section": "health-check-parameters",
+                  "mutually_exclusive_with": [
+                    "tcp_health_check"
+                  ]
+                }
+              }
+            }
           },
           "interval": {
             "type": "integer",
@@ -121280,7 +123894,17 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-recommended-value": 15
+            "x-f5xc-recommended-value": 15,
+            "x-f5xc-console-field": {
+              "resources": {
+                "healthcheck": {
+                  "widget_type": "spinbutton",
+                  "label": "Interval",
+                  "default": 15,
+                  "form_section": "health-check-parameters"
+                }
+              }
+            }
           },
           "jitter_percent": {
             "type": "integer",
@@ -121392,7 +124016,17 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-recommended-value": 3
+            "x-f5xc-recommended-value": 3,
+            "x-f5xc-console-field": {
+              "resources": {
+                "healthcheck": {
+                  "widget_type": "spinbutton",
+                  "label": "Timeout",
+                  "default": 3,
+                  "form_section": "health-check-parameters"
+                }
+              }
+            }
           },
           "udp_icmp_health_check": {
             "allOf": [
@@ -121452,7 +124086,17 @@
               "update": false,
               "read": false
             },
-            "x-f5xc-recommended-value": 1
+            "x-f5xc-recommended-value": 1,
+            "x-f5xc-console-field": {
+              "resources": {
+                "healthcheck": {
+                  "widget_type": "spinbutton",
+                  "label": "Unhealthy Threshold",
+                  "default": 1,
+                  "form_section": "health-check-parameters"
+                }
+              }
+            }
           }
         },
         "x-f5xc-description-short": "Healthcheck object defines method to determine if the given Endpoint is healthy.",
@@ -121490,6 +124134,66 @@
           "classification": {
             "category": "networking",
             "multi_tenant_pattern": "per-tenant"
+          }
+        },
+        "x-f5xc-console": {
+          "workspace": "web-app-and-api-protection",
+          "workspace_label": "Web App & API Protection",
+          "route_prefix": "/web/workspaces/web-app-and-api-protection",
+          "menu_path": [
+            "Web App & API Protection",
+            "Manage",
+            "Load Balancers",
+            "Health Checks"
+          ],
+          "route_pattern": "/namespaces/{namespace}/manage/load_balancers/health_checks",
+          "breadcrumbs": [
+            "Home",
+            "Web App & API Protection",
+            "{namespace}",
+            "Manage",
+            "Load Balancers",
+            "Health Checks"
+          ],
+          "add_action": {
+            "type": "tab",
+            "label": "Add Health Check"
+          },
+          "save_action": {
+            "label": "Add Health Check"
+          },
+          "form_tabs": [
+            "Form",
+            "Documentation",
+            "JSON"
+          ],
+          "form_sections": [
+            {
+              "id": "metadata",
+              "label": "Metadata",
+              "api_fields": [
+                "metadata.name",
+                "metadata.labels",
+                "metadata.description"
+              ]
+            },
+            {
+              "id": "health-check-parameters",
+              "label": "Health Check Parameters",
+              "show_advanced_fields": true,
+              "api_fields": [
+                "spec.http_health_check",
+                "spec.timeout",
+                "spec.interval",
+                "spec.unhealthy_threshold",
+                "spec.healthy_threshold"
+              ]
+            }
+          ],
+          "metadata": {
+            "confidence": "validated",
+            "discovered_at": "2026-06-15",
+            "console_version": "2025.06"
           }
         }
       },
@@ -122208,7 +124912,18 @@
             "items": {
               "type": "string",
               "minLength": 3,
-              "maxLength": 10
+              "maxLength": 10,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 3,
+                "maxLength": 10,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Expected Status Codes.",
             "x-ves-example": "200-250",
@@ -122270,7 +124985,18 @@
             "additionalProperties": {
               "type": "string",
               "maxLength": 2048,
-              "minLength": 1
+              "minLength": 1,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 2048,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-f5xc-example": "value",
             "x-validation-rules": {
@@ -122283,13 +125009,28 @@
             "x-f5xc-description-short": "Specifies a list of HTTP headers that should be added to each request that is sent to the health checked cluster.",
             "x-f5xc-description-medium": "Specifies a list of HTTP headers that should be added to each request that is sent to the health checked cluster. This is a list of key-value pairs.",
             "x-f5xc-constraints": {
-              "constraintType": "object",
-              "category": "general",
-              "maxProperties": 16,
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.75,
-                "validatedAt": "2026-10-03T05:10:26+00:00"
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.keys.string.max_len": "256",
+                "ves.io.schema.rules.map.keys.string.min_len": "1",
+                "ves.io.schema.rules.map.max_pairs": "16",
+                "ves.io.schema.rules.map.values.string.max_len": "2048",
+                "ves.io.schema.rules.map.values.string.min_len": "1"
+              },
+              "keys": {
+                "maxLength": 256,
+                "type": "string",
+                "minLength": 1
+              },
+              "cardinality": {
+                "maxProperties": 16
+              },
+              "values": {
+                "maxLength": 2048,
+                "type": "string",
+                "minLength": 1
               }
             },
             "x-f5xc-required-for": {
@@ -122387,7 +125128,17 @@
             "maxItems": 16,
             "items": {
               "type": "string",
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Request Headers to Remove.",
             "x-ves-example": "User-agent.",
@@ -125046,6 +127797,17 @@
               "create": false,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "origin_pool": {
+                  "widget_type": "configurable",
+                  "label": "Other Settings",
+                  "form_section": "other-settings",
+                  "nested_properties": 21,
+                  "notes": "Circuit breaker, outlier detection, connection timeouts, proxy protocol, subsets"
+                }
+              }
             }
           },
           "automatic_port": {
@@ -125161,7 +127923,18 @@
               "read": false
             },
             "default": [],
-            "x-f5xc-server-default": true
+            "x-f5xc-server-default": true,
+            "x-f5xc-console-field": {
+              "resources": {
+                "origin_pool": {
+                  "widget_type": "resource-selector",
+                  "label": "Health Checks",
+                  "resource_type": "healthcheck",
+                  "required": false,
+                  "form_section": "health-checks"
+                }
+              }
+            }
           },
           "lb_port": {
             "allOf": [
@@ -125294,7 +128067,100 @@
                 "required": true,
                 "reason": "site_locator requires oneOf choice: site or virtual_site (400: 'choice should be not nil')"
               }
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "origin_pool": {
+                  "widget_type": "nested-resource-list",
+                  "label": "Origin Servers",
+                  "required": true,
+                  "add_action": "Add Item",
+                  "form_section": "origin-servers",
+                  "sub_field_label": "DNS Name",
+                  "description": "Default type: Public DNS Name. The sub-form requires \"DNS Name\" (FQDN of the origin).",
+                  "item_types": {
+                    "public_name": {
+                      "label": "Public DNS Name",
+                      "fields": [
+                        "dns_name",
+                        "refresh_interval"
+                      ]
+                    },
+                    "public_ip": {
+                      "label": "Public IP",
+                      "fields": [
+                        "ip"
+                      ]
+                    },
+                    "private_ip": {
+                      "label": "Private IP",
+                      "fields": [
+                        "ip",
+                        "site_locator",
+                        "inside_network",
+                        "outside_network",
+                        "segment",
+                        "snat_pool"
+                      ]
+                    },
+                    "private_name": {
+                      "label": "Private DNS Name",
+                      "fields": [
+                        "dns_name",
+                        "refresh_interval",
+                        "site_locator",
+                        "inside_network",
+                        "outside_network",
+                        "segment",
+                        "snat_pool"
+                      ]
+                    },
+                    "k8s_service": {
+                      "label": "K8s Service",
+                      "fields": [
+                        "service_name",
+                        "site_locator",
+                        "inside_network",
+                        "outside_network",
+                        "protocol",
+                        "snat_pool",
+                        "vk8s_networks"
+                      ]
+                    },
+                    "consul_service": {
+                      "label": "Consul Service",
+                      "fields": [
+                        "service_name",
+                        "site_locator",
+                        "inside_network",
+                        "outside_network",
+                        "snat_pool"
+                      ]
+                    },
+                    "custom_endpoint_object": {
+                      "label": "Custom Endpoint",
+                      "fields": [
+                        "endpoint"
+                      ]
+                    },
+                    "vn_private_ip": {
+                      "label": "Virtual Network Private IP",
+                      "fields": [
+                        "ip",
+                        "virtual_network"
+                      ]
+                    },
+                    "vn_private_name": {
+                      "label": "Virtual Network Private Name",
+                      "fields": [
+                        "dns_name",
+                        "private_network"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
           },
           "port": {
             "type": "integer",
@@ -125337,7 +128203,18 @@
             "x-f5xc-conflicts-with": [
               "automatic_port",
               "lb_port"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "origin_pool": {
+                  "widget_type": "spinbutton",
+                  "label": "Port",
+                  "required": true,
+                  "default": 443,
+                  "form_section": "origin-servers"
+                }
+              }
+            }
           },
           "same_as_endpoint_port": {
             "allOf": [
@@ -125399,7 +128276,18 @@
                 "reason": "use_mtls requires at least one TLS certificate (400: 'tls_certificates should have minimum items of 1')",
                 "min_items": 1
               }
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "origin_pool": {
+                  "widget_type": "listbox",
+                  "label": "TLS",
+                  "form_section": "tls",
+                  "nested_properties": 13,
+                  "notes": "Contains tls_config, mTLS, server verification, SNI, session caching"
+                }
+              }
+            }
           }
         },
         "x-f5xc-description-short": "Shape of the origin pool create specification.",
@@ -125443,6 +128331,81 @@
           "classification": {
             "category": "networking",
             "multi_tenant_pattern": "per-tenant"
+          }
+        },
+        "x-f5xc-console": {
+          "workspace": "web-app-and-api-protection",
+          "workspace_label": "Web App & API Protection",
+          "route_prefix": "/web/workspaces/web-app-and-api-protection",
+          "menu_path": [
+            "Web App & API Protection",
+            "Manage",
+            "Load Balancers",
+            "Origin Pools"
+          ],
+          "route_pattern": "/namespaces/{namespace}/manage/load_balancers/origin_pools",
+          "breadcrumbs": [
+            "Home",
+            "Web App & API Protection",
+            "{namespace}",
+            "Manage",
+            "Load Balancers",
+            "Origin Pools"
+          ],
+          "add_action": {
+            "type": "tab",
+            "label": "Add Origin Pool"
+          },
+          "save_action": {
+            "label": "Add Origin Pool"
+          },
+          "form_tabs": [
+            "Form",
+            "Documentation",
+            "JSON"
+          ],
+          "form_sections": [
+            {
+              "id": "metadata",
+              "label": "Metadata",
+              "api_fields": [
+                "metadata.name",
+                "metadata.labels",
+                "metadata.description"
+              ]
+            },
+            {
+              "id": "origin-servers",
+              "label": "Origin Servers",
+              "api_fields": [
+                "spec.origin_servers",
+                "spec.port"
+              ]
+            },
+            {
+              "id": "health-checks",
+              "label": "Health Checks",
+              "api_fields": [
+                "spec.healthcheck"
+              ]
+            },
+            {
+              "id": "tls",
+              "label": "TLS",
+              "api_fields": [
+                "spec.use_tls"
+              ]
+            },
+            {
+              "id": "other-settings",
+              "label": "Other Settings",
+              "api_fields": []
+            }
+          ],
+          "metadata": {
+            "confidence": "validated",
+            "discovered_at": "2026-06-15",
+            "console_version": "2025.06"
           }
         }
       },
@@ -126714,7 +129677,18 @@
             "items": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Domains",
             "x-ves-example": "www.example.com.",
@@ -128646,6 +131620,53 @@
           "classification": {
             "category": "application",
             "multi_tenant_pattern": "per-tenant"
+          }
+        },
+        "x-f5xc-console": {
+          "workspace": "multi-cloud-app-connect",
+          "workspace_label": "Multi-Cloud App Connect",
+          "route_prefix": "/web/workspaces/multi-cloud-app-connect",
+          "menu_path": [
+            "Manage",
+            "Load Balancers",
+            "HTTP Connect & DRPs"
+          ],
+          "route_pattern": "/namespaces/{namespace}/manage/load_balancers/proxy",
+          "breadcrumbs": [
+            "Home",
+            "Multi-Cloud App Connect",
+            "{namespace}",
+            "Manage",
+            "Load Balancers",
+            "HTTP Connect & DRPs"
+          ],
+          "add_action": {
+            "type": "tab",
+            "label": "Add HTTP Connect / DRP"
+          },
+          "save_action": {
+            "label": "Add HTTP Connect / DRP"
+          },
+          "form_tabs": [
+            "Form",
+            "Documentation",
+            "JSON"
+          ],
+          "form_sections": [
+            {
+              "id": "metadata",
+              "label": "Metadata",
+              "api_fields": [
+                "metadata.name",
+                "metadata.labels",
+                "metadata.description"
+              ]
+            }
+          ],
+          "metadata": {
+            "confidence": "validated",
+            "discovered_at": "2026-06-17",
+            "console_version": "2025.06"
           }
         }
       },
@@ -130940,7 +133961,16 @@
               "read": false
             },
             "default": [],
-            "x-f5xc-server-default": true
+            "x-f5xc-server-default": true,
+            "x-f5xc-console-field": {
+              "resources": {
+                "rate_limiter_policy": {
+                  "widget_type": "configurable",
+                  "label": "Rate Limit Rules",
+                  "form_section": "basic"
+                }
+              }
+            }
           },
           "server_name": {
             "type": "string",
@@ -131048,6 +134078,53 @@
           "classification": {
             "category": "security",
             "multi_tenant_pattern": "shared-ref"
+          }
+        },
+        "x-f5xc-console": {
+          "workspace": "web-app-and-api-protection",
+          "workspace_label": "Web App & API Protection",
+          "route_prefix": "/web/workspaces/web-app-and-api-protection",
+          "menu_path": [
+            "Web App & API Protection",
+            "Manage",
+            "Rate Limiter Policies"
+          ],
+          "route_pattern": "/namespaces/{namespace}/manage/rate_limiter_policies",
+          "breadcrumbs": [
+            "Home",
+            "Web App & API Protection",
+            "{namespace}",
+            "Manage",
+            "Rate Limiter Policies"
+          ],
+          "add_action": {
+            "type": "tab",
+            "label": "Add Rate Limiter"
+          },
+          "save_action": {
+            "label": "Add Rate Limiter"
+          },
+          "form_tabs": [
+            "Form",
+            "Documentation",
+            "JSON"
+          ],
+          "form_sections": [
+            {
+              "id": "metadata",
+              "label": "Metadata",
+              "api_fields": [
+                "metadata.name",
+                "metadata.labels",
+                "metadata.description"
+              ]
+            }
+          ],
+          "metadata": {
+            "confidence": "validated",
+            "discovered_at": "2026-06-16",
+            "console_version": "2025.06",
+            "notes": "Validated via URL probe against live staging console"
           }
         }
       },
@@ -132310,7 +135387,17 @@
             "maxItems": 64,
             "items": {
               "type": "string",
-              "maxLength": 63
+              "maxLength": 63,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "maxLength": 63,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Exact Values.",
             "x-ves-example": "['new york', 'london', 'sydney', 'tokyo', 'cairo']",
@@ -132706,7 +135793,22 @@
               "server_name",
               "server_name_matcher",
               "server_selector"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "service_policy": {
+                  "widget_type": "listbox",
+                  "label": "Any Server",
+                  "default": "Any Server",
+                  "form_section": "servers",
+                  "mutually_exclusive_with": [
+                    "spec.server_name",
+                    "spec.server_name_matcher",
+                    "spec.server_selector"
+                  ]
+                }
+              }
+            }
           },
           "deny_all_requests": {
             "allOf": [
@@ -132768,7 +135870,23 @@
               "allow_list",
               "deny_all_requests",
               "deny_list"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "service_policy": {
+                  "widget_type": "listbox",
+                  "label": "Custom Rule List",
+                  "form_section": "rules",
+                  "mutually_exclusive_with": [
+                    "spec.allow_all_requests",
+                    "spec.deny_all_requests",
+                    "spec.allow_list",
+                    "spec.deny_list"
+                  ],
+                  "notes": "Opens nested rule editor with match conditions and actions"
+                }
+              }
+            }
           },
           "server_name": {
             "type": "string",
@@ -137228,6 +140346,17 @@
               "create": true,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "service_policy_rule": {
+                  "required": true,
+                  "label": "Waf Action",
+                  "form_section": "basic-configuration",
+                  "description": "Server-required: Field should be not nil",
+                  "widget_type": "configurable"
+                }
+              }
             }
           }
         },
@@ -144058,6 +147187,15 @@
               "create": false,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "virtual_host": {
+                  "widget_type": "configurable",
+                  "label": "Buffer Policy",
+                  "form_section": "advanced"
+                }
+              }
             }
           },
           "captcha_challenge": {
@@ -144104,6 +147242,15 @@
               "create": false,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "virtual_host": {
+                  "widget_type": "configurable",
+                  "label": "Compression",
+                  "form_section": "advanced"
+                }
+              }
             }
           },
           "connection_idle_timeout": {
@@ -144152,6 +147299,15 @@
               "create": false,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "virtual_host": {
+                  "widget_type": "configurable",
+                  "label": "CORS Policy",
+                  "form_section": "security"
+                }
+              }
             }
           },
           "csrf_policy": {
@@ -144166,6 +147322,15 @@
               "create": false,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "virtual_host": {
+                  "widget_type": "configurable",
+                  "label": "CSRF Policy",
+                  "form_section": "security"
+                }
+              }
             }
           },
           "custom_errors": {
@@ -144183,7 +147348,17 @@
             "maxProperties": 16,
             "additionalProperties": {
               "type": "string",
-              "maxLength": 65536
+              "maxLength": 65536,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "maxLength": 65536,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-f5xc-example": "value",
             "x-validation-rules": {
@@ -144196,13 +147371,28 @@
             "x-f5xc-description-short": "Map of integer error codes as keys and string values that can be used to provide custom HTTP pages for each error code.",
             "x-f5xc-description-medium": "Map of integer error codes as keys and string values that can be used to provide custom HTTP pages for each error code. Key of the map can be either response code class or HTTP Error code. Response code classes for key is configured as follows 3 -- for 3xx response code class 4 -- for 4xx...",
             "x-f5xc-constraints": {
-              "constraintType": "object",
-              "category": "general",
-              "maxProperties": 16,
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.75,
-                "validatedAt": "2026-10-03T05:10:26+00:00"
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.keys.uint32.gte": "3",
+                "ves.io.schema.rules.map.keys.uint32.lte": "599",
+                "ves.io.schema.rules.map.max_pairs": "16",
+                "ves.io.schema.rules.map.values.string.max_len": "65536",
+                "ves.io.schema.rules.map.values.string.uri_ref": "true"
+              },
+              "keys": {
+                "minimum": 3,
+                "type": "uint32-string",
+                "maximum": 599
+              },
+              "cardinality": {
+                "maxProperties": 16
+              },
+              "values": {
+                "maxLength": 65536,
+                "type": "string",
+                "format": "uri-reference"
               }
             },
             "x-f5xc-required-for": {
@@ -144333,6 +147523,17 @@
               "create": false,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "virtual_host": {
+                  "widget_type": "table",
+                  "label": "Domains",
+                  "required": true,
+                  "add_action": "Add Item",
+                  "form_section": "basic"
+                }
+              }
             }
           },
           "dynamic_reverse_proxy": {
@@ -144581,6 +147782,18 @@
               "create": false,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "virtual_host": {
+                  "widget_type": "configurable",
+                  "label": "Proxy",
+                  "form_section": "proxy",
+                  "notes": "Proxy settings including connection and routing behavior",
+                  "required": true,
+                  "description": "Server-required: Must be SMA_PROXY or UDP_PROXY"
+                }
+              }
             }
           },
           "rate_limiter_allowed_prefixes": {
@@ -144660,7 +147873,18 @@
             "items": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Remove Cookies from Cookie Header.",
             "x-ves-validation-rules": {
@@ -144814,7 +148038,18 @@
             "items": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Remove Cookies from Set-Cookie Headers.",
             "x-ves-validation-rules": {
@@ -144937,6 +148172,15 @@
               "create": false,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "virtual_host": {
+                  "widget_type": "configurable",
+                  "label": "Retry Policy",
+                  "form_section": "advanced"
+                }
+              }
             }
           },
           "routes": {
@@ -144971,6 +148215,16 @@
               "create": false,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "virtual_host": {
+                  "widget_type": "nested-resource-list",
+                  "label": "Routes",
+                  "add_action": "Add Item",
+                  "form_section": "routes"
+                }
+              }
             }
           },
           "sensitive_data_policy": {
@@ -145072,7 +148326,17 @@
             },
             "x-f5xc-conflicts-with": [
               "tls_cert_params"
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "virtual_host": {
+                  "widget_type": "listbox",
+                  "label": "TLS Parameters",
+                  "form_section": "tls",
+                  "notes": "Downstream TLS configuration"
+                }
+              }
+            }
           },
           "user_identification": {
             "type": "array",
@@ -145121,6 +148385,15 @@
               "create": false,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "virtual_host": {
+                  "widget_type": "listbox",
+                  "label": "WAF Type",
+                  "form_section": "security"
+                }
+              }
             }
           }
         },
@@ -145459,7 +148732,17 @@
             "maxProperties": 16,
             "additionalProperties": {
               "type": "string",
-              "maxLength": 65536
+              "maxLength": 65536,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "maxLength": 65536,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-f5xc-example": "value",
             "x-validation-rules": {
@@ -145472,13 +148755,28 @@
             "x-f5xc-description-short": "Map of integer error codes as keys and string values that can be used to provide custom HTTP pages for each error code.",
             "x-f5xc-description-medium": "Map of integer error codes as keys and string values that can be used to provide custom HTTP pages for each error code. Key of the map can be either response code class or HTTP Error code. Response code classes for key is configured as follows 3 -- for 3xx response code class 4 -- for 4xx...",
             "x-f5xc-constraints": {
-              "constraintType": "object",
-              "category": "general",
-              "maxProperties": 16,
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.75,
-                "validatedAt": "2026-10-03T05:10:26+00:00"
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.keys.uint32.gte": "3",
+                "ves.io.schema.rules.map.keys.uint32.lte": "599",
+                "ves.io.schema.rules.map.max_pairs": "16",
+                "ves.io.schema.rules.map.values.string.max_len": "65536",
+                "ves.io.schema.rules.map.values.string.uri_ref": "true"
+              },
+              "keys": {
+                "minimum": 3,
+                "type": "uint32-string",
+                "maximum": 599
+              },
+              "cardinality": {
+                "maxProperties": 16
+              },
+              "values": {
+                "maxLength": 65536,
+                "type": "string",
+                "format": "uri-reference"
               }
             },
             "x-f5xc-required-for": {
@@ -146065,7 +149363,18 @@
             "items": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Remove Cookies from Cookie Header.",
             "x-ves-validation-rules": {
@@ -146219,7 +149528,18 @@
             "items": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Remove Cookies from Set-Cookie Headers.",
             "x-ves-validation-rules": {
@@ -146818,7 +150138,17 @@
             "maxProperties": 16,
             "additionalProperties": {
               "type": "string",
-              "maxLength": 65536
+              "maxLength": 65536,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "maxLength": 65536,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-f5xc-example": "value",
             "x-validation-rules": {
@@ -146831,13 +150161,28 @@
             "x-f5xc-description-short": "Map of integer error codes as keys and string values that can be used to provide custom HTTP pages for each error code.",
             "x-f5xc-description-medium": "Map of integer error codes as keys and string values that can be used to provide custom HTTP pages for each error code. Key of the map can be either response code class or HTTP Error code. Response code classes for key is configured as follows 3 -- for 3xx response code class 4 -- for 4xx...",
             "x-f5xc-constraints": {
-              "constraintType": "object",
-              "category": "general",
-              "maxProperties": 16,
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.75,
-                "validatedAt": "2026-10-03T05:10:26+00:00"
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.keys.uint32.gte": "3",
+                "ves.io.schema.rules.map.keys.uint32.lte": "599",
+                "ves.io.schema.rules.map.max_pairs": "16",
+                "ves.io.schema.rules.map.values.string.max_len": "65536",
+                "ves.io.schema.rules.map.values.string.uri_ref": "true"
+              },
+              "keys": {
+                "minimum": 3,
+                "type": "uint32-string",
+                "maximum": 599
+              },
+              "cardinality": {
+                "maxProperties": 16
+              },
+              "values": {
+                "maxLength": 65536,
+                "type": "string",
+                "format": "uri-reference"
               }
             },
             "x-f5xc-required-for": {
@@ -147295,7 +150640,18 @@
             "items": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Remove Cookies from Cookie Header.",
             "x-ves-validation-rules": {
@@ -147449,7 +150805,18 @@
             "items": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Remove Cookies from Set-Cookie Headers.",
             "x-ves-validation-rules": {
@@ -148871,7 +152238,18 @@
             "items": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "List of Domains.",
             "x-ves-example": "www.example.com.",
@@ -149254,7 +152632,18 @@
             "items": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "List of Domain.",
             "x-ves-example": "www.example.com.",
@@ -150536,13 +153925,14 @@
             "x-f5xc-description-short": "Map of string keys and values that can be used to organize and categorize (scope and select) objects as chosen by the user.",
             "x-f5xc-description-medium": "Map of string keys and values that can be used to organize and categorize (scope and select) objects as chosen by the user. Values specified here will be used by selector expression.",
             "x-f5xc-constraints": {
-              "constraintType": "object",
-              "category": "general",
-              "maxProperties": 16,
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.75,
-                "validatedAt": "2026-10-03T05:10:26+00:00"
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.max_pairs": "16"
+              },
+              "cardinality": {
+                "maxProperties": 16
               }
             },
             "x-f5xc-required-for": {
@@ -152000,7 +155390,18 @@
             "items": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "List of Domain.",
             "x-ves-example": "www.example.com.",
@@ -152276,7 +155677,18 @@
             "items": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "List of Domain.",
             "x-ves-example": "www.example.com.",
@@ -157116,6 +160528,15 @@
               "create": true,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "waf_exclusion_policy": {
+                  "widget_type": "configurable",
+                  "label": "WAF Exclusion Rules",
+                  "form_section": "basic"
+                }
+              }
             }
           }
         },
@@ -158992,7 +162413,17 @@
             "title": "Added Signatures",
             "items": {
               "type": "string",
-              "format": "int64"
+              "format": "int64",
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "format": "int64",
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Added Signatures.",
             "x-f5xc-example": "[\"200101852\", \"200103290\"]",
@@ -159035,7 +162466,17 @@
             "title": "Updated Signatures",
             "items": {
               "type": "string",
-              "format": "int64"
+              "format": "int64",
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "format": "int64",
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Updated Signatures.",
             "x-f5xc-example": "[\"200101852\", \"200103290\"]",

@@ -1,0 +1,468 @@
+version: 1
+stages:
+  AcronymEnricher:
+    status: active
+    phase: index
+    producer: scripts/utils/acronym_enricher.py
+    outputs:
+      - x-f5xc-acronyms
+    configuration:
+      - config/acronyms.yaml
+      - config/enrichment.yaml
+    statistics: get_stats
+    artifacts:
+      - index.json
+    disposition: Maintained production enrichment
+    owner: f5-sales-demo/api-specs-enriched#1854
+  BestPracticesEnricher:
+    status: active
+    phase: domain
+    producer: scripts/utils/best_practices_enricher.py
+    outputs: []
+    configuration:
+      - config/best_practices.yaml
+      - config/enrichment.yaml
+    statistics: get_stats
+    artifacts:
+      - domains/*.json
+    disposition: Maintained production enrichment
+    owner: f5-sales-demo/api-specs-enriched#1854
+  BrandingNormalizer:
+    status: superseded
+    phase: source
+    producer: scripts/utils/branding.py
+    outputs: []
+    configuration:
+      - config/enrichment.yaml
+    statistics: get_stats
+    artifacts: []
+    disposition: Configured BrandingTransformer owns production branding
+    owner: f5-sales-demo/api-specs-enriched#1854
+  ConcurrencyContractEnricher:
+    status: active
+    phase: publication
+    producer: scripts/utils/concurrency_contract_enricher.py
+    outputs: []
+    configuration:
+      - config/concurrency_exclusions.yaml
+      - config/paths.yaml
+    statistics: get_stats
+    artifacts:
+      - domains/*.json
+    disposition: Maintained production enrichment
+    owner: f5-sales-demo/api-specs-enriched#1854
+  ConflictsWithEnricher:
+    status: active
+    phase: domain
+    producer: scripts/utils/conflicts_with_enricher.py
+    outputs: []
+    configuration:
+      - config/enrichment.yaml
+    statistics: get_stats
+    artifacts:
+      - domains/*.json
+    disposition: Maintained production enrichment
+    owner: f5-sales-demo/api-specs-enriched#1854
+  ConsoleUIEnricher:
+    status: active
+    phase: canonical-domain
+    producer: scripts/utils/console_ui_enricher.py
+    outputs: []
+    configuration:
+      - config/console_field_metadata.yaml
+      - config/console_ui.yaml
+      - config/enrichment.yaml
+      - config/field_metadata.yaml
+      - config/paths.yaml
+    statistics: get_stats
+    artifacts:
+      - openapi.json
+      - domains/*.json
+      - api-catalog.json
+    disposition: Maintained production enrichment
+    owner: f5-sales-demo/api-specs-enriched#1854
+  ConstrainedFieldsEnricher:
+    status: active
+    phase: domain
+    producer: scripts/utils/constrained_fields_enricher.py
+    outputs: []
+    configuration:
+      - config/enrichment.yaml
+      - config/minimum_configs.yaml
+      - config/paths.yaml
+    statistics: get_stats
+    artifacts:
+      - domains/*.json
+    disposition: Maintained production enrichment
+    owner: f5-sales-demo/api-specs-enriched#1854
+  ConstraintEnricher:
+    status: active
+    phase: source
+    producer: scripts/utils/constraint_enricher.py
+    outputs:
+      - x-f5xc-constraints
+    configuration:
+      - config/constraint_patterns.yaml
+      - config/discovery.yaml
+      - config/enrichment.yaml
+      - config/validation.yaml
+    statistics: get_stats
+    artifacts:
+      - openapi.json
+      - domains/*.json
+      - api-catalog.json
+    disposition: Maintained production enrichment
+    owner: f5-sales-demo/api-specs-enriched#1854
+  DefaultValueEnricher:
+    status: active
+    phase: domain
+    producer: scripts/utils/default_value_enricher.py
+    outputs: []
+    configuration:
+      - config/discovered_defaults.yaml
+      - config/enrichment.yaml
+    statistics: get_stats
+    artifacts:
+      - domains/*.json
+    disposition: Maintained production enrichment
+    owner: f5-sales-demo/api-specs-enriched#1854
+  DependencyEnricher:
+    status: active
+    phase: domain
+    producer: scripts/utils/dependency_enricher.py
+    outputs: []
+    configuration:
+      - config/enrichment.yaml
+      - config/minimum_configs.yaml
+    statistics: get_stats
+    artifacts:
+      - domains/*.json
+    disposition: Maintained production enrichment
+    owner: f5-sales-demo/api-specs-enriched#1854
+  DeprecatedTierEnricher:
+    status: retired
+    phase: domain
+    producer: scripts/utils/deprecated_tier_enricher.py
+    outputs: []
+    configuration:
+      - config/enrichment.yaml
+      - config/paths.yaml
+    statistics: get_stats
+    artifacts:
+      - domains/*.json
+    disposition: Wire enum corrections belong upstream; enrichment must preserve upstream
+      wire values
+    owner: f5-sales-demo/api-specs-enriched#1854
+  DescriptionEnricher:
+    status: active
+    phase: domain
+    producer: scripts/utils/description_enricher.py
+    outputs:
+      - x-f5xc-summary
+    configuration:
+      - config/domain_descriptions.yaml
+      - config/enrichment.yaml
+    statistics: get_stats
+    artifacts:
+      - domains/*.json
+    disposition: Maintained production enrichment
+    owner: f5-sales-demo/api-specs-enriched#1854
+  DiscoveryEnricher:
+    status: active
+    phase: discovery
+    producer: scripts/utils/discovery_enricher.py
+    outputs: []
+    configuration:
+      - config/discovery.yaml
+      - config/discovery_enrichment.yaml
+      - config/enrichment.yaml
+      - config/latency_estimates.yaml
+      - config/normalization.yaml
+      - config/paths.yaml
+      - config/validation.yaml
+    statistics: get_stats
+    artifacts:
+      - domains/*.json
+    disposition: Maintained production enrichment
+    owner: f5-sales-demo/api-specs-enriched#1854
+  ErrorResolutionEnricher:
+    status: active
+    phase: index
+    producer: scripts/utils/error_resolution_enricher.py
+    outputs:
+      - x-f5xc-error-resolution
+    configuration:
+      - config/enrichment.yaml
+      - config/error_resolution.yaml
+    statistics: get_stats
+    artifacts:
+      - index.json
+    disposition: Maintained production enrichment
+    owner: f5-sales-demo/api-specs-enriched#1854
+  ExampleFieldEnricher:
+    status: active
+    phase: domain
+    producer: scripts/utils/example_field_enricher.py
+    outputs:
+      - x-f5xc-minimum-configuration
+    configuration:
+      - config/console_field_metadata.yaml
+      - config/enrichment.yaml
+      - config/field_metadata.yaml
+    statistics: get_stats
+    artifacts:
+      - domains/*.json
+    disposition: Maintained production enrichment
+    owner: f5-sales-demo/api-specs-enriched#1854
+  ExternalDocsEnricher:
+    status: active
+    phase: domain
+    producer: scripts/utils/external_docs_enricher.py
+    outputs: []
+    configuration:
+      - config/enrichment.yaml
+      - config/external_docs.yaml
+      - config/paths.yaml
+    statistics: get_stats
+    artifacts:
+      - domains/*.json
+    disposition: Maintained production enrichment
+    owner: f5-sales-demo/api-specs-enriched#1854
+  FieldDescriptionEnricher:
+    status: active
+    phase: source
+    producer: scripts/utils/field_description_enricher.py
+    outputs: []
+    configuration:
+      - config/enrichment.yaml
+      - config/field_descriptions.yaml
+    statistics: get_stats
+    artifacts:
+      - openapi.json
+      - domains/*.json
+      - api-catalog.json
+    disposition: Maintained production enrichment
+    owner: f5-sales-demo/api-specs-enriched#1854
+  FieldMetadataEnricher:
+    status: superseded
+    phase: domain
+    producer: scripts/utils/field_metadata_enricher.py
+    outputs: []
+    configuration:
+      - config/discovery.yaml
+      - config/enrichment.yaml
+      - config/field_metadata.yaml
+      - config/validation.yaml
+    statistics: get_stats
+    artifacts:
+      - domains/*.json
+    disposition: Specialized field descriptions, constraints, examples and defaults
+      own authoritative semantics; generic inference is retired
+    owner: f5-sales-demo/api-specs-enriched#1854
+  GuidedWorkflowEnricher:
+    status: active
+    phase: domain
+    producer: scripts/utils/guided_workflow_enricher.py
+    outputs: []
+    configuration:
+      - config/enrichment.yaml
+      - config/guided_workflows.yaml
+    statistics: get_stats
+    artifacts:
+      - domains/*.json
+    disposition: Maintained production enrichment
+    owner: f5-sales-demo/api-specs-enriched#1854
+  InterfaceContractEnricher:
+    status: active
+    phase: domain
+    producer: scripts/utils/interface_contract_enricher.py
+    outputs: []
+    configuration:
+      - config/discovery.yaml
+      - config/enrichment.yaml
+      - config/interface_contracts.yaml
+      - config/normalization.yaml
+      - config/paths.yaml
+      - config/validation.yaml
+    statistics: get_stats
+    artifacts:
+      - domains/*.json
+    disposition: Maintained production enrichment
+    owner: f5-sales-demo/api-specs-enriched#1854
+  MinimumConfigurationEnricher:
+    status: active
+    phase: source
+    producer: scripts/utils/minimum_configuration_enricher.py
+    outputs:
+      - x-f5xc-example
+      - x-f5xc-recommended-value
+    configuration:
+      - config/enrichment.yaml
+      - config/minimum_configs.yaml
+      - config/paths.yaml
+      - config/schema_overrides.yaml
+      - config/validation.yaml
+      - config/validation_rules.yaml
+    statistics: get_stats
+    artifacts:
+      - openapi.json
+      - domains/*.json
+      - api-catalog.json
+    disposition: Maintained production enrichment
+    owner: f5-sales-demo/api-specs-enriched#1854
+  NamespaceProfileEnricher:
+    status: active
+    phase: domain
+    producer: scripts/utils/namespace_profile_enricher.py
+    outputs:
+      - x-f5xc-cli-domain
+      - x-f5xc-namespace-scope
+    configuration:
+      - config/enrichment.yaml
+      - config/namespace_profile.yaml
+      - config/namespace_verdicts.yaml
+      - config/paths.yaml
+    statistics: get_stats
+    artifacts:
+      - domains/*.json
+    disposition: Maintained production enrichment
+    owner: f5-sales-demo/api-specs-enriched#1854
+  OperationDescriptionEnricher:
+    status: active
+    phase: source
+    producer: scripts/utils/operation_description_enricher.py
+    outputs:
+      - x-f5xc-operation-metadata
+    configuration:
+      - config/enrichment.yaml
+      - config/operation_descriptions.yaml
+      - config/paths.yaml
+    statistics: get_stats
+    artifacts:
+      - openapi.json
+      - domains/*.json
+      - api-catalog.json
+    disposition: Maintained production enrichment
+    owner: f5-sales-demo/api-specs-enriched#1854
+  OperationMetadataEnricher:
+    status: active
+    phase: source
+    producer: scripts/utils/operation_metadata_enricher.py
+    outputs: []
+    configuration:
+      - config/enrichment.yaml
+      - config/operation_metadata.yaml
+      - config/paths.yaml
+    statistics: get_stats
+    artifacts:
+      - openapi.json
+      - domains/*.json
+      - api-catalog.json
+    disposition: Maintained production enrichment
+    owner: f5-sales-demo/api-specs-enriched#1854
+  PropertyDescriptionShortEnricher:
+    status: active
+    phase: source
+    producer: scripts/utils/property_description_short_enricher.py
+    outputs: []
+    configuration:
+      - config/enrichment.yaml
+      - config/paths.yaml
+      - config/property_description_short.yaml
+      - config/validation.yaml
+    statistics: get_stats
+    artifacts:
+      - openapi.json
+      - domains/*.json
+      - api-catalog.json
+    disposition: Maintained production enrichment
+    owner: f5-sales-demo/api-specs-enriched#1854
+  ReadOnlyEnricher:
+    status: active
+    phase: source
+    producer: scripts/utils/readonly_enricher.py
+    outputs: []
+    configuration:
+      - config/enrichment.yaml
+      - config/readonly_fields.yaml
+    statistics: get_stats
+    artifacts:
+      - openapi.json
+      - domains/*.json
+      - api-catalog.json
+    disposition: Maintained production enrichment
+    owner: f5-sales-demo/api-specs-enriched#1854
+  ReferencesEnricher:
+    status: active
+    phase: domain
+    producer: scripts/utils/references_enricher.py
+    outputs:
+      - x-f5xc-required-for
+    configuration:
+      - config/enrichment.yaml
+      - config/resource_references.yaml
+    statistics: get_stats
+    artifacts:
+      - domains/*.json
+    disposition: Maintained production enrichment
+    owner: f5-sales-demo/api-specs-enriched#1854
+  ResourceExamplesEnricher:
+    status: active
+    phase: index
+    producer: scripts/utils/resource_examples_enricher.py
+    outputs: []
+    configuration:
+      - config/enrichment.yaml
+      - config/resource_examples.yaml
+      - config/validation.yaml
+    statistics: get_stats
+    artifacts:
+      - index.json
+    disposition: Maintained production enrichment
+    owner: f5-sales-demo/api-specs-enriched#1854
+  SchemaOverrideEnricher:
+    status: active
+    phase: source-domain-canonical
+    producer: scripts/utils/schema_override_enricher.py
+    outputs: []
+    configuration:
+      - config/enrichment.yaml
+      - config/paths.yaml
+      - config/schema_overrides.yaml
+    statistics: get_stats
+    artifacts:
+      - domains/*.json
+    disposition: Maintained production enrichment
+    owner: f5-sales-demo/api-specs-enriched#1854
+  UniquenessEnricher:
+    status: retired
+    phase: domain
+    producer: scripts/utils/uniqueness_enricher.py
+    outputs: []
+    configuration:
+      - config/acronyms.yaml
+      - config/constraint_patterns.yaml
+      - config/enrichment.yaml
+    statistics: get_stats
+    artifacts:
+      - domains/*.json
+    disposition: Inactive pending schema location and value-shape agreement with consumers;
+      contract follow-up f5-sales-demo/api-specs-enriched#1855
+    owner: f5-sales-demo/api-specs-enriched#1854
+  ValidationEnricher:
+    status: active
+    phase: source
+    producer: scripts/utils/validation_enricher.py
+    outputs: []
+    configuration:
+      - config/discovery.yaml
+      - config/enrichment.yaml
+      - config/validation.yaml
+      - config/validation_rules.yaml
+    statistics: get_stats
+    artifacts:
+      - openapi.json
+      - domains/*.json
+      - api-catalog.json
+    disposition: Maintained production enrichment
+    owner: f5-sales-demo/api-specs-enriched#1854

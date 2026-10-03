@@ -3,7 +3,7 @@
   "info": {
     "title": "Network",
     "description": "Routing table manipulation via peer state machines and path selection algorithms. Secure conduits between locations using IKE handshakes, cipher suites, and key exchanges. Segment attachments bridge hybrid topologies spanning cloud providers and on-premises infrastructure. SRv6 addressing, CIDR block matching, and advertisement controls direct traffic flows across distributed deployments with granular policy enforcement.",
-    "version": "9.0.2",
+    "version": "10.0.0",
     "contact": {
       "name": "F5 Distributed Cloud",
       "url": "https://docs.cloud.f5.com"
@@ -61,6 +61,50 @@
       "classification": {
         "category": "application",
         "multi_tenant_pattern": "per-tenant"
+      }
+    },
+    "x-f5xc-console-navigation": {
+      "workspaces": {
+        "web-app-and-api-protection": {
+          "label": "Web App & API Protection",
+          "route_prefix": "/web/workspaces/web-app-and-api-protection"
+        },
+        "multi-cloud-app-connect": {
+          "label": "Multi-Cloud App Connect",
+          "route_prefix": "/web/workspaces/multi-cloud-app-connect"
+        },
+        "multi-cloud-network-connect": {
+          "label": "Multi-Cloud Network Connect",
+          "route_prefix": "/web/workspaces/multi-cloud-network-connect"
+        },
+        "distributed-apps": {
+          "label": "Distributed Apps",
+          "route_prefix": "/web/workspaces/distributed-apps"
+        },
+        "dns-management": {
+          "label": "DNS Management",
+          "route_prefix": "/web/workspaces/dns-management"
+        },
+        "content-delivery-network": {
+          "label": "Content Delivery Network",
+          "route_prefix": "/web/workspaces/content-delivery-network"
+        },
+        "observability": {
+          "label": "Observability",
+          "route_prefix": "/web/workspaces/observability"
+        },
+        "shared-configuration": {
+          "label": "Shared Configuration",
+          "route_prefix": "/web/workspaces/shared-configuration"
+        },
+        "audit-logs-and-alerts": {
+          "label": "Audit Logs & Alerts",
+          "route_prefix": "/web/workspaces/audit-logs-and-alerts"
+        },
+        "administration": {
+          "label": "Administration",
+          "route_prefix": "/web/workspaces/administration"
+        }
       }
     }
   },
@@ -23927,6 +23971,17 @@
               "create": false,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "address_allocator": {
+                  "required": true,
+                  "label": "Address Allocation Scheme",
+                  "form_section": "basic-configuration",
+                  "description": "Server-required: Field should be not nil",
+                  "widget_type": "listbox"
+                }
+              }
             }
           },
           "address_pool": {
@@ -23971,6 +24026,16 @@
               "create": true,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "address_allocator": {
+                  "widget_type": "table",
+                  "label": "Address Pool",
+                  "required": true,
+                  "form_section": "address-pool"
+                }
+              }
             }
           },
           "mode": {
@@ -24013,6 +24078,55 @@
           "classification": {
             "category": "application",
             "multi_tenant_pattern": "per-tenant"
+          }
+        },
+        "x-f5xc-console": {
+          "workspace": "multi-cloud-network-connect",
+          "workspace_label": "Multi-Cloud Network Connect",
+          "route_prefix": "/web/workspaces/multi-cloud-network-connect",
+          "menu_path": [
+            "Manage",
+            "Networking",
+            "Legacy Network Configuration",
+            "IP Address Allocators"
+          ],
+          "route_pattern": "/manage/networking/legacy_network_configuration/address_allocators",
+          "breadcrumbs": [
+            "Home",
+            "Multi-Cloud Network Connect",
+            "Manage",
+            "Networking",
+            "Legacy Network Configuration",
+            "IP Address Allocators"
+          ],
+          "add_action": {
+            "type": "tab",
+            "label": "Add IP Address Allocator"
+          },
+          "save_action": {
+            "label": "Add IP Address Allocator"
+          },
+          "form_tabs": [
+            "Form",
+            "Documentation",
+            "JSON"
+          ],
+          "namespace_scoped": false,
+          "form_sections": [
+            {
+              "id": "metadata",
+              "label": "Metadata",
+              "api_fields": [
+                "metadata.name",
+                "metadata.labels",
+                "metadata.description"
+              ]
+            }
+          ],
+          "metadata": {
+            "confidence": "validated",
+            "discovered_at": "2026-06-17",
+            "console_version": "2025.06"
           }
         }
       },
@@ -25659,7 +25773,18 @@
             "additionalProperties": {
               "type": "string",
               "maxLength": 1024,
-              "minLength": 1
+              "minLength": 1,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 1024,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-f5xc-example": "value",
             "x-validation-rules": {
@@ -25670,6 +25795,27 @@
             },
             "x-f5xc-description-short": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata.",
             "x-f5xc-description-medium": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata. They are not queryable and should be preserved when modifying objects.",
+            "x-f5xc-constraints": {
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.keys.string.max_len": "64",
+                "ves.io.schema.rules.map.keys.string.min_len": "1",
+                "ves.io.schema.rules.map.values.string.max_len": "1024",
+                "ves.io.schema.rules.map.values.string.min_len": "1"
+              },
+              "keys": {
+                "maxLength": 64,
+                "type": "string",
+                "minLength": 1
+              },
+              "values": {
+                "maxLength": 1024,
+                "type": "string",
+                "minLength": 1
+              }
+            },
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -25718,7 +25864,66 @@
             },
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-03T05:10:26+00:00"
+            "x-reconciled-at": "2026-10-03T05:10:26+00:00",
+            "x-f5xc-console-field": {
+              "resources": {
+                "route": {
+                  "widget_type": "textbox",
+                  "label": "Description",
+                  "form_section": "metadata"
+                },
+                "ip_prefix_set": {
+                  "widget_type": "textbox",
+                  "label": "Description",
+                  "form_section": "metadata"
+                },
+                "bgp_asn_set": {
+                  "widget_type": "textbox",
+                  "label": "Description",
+                  "form_section": "metadata"
+                },
+                "bgp": {
+                  "widget_type": "textbox",
+                  "label": "Description",
+                  "form_section": "metadata"
+                },
+                "dc_cluster_group": {
+                  "widget_type": "textbox",
+                  "label": "Description",
+                  "form_section": "metadata"
+                },
+                "virtual_network": {
+                  "widget_type": "textbox",
+                  "label": "Description",
+                  "form_section": "metadata"
+                },
+                "network_connector": {
+                  "widget_type": "textbox",
+                  "label": "Description",
+                  "form_section": "metadata"
+                },
+                "subnet": {
+                  "widget_type": "textbox",
+                  "label": "Description",
+                  "form_section": "metadata"
+                },
+                "tunnel": {
+                  "widget_type": "textbox",
+                  "label": "Description",
+                  "form_section": "metadata"
+                },
+                "address_allocator": {
+                  "widget_type": "textbox",
+                  "label": "Description",
+                  "form_section": "metadata"
+                },
+                "advertise_policy": {
+                  "widget_type": "textbox",
+                  "label": "Description",
+                  "form_section": "metadata"
+                }
+              }
+            }
           },
           "disable": {
             "type": "boolean",
@@ -25747,6 +25952,65 @@
               "create": false,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "route": {
+                  "widget_type": "key-value-pairs",
+                  "label": "Labels",
+                  "form_section": "metadata"
+                },
+                "ip_prefix_set": {
+                  "widget_type": "key-value-pairs",
+                  "label": "Labels",
+                  "form_section": "metadata"
+                },
+                "bgp_asn_set": {
+                  "widget_type": "key-value-pairs",
+                  "label": "Labels",
+                  "form_section": "metadata"
+                },
+                "bgp": {
+                  "widget_type": "key-value-pairs",
+                  "label": "Labels",
+                  "form_section": "metadata"
+                },
+                "dc_cluster_group": {
+                  "widget_type": "key-value-pairs",
+                  "label": "Labels",
+                  "form_section": "metadata"
+                },
+                "virtual_network": {
+                  "widget_type": "key-value-pairs",
+                  "label": "Labels",
+                  "form_section": "metadata"
+                },
+                "network_connector": {
+                  "widget_type": "key-value-pairs",
+                  "label": "Labels",
+                  "form_section": "metadata"
+                },
+                "subnet": {
+                  "widget_type": "key-value-pairs",
+                  "label": "Labels",
+                  "form_section": "metadata"
+                },
+                "tunnel": {
+                  "widget_type": "key-value-pairs",
+                  "label": "Labels",
+                  "form_section": "metadata"
+                },
+                "address_allocator": {
+                  "widget_type": "key-value-pairs",
+                  "label": "Labels",
+                  "form_section": "metadata"
+                },
+                "advertise_policy": {
+                  "widget_type": "key-value-pairs",
+                  "label": "Labels",
+                  "form_section": "metadata"
+                }
+              }
             }
           },
           "name": {
@@ -25800,7 +26064,77 @@
             "minLength": 1,
             "x-reconciled-from-discovery": true,
             "x-reconciled-at": "2026-10-03T05:10:26+00:00",
-            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+            "x-f5xc-console-field": {
+              "resources": {
+                "route": {
+                  "widget_type": "textbox",
+                  "label": "Name",
+                  "required": true,
+                  "form_section": "metadata"
+                },
+                "ip_prefix_set": {
+                  "widget_type": "textbox",
+                  "label": "Name",
+                  "required": true,
+                  "form_section": "metadata"
+                },
+                "bgp_asn_set": {
+                  "widget_type": "textbox",
+                  "label": "Name",
+                  "required": true,
+                  "form_section": "metadata"
+                },
+                "bgp": {
+                  "widget_type": "textbox",
+                  "label": "Name",
+                  "required": true,
+                  "form_section": "metadata"
+                },
+                "dc_cluster_group": {
+                  "widget_type": "textbox",
+                  "label": "Name",
+                  "required": true,
+                  "form_section": "metadata"
+                },
+                "virtual_network": {
+                  "widget_type": "textbox",
+                  "label": "Name",
+                  "required": true,
+                  "form_section": "metadata"
+                },
+                "network_connector": {
+                  "widget_type": "textbox",
+                  "label": "Name",
+                  "required": true,
+                  "form_section": "metadata"
+                },
+                "subnet": {
+                  "widget_type": "textbox",
+                  "label": "Name",
+                  "required": true,
+                  "form_section": "metadata"
+                },
+                "tunnel": {
+                  "widget_type": "textbox",
+                  "label": "Name",
+                  "required": true,
+                  "form_section": "metadata"
+                },
+                "address_allocator": {
+                  "widget_type": "textbox",
+                  "label": "Name",
+                  "required": true,
+                  "form_section": "metadata"
+                },
+                "advertise_policy": {
+                  "widget_type": "textbox",
+                  "label": "Name",
+                  "required": true,
+                  "form_section": "metadata"
+                }
+              }
+            }
           },
           "namespace": {
             "type": "string",
@@ -25900,7 +26234,18 @@
             "additionalProperties": {
               "type": "string",
               "maxLength": 1024,
-              "minLength": 1
+              "minLength": 1,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 1024,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-f5xc-example": "value",
             "x-validation-rules": {
@@ -25911,6 +26256,27 @@
             },
             "x-f5xc-description-short": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata.",
             "x-f5xc-description-medium": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata. They are not queryable and should be preserved when modifying objects.",
+            "x-f5xc-constraints": {
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.keys.string.max_len": "64",
+                "ves.io.schema.rules.map.keys.string.min_len": "1",
+                "ves.io.schema.rules.map.values.string.max_len": "1024",
+                "ves.io.schema.rules.map.values.string.min_len": "1"
+              },
+              "keys": {
+                "maxLength": 64,
+                "type": "string",
+                "minLength": 1
+              },
+              "values": {
+                "maxLength": 1024,
+                "type": "string",
+                "minLength": 1
+              }
+            },
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -27655,6 +28021,53 @@
           "classification": {
             "category": "networking",
             "multi_tenant_pattern": "none"
+          }
+        },
+        "x-f5xc-console": {
+          "workspace": "multi-cloud-app-connect",
+          "workspace_label": "Multi-Cloud App Connect",
+          "route_prefix": "/web/workspaces/multi-cloud-app-connect",
+          "menu_path": [
+            "Manage",
+            "Virtual Host",
+            "Advertise Policies"
+          ],
+          "route_pattern": "/namespaces/{namespace}/manage/virtual_host/advertise_policies",
+          "breadcrumbs": [
+            "Home",
+            "Multi-Cloud App Connect",
+            "{namespace}",
+            "Manage",
+            "Virtual Host",
+            "Advertise Policies"
+          ],
+          "add_action": {
+            "type": "tab",
+            "label": "Add Advertise Policy"
+          },
+          "save_action": {
+            "label": "Add Advertise Policy"
+          },
+          "form_tabs": [
+            "Form",
+            "Documentation",
+            "JSON"
+          ],
+          "form_sections": [
+            {
+              "id": "metadata",
+              "label": "Metadata",
+              "api_fields": [
+                "metadata.name",
+                "metadata.labels",
+                "metadata.description"
+              ]
+            }
+          ],
+          "metadata": {
+            "confidence": "validated",
+            "discovered_at": "2026-06-17",
+            "console_version": "2025.06"
           }
         }
       },
@@ -30099,7 +30512,18 @@
             "additionalProperties": {
               "type": "string",
               "maxLength": 1024,
-              "minLength": 1
+              "minLength": 1,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 1024,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-f5xc-example": "value",
             "x-validation-rules": {
@@ -30110,6 +30534,27 @@
             },
             "x-f5xc-description-short": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata.",
             "x-f5xc-description-medium": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata. They are not queryable and should be preserved when modifying objects.",
+            "x-f5xc-constraints": {
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.keys.string.max_len": "64",
+                "ves.io.schema.rules.map.keys.string.min_len": "1",
+                "ves.io.schema.rules.map.values.string.max_len": "1024",
+                "ves.io.schema.rules.map.values.string.min_len": "1"
+              },
+              "keys": {
+                "maxLength": 64,
+                "type": "string",
+                "minLength": 1
+              },
+              "values": {
+                "maxLength": 1024,
+                "type": "string",
+                "minLength": 1
+              }
+            },
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -32662,6 +33107,17 @@
               "create": false,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "bgp": {
+                  "required": true,
+                  "label": "Bgp Parameters",
+                  "form_section": "basic-configuration",
+                  "description": "Server-required: Field should be not nil",
+                  "widget_type": "configurable"
+                }
+              }
             }
           },
           "peers": {
@@ -32699,6 +33155,15 @@
               "create": true,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "bgp": {
+                  "widget_type": "table",
+                  "label": "Peers",
+                  "form_section": "peers"
+                }
+              }
             }
           },
           "where": {
@@ -32721,7 +33186,18 @@
                 "required": false,
                 "cardinality": "single"
               }
-            ]
+            ],
+            "x-f5xc-console-field": {
+              "resources": {
+                "bgp": {
+                  "widget_type": "listbox",
+                  "label": "Where",
+                  "required": true,
+                  "default": "Site",
+                  "form_section": "where"
+                }
+              }
+            }
           }
         },
         "x-f5xc-description-short": "BGP object is the configuration for peering with external BGP servers. It is created by users in system namespace.",
@@ -32751,6 +33227,55 @@
           "classification": {
             "category": "networking",
             "multi_tenant_pattern": "none"
+          }
+        },
+        "x-f5xc-console": {
+          "workspace": "multi-cloud-network-connect",
+          "workspace_label": "Multi-Cloud Network Connect",
+          "route_prefix": "/web/workspaces/multi-cloud-network-connect",
+          "menu_path": [
+            "Manage",
+            "Networking",
+            "External Connectivity",
+            "BGP Peers & Policies"
+          ],
+          "route_pattern": "/manage/networking/external_connectivity/bgp",
+          "breadcrumbs": [
+            "Home",
+            "Multi-Cloud Network Connect",
+            "Manage",
+            "Networking",
+            "External Connectivity",
+            "BGP Peers & Policies"
+          ],
+          "add_action": {
+            "type": "tab",
+            "label": "Add BGP"
+          },
+          "save_action": {
+            "label": "Add BGP"
+          },
+          "form_tabs": [
+            "Form",
+            "Documentation",
+            "JSON"
+          ],
+          "namespace_scoped": false,
+          "form_sections": [
+            {
+              "id": "metadata",
+              "label": "Metadata",
+              "api_fields": [
+                "metadata.name",
+                "metadata.labels",
+                "metadata.description"
+              ]
+            }
+          ],
+          "metadata": {
+            "confidence": "validated",
+            "discovered_at": "2026-06-16",
+            "console_version": "2025.06"
           }
         }
       },
@@ -36382,6 +36907,19 @@
               "create": true,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "bgp_asn_set": {
+                  "widget_type": "table",
+                  "label": "AS Numbers",
+                  "form_section": "spec",
+                  "required": true,
+                  "description": "List of AS Numbers — a row pre-exists with value 0; fill it with a valid ASN (e.g. 64512). Uses ngx-datatable input.",
+                  "add_action": "Add Item",
+                  "default": null
+                }
+              }
             }
           }
         },
@@ -36411,6 +36949,53 @@
           "classification": {
             "category": "networking",
             "multi_tenant_pattern": "none"
+          }
+        },
+        "x-f5xc-console": {
+          "workspace": "web-app-and-api-protection",
+          "workspace_label": "Web App & API Protection",
+          "route_prefix": "/web/workspaces/web-app-and-api-protection",
+          "menu_path": [
+            "Manage",
+            "Shared Objects",
+            "BGP ASN Sets"
+          ],
+          "route_pattern": "/namespaces/{namespace}/manage/shared_objects/bgp_asn_sets",
+          "breadcrumbs": [
+            "Home",
+            "Web App & API Protection",
+            "{namespace}",
+            "Manage",
+            "Shared Objects",
+            "BGP ASN Sets"
+          ],
+          "add_action": {
+            "type": "tab",
+            "label": "Add BGP ASN Set"
+          },
+          "save_action": {
+            "label": "Add BGP ASN Set"
+          },
+          "form_tabs": [
+            "Form",
+            "Documentation",
+            "JSON"
+          ],
+          "form_sections": [
+            {
+              "id": "metadata",
+              "label": "Metadata",
+              "api_fields": [
+                "metadata.name",
+                "metadata.labels",
+                "metadata.description"
+              ]
+            }
+          ],
+          "metadata": {
+            "confidence": "validated",
+            "discovered_at": "2026-06-16",
+            "console_version": "2025.06"
           }
         }
       },
@@ -40133,6 +40718,55 @@
           "classification": {
             "category": "infrastructure",
             "multi_tenant_pattern": "none"
+          }
+        },
+        "x-f5xc-console": {
+          "workspace": "multi-cloud-network-connect",
+          "workspace_label": "Multi-Cloud Network Connect",
+          "route_prefix": "/web/workspaces/multi-cloud-network-connect",
+          "menu_path": [
+            "Manage",
+            "Networking",
+            "Site-to-Site Connectivity",
+            "DC Cluster Groups"
+          ],
+          "route_pattern": "/manage/networking/site_to_site_connectivity/dc_cluster_groups",
+          "breadcrumbs": [
+            "Home",
+            "Multi-Cloud Network Connect",
+            "Manage",
+            "Networking",
+            "Site-to-Site Connectivity",
+            "DC Cluster Groups"
+          ],
+          "add_action": {
+            "type": "tab",
+            "label": "Add DC Cluster Group"
+          },
+          "save_action": {
+            "label": "Add DC Cluster Group"
+          },
+          "form_tabs": [
+            "Form",
+            "Documentation",
+            "JSON"
+          ],
+          "namespace_scoped": false,
+          "form_sections": [
+            {
+              "id": "metadata",
+              "label": "Metadata",
+              "api_fields": [
+                "metadata.name",
+                "metadata.labels",
+                "metadata.description"
+              ]
+            }
+          ],
+          "metadata": {
+            "confidence": "validated",
+            "discovered_at": "2026-06-16",
+            "console_version": "2025.06"
           }
         }
       },
@@ -51235,6 +51869,53 @@
             "category": "security",
             "multi_tenant_pattern": "shared-ref"
           }
+        },
+        "x-f5xc-console": {
+          "workspace": "web-app-and-api-protection",
+          "workspace_label": "Web App & API Protection",
+          "route_prefix": "/web/workspaces/web-app-and-api-protection",
+          "menu_path": [
+            "Manage",
+            "Shared Objects",
+            "IP Prefix Sets"
+          ],
+          "route_pattern": "/namespaces/{namespace}/manage/shared_objects/ip_prefix_sets",
+          "breadcrumbs": [
+            "Home",
+            "Web App & API Protection",
+            "{namespace}",
+            "Manage",
+            "Shared Objects",
+            "IP Prefix Sets"
+          ],
+          "add_action": {
+            "type": "tab",
+            "label": "Add IP Prefix Set"
+          },
+          "save_action": {
+            "label": "Add IP Prefix Set"
+          },
+          "form_tabs": [
+            "Form",
+            "Documentation",
+            "JSON"
+          ],
+          "form_sections": [
+            {
+              "id": "metadata",
+              "label": "Metadata",
+              "api_fields": [
+                "metadata.name",
+                "metadata.labels",
+                "metadata.description"
+              ]
+            }
+          ],
+          "metadata": {
+            "confidence": "validated",
+            "discovered_at": "2026-06-16",
+            "console_version": "2025.06"
+          }
         }
       },
       "ip_prefix_setDeleteRequest": {
@@ -52679,6 +53360,55 @@
           "classification": {
             "category": "networking",
             "multi_tenant_pattern": "none"
+          }
+        },
+        "x-f5xc-console": {
+          "workspace": "multi-cloud-network-connect",
+          "workspace_label": "Multi-Cloud Network Connect",
+          "route_prefix": "/web/workspaces/multi-cloud-network-connect",
+          "menu_path": [
+            "Manage",
+            "Networking",
+            "Legacy Network Configuration",
+            "Network Connectors"
+          ],
+          "route_pattern": "/manage/networking/legacy_network_configuration/network_connectors",
+          "breadcrumbs": [
+            "Home",
+            "Multi-Cloud Network Connect",
+            "Manage",
+            "Networking",
+            "Legacy Network Configuration",
+            "Network Connectors"
+          ],
+          "add_action": {
+            "type": "tab",
+            "label": "Add Network Connector"
+          },
+          "save_action": {
+            "label": "Add Network Connector"
+          },
+          "form_tabs": [
+            "Form",
+            "Documentation",
+            "JSON"
+          ],
+          "namespace_scoped": false,
+          "form_sections": [
+            {
+              "id": "metadata",
+              "label": "Metadata",
+              "api_fields": [
+                "metadata.name",
+                "metadata.labels",
+                "metadata.description"
+              ]
+            }
+          ],
+          "metadata": {
+            "confidence": "validated",
+            "discovered_at": "2026-06-16",
+            "console_version": "2025.06"
           }
         }
       },
@@ -58278,13 +59008,14 @@
             "x-f5xc-description-short": "Upstream cluster may be configured to divide its endpoints into subsets based on metadata attached to the endpoints.",
             "x-f5xc-description-medium": "Upstream cluster may be configured to divide its endpoints into subsets based on metadata attached to the endpoints. Routes may then specify the metadata that a endpoint must match in order to be selected by the load balancer Labels field of endpoint object's metadata is used for subset...",
             "x-f5xc-constraints": {
-              "constraintType": "object",
-              "category": "general",
-              "maxProperties": 16,
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.75,
-                "validatedAt": "2026-10-03T05:10:26+00:00"
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.max_pairs": "16"
+              },
+              "cardinality": {
+                "maxProperties": 16
               }
             },
             "x-f5xc-required-for": {
@@ -58539,13 +59270,14 @@
             "x-f5xc-description-short": "Upstream cluster may be configured to divide its endpoints into subsets based on metadata attached to the endpoints.",
             "x-f5xc-description-medium": "Upstream cluster may be configured to divide its endpoints into subsets based on metadata attached to the endpoints. Routes may then specify the metadata that a endpoint must match in order to be selected by the load balancer Labels field of endpoint object's metadata is used for subset...",
             "x-f5xc-constraints": {
-              "constraintType": "object",
-              "category": "general",
-              "maxProperties": 16,
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.75,
-                "validatedAt": "2026-10-03T05:10:26+00:00"
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.max_pairs": "16"
+              },
+              "cardinality": {
+                "maxProperties": 16
               }
             },
             "x-f5xc-required-for": {
@@ -59405,7 +60137,18 @@
             "items": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Remove Cookies from Cookie Header.",
             "x-ves-validation-rules": {
@@ -59483,7 +60226,18 @@
             "items": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Request Headers to Remove.",
             "x-ves-example": "Host",
@@ -59563,7 +60317,18 @@
             "items": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Remove Cookies from Set-Cookie Headers.",
             "x-ves-validation-rules": {
@@ -59642,7 +60407,18 @@
             "items": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Response Headers to Remove.",
             "x-ves-example": "Host",
@@ -60687,7 +61463,18 @@
             "items": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Allow Origin.",
             "x-ves-example": "Value",
@@ -60733,7 +61520,18 @@
             "items": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Allow Origin Regex.",
             "x-ves-example": "Value",
@@ -61026,7 +61824,18 @@
             "items": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 256
+              "maxLength": 256,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 256,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-10-03T05:10:26+00:00"
+                }
+              }
             },
             "x-displayname": "Domain names.",
             "x-ves-example": "www.example.com.",
@@ -66926,6 +67735,17 @@
               "create": true,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "subnet": {
+                  "required": true,
+                  "label": "Site Subnet Parameters",
+                  "form_section": "basic-configuration",
+                  "description": "Server-required: Minimum items of 1",
+                  "widget_type": "listbox"
+                }
+              }
             }
           }
         },
@@ -69402,6 +70222,17 @@
               "create": false,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "tunnel": {
+                  "required": true,
+                  "label": "Local Ip",
+                  "form_section": "basic-configuration",
+                  "description": "Server-required: Field should be not nil",
+                  "widget_type": "configurable"
+                }
+              }
             }
           },
           "params": {
@@ -69441,6 +70272,16 @@
               "create": false,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "tunnel": {
+                  "widget_type": "listbox",
+                  "label": "Tunnel Type",
+                  "required": true,
+                  "form_section": "tunnel-type"
+                }
+              }
             }
           }
         },
@@ -71323,13 +72164,21 @@
             "x-f5xc-description-short": "Map of remote attributes to which tunnel will be established on per site node basis Every node can have a different attributes and IP address to...",
             "x-f5xc-description-medium": "Map of remote attributes to which tunnel will be established on per site node basis Every node can have a different attributes and IP address to connect to Key is ver node name and value is Remote node attributes.",
             "x-f5xc-constraints": {
-              "constraintType": "object",
-              "category": "general",
-              "maxProperties": 128,
-              "metadata": {
-                "source": "inferred",
-                "confidence": 0.75,
-                "validatedAt": "2026-10-03T05:10:26+00:00"
+              "constraintType": "map",
+              "category": "discovery",
+              "deterministic": true,
+              "originalRules": {
+                "ves.io.schema.rules.map.keys.string.max_len": "256",
+                "ves.io.schema.rules.map.keys.string.min_len": "1",
+                "ves.io.schema.rules.map.max_pairs": "128"
+              },
+              "keys": {
+                "maxLength": 256,
+                "type": "string",
+                "minLength": 1
+              },
+              "cardinality": {
+                "maxProperties": 128
               }
             },
             "x-f5xc-required-for": {
@@ -72164,6 +73013,15 @@
               "create": false,
               "update": false,
               "read": false
+            },
+            "x-f5xc-console-field": {
+              "resources": {
+                "virtual_network": {
+                  "widget_type": "table",
+                  "label": "Static Routes",
+                  "form_section": "static-routes"
+                }
+              }
             }
           }
         },
@@ -72191,6 +73049,55 @@
           "classification": {
             "category": "networking",
             "multi_tenant_pattern": "none"
+          }
+        },
+        "x-f5xc-console": {
+          "workspace": "multi-cloud-network-connect",
+          "workspace_label": "Multi-Cloud Network Connect",
+          "route_prefix": "/web/workspaces/multi-cloud-network-connect",
+          "menu_path": [
+            "Manage",
+            "Networking",
+            "Legacy Network Configuration",
+            "Virtual Networks"
+          ],
+          "route_pattern": "/manage/networking/legacy_network_configuration/virtual_networks",
+          "breadcrumbs": [
+            "Home",
+            "Multi-Cloud Network Connect",
+            "Manage",
+            "Networking",
+            "Legacy Network Configuration",
+            "Virtual Networks"
+          ],
+          "add_action": {
+            "type": "tab",
+            "label": "Add Virtual Network"
+          },
+          "save_action": {
+            "label": "Add Virtual Network"
+          },
+          "form_tabs": [
+            "Form",
+            "Documentation",
+            "JSON"
+          ],
+          "namespace_scoped": false,
+          "form_sections": [
+            {
+              "id": "metadata",
+              "label": "Metadata",
+              "api_fields": [
+                "metadata.name",
+                "metadata.labels",
+                "metadata.description"
+              ]
+            }
+          ],
+          "metadata": {
+            "confidence": "validated",
+            "discovered_at": "2026-06-16",
+            "console_version": "2025.06"
           }
         }
       },

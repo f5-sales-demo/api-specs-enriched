@@ -293,7 +293,8 @@ resources:
       label: DDoS Protection
       required: false
       form_section: dos-settings
-      notes: Contains mitigation_action, rps_threshold, and client_side_challenge settings
+      notes: Contains mitigation_action, rps_threshold, and client_side_challenge
+        settings
     spec.l7_ddos_action_block:
       widget_type: listbox
       label: Mitigation Action
@@ -735,7 +736,8 @@ resources:
       add_action: Add Item
       form_section: origin-servers
       sub_field_label: DNS Name
-      description: 'Default type: Public DNS Name. The sub-form requires "DNS Name" (FQDN of the origin).'
+      description: 'Default type: Public DNS Name. The sub-form requires "DNS Name"
+        (FQDN of the origin).'
       item_types:
         public_name:
           label: Public DNS Name
@@ -820,7 +822,8 @@ resources:
       label: Other Settings
       form_section: other-settings
       nested_properties: 21
-      notes: Circuit breaker, outlier detection, connection timeouts, proxy protocol, subsets
+      notes: Circuit breaker, outlier detection, connection timeouts, proxy protocol,
+        subsets
   app_firewall:
     metadata.name:
       widget_type: textbox
@@ -863,51 +866,11 @@ resources:
       label: Name
       required: true
       form_section: metadata
-    domains:
-      widget_type: table
-      label: Domains
-      required: true
-      add_item_first: true
-      form_section: basic-configuration
-      description: TCP LB Domains table starts EMPTY (0 items) — needs Add Item click before filling. Fills via ngx-datatable grid real-typing after row creation.
-    listen_port:
-      widget_type: spinbutton
-      label: Listen Port (value)
-      required: true
-      form_section: basic-configuration
-    no_sni:
-      widget_type: listbox
-      label: No SNI
-      form_section: basic-configuration
-      mutually_exclusive_with:
-        - sni
-    origin_pools_weights:
-      widget_type: nested-resource-list
-      label: Origin Pools
-      add_action: Add Item
-      form_section: basic-configuration
-    advertise_on_public:
-      widget_type: listbox
-      label: Advertise On Public
-      default: Advertise On Public
-      form_section: basic-configuration
-    tcp:
-      widget_type: listbox
-      label: TCP
-      default: TCP
-      form_section: load-balancing-control
-      mutually_exclusive_with:
-        - tcp_proxy
-        - sni_based
     round_robin:
       widget_type: listbox
       label: Round Robin
       default: Round Robin
       form_section: load-balancing-control
-    service_policies_from_namespace:
-      widget_type: listbox
-      label: Apply Namespace Service Policies
-      form_section: service-policies
     spec.port_choice:
       required: true
       label: Listen Port
@@ -916,41 +879,83 @@ resources:
       options:
         - Listen Port
         - Custom Port
-      description: vsui listbox choice (Listen Port | Custom Port). Verified from docs/form-discovery/tcp_loadbalancer.yaml.
+      description: vsui listbox choice (Listen Port | Custom Port). Verified from
+        docs/form-discovery/tcp_loadbalancer.yaml.
       widget_type: listbox
-  healthcheck:
-    http_health_check:
+    spec.domains:
+      widget_type: table
+      label: Domains
+      required: true
+      add_item_first: true
+      form_section: basic-configuration
+      description: TCP LB Domains table starts EMPTY (0 items) — needs Add Item click
+        before filling. Fills via ngx-datatable grid real-typing after row creation.
+    spec.listen_port:
+      widget_type: spinbutton
+      label: Listen Port (value)
+      required: true
+      form_section: basic-configuration
+    spec.no_sni:
       widget_type: listbox
-      label: HTTP HealthCheck
-      form_section: health-check-parameters
+      label: No SNI
+      form_section: basic-configuration
       mutually_exclusive_with:
-        - tcp_health_check
-    timeout:
-      widget_type: spinbutton
-      label: Timeout
-      default: 3
-      form_section: health-check-parameters
-    interval:
-      widget_type: spinbutton
-      label: Interval
-      default: 15
-      form_section: health-check-parameters
-    unhealthy_threshold:
-      widget_type: spinbutton
-      label: Unhealthy Threshold
-      default: 1
-      form_section: health-check-parameters
-    healthy_threshold:
-      widget_type: spinbutton
-      label: Healthy Threshold
-      default: 3
-      form_section: health-check-parameters
+        - sni
+    spec.origin_pools_weights:
+      widget_type: nested-resource-list
+      label: Origin Pools
+      add_action: Add Item
+      form_section: basic-configuration
+    spec.advertise_on_public:
+      widget_type: listbox
+      label: Advertise On Public
+      default: Advertise On Public
+      form_section: basic-configuration
+    spec.tcp:
+      widget_type: listbox
+      label: TCP
+      default: TCP
+      form_section: load-balancing-control
+      mutually_exclusive_with:
+        - tcp_proxy
+        - sni_based
+    spec.service_policies_from_namespace:
+      widget_type: listbox
+      label: Apply Namespace Service Policies
+      form_section: service-policies
+  healthcheck:
     spec.health_check:
       required: true
       label: Health Check
       form_section: basic-configuration
       description: 'Server-required: Field should be not nil'
       widget_type: configurable
+    spec.http_health_check:
+      widget_type: listbox
+      label: HTTP HealthCheck
+      form_section: health-check-parameters
+      mutually_exclusive_with:
+        - tcp_health_check
+    spec.timeout:
+      widget_type: spinbutton
+      label: Timeout
+      default: 3
+      form_section: health-check-parameters
+    spec.interval:
+      widget_type: spinbutton
+      label: Interval
+      default: 15
+      form_section: health-check-parameters
+    spec.unhealthy_threshold:
+      widget_type: spinbutton
+      label: Unhealthy Threshold
+      default: 1
+      form_section: health-check-parameters
+    spec.healthy_threshold:
+      widget_type: spinbutton
+      label: Healthy Threshold
+      default: 3
+      form_section: health-check-parameters
   service_policy:
     metadata.name:
       widget_type: textbox
@@ -1102,8 +1107,10 @@ resources:
       default_state: Not configured
       configure_action: Configure
       form_section: cdn-origin-pool
-      description: CDN Origin Pool configuration — required. Click Configure to set origin servers.
-      notes: Inline sub-form (not a reference to a separate resource). The UI shows "Field CDN Origin Pool in Spec is required" when not configured.
+      description: CDN Origin Pool configuration — required. Click Configure to set
+        origin servers.
+      notes: Inline sub-form (not a reference to a separate resource). The UI shows
+        "Field CDN Origin Pool in Spec is required" when not configured.
   aws_vpc_site:
     metadata.name:
       widget_type: textbox
@@ -1260,7 +1267,8 @@ resources:
       sub_select_label: Pool
       sub_resource_type: dns_lb_pool
       form_section: load-balancing-rules
-      description: At least one Load Balancing Rule. Each rule selects a Pool (references an existing dns_lb_pool — dependency; create one first).
+      description: At least one Load Balancing Rule. Each rule selects a Pool (references
+        an existing dns_lb_pool — dependency; create one first).
   global_log_receiver:
     namespace_scope: system
     metadata.name:
@@ -1572,13 +1580,15 @@ resources:
       form_section: selector
       required: true
       add_action: Add Label
-      description: 'CDK-portal label-selector: Add Label → type key prefix (e.g. "ves") → select from portal → operator → value. Verified live via label_select tool.'
+      description: 'CDK-portal label-selector: Add Label → type key prefix (e.g. "ves")
+        → select from portal → operator → value. Verified live via label_select tool.'
     spec.site_type:
       widget_type: listbox
       label: Site Type
       form_section: basic
       required: true
-      description: 'Required: Site Type (RE = Regional Edge, CE = Customer Edge). Select from the listbox.'
+      description: 'Required: Site Type (RE = Regional Edge, CE = Customer Edge).
+        Select from the listbox.'
       options:
         - RE
         - CE
@@ -1603,14 +1613,16 @@ resources:
       required: true
       form_section: basic
       resource_type: alert_receiver
-      description: 'Server-required: at least one Alert Receiver reference. Depends on an existing alert_receiver object (create one first).'
+      description: 'Server-required: at least one Alert Receiver reference. Depends
+        on an existing alert_receiver object (create one first).'
     spec.routes:
       widget_type: nested-resource-list
       label: Policy Rules
       required: true
       add_action: Add Item
       form_section: basic
-      description: 'Server-required: at least one alert policy rule (Field Policy Rules in Spec is required).'
+      description: 'Server-required: at least one alert policy rule (Field Policy
+        Rules in Spec is required).'
   secret_policy:
     metadata.name:
       widget_type: textbox
@@ -1670,7 +1682,8 @@ resources:
       required: true
       add_action: Add Item
       sub_field_label: Public IP
-      description: Pool Members is a nested-resource-list (Add Item, NOT Configure — verified from live form). Default A record member needs a Public IP.
+      description: Pool Members is a nested-resource-list (Add Item, NOT Configure
+        — verified from live form). Default A record member needs a Public IP.
   site_mesh_group:
     metadata.name:
       widget_type: textbox
@@ -1906,7 +1919,11 @@ resources:
       required: true
       form_section: api-endpoints
       resource_type: http_loadbalancer
-      description: 'Server-required (feedback loop: "Field HTTP Load Balancer is required"). A direct listbox that selects an EXISTING http_loadbalancer — dependency, create an http-lb first. (Removed the duplicate spec.http_load_balancer: the real API field is http_loadbalancer, and the console form shows a single listbox, not a resource-selector.)'
+      description: 'Server-required (feedback loop: "Field HTTP Load Balancer is required").
+        A direct listbox that selects an EXISTING http_loadbalancer — dependency,
+        create an http-lb first. (Removed the duplicate spec.http_load_balancer: the
+        real API field is http_loadbalancer, and the console form shows a single listbox,
+        not a resource-selector.)'
   app_setting:
     metadata.name:
       widget_type: textbox
@@ -1949,7 +1966,8 @@ resources:
       widget_type: table
       label: AI/ML Feature Type
       form_section: features
-      description: Not a top-level required field — the AI/ML Feature Type listbox lives inside the App Type Settings Add Item sub-form (see spec.app_type_settings).
+      description: Not a top-level required field — the AI/ML Feature Type listbox
+        lives inside the App Type Settings Add Item sub-form (see spec.app_type_settings).
     spec.learn_from_traffic_with_redirect_response:
       widget_type: listbox
       label: Learn from Traffic with Redirect Response
@@ -1965,14 +1983,17 @@ resources:
       widget_type: nested-resource-list
       add_action: Add Item
       form_section: app-type-settings
-      description: Optional advanced settings. The required AI/ML Feature Type is the Features-row listbox (spec.feature_type), which ships with one row — no Add Item needed.
+      description: Optional advanced settings. The required AI/ML Feature Type is
+        the Features-row listbox (spec.feature_type), which ships with one row — no
+        Add Item needed.
     spec.feature_type:
       required: true
       label: AI/ML Feature Type
       widget_type: listbox
       resource_type: ai_feature_type
       form_section: features
-      description: Required Select-item listbox in the Features section (ships with one row). Verified from live form screenshot.
+      description: Required Select-item listbox in the Features section (ships with
+        one row). Verified from live form screenshot.
   authorization_server:
     metadata.name:
       widget_type: textbox
@@ -1992,7 +2013,8 @@ resources:
       label: JWKS URI
       required: true
       form_section: spec
-      description: 'Feedback loop: ''Field JWKS URI in Spec must be a valid absolute URI'''
+      description: 'Feedback loop: ''Field JWKS URI in Spec must be a valid absolute
+        URI'''
   bgp:
     metadata.name:
       widget_type: textbox
@@ -2059,10 +2081,11 @@ resources:
       label: AS Numbers
       form_section: spec
       required: true
-      description: List of AS Numbers — a row pre-exists with value 0; fill it with a valid ASN (e.g. 64512). Uses ngx-datatable input.
+      description: List of AS Numbers — a row pre-exists with value 0; fill it with
+        a valid ASN (e.g. 64512). Uses ngx-datatable input.
       add_action: Add Item
       default: null
-  bigip_virtual_server: null
+  bigip_virtual_server: {}
   cdn_cache_rule:
     metadata.name:
       widget_type: textbox
@@ -2088,7 +2111,8 @@ resources:
       required: true
       add_item_first: true
       form_section: cache-rule
-      description: Expressions table starts empty — needs Add Item before filling the inline cell.
+      description: Expressions table starts empty — needs Add Item before filling
+        the inline cell.
     spec.cache_actions:
       widget_type: listbox
       label: Cache Actions
@@ -2121,7 +2145,7 @@ resources:
     spec.intermediate_certificate_chain:
       widget_type: listbox
       label: Intermediate Certificate Chain
-      default: ""
+      default: ''
       form_section: intermediate-certificate-chain
     spec.certificate_url:
       required: true
@@ -2363,7 +2387,8 @@ resources:
       required: true
       form_section: integration-data
       resource_type: code_base
-      description: A vsui "Select item" listbox (not a configurable). Selects an existing code-base integration. Verified from live form screenshot.
+      description: A vsui "Select item" listbox (not a configurable). Selects an existing
+        code-base integration. Verified from live form screenshot.
   container_registry:
     metadata.name:
       widget_type: textbox
@@ -2394,7 +2419,9 @@ resources:
       required: true
       form_section: password
       secret: true
-      description: 'Secret field: click Configure (a link), enter the value in the secret TEXTAREA (Secret Type defaults are fine), then Apply. Verified live: create 200.'
+      description: 'Secret field: click Configure (a link), enter the value in the
+        secret TEXTAREA (Secret Type defaults are fine), then Apply. Verified live:
+        create 200.'
     spec.email:
       widget_type: textbox
       label: Email
@@ -2544,7 +2571,8 @@ resources:
       widget_type: listbox
   dns_domain:
     deprecated: true
-    deprecated_reason: functionality removed from the F5 XC platform — delegated domain management is being decommissioned
+    deprecated_reason: functionality removed from the F5 XC platform — delegated domain
+      management is being decommissioned
     metadata.domain_name:
       widget_type: textbox
       label: Domain Name
@@ -2612,7 +2640,7 @@ resources:
     spec.health_check_secondary_port:
       widget_type: listbox
       label: Health Check Secondary Port
-      default: "0"
+      default: '0'
       form_section: health-check-type
     spec.virtual_host:
       widget_type: listbox
@@ -2667,7 +2695,8 @@ resources:
       required: true
       resource_type: virtual_site
       form_section: spec
-      description: vsui autocomplete dropdown (VSUI-AUTOCOMPLETE-DROPDOWN) selecting a virtual-site, site, or network. Dependency resource.
+      description: vsui autocomplete dropdown (VSUI-AUTOCOMPLETE-DROPDOWN) selecting
+        a virtual-site, site, or network. Dependency resource.
     spec.network_type:
       widget_type: listbox
       label: Network Type
@@ -2932,7 +2961,8 @@ resources:
       widget_type: nested-resource-list
       add_action: Add Item
       form_section: prefix
-      description: IP prefixes — Add Item creates an inline row (NO Apply button). Fill IPv4 Prefix directly.
+      description: IP prefixes — Add Item creates an inline row (NO Apply button).
+        Fill IPv4 Prefix directly.
       sub_field_label: IPv4 Prefix
       no_apply: true
   log_receiver:
@@ -3002,7 +3032,8 @@ resources:
       form_section: rules
       widget_type: nested-resource-list
       add_action: Add Item
-      description: 'At least one mitigation rule is required. Server error: ''Field Rules in Mitigation Rules is required.'''
+      description: 'At least one mitigation rule is required. Server error: ''Field
+        Rules in Mitigation Rules is required.'''
   nat_policy:
     metadata.name:
       widget_type: textbox
@@ -3260,7 +3291,9 @@ resources:
       add_action: Add Item
       sub_select_label: Policer
       sub_resource_type: policer
-      description: 'At least one protocol policer entry required. The nested Add Item sub-form requires selecting an existing Policer (feedback loop: "Field Policer is required") — a policer object must exist first.'
+      description: 'At least one protocol policer entry required. The nested Add Item
+        sub-form requires selecting an existing Policer (feedback loop: "Field Policer
+        is required") — a policer object must exist first.'
       resource_type: protocol_policer
   proxy:
     metadata.name:
@@ -3358,7 +3391,7 @@ resources:
     spec.user_identification_policy:
       widget_type: listbox
       label: User Identification Policy
-      default: ""
+      default: ''
       form_section: user-identification-policy
   role:
     metadata.name:
@@ -3424,12 +3457,12 @@ resources:
     spec.latitude:
       widget_type: textbox
       label: Latitude
-      default: "0"
+      default: '0'
       form_section: basic-configuration
     spec.longitude:
       widget_type: textbox
       label: Longitude
-      default: "0"
+      default: '0'
       form_section: basic-configuration
     spec.bond_configuration:
       widget_type: listbox
@@ -3943,17 +3976,17 @@ resources:
     spec.memory_mib:
       widget_type: textbox
       label: Memory (MiB)
-      default: "0"
+      default: '0'
       form_section: memory
     spec.vcpus:
       widget_type: textbox
       label: vCPUs
-      default: "0"
+      default: '0'
       form_section: vcpus
     spec.ephemeral_storage_mib:
       widget_type: textbox
       label: Ephemeral Storage (MiB)
-      default: "0"
+      default: '0'
       form_section: ephemeral-storage
   network_policy_rule:
     spec.protocol:
@@ -3962,3 +3995,1396 @@ resources:
       form_section: basic-configuration
       description: 'Server-required: Must be ALL/TCP/UDP/ICMP'
       widget_type: configurable
+exclusions:
+  app_firewall:
+    spec.enforcement_mode:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#app_firewall
+  tcp_loadbalancer:
+    round_robin:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#tcp_loadbalancer
+    spec.port_choice:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#tcp_loadbalancer
+  healthcheck:
+    spec.health_check:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#healthcheck
+  service_policy:
+    spec.rule_choice:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#service_policy
+  aws_vpc_site:
+    spec.deployment:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#aws_vpc_site
+  azure_vnet_site:
+    spec.deployment:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#azure_vnet_site
+  gcp_vpc_site:
+    spec.deployment:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#gcp_vpc_site
+  dns_zone:
+    namespace_scope:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#dns_zone
+    spec.domain:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#dns_zone
+  dns_load_balancer:
+    namespace_scope:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#dns_load_balancer
+    spec.dns_lb_pool:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#dns_load_balancer
+    spec.load_balancing_rules:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#dns_load_balancer
+  global_log_receiver:
+    namespace_scope:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#global_log_receiver
+    spec.filter:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#global_log_receiver
+    spec.receiver:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#global_log_receiver
+    spec.log_type:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#global_log_receiver
+  v1_http_monitor:
+    spec.interval:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#v1_http_monitor
+  v1_dns_monitor:
+    spec.interval:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#v1_dns_monitor
+  voltstack_site:
+    spec.master_nodes:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#voltstack_site
+  api_discovery:
+    spec.discovered_api_settings:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#api_discovery
+  sensitive_data_policy:
+    spec.sensitive_data_detection_rules:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#sensitive_data_policy
+  secret_policy:
+    spec.rules:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#secret_policy
+  alert_receiver:
+    spec.receiver:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#alert_receiver
+  dns_lb_pool:
+    namespace_scope:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#dns_lb_pool
+    spec.members:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#dns_lb_pool
+  site_mesh_group:
+    spec.type:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#site_mesh_group
+    spec.bfd_choice:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#site_mesh_group
+  ike_gateway:
+    metadata.name:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#ike_gateway
+    metadata.labels:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#ike_gateway
+    metadata.description:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#ike_gateway
+    spec.remote_address:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#ike_gateway
+  route:
+    spec.simple_static_route:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#route
+  address_allocator:
+    spec.address_allocator_mode:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#address_allocator
+    spec.allocation_unit:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#address_allocator
+    spec.local_interface_address_type:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#address_allocator
+    spec.local_interface_address_offset:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#address_allocator
+  advertise_policy:
+    spec.virtual-site_or_site_or_network:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#advertise_policy
+    spec.reference:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#advertise_policy
+    spec.network_type:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#advertise_policy
+    spec.internet_vip_choice:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#advertise_policy
+    spec.tcp_udp_port:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#advertise_policy
+    spec.tcp_udp_port_value:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#advertise_policy
+    spec.port_choice:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#advertise_policy
+  api_credential:
+    metadata.name:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#api_credential
+    spec.credential_name:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#api_credential
+    spec.credential_type:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#api_credential
+    spec.confirm_password:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#api_credential
+    spec.expiry_date:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#api_credential
+  app_api_group:
+    spec.scope:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#app_api_group
+  app_setting:
+    spec.apptype_customizations:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#app_setting
+  app_type:
+    spec.ai_ml_feature_type:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#app_type
+    spec.learn_from_traffic_with_redirect_response:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#app_type
+    spec.purge_duration_for_inactive_discovered_apis_from_traffic_d:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#app_type
+    spec.app_type_settings:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#app_type
+    spec.feature_type:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#app_type
+  bgp:
+    spec.reference:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#bgp
+    spec.asn:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#bgp
+    spec.router_id:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#bgp
+  cdn_cache_rule:
+    spec.rule_name:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#cdn_cache_rule
+    spec.expressions:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#cdn_cache_rule
+    spec.cache_actions:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#cdn_cache_rule
+  certificate:
+    spec.certificate:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#certificate
+    spec.ocsp_stapling:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#certificate
+    spec.intermediate_certificate_chain:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#certificate
+  cloud_connect:
+    spec.provider:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#cloud_connect
+    spec.site_reference:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#cloud_connect
+    spec.credential_reference:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#cloud_connect
+    spec.spoke_vpcs:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#cloud_connect
+    spec.cloud:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#cloud_connect
+  cloud_credentials:
+    spec.select_cloud_credential_type:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#cloud_credentials
+    spec.access_key_id:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#cloud_credentials
+    spec.secret_access_key:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#cloud_credentials
+    spec.cloud:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#cloud_credentials
+  cloud_elastic_ip:
+    spec.site_reference:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#cloud_elastic_ip
+    spec.elastic_ip_count_per_node:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#cloud_elastic_ip
+  cloud_link:
+    spec.type:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#cloud_link
+    spec.bring_your_own_connections:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#cloud_link
+    spec.account_credential:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#cloud_link
+    spec.direct_connect_gateway_asn:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#cloud_link
+    spec.custom_asn:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#cloud_link
+    spec.private_connectivity_via_regional_edge_re:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#cloud_link
+    spec.cloud_provider:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#cloud_link
+  cluster:
+    spec.select_upstream_connection_pool_reuse_state:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#cluster
+    spec.maximum_requests_per_connection:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#cluster
+  code_base_integration:
+    spec.code_base:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#code_base_integration
+  container_registry:
+    spec.server_fqdn:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#container_registry
+  crl:
+    spec.crl_server_address:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#crl
+    spec.crl_server_port:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#crl
+    spec.crl_refresh_interval_h:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#crl
+    spec.crl_download_timeout_s:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#crl
+    spec.crl_access_information:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#crl
+    spec.crl_file_path:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#crl
+  dc_cluster_group:
+    spec.mesh_type:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#dc_cluster_group
+  discovery:
+    spec.virtual-site_or_site_or_network:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#discovery
+    spec.reference:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#discovery
+    spec.network_type:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#discovery
+    spec.select_kubernetes_credentials:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#discovery
+    spec.kubeconfig:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#discovery
+    spec.kubernetes_pod_network_reachability:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#discovery
+    spec.select_vip_publishing_or_dns_delegation:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#discovery
+    spec.mapping_preference:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#discovery
+    spec.regex_matching:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#discovery
+    spec.select_discovery_cluster_identifier:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#discovery
+    spec.discovery_choice:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#discovery
+  dns_domain:
+    deprecated:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#dns_domain
+    deprecated_reason:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#dns_domain
+    metadata.domain_name:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#dns_domain
+    spec.domain_method:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#dns_domain
+  dns_lb_health_check:
+    namespace_scope:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#dns_lb_health_check
+    spec.health_check_type:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#dns_lb_health_check
+    spec.send_string:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#dns_lb_health_check
+    spec.receive_string:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#dns_lb_health_check
+    spec.health_check_port:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#dns_lb_health_check
+    spec.health_check_secondary_port:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#dns_lb_health_check
+    spec.virtual_host:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#dns_lb_health_check
+  endpoint:
+    spec.endpoint_specifier:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#endpoint
+    spec.endpoint_ip_address:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#endpoint
+    spec.virtual-site_or_site_or_network:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#endpoint
+    spec.reference:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#endpoint
+    spec.network_type:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#endpoint
+    spec.select_snat_pool_choice:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#endpoint
+  enhanced_firewall_policy:
+    spec.select_enhanced_firewall_policy_rule_type:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#enhanced_firewall_policy
+    spec.source_segments:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#enhanced_firewall_policy
+    spec.destination_segments:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#enhanced_firewall_policy
+  external_connector:
+    spec.connection_type:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#external_connector
+  fast_acl:
+    spec.select_site_type_for_acl:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#fast_acl
+    spec.site_type_regional_edge:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#fast_acl
+    spec.default_protocol_policer:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#fast_acl
+    spec.site_choice:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#fast_acl
+  fleet:
+    namespace_scope:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#fleet
+    spec.fleet_label_value:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#fleet
+    spec.outside_site_local_virtual_network:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#fleet
+    spec.site_local_inside_virtual_network:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#fleet
+    spec.software_version:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#fleet
+    spec.select_bond_configuration:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#fleet
+    spec.select_interface_config:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#fleet
+    spec.select_storage_interface_configuration:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#fleet
+    spec.select_storage_device_configuration:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#fleet
+    spec.select_configuration_for_storage_classes:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#fleet
+    spec.select_storage_static_routes:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#fleet
+    spec.node_by_node_upgrade:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#fleet
+    spec.upgrade_wait_time:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#fleet
+    spec.node_batch_size:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#fleet
+    spec.node_batch_size_count:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#fleet
+    spec.disable_node_local_services:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#fleet
+    spec.sr-iov_interfaces:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#fleet
+  geo_location_set:
+    spec.geolocation_label_selector:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#geo_location_set
+  ip_prefix_set:
+    spec.ipv4_prefix:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#ip_prefix_set
+    spec.ipv6_prefix:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#ip_prefix_set
+    spec.prefix:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#ip_prefix_set
+  log_receiver:
+    spec.log_receiver:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#log_receiver
+    spec.syslog_transport_mode:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#log_receiver
+    spec.server_name:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#log_receiver
+    spec.port_number:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#log_receiver
+    spec.log_receiver_choice:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#log_receiver
+  malicious_user_mitigation:
+    spec.rules:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#malicious_user_mitigation
+    spec.mitigation_rules:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#malicious_user_mitigation
+  nat_policy:
+    spec.applies_to:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#nat_policy
+    spec.rule:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#nat_policy
+    spec.applies_to_choice:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#nat_policy
+  network_connector:
+    spec.select_network_connector_type:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#network_connector
+    spec.routing_mode:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#network_connector
+    spec.snat_source_ip_selection:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#network_connector
+    spec.select_forward_proxy:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#network_connector
+    spec.connector_choice:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#network_connector
+  network_firewall:
+    spec.select_forward_policy_configuration:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#network_firewall
+    spec.select_firewall_policy_configuration:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#network_firewall
+    spec.select_fast_acl_configuration:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#network_firewall
+  network_interface:
+    spec.interface_config_type:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#network_interface
+  nfv_service:
+    spec.external_service_provider:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#nfv_service
+    spec.provider_configuration:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#nfv_service
+    spec.https_based_management_of_nodes:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#nfv_service
+    spec.ssh_based_management_of_nodes:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#nfv_service
+    spec.service_provider_choice:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#nfv_service
+  openapi_file:
+    metadata.name:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#openapi_file
+    metadata.description:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#openapi_file
+    spec.upload_file:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#openapi_file
+  policer:
+    spec.policer_rules:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#policer
+  proxy:
+    spec.http_connect_proxy_or_dynamic_reverse_proxy:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#proxy
+    spec.http_connect:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#proxy
+    spec.select_sites_for_proxy:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#proxy
+    spec.site_or_virtual_site:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#proxy
+    spec.select_upstream_network:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#proxy
+    spec.tls_interception_choice:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#proxy
+    spec.manage_proxy_policy:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#proxy
+    spec.proxy_choice:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#proxy
+  public_ip:
+    metadata.name:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#public_ip
+    metadata.labels:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#public_ip
+    metadata.description:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#public_ip
+  rate_limiter:
+    spec.rate_limit_values:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#rate_limiter
+    spec.user_identification_policy:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#rate_limiter
+  role:
+    spec.role_name:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#role
+    spec.api_groups:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#role
+  securemesh_site:
+    spec.generic_server_certified_hardware:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#securemesh_site
+    spec.master_nodes:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#securemesh_site
+    spec.geographical_address:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#securemesh_site
+    spec.latitude:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#securemesh_site
+    spec.longitude:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#securemesh_site
+    spec.bond_configuration:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#securemesh_site
+    spec.configure_networking:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#securemesh_site
+    spec.logs_streaming:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#securemesh_site
+    spec.f5xc_software_version:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#securemesh_site
+    spec.operating_system_version:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#securemesh_site
+    spec.node_by_node_upgrade:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#securemesh_site
+    spec.upgrade_wait_time:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#securemesh_site
+    spec.node_batch_size:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#securemesh_site
+    spec.node_batch_size_count:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#securemesh_site
+    spec.performance_mode:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#securemesh_site
+  securemesh_site_v2:
+    spec.provider_name:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#securemesh_site_v2
+    spec.orchestration_mode:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#securemesh_site_v2
+    spec.nodes:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#securemesh_site_v2
+    spec.high_availability:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#securemesh_site_v2
+    spec.provider_choice:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#securemesh_site_v2
+  segment:
+    spec.connect_to_internet:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#segment
+  segment_connection:
+    metadata.name:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#segment_connection
+    metadata.description:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#segment_connection
+    metadata.labels:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#segment_connection
+    spec.segment_connectors:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#segment_connection
+  service_credential:
+    spec.credential_email:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#service_credential
+    spec.credential_type:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#service_credential
+    spec.password:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#service_credential
+    spec.confirm_password:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#service_credential
+    spec.expiry_date:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#service_credential
+    spec.groups:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#service_credential
+    spec.roles_and_namespaces:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#service_credential
+  shared_advertise_policy:
+    metadata.name:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#shared_advertise_policy
+    metadata.labels:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#shared_advertise_policy
+    metadata.description:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#shared_advertise_policy
+    spec.virtual-site_or_site_or_network:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#shared_advertise_policy
+    spec.reference:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#shared_advertise_policy
+    spec.network_type:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#shared_advertise_policy
+    spec.internet_vip_choice:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#shared_advertise_policy
+    spec.tcp_udp_port:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#shared_advertise_policy
+    spec.tcp_udp_port_value:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#shared_advertise_policy
+  subnet:
+    spec.site_subnet_parameters:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#subnet
+    spec.network_connection_type:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#subnet
+  third_party_application:
+    metadata.name:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#third_party_application
+    metadata.labels:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#third_party_application
+    metadata.description:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#third_party_application
+    spec.application_type:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#third_party_application
+    spec.application_configuration:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#third_party_application
+  ticket_tracking_system:
+    spec.provider:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#ticket_tracking_system
+    spec.api_token:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#ticket_tracking_system
+    spec.account_email:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#ticket_tracking_system
+    spec.organization_domain:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#ticket_tracking_system
+  tunnel:
+    spec.local_ip_type:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#tunnel
+    spec.local_interface:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#tunnel
+    spec.remote_ip_type:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#tunnel
+    spec.version:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#tunnel
+    spec.ipv4_address:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#tunnel
+    spec.tunnel_params_type:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#tunnel
+    spec.ipsec_psk:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#tunnel
+  usb_policy:
+    spec.allowed_usb_devices:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#usb_policy
+  user_identification:
+    spec.user_identification_rules:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#user_identification
+  virtual_k8s:
+    spec.virtual_sites:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#virtual_k8s
+    spec.choose_service_isolation:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#virtual_k8s
+    spec.default_workload_flavor:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#virtual_k8s
+  virtual_network:
+    namespace_scope:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#virtual_network
+    spec.select_type_of_network:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#virtual_network
+    spec.static_ipv6_routes:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#virtual_network
+  workload_flavor:
+    spec.memory_mib:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#workload_flavor
+    spec.ephemeral_storage_mib:
+      reason: Configured console control has no exact request-schema field; no wire-field
+        inference is permitted
+      owner: f5-sales-demo/api-specs-enriched#1854
+      evidence: console_field_exclusion_evidence.yaml#workload_flavor

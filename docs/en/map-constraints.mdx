@@ -1,0 +1,56 @@
+---
+title: Map Constraints and Enrichment Coverage
+description: Map key, value, pair-count and cross-entry contracts in enriched specifications
+---
+
+Map constraints use `x-f5xc-constraints.constraintType: map`. The `keys`, `values`,
+`cardinality` and `crossEntry` objects describe separate scopes. `originalRules`
+retains the exact vendor rule names and values. Both upstream validation-rule
+aliases remain unchanged; contradictory aliases stop the build.
+
+OpenAPI 3.0 supports map pair bounds through `minProperties` and `maxProperties`.
+Compatible string-value bounds appear under `additionalProperties`; they never
+apply to the map object itself. Key validation, object-value uniqueness, and
+formats without an agreed native contract remain explicit extension semantics.
+Standard validators require separate extension validation to enforce those rules.
+
+## HTTP Load Balancer Custom Errors
+
+`spec.more_option.custom_errors` allows at most 16 pairs. Keys retain the exact
+unsigned-integer domain `3,4,5,300-599`. Each complete value is a URI-reference
+string with a maximum of 65,536 characters. This includes the ten ASCII characters
+of `string:///`; the limit does not describe decoded HTML or the total JSON request.
+
+For `N` decoded bytes and standard padded Base64 without wrapping:
+
+```text
+10 + 4 * ceil(N / 3) <= 65536
+N_max = 3 * floor((65536 - 10) / 4) = 49143 bytes
+```
+
+The 49,143-byte case uses 65,534 URI characters. The next decoded byte, 49,144,
+requires 65,538 characters and exceeds the limit. Exactly 48 KiB (49,152 bytes)
+already uses 65,536 Base64 characters before the prefix. For UTF-8 HTML, budget
+encoded bytes rather than source characters. Optionality, pair count and URI
+semantics are independent. These calculations do not establish limits for other
+schemes or console interfaces.
+
+## Coverage and Lifecycle
+
+The production enrichment commands share their staged pipeline. The generated
+`enrichment-coverage.json` and Markdown summary bind their inputs to SHA-256
+digests and the upstream immutable-release receipt. Missing map normalization or
+catalog projection fails the build. Catalog `fieldMetadata.constraints` retains
+the complete map object.
+
+Console fields resolve exact configured request paths. Shared schema annotations
+are scoped by resource under `x-f5xc-console-field.resources`. A nonresolving
+console control requires an explicit owner, reason and schema evidence; a bare
+leaf-name match cannot establish a wire-field contract.
+
+`config/enrichment_stages.yaml` records stage lifecycle and artifact destinations.
+The configured branding pass supersedes `BrandingNormalizer`. Specialized field
+enrichers supersede generic `FieldMetadataEnricher` inference. `DeprecatedTierEnricher`
+is retired because wire enum corrections belong upstream. `UniquenessEnricher`
+remains inactive pending agreement on its schema location and consumer value shape
+in [contract follow-up #1855](https://github.com/f5-sales-demo/api-specs-enriched/issues/1855).
