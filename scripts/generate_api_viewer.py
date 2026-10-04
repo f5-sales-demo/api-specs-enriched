@@ -22,6 +22,7 @@ HTTP_METHODS = ("get", "post", "put", "delete", "patch", "head", "options", "tra
 
 SPEC_DIR = Path("docs/specifications/api")
 MDX_DIR = Path("docs/api-reference")
+ENGLISH_MDX_DIR = Path("docs/en/api-reference")
 INDEX_JSON = SPEC_DIR / "index.json"
 OPENAPI_CONFIG_PATH = Path("docs/openapi-specs-config.json")
 
@@ -254,32 +255,26 @@ def main() -> int:
         print("Error: No specifications found in index.json")
         return 1
 
-    MDX_DIR.mkdir(parents=True, exist_ok=True)
-
-    # Remove stale generated MDX files
-    valid_stems = {"index"} | {f"{s['domain']}-api" for s in specs}
-    for stale in MDX_DIR.glob("*.mdx"):
-        if stale.stem not in valid_stems:
-            stale.unlink()
-
-    # Generate catalog landing page
-    catalog_path = MDX_DIR / "index.mdx"
-    catalog_path.write_text(generate_catalog_mdx(specs))
-
-    # Generate per-domain summary pages for llms-txt indexing
-    summary_count = 0
-    for spec in specs:
-        if spec.get("path_count", 0) == 0:
-            continue
-        summary_path = MDX_DIR / f"{spec['domain']}-api.mdx"
-        summary_path.write_text(generate_domain_summary(spec))
-        summary_count += 1
+    summaries = {
+        f"{spec['domain']}-api": generate_domain_summary(spec)
+        for spec in specs
+        if spec.get("path_count", 0) > 0
+    }
+    valid_stems = {"index", *summaries}
+    for directory in (MDX_DIR, ENGLISH_MDX_DIR):
+        directory.mkdir(parents=True, exist_ok=True)
+        for stale in directory.glob("*.mdx"):
+            if stale.stem not in valid_stems:
+                stale.unlink()
+        (directory / "index.mdx").write_text(generate_catalog_mdx(specs))
+        for stem, rendered in summaries.items():
+            (directory / f"{stem}.mdx").write_text(rendered)
     # Generate starlight-openapi plugin configuration
     config_content = generate_openapi_specs_config(specs)
     OPENAPI_CONFIG_PATH.write_text(config_content)
 
-    print(f"Generated catalog page at {catalog_path}")
-    print(f"Generated {summary_count} domain summary pages")
+    print(f"Generated catalog pages at {MDX_DIR} and {ENGLISH_MDX_DIR}")
+    print(f"Generated {len(summaries)} domain summary pages per location")
     print(f"Generated OpenAPI specs config at {OPENAPI_CONFIG_PATH}")
     return 0
 

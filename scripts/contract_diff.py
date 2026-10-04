@@ -25,6 +25,7 @@ from typing import TYPE_CHECKING, Any
 import httpx
 from deepdiff import DeepDiff
 
+from scripts.site_curation import curate_spec, load_policy
 from scripts.utils.additive_allowlist import is_additive_change
 from scripts.utils.canonical_merge import canonical_merge_sources
 from scripts.utils.deprecated_operations import remove_deprecated_operations
@@ -280,6 +281,7 @@ def run_contract_diff(
     output_spec: dict,
     known_drift: set[str] | None = None,
     declared_removals: Sequence[DeclaredPropertyRemoval] | None = None,
+    curation_policy: dict[str, Any] | None = None,
 ) -> list[Violation]:
     """Compare two spec dicts and return all non-additive changes as violations.
 
@@ -290,6 +292,7 @@ def run_contract_diff(
             Any violation whose ``_fingerprint_violation`` hash is in this
             set is suppressed (design spec 2026-04-22 §5).
         declared_removals: canonical, issue-linked property removals to normalize.
+        curation_policy: reviewed exact operation identities to remove from input.
     """
     known = known_drift or set()
     input_spec, removal_violations = _normalize_declared_removals(
@@ -298,6 +301,8 @@ def run_contract_diff(
         declared_removals or (),
     )
     remove_deprecated_operations(input_spec)
+    if curation_policy is not None:
+        curate_spec(input_spec, curation_policy)
     # Normalize both sides: an allOf-wrapped $ref is semantically identical to a
     # direct $ref, and either spec may use either form. Flattening only the
     # output turned upstream-wrapped properties into a phantom `allOf` removal
@@ -399,6 +404,7 @@ def run_directory_diff(
     output_dir: Path,
     known_drift: set[str] | None = None,
     declared_removals: Sequence[DeclaredPropertyRemoval] | None = None,
+    curation_policy: dict[str, Any] | None = None,
 ) -> list[Violation]:
     """Diff the merged contract between two directories of OpenAPI specs.
 
@@ -428,6 +434,7 @@ def run_directory_diff(
         merged_output,
         known_drift=known_drift,
         declared_removals=declared_removals,
+        curation_policy=curation_policy,
     )
 
 
@@ -519,6 +526,12 @@ def main(argv: Sequence[str] | None = None) -> int:
         default=SCHEMA_OVERRIDES_PATH,
         help="Canonical issue-linked remove_properties declarations.",
     )
+    parser.add_argument(
+        "--curation-policy",
+        type=Path,
+        default=Path("config/curation/v11.0.0.json"),
+        help="Reviewed exact-operation removal policy.",
+    )
     args = parser.parse_args(argv)
 
     known_drift = load_known_drift(args.known_drift)
@@ -528,6 +541,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         args.output,
         known_drift=known_drift,
         declared_removals=declared_removals,
+        curation_policy=load_policy(args.curation_policy),
     )
     args.report.parent.mkdir(parents=True, exist_ok=True)
     args.report.write_text(
