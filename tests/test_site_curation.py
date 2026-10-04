@@ -106,7 +106,7 @@ def test_exact_removal_preserves_mixed_path_shared_cycle_and_is_idempotent(tmp_p
     assert audit["removed_other_components"] == [{"kind": "responses", "name": "Legacy"}]
     assert list(spec["paths"][entry["path"]]) == ["patch"]
     assert set(spec["components"]["schemas"]) == {"Shared", "Unrelated"}
-    assert spec["components"]["responses"] == {}
+    assert not spec["components"]["responses"]
     retained = spec["paths"][entry["path"]]["patch"]
     assert "aws_vpc_site" not in retained["description"].lower()
     assert retained["x-f5xc-operation-aliases"] == ["retained.alias"]
@@ -183,7 +183,7 @@ def test_contract_diff_normalizes_only_reviewed_removals():
     after = copy.deepcopy(before)
     policy = _policy_with_retained_patch(entry)
     curate_spec(after, policy)
-    assert run_contract_diff(before, after, curation_policy=policy) == []
+    assert not run_contract_diff(before, after, curation_policy=policy)
 
 
 def test_published_metadata_and_sidecars_drop_curated_resource_keys():
