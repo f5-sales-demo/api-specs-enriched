@@ -1416,3 +1416,42 @@ def test_http_loadbalancer_selection_is_immutable_but_children_are_mutable(enric
         assert schema["properties"] == spec["components"]["schemas"][name]["properties"]
         assert "required" not in schema
     assert enricher.enrich_spec(result, canonical_only=True) == result
+
+
+def test_http_dns_ownership_is_immutable(enricher):
+    """Creation-time DNS ownership is immutable without freezing HTTP ports."""
+    spec = {
+        "components": {
+            "schemas": {
+                "http_loadbalancerProxyTypeHttp": {
+                    "type": "object",
+                    "properties": {
+                        "dns_volterra_managed": {"type": "boolean"},
+                        "port": {"type": "integer"},
+                    },
+                },
+                "unrelatedProxyTypeHttp": {
+                    "type": "object",
+                    "properties": {
+                        "dns_volterra_managed": {"type": "boolean"},
+                    },
+                },
+            }
+        }
+    }
+    result = enricher.enrich_spec(spec, canonical_only=True)
+    schemas = result["components"]["schemas"]
+    assert (
+        schemas["http_loadbalancerProxyTypeHttp"]["properties"]["dns_volterra_managed"][
+            "x-field-mutability"
+        ]
+        == "immutable"
+    )
+    assert (
+        "x-field-mutability" not in schemas["http_loadbalancerProxyTypeHttp"]["properties"]["port"]
+    )
+    assert (
+        "x-field-mutability"
+        not in schemas["unrelatedProxyTypeHttp"]["properties"]["dns_volterra_managed"]
+    )
+    assert enricher.enrich_spec(result, canonical_only=True) == result
