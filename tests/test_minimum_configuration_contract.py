@@ -8,6 +8,7 @@ from pathlib import Path
 
 import yaml
 
+from scripts.site_curation import CURATED_RESOURCE_NAMES
 from scripts.utils.canonical_merge import canonical_merge_sources
 from scripts.utils.minimum_configuration_enricher import validate_minimum_configuration_paths
 
@@ -43,6 +44,8 @@ def test_smsv2_minimum_configuration_resolves_through_schema_graph() -> None:
 def test_every_minimum_configuration_path_resolves_through_schema_graph() -> None:
     spec = json.loads(Path("docs/specifications/api/openapi.json").read_text())
     config = yaml.safe_load(Path("config/minimum_configs.yaml").read_text())
+    for resource_name in CURATED_RESOURCE_NAMES:
+        config["resources"].pop(resource_name, None)
 
     validate_minimum_configuration_paths(spec, config)
 

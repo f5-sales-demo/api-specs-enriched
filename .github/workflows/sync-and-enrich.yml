@@ -209,6 +209,7 @@ jobs:
               scripts/merge_specs.py \
               scripts/enrich.py \
               scripts/normalize.py \
+              scripts/site_curation.py \
               requirements.txt
             find scripts/utils scripts/discovery config -type f 2>/dev/null \
               | sort | xargs cat
@@ -228,7 +229,9 @@ jobs:
         id: enriched-cache
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
-          path: docs/specifications/api
+          path: |
+            docs/specifications/api
+            release/curation-v11.0.0.json
           key: enriched-${{ steps.specs-fingerprint.outputs.hash }}-${{ steps.pipeline-fingerprint.outputs.hash }}-biome-${{ steps.biome.outputs.version }}
 
       - name: Use image-resident Java 17 (for LanguageTool)
@@ -312,7 +315,9 @@ jobs:
         if: steps.enriched-cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
-          path: docs/specifications/api
+          path: |
+            docs/specifications/api
+            release/curation-v11.0.0.json
           key: enriched-${{ steps.specs-fingerprint.outputs.hash }}-${{ steps.pipeline-fingerprint.outputs.hash }}-biome-${{ steps.biome.outputs.version }}
 
       - name: Generate API viewer pages
@@ -540,7 +545,7 @@ jobs:
           # files match exactly what biome ci will check.
           # Files exceeding biome.json maxSize (5 MB) are silently skipped
           # by both this step and the Super-Linter check.
-          biome format --write docs/specifications/api/ docs/api-reference/ || true
+          biome format --write docs/specifications/api/ docs/api-reference/ docs/en/api-reference/ || true
 
       - name: Commit and tag release
         id: release
@@ -631,7 +636,7 @@ jobs:
           else
             # Create a new release PR only when this version has no prior PR.
             git checkout -b "$BRANCH"
-            git add -f CHANGELOG.md .github_release release/api-catalog.json release/enrichment-coverage.json release/enrichment-coverage.md release/upstream-contract-removals.json release/upstream-contract-removals.md release/upstream-contract-changes.json release/upstream-contract-changes.md docs/specifications/api/ docs/api-reference/
+            git add -f CHANGELOG.md .github_release release/api-catalog.json release/curation-v11.0.0.json release/enrichment-coverage.json release/enrichment-coverage.md release/upstream-contract-removals.json release/upstream-contract-removals.md release/upstream-contract-changes.json release/upstream-contract-changes.md docs/specifications/api/ docs/api-reference/ docs/en/api-reference/ docs/openapi-specs-config.json
             if git diff --staged --quiet; then
               echo "::error::Release detector requested v${VERSION}, but no generated output is staged"
               exit 1
@@ -686,7 +691,7 @@ jobs:
           VERSION: ${{ steps.version.outputs.new_version }}
         run: |
           RELEASE_DIR="release-package"
-          DATE=$(date -u +"%Y-%m-%d")
+          DATE=$(git show -s --format=%cs "${release_commit:?release commit is required}")
 
           # Extract upstream info from index.json
           UPSTREAM_TS=$(jq -r '."x-upstream-timestamp" // "unknown"' docs/specifications/api/index.json)
@@ -736,7 +741,8 @@ jobs:
           # Copy metadata index
           cp docs/specifications/api/index.json "$RELEASE_DIR/"
 
-          cp release/enrichment-coverage.json release/enrichment-coverage.md "$RELEASE_DIR/"
+          cp release/enrichment-coverage.json release/enrichment-coverage.md \
+            release/curation-v11.0.0.json "$RELEASE_DIR/"
 
           # Copy changelog
           cp CHANGELOG.md "$RELEASE_DIR/"
@@ -751,9 +757,12 @@ jobs:
           echo "::endgroup::"
 
           # Create ZIP package
-          cd "$RELEASE_DIR"
-          zip -r "../${ZIP_NAME}" .
-          cd ..
+          ARCHIVE_EPOCH=$(git show -s --format=%ct "${release_commit}")
+          find "$RELEASE_DIR" -exec touch -d "@${ARCHIVE_EPOCH}" {} +
+          (
+            cd "$RELEASE_DIR"
+            find . -type f -print | LC_ALL=C sort | zip -X -q "../${ZIP_NAME}" -@
+          )
 
           echo "zip_name=${ZIP_NAME}" >> "$GITHUB_ENV"
           echo "::notice::Package created: ${ZIP_NAME}"

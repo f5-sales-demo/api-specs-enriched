@@ -21,6 +21,7 @@ from typing import Any
 
 import yaml
 
+from scripts.site_curation import curate_catalog_metadata
 from scripts.utils.canonical_merge import canonical_merge_sources
 from scripts.utils.pii_sanitizer import sanitize_discovery_payload, sanitize_emails
 from scripts.utils.version_calculator import get_version_from_tags
@@ -1240,7 +1241,7 @@ def main() -> int:
         with DEFAULT_INPUT.open(encoding="utf-8") as f:
             openapi = json.load(f)
 
-    catalog = sanitize_emails(compile_catalog(openapi))
+    catalog = curate_catalog_metadata(sanitize_emails(compile_catalog(openapi)))
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
     with args.output.open("w", encoding="utf-8") as f:

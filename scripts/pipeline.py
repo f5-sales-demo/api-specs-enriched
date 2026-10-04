@@ -71,6 +71,13 @@ from rich.table import Table
 
 # Import processing modules
 from scripts.merge_specs import load_critical_resources
+from scripts.site_curation import (
+    CURATED_RESOURCE_NAMES,
+    curate_metadata,
+    curate_sidecar_resources,
+    curate_spec,
+    load_policy,
+)
 from scripts.smsv2_parity_manifest import build_parity_manifest
 from scripts.utils import (
     AcronymEnricher,
@@ -2034,6 +2041,24 @@ def _run_pipeline(
             batch_processor.cleanup_cache()
             console.print("[dim]Cache cleanup complete[/dim]")
 
+            # Apply the reviewed removal policy to the canonical provider graph and
+            # every documentation projection before any published output is saved.
+            # The audit is a release artifact, outside the API reference.
+            policy = load_policy()
+            master = create_master_spec(domain_specs, version, canonical)
+            curation_audit = curate_spec(
+                master,
+                policy,
+                audit_path=Path("release/curation-v11.0.0.json"),
+                protect_smsv2=True,
+            )
+            for spec in domain_specs.values():
+                curate_spec(spec, policy)
+            console.print(
+                f"[green]Curated {len(curation_audit['removed'])} legacy operations "
+                f"and {len(curation_audit['removed_schemas'])} exclusive schemas[/green]"
+            )
+
             # Save domain specs
             for domain, spec in domain_specs.items():
                 # The provider release bundle consumes domains/*.json rather than
@@ -2044,11 +2069,13 @@ def _run_pipeline(
                 save_spec(spec, output_dir / f"{domain}.json", indent=indent)
 
             # Create master spec
-            master = create_master_spec(domain_specs, version, canonical)
             concurrency_inventory = ConcurrencyContractEnricher().enrich_spec(master)
+            minimum_config = yaml.safe_load(Path("config/minimum_configs.yaml").read_text())
+            for resource_name in CURATED_RESOURCE_NAMES:
+                minimum_config.get("resources", {}).pop(resource_name, None)
             validate_minimum_configuration_paths(
                 master,
-                yaml.safe_load(Path("config/minimum_configs.yaml").read_text()),
+                minimum_config,
             )
             save_spec(master, output_dir / "openapi.json", indent=indent)
             save_spec(
@@ -2064,6 +2091,7 @@ def _run_pipeline(
 
             # Create index
             index = create_spec_index(domain_specs, version)
+            curate_metadata(index)
             save_spec(index, output_dir / "index.json", indent=indent)
 
             # Export validation specification for downstream consumers.
@@ -2072,7 +2100,8 @@ def _run_pipeline(
             try:
                 validation_exporter = ValidationExporter()
                 validation_path = output_dir / "validation.json"
-                validation_exporter.export(validation_path)
+                validation_artifact = curate_sidecar_resources(validation_exporter.export())
+                write_json_file(validation_artifact, validation_path, indent=indent)
                 validation_stats = validation_exporter.get_stats()
                 console.print(
                     f"[green]Exported validation.json: "
@@ -2089,10 +2118,14 @@ def _run_pipeline(
             try:
                 minimal_exporter = MinimalDefaultsExporter()
                 minimal_schemas = MinimalDefaultsExporter.collect_schemas(domain_specs.values())
-                minimal_artifact = minimal_exporter.export(
-                    minimal_schemas,
+                minimal_artifact = curate_sidecar_resources(
+                    minimal_exporter.build(minimal_schemas, version=version)
+                )
+                write_json_file(
+                    minimal_artifact,
                     output_dir / "minimal-export-defaults.json",
-                    version=version,
+                    indent=indent,
+                    sort_keys=True,
                 )
                 console.print(
                     f"[green]Exported minimal-export-defaults.json: "
@@ -2106,9 +2139,13 @@ def _run_pipeline(
             # Rides alongside the domain specs (like validation.json) and is read by
             # the consumer via an explicit path, not parsed as a domain spec.
             np_profiles_exporter = NamespaceProfilesExporter()
-            np_profiles_artifact = np_profiles_exporter.export(
+            np_profiles_artifact = curate_sidecar_resources(
+                np_profiles_exporter.build(version=version)
+            )
+            write_json_file(
+                np_profiles_artifact,
                 output_dir / "namespace_profiles.json",
-                version=version,
+                indent=indent,
             )
             console.print(
                 f"[green]Exported namespace_profiles.json: "
@@ -2117,12 +2154,20 @@ def _run_pipeline(
 
             # Publish the fail-closed resource coverage contract only after the
             # canonical candidates and namespace profiles can be proven complete.
-            coverage_artifact = ResourceCoverageExporter().export(
-                domain_specs.values(),
-                np_profiles_artifact,
-                output_dir / "resource_coverage.json",
-                version=version,
+            coverage_artifact = curate_sidecar_resources(
+                ResourceCoverageExporter().build(
+                    domain_specs.values(),
+                    np_profiles_artifact,
+                    version=version,
+                )
             )
+            write_json_file(
+                coverage_artifact,
+                output_dir / "resource_coverage.json",
+                indent=indent,
+            )
+            if CURATED_RESOURCE_NAMES & coverage_artifact["resources"].keys():
+                raise ValueError("Curated resource remains in resource_coverage.json")
             console.print(
                 f"[green]Exported resource_coverage.json: "
                 f"{coverage_artifact['coverage']['generated']} generated, "

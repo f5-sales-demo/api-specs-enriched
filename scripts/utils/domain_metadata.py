@@ -454,7 +454,6 @@ DOMAIN_METADATA = {
             "Manage XCKS (Managed Kubernetes) site deployments (formerly AppStack)",
             "Deploy Secure Mesh sites for networking-focused edge deployments",
             "Integrate external Kubernetes clusters as Customer Edge",
-            "Configure AWS VPC, Azure VNet, and GCP VPC sites",
             "Manage virtual sites and site policies",
         ],
         "related_domains": ["cloud_infrastructure", "customer_edge", "managed_kubernetes"],
