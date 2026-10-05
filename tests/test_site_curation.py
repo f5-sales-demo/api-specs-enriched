@@ -1,10 +1,11 @@
-"""Contract tests for the reviewed v11 site API curation boundary."""
+"""Contract tests for the reviewed v12 site API curation boundary."""
 
 from __future__ import annotations
 
 import copy
 import json
 from collections import Counter
+from pathlib import Path
 
 import pytest
 
@@ -67,7 +68,7 @@ def _document(entry):
 
 def _policy_with_retained_patch(entry):
     return {
-        "policyVersion": "v11.0.0",
+        "policyVersion": "v12.0.0",
         "operations": [
             entry,
             {
@@ -82,15 +83,26 @@ def _policy_with_retained_patch(entry):
     }
 
 
-def test_policy_has_the_reviewed_v10_0_1_inventory():
+def test_policy_adds_only_the_five_reviewed_appstack_identities():
     policy = load_policy()
-    assert len(policy["operations"]) == 42
-    assert len({item["path"] for item in policy["operations"]}) == 37
+    prior = json.loads(Path("config/curation/v11.0.0.json").read_text())
+    assert len(prior["operations"]) == 42
+    assert len(policy["operations"]) == 47
+    assert len({item["path"] for item in policy["operations"]}) == 41
+    assert all(item in policy["operations"] for item in prior["operations"])
     assert Counter(item["topic"] for item in policy["operations"]) == {
         "secure-mesh-v1": 5,
         "provider-cloud-site": 24,
         "cloud-connect": 13,
+        "appstack-site": 5,
     }
+    assert {
+        item["operationId"] for item in policy["operations"] if item["topic"] == "appstack-site"
+    } == {
+        f"ves.io.schema.views.voltstack_site.API.{action}"
+        for action in ("Create", "Replace", "List", "Get", "Delete")
+    }
+    assert "SITE_MANAGEMENT_APP_STACK_SITES" in policy["navigationValues"]
     assert all(item["reason"] and item["disposition"] == "remove" for item in policy["operations"])
 
 
@@ -120,7 +132,7 @@ def test_exact_removal_preserves_mixed_path_shared_cycle_and_is_idempotent(tmp_p
 def test_absent_upstream_identity_is_accepted():
     entry = _policy_entry()
     spec = {"paths": {}, "components": {"schemas": {}}}
-    audit = curate_spec(spec, {"policyVersion": "v11.0.0", "operations": [entry]})
+    audit = curate_spec(spec, {"policyVersion": "v12.0.0", "operations": [entry]})
     assert len(audit["already_absent"]) == 1
     assert not audit["newly_discovered_candidates"]
 
@@ -156,6 +168,54 @@ def test_new_family_operation_fails_even_when_approved_identity_is_present():
         curate_spec(spec, _policy_with_retained_patch(entry))
 
 
+def test_new_appstack_operation_and_moved_identity_fail_closed():
+    entry = next(item for item in load_policy()["operations"] if item["topic"] == "appstack-site")
+    spec = _document(entry)
+    spec["paths"]["/api/config/namespaces/{namespace}/voltstack_sites/new"] = {
+        "get": {"operationId": "ves.io.schema.views.voltstack_site.API.New"}
+    }
+    with pytest.raises(ValueError, match="new candidates"):
+        curate_spec(spec, _policy_with_retained_patch(entry))
+    spec["paths"]["/api/config/namespaces/{namespace}/voltstack_sites/new"]["get"][
+        "operationId"
+    ] = "ves.io.schema.views.securemesh_site_v2.API.New"
+    with pytest.raises(ValueError, match="new candidates"):
+        curate_spec(spec, _policy_with_retained_patch(entry))
+    del spec["paths"]["/api/config/namespaces/{namespace}/voltstack_sites/new"]
+    spec["paths"][entry["path"]][entry["method"]]["operationId"] += "Moved"
+    with pytest.raises(ValueError, match="changed identities"):
+        curate_spec(spec, _policy_with_retained_patch(entry))
+
+
+def test_appstack_navigation_is_removed_but_historical_wire_value_is_retained():
+    entry = next(item for item in load_policy()["operations"] if item["topic"] == "appstack-site")
+    spec = _document(entry)
+    spec["components"]["schemas"]["commonDashboardLinkType"] = {
+        "enum": ["SITE_MANAGEMENT_APP_STACK_SITES", "SITE_MANAGEMENT_SECURE_MESH_V2_SITES"],
+        "description": (
+            "- SITE_MANAGEMENT_APP_STACK_SITES: App Stack sites\n"
+            "- SITE_MANAGEMENT_SECURE_MESH_V2_SITES: Mesh sites"
+        ),
+    }
+    spec["components"]["schemas"]["HistoricalSiteAppType"] = {
+        "enum": ["SITE_APPTYPE_APPSTACK", "SITE_APPTYPE_MESH"]
+    }
+    policy = _policy_with_retained_patch(entry)
+    policy["navigationValues"] = ["SITE_MANAGEMENT_APP_STACK_SITES"]
+    curate_spec(spec, policy)
+    assert spec["components"]["schemas"]["commonDashboardLinkType"]["enum"] == [
+        "SITE_MANAGEMENT_SECURE_MESH_V2_SITES"
+    ]
+    assert (
+        "SITE_MANAGEMENT_APP_STACK_SITES"
+        not in spec["components"]["schemas"]["commonDashboardLinkType"]["description"]
+    )
+    assert spec["components"]["schemas"]["HistoricalSiteAppType"]["enum"] == [
+        "SITE_APPTYPE_APPSTACK",
+        "SITE_APPTYPE_MESH",
+    ]
+
+
 def test_smsv2_six_operations_and_schema_closure_are_preserved():
     entry = _policy_entry()
     spec = _document(entry)
@@ -177,6 +237,27 @@ def test_smsv2_six_operations_and_schema_closure_are_preserved():
     assert spec["paths"]["/api/sync-cloud-data/securemesh_site_v2/cloud_resources"] == before
 
 
+def test_retained_family_guard_rejects_shared_schema_changes(monkeypatch):
+    entry = _policy_entry()
+    spec = _document(entry)
+    spec["paths"]["/api/config/namespaces/{namespace}/workloads"] = {
+        "get": {
+            "operationId": "ves.io.schema.views.workload.API.List",
+            "responses": {"200": {"$ref": "#/components/schemas/Shared"}},
+        }
+    }
+    spec["components"]["schemas"]["Shared"]["description"] = (
+        "Kind of view e.g. Aws_vpc_site, azure_vnet_site."
+    )
+    monkeypatch.setattr("scripts.site_curation.RETAINED_FAMILY_COUNTS", {"workload": 1})
+    with pytest.raises(ValueError, match="changed retained workload"):
+        curate_spec(
+            spec,
+            _policy_with_retained_patch(entry),
+            protect_retained_families=True,
+        )
+
+
 def test_contract_diff_normalizes_only_reviewed_removals():
     entry = _policy_entry()
     before = _document(entry)
@@ -188,7 +269,11 @@ def test_contract_diff_normalizes_only_reviewed_removals():
 
 def test_published_metadata_and_sidecars_drop_curated_resource_keys():
     metadata = {
-        "x-f5xc-primary-resources": [{"name": "aws_vpc_site"}, {"name": "securemesh_site_v2"}],
+        "x-f5xc-primary-resources": [
+            {"name": "aws_vpc_site"},
+            {"name": "voltstack_site"},
+            {"name": "securemesh_site_v2"},
+        ],
         "x-f5xc-critical-resources": ["cloud_connect", "origin_pool"],
     }
     curate_metadata(metadata)
@@ -199,13 +284,14 @@ def test_published_metadata_and_sidecars_drop_curated_resource_keys():
         "resources": {
             "azure_vnet_site": {"_meta": {"verification": "assumed"}},
             "views_aws_vpc_site": {"_meta": {"verification": "unverified"}},
+            "views_voltstack_site": {"_meta": {"verification": "unverified"}},
             "securemesh_site_v2": {"_meta": {"verification": "verified"}},
         },
         "_coverage": {
-            "total_explicit": 3,
+            "total_explicit": 4,
             "verified": 1,
             "assumed": 1,
-            "unverified": 1,
+            "unverified": 2,
             "default_deny_worklist": [],
             "default_deny_worklist_count": 0,
         },

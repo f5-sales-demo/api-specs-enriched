@@ -235,7 +235,7 @@ jobs:
         with:
           path: |
             docs/specifications/api
-            release/curation-v11.0.0.json
+            release/curation-v12.0.0.json
           key: enriched-${{ steps.specs-fingerprint.outputs.hash }}-${{ steps.pipeline-fingerprint.outputs.hash }}-biome-${{ steps.biome.outputs.version }}
 
       - name: Use image-resident Java 17 (for LanguageTool)
@@ -321,7 +321,7 @@ jobs:
         with:
           path: |
             docs/specifications/api
-            release/curation-v11.0.0.json
+            release/curation-v12.0.0.json
           key: enriched-${{ steps.specs-fingerprint.outputs.hash }}-${{ steps.pipeline-fingerprint.outputs.hash }}-biome-${{ steps.biome.outputs.version }}
 
       - name: Generate API viewer pages
@@ -640,7 +640,7 @@ jobs:
           else
             # Create a new release PR only when this version has no prior PR.
             git checkout -b "$BRANCH"
-            git add -f CHANGELOG.md .github_release release/api-catalog.json release/curation-v11.0.0.json release/enrichment-coverage.json release/enrichment-coverage.md release/upstream-contract-removals.json release/upstream-contract-removals.md release/upstream-contract-changes.json release/upstream-contract-changes.md docs/specifications/api/ docs/api-reference/ docs/en/api-reference/ docs/openapi-specs-config.json
+            git add -f CHANGELOG.md .github_release release/api-catalog.json release/curation-v12.0.0.json release/enrichment-coverage.json release/enrichment-coverage.md release/upstream-contract-removals.json release/upstream-contract-removals.md release/upstream-contract-changes.json release/upstream-contract-changes.md docs/specifications/api/ docs/api-reference/ docs/en/api-reference/ docs/openapi-specs-config.json
             if git diff --staged --quiet; then
               echo "::error::Release detector requested v${VERSION}, but no generated output is staged"
               exit 1
@@ -746,7 +746,7 @@ jobs:
           cp docs/specifications/api/index.json "$RELEASE_DIR/"
 
           cp release/enrichment-coverage.json release/enrichment-coverage.md \
-            release/curation-v11.0.0.json "$RELEASE_DIR/"
+            release/curation-v12.0.0.json "$RELEASE_DIR/"
 
           # Copy changelog
           cp CHANGELOG.md "$RELEASE_DIR/"
@@ -878,7 +878,7 @@ jobs:
   build-downstream-matrix:
     name: Build Downstream Matrix
     needs: [sync-and-enrich]
-    if: needs.sync-and-enrich.outputs.has_changes == 'true' && needs.sync-and-enrich.outputs.version != '11.0.0' && inputs.skip_downstream_dispatch != true
+    if: needs.sync-and-enrich.outputs.has_changes == 'true' && needs.sync-and-enrich.outputs.version != '11.0.0' && needs.sync-and-enrich.outputs.version != '12.0.0' && inputs.skip_downstream_dispatch != true
     runs-on: managed-socketless
     outputs:
       matrix: ${{ steps.matrix.outputs.result }}

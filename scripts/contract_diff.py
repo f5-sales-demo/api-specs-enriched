@@ -529,7 +529,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument(
         "--curation-policy",
         type=Path,
-        default=Path("config/curation/v11.0.0.json"),
+        default=Path("config/curation/v12.0.0.json"),
         help="Reviewed exact-operation removal policy.",
     )
     args = parser.parse_args(argv)

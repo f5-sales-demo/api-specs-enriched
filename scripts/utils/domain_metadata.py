@@ -132,7 +132,7 @@ DOMAIN_ICONS = {
 # =============================================================================
 
 DOMAIN_PRIMARY_RESOURCES = {
-    "customer_edge": ["voltstack_site", "securemesh_site", "virtual_site"],
+    "customer_edge": ["securemesh_site_v2", "virtual_site"],
     "cloud_infrastructure": [
         "aws_vpc_site",
         "azure_vnet_site",
@@ -421,7 +421,6 @@ DOMAIN_METADATA = {
         # Industry-standard naming (XCKS = XC Kubernetes Service)
         "short_name": "XCKS",
         "full_name": "XC Kubernetes Service",
-        "legacy_name": "AppStack",
         "comparable_to": ["AWS EKS", "Azure AKS", "Google GKE"],
         "use_cases": [
             "Manage XCKS (Managed Kubernetes) cluster RBAC and security",
@@ -447,11 +446,10 @@ DOMAIN_METADATA = {
         "is_preview": False,
         "requires_tier": "Standard",
         "category": "Infrastructure",
-        # Customer Edge deployments: Cloud sites, XCKS (Managed Kubernetes), Mesh
-        "deployment_types": ["Cloud Sites", "XCKS (Managed Kubernetes)", "Secure Mesh"],
+        # Customer Edge deployments in the curated API.
+        "deployment_types": ["Cloud Sites", "Secure Mesh"],
         "use_cases": [
             "Deploy F5 XC across cloud providers (AWS, Azure, GCP)",
-            "Manage XCKS (Managed Kubernetes) site deployments (formerly AppStack)",
             "Deploy Secure Mesh sites for networking-focused edge deployments",
             "Integrate external Kubernetes clusters as Customer Edge",
             "Manage virtual sites and site policies",

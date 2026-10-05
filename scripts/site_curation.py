@@ -12,10 +12,20 @@ from typing import Any
 
 from scripts.utils.deprecated_operations import HTTP_METHODS
 
-POLICY_PATH = Path("config/curation/v11.0.0.json")
+POLICY_PATH = Path("config/curation/v12.0.0.json")
 NEUTRAL_EXAMPLE = ("e.g. Aws_vpc_site, azure_vnet_site", "for a supported view kind")
+RETAINED_FAMILY_COUNTS = {
+    "securemesh_site_v2": 6,
+    "virtual_k8s": 6,
+    "workload": 11,
+    "container_registry": 5,
+    "k8s_cluster": 15,
+    "k8s_pod_security": 10,
+}
 CURATED_RESOURCE_NAMES = frozenset(
     {
+        "voltstack_site",
+        "views_voltstack_site",
         "securemesh_site",
         "aws_vpc_site",
         "azure_vnet_site",
@@ -30,6 +40,8 @@ CURATED_RESOURCE_NAMES = frozenset(
 
 def _family(path: str, operation_id: str) -> str | None:
     identity = f"{path} {operation_id}"
+    if "voltstack_site" in path or "voltstack_site" in operation_id:
+        return "appstack-site"
     if "securemesh_site_v2" in identity:
         return None
     if re.search(r"securemesh_site(?!_v2)", identity):
@@ -44,7 +56,7 @@ def _family(path: str, operation_id: str) -> str | None:
 def load_policy(path: Path = POLICY_PATH) -> dict[str, Any]:
     """Read and validate the complete, versioned exact-identity policy."""
     policy = json.loads(path.read_text())
-    if policy.get("policyVersion") != "v11.0.0":
+    if policy.get("policyVersion") != "v12.0.0":
         raise ValueError(f"Unexpected curation policy version: {path}")
     navigation_values = policy.get("navigationValues", [])
     if (
@@ -230,6 +242,7 @@ def curate_spec(
     policy: dict[str, Any] | None = None,
     audit_path: Path | None = None,
     protect_smsv2: bool = False,
+    protect_retained_families: bool = False,
 ) -> dict[str, Any]:
     """Curate in place, writing a sorted audit even when drift stops the build."""
     policy = policy or load_policy()
@@ -310,6 +323,30 @@ def curate_spec(
             },
         )
 
+    protected_before = None
+    if protect_retained_families:
+        protected_before = {}
+        for family, expected_count in RETAINED_FAMILY_COUNTS.items():
+            operations = {
+                identity: operation
+                for identity, operation in actual.items()
+                if family in identity[1] or family in identity[2]
+            }
+            if len(operations) != expected_count:
+                raise ValueError(
+                    f"Expected {expected_count} retained {family} operations, "
+                    f"found {len(operations)}"
+                )
+            closure = _reachable_schemas(spec, list(operations.values()))
+            protected_before[family] = (
+                copy.deepcopy(operations),
+                {
+                    name: copy.deepcopy(schema)
+                    for name, schema in spec.get("components", {}).get("schemas", {}).items()
+                    if name in closure
+                },
+            )
+
     for method, path, _ in removed:
         del spec["paths"][path][method]
         if not any(key in HTTP_METHODS for key in spec["paths"][path]):
@@ -352,4 +389,18 @@ def curate_spec(
         }
         if (smsv2_after, closure_after) != smsv2_before:
             raise ValueError("Curation changed the SMSv2 operation or schema contract")
+    if protected_before is not None:
+        after = _operations(spec)
+        for family, before in protected_before.items():
+            operations = {
+                identity: operation
+                for identity, operation in after.items()
+                if family in identity[1] or family in identity[2]
+            }
+            closure = _reachable_schemas(spec, list(operations.values()))
+            schemas_after = {
+                name: copy.deepcopy(schema) for name, schema in schemas.items() if name in closure
+            }
+            if (operations, schemas_after) != before:
+                raise ValueError(f"Curation changed retained {family} operations or schemas")
     return audit

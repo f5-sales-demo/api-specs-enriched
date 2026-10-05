@@ -5,13 +5,14 @@ from pathlib import Path
 WORKFLOW = Path(".github/workflows/sync-and-enrich.yml")
 
 
-def test_manual_release_can_skip_all_downstream_dispatches() -> None:
-    """The reviewed release may publish and deploy without entering the dispatch matrix."""
+def test_v12_release_skips_all_downstream_dispatches() -> None:
+    """Automatic and manual v12 releases must never enter the dispatch matrix."""
     workflow = WORKFLOW.read_text(encoding="utf-8")
     assert "skip_downstream_dispatch:" in workflow
     assert (
         "if: needs.sync-and-enrich.outputs.has_changes == 'true' "
         "&& needs.sync-and-enrich.outputs.version != '11.0.0' "
+        "&& needs.sync-and-enrich.outputs.version != '12.0.0' "
         "&& inputs.skip_downstream_dispatch != true"
     ) in workflow
     notify_job = workflow.split("\n  notify-downstream:\n", maxsplit=1)[1].split(
