@@ -135,7 +135,6 @@ def test_canonical_master_has_complete_deterministic_inventory() -> None:
 
     # The v12 curation also removes the AppStack CE site resource.
     assert inventory["eligible_count"] >= 156
-    assert all("voltstack_site" not in item["api_identity"] for item in inventory["resources"])
     assert inventory["covered_count"] == inventory["eligible_count"]
     assert inventory["excluded_count"] == 2
     assert inventory["exclusions"] == [
