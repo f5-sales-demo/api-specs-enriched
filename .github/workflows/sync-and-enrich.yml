@@ -42,6 +42,10 @@ on:
           - patch
           - minor
         default: patch
+      skip_downstream_dispatch:
+        description: Publish and deploy this release without notifying downstream repositories.
+        type: boolean
+        default: false
 
 # Read-only default; each job declares what it consumes. Traced per write:
 #   sync-and-enrich  contents: write   `gh release create` runs as GITHUB_TOKEN
@@ -874,7 +878,7 @@ jobs:
   build-downstream-matrix:
     name: Build Downstream Matrix
     needs: [sync-and-enrich]
-    if: needs.sync-and-enrich.outputs.has_changes == 'true'
+    if: needs.sync-and-enrich.outputs.has_changes == 'true' && needs.sync-and-enrich.outputs.version != '11.0.0' && inputs.skip_downstream_dispatch != true
     runs-on: managed-socketless
     outputs:
       matrix: ${{ steps.matrix.outputs.result }}
