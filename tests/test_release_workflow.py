@@ -11,6 +11,7 @@ def test_manual_release_can_skip_all_downstream_dispatches() -> None:
     assert "skip_downstream_dispatch:" in workflow
     assert (
         "if: needs.sync-and-enrich.outputs.has_changes == 'true' "
+        "&& needs.sync-and-enrich.outputs.version != '11.0.0' "
         "&& inputs.skip_downstream_dispatch != true"
     ) in workflow
     notify_job = workflow.split("\n  notify-downstream:\n", maxsplit=1)[1].split(

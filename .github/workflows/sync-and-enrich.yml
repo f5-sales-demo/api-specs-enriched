@@ -878,7 +878,7 @@ jobs:
   build-downstream-matrix:
     name: Build Downstream Matrix
     needs: [sync-and-enrich]
-    if: needs.sync-and-enrich.outputs.has_changes == 'true' && inputs.skip_downstream_dispatch != true
+    if: needs.sync-and-enrich.outputs.has_changes == 'true' && needs.sync-and-enrich.outputs.version != '11.0.0' && inputs.skip_downstream_dispatch != true
     runs-on: managed-socketless
     outputs:
       matrix: ${{ steps.matrix.outputs.result }}
