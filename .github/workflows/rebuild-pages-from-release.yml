@@ -26,7 +26,7 @@ jobs:
     permissions:
       contents: read
     outputs:
-      target_commit: ${{ steps.publication.outputs.target_commit }}
+      content_ref: ${{ steps.publication.outputs.content_ref }}
     steps:
       - name: Reject nonprotected publication refs
         if: github.ref != 'refs/heads/main' || !github.ref_protected
@@ -53,6 +53,13 @@ jobs:
 
           git fetch --no-tags origin "refs/tags/$RELEASE_TAG:refs/tags/$RELEASE_TAG"
           test "$(git rev-parse "$RELEASE_TAG^{commit}")" = "$TARGET_COMMIT"
+          git fetch --no-tags origin "+refs/heads/main:refs/remotes/origin/main"
+          test "$(git rev-parse refs/remotes/origin/main)" = "$GITHUB_SHA"
+          git merge-base --is-ancestor "$TARGET_COMMIT" "$GITHUB_SHA"
+          if ! git diff --quiet "$TARGET_COMMIT" "$GITHUB_SHA" -- docs release; then
+            echo '::error::protected-main documentation differs from the verified release'
+            exit 1
+          fi
 
           receipt_dir=$(mktemp -d "$RUNNER_TEMP/api-release.XXXXXX")
           mkdir "$receipt_dir/assets"
@@ -69,14 +76,14 @@ jobs:
           # Refuse a tag move during asset download and verification.
           git fetch --no-tags origin "refs/tags/$RELEASE_TAG:refs/tags/$RELEASE_TAG"
           test "$(git rev-parse "$RELEASE_TAG^{commit}")" = "$TARGET_COMMIT"
-          echo "target_commit=$TARGET_COMMIT" >> "$GITHUB_OUTPUT"
+          echo "content_ref=$GITHUB_SHA" >> "$GITHUB_OUTPUT"
 
   deploy:
     name: Rebuild verified release Pages
     needs: verify
     uses: ./.github/workflows/github-pages-deploy.yml
     with:
-      target-commit: ${{ needs.verify.outputs.target_commit }}
+      target-commit: ${{ needs.verify.outputs.content_ref }}
     permissions:
       contents: read
       packages: read # pull the verified builder image in the called Pages workflow

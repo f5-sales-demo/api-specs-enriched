@@ -87,7 +87,8 @@ def test_ambiguous_or_changed_release_fails(tmp_path: Path, mutation: str) -> No
 def test_workflow_cannot_deploy_without_release_verification() -> None:
     text = Path(".github/workflows/rebuild-pages-from-release.yml").read_text()
     assert "needs: verify" in text
-    assert "target-commit: ${{ needs.verify.outputs.target_commit }}" in text
+    assert "target-commit: ${{ needs.verify.outputs.content_ref }}" in text
+    assert 'git diff --quiet "$TARGET_COMMIT" "$GITHUB_SHA" -- docs release' in text
     assert "verify_existing_publication.py" in text
     assert "gh release download" in text
     assert "gh release create" not in text
