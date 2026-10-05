@@ -5,6 +5,22 @@ from pathlib import Path
 WORKFLOW = Path(".github/workflows/sync-and-enrich.yml")
 
 
+def test_manual_release_can_skip_all_downstream_dispatches() -> None:
+    """The reviewed release may publish and deploy without entering the dispatch matrix."""
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    assert "skip_downstream_dispatch:" in workflow
+    assert (
+        "if: needs.sync-and-enrich.outputs.has_changes == 'true' "
+        "&& inputs.skip_downstream_dispatch != true"
+    ) in workflow
+    notify_job = workflow.split("\n  notify-downstream:\n", maxsplit=1)[1].split(
+        "\n  # ==========================================================================",
+        maxsplit=1,
+    )[0]
+    assert "needs: [sync-and-enrich, build-downstream-matrix]" in notify_job
+    assert "if: needs.build-downstream-matrix.outputs.has_targets == 'true'" in notify_job
+
+
 def test_specification_validation_is_release_blocking() -> None:
     """A crashed or failed validator must prevent release publication."""
 
