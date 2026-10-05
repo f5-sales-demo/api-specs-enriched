@@ -1,0 +1,84 @@
+---
+name: Rebuild Pages From Verified API Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Exact existing vX.Y.Z release tag
+        required: true
+        type: string
+      target_commit:
+        description: Exact 40-character commit the release tag and receipt bind
+        required: true
+        type: string
+
+permissions: {}
+
+concurrency:
+  group: verified-api-release-pages
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    name: Verify existing release and assets
+    runs-on: managed-socketless
+    permissions:
+      contents: read
+    outputs:
+      target_commit: ${{ steps.publication.outputs.target_commit }}
+    steps:
+      - name: Reject nonprotected publication refs
+        if: github.ref != 'refs/heads/main' || !github.ref_protected
+        run: |
+          echo '::error::maintenance rebuild requires protected main'
+          exit 1
+
+      - name: Checkout protected main verifier
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify tag, receipt, and downloaded assets
+        id: publication
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+          TARGET_COMMIT: ${{ inputs.target_commit }}
+        run: |
+          set -euo pipefail
+          [[ "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || exit 1
+          [[ "$TARGET_COMMIT" =~ ^[0-9a-f]{40}$ ]] || exit 1
+
+          git fetch --no-tags origin "refs/tags/$RELEASE_TAG:refs/tags/$RELEASE_TAG"
+          test "$(git rev-parse "$RELEASE_TAG^{commit}")" = "$TARGET_COMMIT"
+
+          receipt_dir=$(mktemp -d "$RUNNER_TEMP/api-release.XXXXXX")
+          mkdir "$receipt_dir/assets"
+          gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" \
+            --json body,assets,tagName > "$receipt_dir/release.json"
+          gh release download "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" \
+            --dir "$receipt_dir/assets"
+          python3 scripts/release/verify_existing_publication.py \
+            --release-json "$receipt_dir/release.json" \
+            --assets-dir "$receipt_dir/assets" \
+            --tag "$RELEASE_TAG" \
+            --commit "$TARGET_COMMIT"
+
+          # Refuse a tag move during asset download and verification.
+          git fetch --no-tags origin "refs/tags/$RELEASE_TAG:refs/tags/$RELEASE_TAG"
+          test "$(git rev-parse "$RELEASE_TAG^{commit}")" = "$TARGET_COMMIT"
+          echo "target_commit=$TARGET_COMMIT" >> "$GITHUB_OUTPUT"
+
+  deploy:
+    name: Rebuild verified release Pages
+    needs: verify
+    uses: ./.github/workflows/github-pages-deploy.yml
+    with:
+      target-commit: ${{ needs.verify.outputs.target_commit }}
+    permissions:
+      contents: read
+      packages: read
+      pages: write
+      id-token: write
