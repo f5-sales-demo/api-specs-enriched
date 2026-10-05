@@ -2049,8 +2049,9 @@ def _run_pipeline(
             curation_audit = curate_spec(
                 master,
                 policy,
-                audit_path=Path("release/curation-v11.0.0.json"),
+                audit_path=Path("release/curation-v12.0.0.json"),
                 protect_smsv2=True,
+                protect_retained_families=True,
             )
             for spec in domain_specs.values():
                 curate_spec(spec, policy)

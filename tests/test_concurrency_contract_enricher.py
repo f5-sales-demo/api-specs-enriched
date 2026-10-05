@@ -133,8 +133,8 @@ def test_canonical_master_has_complete_deterministic_inventory() -> None:
     spec = json.loads(Path("docs/specifications/api/openapi.json").read_text())
     inventory = ConcurrencyContractEnricher().enrich_spec(spec)
 
-    # The reviewed v11 curation removes four legacy eligible site resources.
-    assert inventory["eligible_count"] >= 157
+    # The v12 curation also removes the AppStack CE site resource.
+    assert inventory["eligible_count"] >= 156
     assert inventory["covered_count"] == inventory["eligible_count"]
     assert inventory["excluded_count"] == 2
     assert inventory["exclusions"] == [
