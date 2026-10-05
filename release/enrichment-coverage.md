@@ -1,6 +1,6 @@
 # Enrichment coverage
 
-Version: 11.0.0; dialect: 3.0.3
+Version: 12.0.0; dialect: 3.0.3
 
 | Measurement | Count |
 | --- | ---: |
