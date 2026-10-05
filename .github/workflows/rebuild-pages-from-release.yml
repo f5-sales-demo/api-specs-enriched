@@ -79,6 +79,6 @@ jobs:
       target-commit: ${{ needs.verify.outputs.target_commit }}
     permissions:
       contents: read
-      packages: read
-      pages: write
-      id-token: write
+      packages: read # pull the verified builder image in the called Pages workflow
+      pages: write # publish the verified release documentation to GitHub Pages
+      id-token: write # exchange an OIDC token with the Pages deployment service
