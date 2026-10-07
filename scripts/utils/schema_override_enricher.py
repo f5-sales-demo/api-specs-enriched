@@ -411,7 +411,7 @@ class SchemaOverrideEnricher:
             props = schema.get("properties", {})
 
             if corrections_only:
-                self._apply_property_extensions(schema_name, props, override)
+                self._apply_property_extensions(schema_name, props, override, corrections_only=True)
                 continue
 
             for prop_name in override["remove_properties"]:
@@ -466,7 +466,9 @@ class SchemaOverrideEnricher:
                 schema[ext_key] = json.dumps(updated) if was_string else updated
                 self._stats["oneof_arrays_updated"] += 1
 
-    def _apply_property_extensions(self, schema_name: str, props: dict, override: dict) -> None:
+    def _apply_property_extensions(
+        self, schema_name: str, props: dict, override: dict, *, corrections_only: bool = False
+    ) -> None:
         """Set or remove keys on properties that already exist.
 
         Unlike inject_*, these overwrite: correcting a wrong marker is the point.
@@ -483,6 +485,10 @@ class SchemaOverrideEnricher:
                 self._miss(schema_name, prop_name, "set")
                 continue
             for ext_key, ext_val in extensions.items():
+                # A response-map schema is injected during the full pass. Adding
+                # it early leaks documentation-only shape into canonical inputs.
+                if corrections_only and ext_key == "additionalProperties":
+                    continue
                 if prop.get(ext_key) != ext_val:
                     prop[ext_key] = ext_val
                     self._stats["property_extensions_set"] += 1

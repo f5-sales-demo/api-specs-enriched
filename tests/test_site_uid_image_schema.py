@@ -1,8 +1,43 @@
 """Current console image resolution consumes Site UIDs, not software-version IDs."""
 
+import copy
 from pathlib import Path
 
+from scripts.contract_diff import run_contract_diff
 from scripts.utils.schema_override_enricher import SchemaOverrideEnricher
+
+
+def test_early_image_corrections_preserve_upstream_mapping_contract():
+    spec = {
+        "components": {
+            "schemas": {
+                "virtual_applianceGetImageResponse": {
+                    "type": "object",
+                    "properties": {"images": {"type": "object"}},
+                },
+            },
+        },
+    }
+    original = copy.deepcopy(spec)
+    enricher = SchemaOverrideEnricher()
+    early = enricher.enrich_spec(spec, corrections_only=True)
+    images = early["components"]["schemas"]["virtual_applianceGetImageResponse"]["properties"][
+        "images"
+    ]
+    assert "Mapping keyed by each requested Site UID" in images["description"]
+    assert "additionalProperties" not in images
+    assert not run_contract_diff(original, early)
+
+    documented = enricher.enrich_spec(copy.deepcopy(early))
+    mapping = documented["components"]["schemas"]["virtual_applianceGetImageResponse"][
+        "properties"
+    ]["images"]["additionalProperties"]
+    assert mapping["type"] == "object"
+    assert "download_image_link" in mapping["properties"]
+    assert any(
+        "additionalProperties" in violation.pointer
+        for violation in run_contract_diff(original, documented)
+    )
 
 
 def test_site_uid_image_response_has_a_typed_mapping():
