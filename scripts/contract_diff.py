@@ -228,6 +228,64 @@ def _normalize_declared_removals(
     return normalized, violations
 
 
+@dataclass(frozen=True)
+class DeclaredMapSchema:
+    """One reviewed issue-linked response-map schema addition."""
+
+    schema_pattern: str
+    property_name: str
+    value_schema: dict[str, Any]
+    issue: str
+
+
+def load_declared_maps(
+    path: Path | str = SCHEMA_OVERRIDES_PATH,
+) -> list[DeclaredMapSchema]:
+    """Load only explicitly issue-linked additionalProperties declarations."""
+    enricher = SchemaOverrideEnricher(config_path=Path(path))
+    declarations = []
+    for entry in enricher.overrides.values():
+        for schema in entry.get("schemas", []):
+            for name, extensions in schema.get("set_property_extensions", {}).items():
+                if "additionalProperties" not in extensions:
+                    continue
+                issue = entry.get("upstream_issue")
+                value_schema = extensions["additionalProperties"]
+                if (
+                    not isinstance(issue, str)
+                    or re.fullmatch(r"[\w.-]+/[\w.-]+#\d+", issue) is None
+                    or not isinstance(value_schema, dict)
+                    or re.fullmatch(r"\^[A-Za-z_][A-Za-z0-9_]*\$", schema["pattern"]) is None
+                ):
+                    raise ValueError("map schema additions must be exact and issue-linked")
+                declarations.append(
+                    DeclaredMapSchema(schema["pattern"], name, value_schema, issue),
+                )
+    return declarations
+
+
+def _normalize_declared_maps(
+    input_spec: dict[str, Any],
+    declarations: Sequence[DeclaredMapSchema],
+) -> dict[str, Any]:
+    """Add reviewed map schemas to absent baseline slots; existing maps stay enforced."""
+    normalized = copy.deepcopy(input_spec)
+    schemas = normalized.get("components", {}).get("schemas", {})
+    for declaration in declarations:
+        pattern = re.compile(declaration.schema_pattern)
+        for name, schema in schemas.items():
+            if not pattern.fullmatch(name) or not isinstance(schema, dict):
+                continue
+            property_schema = schema.get("properties", {}).get(declaration.property_name)
+            if (
+                isinstance(property_schema, dict)
+                and property_schema.get("type") == "object"
+                and "additionalProperties" not in property_schema
+            ):
+                property_schema["additionalProperties"] = copy.deepcopy(declaration.value_schema)
+    return normalized
+
+
 def _categorize(change_type: str, pointer: str) -> str:
     """Classify a non-additive change into a rule category for reporting."""
     terminal = ""
@@ -282,6 +340,7 @@ def run_contract_diff(
     known_drift: set[str] | None = None,
     declared_removals: Sequence[DeclaredPropertyRemoval] | None = None,
     curation_policy: dict[str, Any] | None = None,
+    declared_maps: Sequence[DeclaredMapSchema] | None = None,
 ) -> list[Violation]:
     """Compare two spec dicts and return all non-additive changes as violations.
 
@@ -293,8 +352,10 @@ def run_contract_diff(
             set is suppressed (design spec 2026-04-22 §5).
         declared_removals: canonical, issue-linked property removals to normalize.
         curation_policy: reviewed exact operation identities to remove from input.
+        declared_maps: exact issue-linked map additions to normalize in the input.
     """
     known = known_drift or set()
+    input_spec = _normalize_declared_maps(input_spec, declared_maps or ())
     input_spec, removal_violations = _normalize_declared_removals(
         input_spec,
         output_spec,
@@ -405,6 +466,7 @@ def run_directory_diff(
     known_drift: set[str] | None = None,
     declared_removals: Sequence[DeclaredPropertyRemoval] | None = None,
     curation_policy: dict[str, Any] | None = None,
+    declared_maps: Sequence[DeclaredMapSchema] | None = None,
 ) -> list[Violation]:
     """Diff the merged contract between two directories of OpenAPI specs.
 
@@ -435,6 +497,7 @@ def run_directory_diff(
         known_drift=known_drift,
         declared_removals=declared_removals,
         curation_policy=curation_policy,
+        declared_maps=declared_maps,
     )
 
 
@@ -542,6 +605,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         known_drift=known_drift,
         declared_removals=declared_removals,
         curation_policy=load_policy(args.curation_policy),
+        declared_maps=load_declared_maps(args.declared_removals),
     )
     args.report.parent.mkdir(parents=True, exist_ok=True)
     args.report.write_text(
