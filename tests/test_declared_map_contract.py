@@ -38,7 +38,7 @@ def pair():
 
 def test_exact_declared_map_and_additive_annotations_pass(tmp_path):
     before, after = pair()
-    assert run_contract_diff(before, after, declared_maps=declaration(tmp_path)) == []
+    assert not run_contract_diff(before, after, declared_maps=declaration(tmp_path))
 
 
 def test_declared_map_type_change_remains_rejected(tmp_path):
