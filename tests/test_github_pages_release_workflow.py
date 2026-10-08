@@ -3,7 +3,7 @@ from pathlib import Path
 WORKFLOW = Path(".github/workflows/github-pages-deploy.yml")
 REJECTED_DOCS_CONTROL_REVISION = "58ce2a9b09aa28f6a37b53c6cce445216bc46670"
 IMMUTABLE_SELECTOR_REVISION = "37b1cf98f29b92bb5f4bf5a727e5fcd025b7899e"
-BUILDER_DIGEST = "sha256:988e1fbf4e5acdbb15eb0c9aa6430f7968603d4fc96e713a28ca09846eedadd4"
+BUILDER_DIGEST = "sha256:049219671eb53fb884af5a529ab638ba01894492ac6918da76bc17a069607e72"
 
 
 def test_release_pages_wrapper_uses_the_immutable_selector_repair() -> None:
