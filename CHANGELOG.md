@@ -1,12 +1,12 @@
 # Changelog
 
-## Version 12.0.3 (2026-10-08)
+## Version 12.0.4 (2026-10-09)
 
 ### Version Information
-- **Full Version**: 12.0.3
+- **Full Version**: 12.0.4
 - **Upstream Timestamp**: unknown
 - **Upstream ETag**: unknown
-- **Enriched Version**: 12.0.3
+- **Enriched Version**: 12.0.4
 
 ### Release Type
 - **patch** release
@@ -46,7 +46,7 @@ docs/specifications/api/
 \`\`\`
 
 ### Download
-- ZIP Package: F5xc-api-(unknown-12.0.3).zip
+- ZIP Package: F5xc-api-(unknown-12.0.4).zip
 
 ### Source
 - Source: F5 Distributed Cloud OpenAPI specifications
