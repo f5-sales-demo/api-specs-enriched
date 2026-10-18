@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import copy
 from pathlib import Path
+from typing import Any
 
 import pytest
 import yaml
@@ -35,11 +36,12 @@ def test_rejects_capability_promotion(field: str) -> None:
 
 
 def test_rejects_inferred_bootstrap_or_cloud_identity() -> None:
-    for mutation in [
+    mutations: list[dict[str, Any]] = [
         {"bootstrap": {"provider": "gcp", "headless_checkout": "available"}},
         {"availability": "evidence_backed"},
         {"interface_list_path": "aws.not_managed.node_list[].interface_list[]"},
-    ]:
+    ]
+    for mutation in mutations:
         profile = {**copy.deepcopy(GCP_SCHEMA_PROFILE), **mutation}
         with pytest.raises(ValueError, match="schema-only"):
             validate_gcp_contract(profile)
@@ -60,8 +62,8 @@ def test_schema_chain_is_required() -> None:
         validate_gcp_openapi({"components": {"schemas": {}}})
 
 
-def _schema_fixture() -> dict:
-    schemas = {}
+def _schema_fixture() -> dict[str, Any]:
+    schemas: dict[str, Any] = {}
     chains = [
         ("viewssecuremesh_site_v2CreateSpecType", "gcp", "securemesh_site_v2GCPProviderType"),
         ("viewssecuremesh_site_v2GetSpecType", "gcp", "securemesh_site_v2GCPProviderType"),
