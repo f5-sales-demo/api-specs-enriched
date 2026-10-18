@@ -62,6 +62,25 @@ GCP_SCHEMA_PROFILE: dict[str, Any] = {
         "preserve_path": "/etc/vpm/config.yaml",
         "runtime_acceptance": False,
         "qualification_required": "exact_image_boot_and_registration",
+        "token": {
+            "method": "POST",
+            "path": "/api/register/namespaces/system/tokens",
+            "request_fields": {"spec.type": 1, "spec.site_name": "site_name"},
+            "metadata_fields": {"name": "token_name", "namespace": "system"},
+            "site_binding_required": True,
+            "credential_response_path": "spec.content",
+            "accepted_response_types": [1, "JWT"],
+        },
+        "material": {
+            "format": "cloud_config",
+            "metadata_key": "user-data",
+            "issued_path": "/etc/vpm/user_data",
+            "content_field": "token",
+            "preserve_paths": ["/etc/vpm/config.yaml"],
+            "private_storage_required": True,
+            "one_use_checkout_required": True,
+            "binding": ["deployment", "site", "node", "engine"],
+        },
     },
 }
 
