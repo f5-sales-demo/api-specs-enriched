@@ -1,22 +1,15 @@
 # Changelog
 
-## Unreleased GCP schema boundary
-
-- Declare a schema-only GCP SMSv2 provider with exact node/interface schema
-  mappings. Bootstrap, registration, physical interface identity, runtime health,
-  routing and upgrades remain unavailable until qualified evidence is recorded.
-  Contract enrichment and release validation reject inferred capability promotion.
-
-## Version 12.0.10 (2026-10-17)
+## Version 12.1.0 (2026-10-18)
 
 ### Version Information
-- **Full Version**: 12.0.10
+- **Full Version**: 12.1.0
 - **Upstream Timestamp**: unknown
 - **Upstream ETag**: unknown
-- **Enriched Version**: 12.0.10
+- **Enriched Version**: 12.1.0
 
 ### Release Type
-- **patch** release
+- **minor** release
 
 ### Changes
 - Updated API specifications from F5 Distributed Cloud
@@ -53,7 +46,7 @@ docs/specifications/api/
 \`\`\`
 
 ### Download
-- ZIP Package: F5xc-api-(unknown-12.0.10).zip
+- ZIP Package: F5xc-api-(unknown-12.1.0).zip
 
 ### Source
 - Source: F5 Distributed Cloud OpenAPI specifications
