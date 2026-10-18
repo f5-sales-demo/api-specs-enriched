@@ -10,6 +10,7 @@ from typing import Any
 
 import yaml
 
+from scripts.utils.gcp_contract import validate_gcp_contract
 from scripts.utils.kvm_image_contract import validate_kvm_image_contract
 from scripts.utils.smsv2_bootstrap_contract import validate_bootstrap_contract
 
@@ -724,6 +725,7 @@ class InterfaceContractEnricher:
         if not isinstance(azure, dict) or not isinstance(aws, dict):
             raise InterfaceContractValidationError(f"{resource}: provider profiles must be objects")
         try:
+            validate_gcp_contract(providers.get("gcp"))
             validate_bootstrap_contract(providers)
             validate_kvm_image_contract(providers.get("kvm", {}).get("image_resolution"))
         except (TypeError, ValueError) as error:
