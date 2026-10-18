@@ -129,3 +129,32 @@ def test_api_receipt_is_sanitized_and_does_not_promote_bootstrap() -> None:
     assert receipt["facts"]["usable_image_bootstrap"] is False
     assert GCP_SCHEMA_PROFILE["bootstrap_candidate"]["availability"] == "unavailable"
     assert GCP_SCHEMA_PROFILE["capabilities"]["bootstrap"] == "unavailable"
+
+
+def test_both_engine_qualification_does_not_claim_health_or_ha() -> None:
+    import hashlib
+    import json
+
+    qualification = GCP_SCHEMA_PROFILE["single_node_qualification"]
+    raw = (Path(__file__).parents[1] / qualification["receipt_path"]).read_bytes()
+    assert qualification["receipt_sha256"] == "sha256:" + hashlib.sha256(raw).hexdigest()
+    receipt = json.loads(raw)
+    assert receipt["sanitized"] is True
+    assert receipt["engines"]["native"]["registration_online"] is True
+    assert receipt["engines"]["terraform"]["post_registration_zero_change_plan"] is True
+    assert receipt["engines"]["terraform"]["empty_final_state"] is True
+    assert receipt["health_observation"]["acceptance"] is False
+    assert qualification["ha_acceptance"] is False
+    assert set(GCP_SCHEMA_PROFILE["capabilities"].values()) == {"unavailable"}
+
+
+def test_exact_gcp_registration_and_physical_mapping_requires_owned_joins() -> None:
+    registration = GCP_SCHEMA_PROFILE["registration_observation"]
+    assert registration["required_provider"] == "GOOGLE"
+    assert registration["accepted_state"] == "ONLINE"
+    assert registration["reject_partial_list"] is True
+    assert registration["reject_ambiguous_matches"] is True
+    physical = GCP_SCHEMA_PROFILE["physical_interface_observation"]
+    assert physical["hardware_addresses"] == "ip_address[]"
+    assert physical["join_cardinality"] == "exactly_one_per_interface"
+    assert physical["guest_names_alone"] == "not_authoritative"
