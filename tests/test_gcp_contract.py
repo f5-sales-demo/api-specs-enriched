@@ -112,3 +112,20 @@ def test_rejects_malformed_interface_identity_schema(field: str) -> None:
     ] = {"type": "integer"}
     with pytest.raises(ValueError, match="identity field"):
         validate_gcp_openapi(spec)
+
+
+def test_api_receipt_is_sanitized_and_does_not_promote_bootstrap() -> None:
+    import hashlib
+    import json
+
+    verification = GCP_SCHEMA_PROFILE["api_verification"]
+    receipt_path = Path(__file__).parents[1] / verification["receipt_path"]
+    raw = receipt_path.read_bytes()
+    assert verification["receipt_sha256"] == "sha256:" + hashlib.sha256(raw).hexdigest()
+    receipt = json.loads(raw)
+    assert receipt["sanitized"] is True
+    assert receipt["runtime_acceptance"] is False
+    assert receipt["facts"]["cloud_init_token_placeholder_only"] is True
+    assert receipt["facts"]["usable_image_bootstrap"] is False
+    assert GCP_SCHEMA_PROFILE["bootstrap_candidate"]["availability"] == "unavailable"
+    assert GCP_SCHEMA_PROFILE["capabilities"]["bootstrap"] == "unavailable"

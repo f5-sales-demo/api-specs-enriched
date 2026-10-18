@@ -45,6 +45,24 @@ GCP_SCHEMA_PROFILE: dict[str, Any] = {
         "asset": "openapi.json",
         "sha256": "sha256:5fe5ebefa9aac5a6a307897aab18ee37491b767ed5a59bbb9451aa83ecc17789",
     },
+    "api_verification": {
+        "availability": "verified_api_only",
+        "runtime_acceptance": False,
+        "receipt_path": "config/evidence/gcp-bootstrap-api-20261018.json",
+        "receipt_sha256": "sha256:33cb727fdee919b3adc41e3f39739c3b07e9eb05cd9e395d4d8af64a83836b2a",
+        "cloud_init_semantics": "token_placeholder_only_not_image_bootstrap",
+    },
+    "bootstrap_candidate": {
+        "availability": "unavailable",
+        "strategy": "guide_backed_gcp_user_data",
+        "source_url": "https://docs.cloud.f5.com/docs-v2/multi-cloud-network-connect/how-to/site-management/deploy-sms-gcp-clickops",
+        "metadata_key": "user-data",
+        "dns_metadata": {"VmDnsSetting": "ZonePreferred"},
+        "issued_path": "/etc/vpm/user_data",
+        "preserve_path": "/etc/vpm/config.yaml",
+        "runtime_acceptance": False,
+        "qualification_required": "exact_image_boot_and_registration",
+    },
 }
 
 
