@@ -111,6 +111,37 @@ contracts:
             routing_acceptance: false
             upgrade_acceptance: false
             fresh_acceptance_required: true
+          global_health_observation:
+            availability: observational_read_only
+            method: GET
+            path: /api/operate/namespaces/system/sites/{site}/vpm/debug/global/health
+            operation_id: ves.io.schema.operate.debug.CustomPublicAPI.HealthPublic
+            response_schema: debugHealthResponse
+            state_schema: debugVpmState
+            state_values:
+              - WAITING_FOR_CONFIG
+              - WAITING_FOR_APPROVAL
+              - PROVISIONING
+              - PROVISIONED
+              - FAILED
+              - RESETTING
+            hostname_field: hostname
+            state_field: state
+            healthy_state: PROVISIONED
+            scope: site_global_only
+            exact_node_join_required: true
+            requires:
+              - owned_cloud_identity
+              - online_registration
+              - physical_interface_join
+            receipt_path: config/evidence/gcp-global-health-both-engines-20261018.json
+            receipt_sha256: sha256:403ea2810ab9a2b8ddb6943fa0f08dbec3723e63d12d23015bb7289c97ee8d8c
+            fresh_acceptance_required: true
+            ha_health_acceptance: false
+            routing_acceptance: false
+            application_traffic_acceptance: false
+            explicit_upgrade_acceptance: false
+            recovery_120_seconds_acceptance: false
           registration_observation:
             availability: observational_read_only
             method: GET
