@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "sanitized": true,
+  "source_issue": "f5-sales-demo/marketplace#1559",
+  "engines": {
+    "native": {
+      "boot": true,
+      "site_bound_bootstrap": true,
+      "registration_online": true,
+      "physical_nic_joins": 2,
+      "global_health_state": "PROVISIONED",
+      "owned_cleanup_absent": true
+    },
+    "terraform": {
+      "boot": true,
+      "site_bound_bootstrap": true,
+      "registration_online": true,
+      "physical_nic_joins": 2,
+      "global_health_samples": 2,
+      "final_no_change_plan": true,
+      "saved_destroy_applied": true,
+      "absence_checks": 8,
+      "empty_state": true
+    }
+  },
+  "topology": {
+    "node_count": 1,
+    "interface_count": 2,
+    "nic_zero": "slo",
+    "nic_one": "sli",
+    "ha": false
+  },
+  "image": {
+    "project": "f5-7626-networks-public",
+    "name": "f5xc-ce-crt-20260801-0205-byol",
+    "license_mode": "byol",
+    "minimum_disk_gib": 80,
+    "minimum_vcpus": 8,
+    "minimum_memory_gib": 32
+  },
+  "bootstrap": {
+    "strategy": "guide_backed_gcp_user_data",
+    "metadata_key": "user-data",
+    "issued_path": "/etc/vpm/user_data",
+    "owner_mode": "0600",
+    "preserve_path": "/etc/vpm/config.yaml",
+    "site_binding": true,
+    "private_deployment_storage": true,
+    "native_one_use_checkout": true,
+    "terraform_sensitive_state": true
+  },
+  "unqualified": [
+    "ha",
+    "routing",
+    "application_traffic",
+    "explicit_upgrade",
+    "replacement",
+    "repair",
+    "failover",
+    "recovery_120_seconds"
+  ],
+  "redaction": "No tenant, cloud resource identity, credential, raw bootstrap or state."
+}

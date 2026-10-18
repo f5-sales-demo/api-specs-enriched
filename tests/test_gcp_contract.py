@@ -207,3 +207,34 @@ def test_rejects_health_identity_relaxation_and_unknown_state_promotion() -> Non
         profile["global_health_observation"][field] = value
         with pytest.raises(ValueError, match="schema-only"):
             validate_gcp_contract(profile)
+
+
+def test_single_node_lifecycle_mapping_binds_qualified_bootstrap_and_cleanup() -> None:
+    import hashlib
+    import json
+
+    profile = GCP_SCHEMA_PROFILE["single_node_lifecycle"]
+    assert profile["availability"] == "evidence_backed_single_node"
+    assert profile["node_count"] == 1
+    assert profile["interface_count"] == 2
+    assert profile["engines"] == ["native", "terraform"]
+    assert profile["site_create"]["spec"]["gcp"] == {"not_managed": {}}
+    assert profile["site_create"]["method"] == "POST"
+    assert profile["bootstrap"]["strategy"] == "guide_backed_gcp_user_data"
+    raw = (Path(__file__).parents[1] / profile["receipt_path"]).read_bytes()
+    assert profile["receipt_sha256"] == "sha256:" + hashlib.sha256(raw).hexdigest()
+    receipt = json.loads(raw)
+    assert receipt["sanitized"] is True
+    assert receipt["engines"]["native"]["owned_cleanup_absent"] is True
+    assert receipt["engines"]["terraform"]["empty_state"] is True
+    assert "ha" in receipt["unqualified"]
+    assert GCP_SCHEMA_PROFILE["capabilities"]["routing"] == "unavailable"
+    assert GCP_SCHEMA_PROFILE["capabilities"]["site_upgrade"] == "unavailable"
+
+
+def test_single_node_mapping_rejects_ha_or_unbound_bootstrap_promotion() -> None:
+    for key, value in [("node_count", 3), ("interface_count", 3), ("availability", "full_parity")]:
+        profile = copy.deepcopy(GCP_SCHEMA_PROFILE)
+        profile["single_node_lifecycle"][key] = value
+        with pytest.raises(ValueError, match="schema-only"):
+            validate_gcp_contract(profile)
