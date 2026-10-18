@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased GCP schema boundary
+
+- Declare a schema-only GCP SMSv2 provider with exact node/interface schema
+  mappings. Bootstrap, registration, physical interface identity, runtime health,
+  routing and upgrades remain unavailable until qualified evidence is recorded.
+  Contract enrichment and release validation reject inferred capability promotion.
+
 ## Version 12.0.10 (2026-10-17)
 
 ### Version Information
