@@ -626,7 +626,7 @@ def test_accepts_additive_current_contract_fields(
     )
     contract["api"]["operations"].append("status")
     contract["providers"]["aws"]["future_additive_field"] = {"safe": True}
-    contract["providers"]["gcp"] = {"availability": "schema_only"}
+    contract["providers"]["future_provider"] = {"availability": "schema_only"}
 
     enricher = InterfaceContractEnricher(_write_config(tmp_path, compatible))
 

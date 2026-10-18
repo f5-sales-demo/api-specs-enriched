@@ -12,6 +12,7 @@ from typing import Any
 
 import yaml
 
+from scripts.utils.gcp_contract import validate_gcp_contract
 from scripts.utils.interface_contract_enricher import (
     AWS_SUCCESS_FACTS,
     AWS_SUCCESS_OPERATIONS,
@@ -230,6 +231,7 @@ def validate_release_assets(
     ]:
         raise Smsv2ReleaseValidationError("SMSv2 API authority is incomplete")
     try:
+        validate_gcp_contract(contract.get("providers", {}).get("gcp"))
         validate_bootstrap_contract(contract.get("providers"))
         validate_kvm_image_contract(
             contract.get("providers", {}).get("kvm", {}).get("image_resolution")
