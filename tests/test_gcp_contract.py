@@ -158,3 +158,52 @@ def test_exact_gcp_registration_and_physical_mapping_requires_owned_joins() -> N
     assert physical["hardware_addresses"] == "ip_address[]"
     assert physical["join_cardinality"] == "exactly_one_per_interface"
     assert physical["guest_names_alone"] == "not_authoritative"
+
+
+def test_global_health_observation_is_read_only_and_bound_to_cleaned_campaigns() -> None:
+    import hashlib
+    import json
+
+    health = GCP_SCHEMA_PROFILE["global_health_observation"]
+    assert health["availability"] == "observational_read_only"
+    assert health["method"] == "GET"
+    assert health["scope"] == "site_global_only"
+    assert health["healthy_state"] == "PROVISIONED"
+    assert health["state_values"] == [
+        "WAITING_FOR_CONFIG",
+        "WAITING_FOR_APPROVAL",
+        "PROVISIONING",
+        "PROVISIONED",
+        "FAILED",
+        "RESETTING",
+    ]
+    raw = (Path(__file__).parents[1] / health["receipt_path"]).read_bytes()
+    assert health["receipt_sha256"] == "sha256:" + hashlib.sha256(raw).hexdigest()
+    receipt = json.loads(raw)
+    assert receipt["sanitized"] is True
+    for engine in ["native", "terraform"]:
+        evidence = receipt["engines"][engine]
+        assert evidence["health_state"] == "PROVISIONED"
+        assert evidence["exact_health_node_match"] is True
+        assert evidence["owned_cleanup_independently_absent"] is True
+    assert receipt["engines"]["terraform"]["final_zero_change_plan"] is True
+    assert receipt["engines"]["terraform"]["empty_final_state"] is True
+    assert receipt["acceptance"]["global_health_observation"] is True
+    assert all(
+        value is False
+        for key, value in receipt["acceptance"].items()
+        if key != "global_health_observation"
+    )
+    assert set(GCP_SCHEMA_PROFILE["capabilities"].values()) == {"unavailable"}
+
+
+def test_rejects_health_identity_relaxation_and_unknown_state_promotion() -> None:
+    for field, value in [
+        ("healthy_state", "ONLINE"),
+        ("exact_node_join_required", False),
+        ("scope", "all_ha_nodes"),
+    ]:
+        profile = copy.deepcopy(GCP_SCHEMA_PROFILE)
+        profile["global_health_observation"][field] = value
+        with pytest.raises(ValueError, match="schema-only"):
+            validate_gcp_contract(profile)
