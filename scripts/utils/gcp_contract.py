@@ -268,3 +268,56 @@ def validate_gcp_openapi(openapi: dict[str, Any]) -> None:
     ]:
         if schemas.get(schema, {}).get("properties", {}).get(field, {}).get("type") != "string":
             raise ValueError("GCP schema identity field is unsupported")
+
+
+def validate_gcp_ha_candidate_openapi(openapi: dict[str, Any]) -> None:
+    """Check candidate wire shapes only; never promote HA lifecycle or health."""
+    schemas = openapi.get("components", {}).get("schemas", {})
+    for name in (
+        "viewssecuremesh_site_v2CreateSpecType",
+        "viewssecuremesh_site_v2GetSpecType",
+        "viewssecuremesh_site_v2ReplaceSpecType",
+    ):
+        value = schemas.get(name, {}).get("properties", {}).get("enable_ha", {})
+        refs = [value.get("$ref")] + [item.get("$ref") for item in value.get("allOf", [])]
+        if "#/components/schemas/ioschemaEmpty" not in refs:
+            raise ValueError("HA candidate enable_ha schema is unsupported")
+    path = "/api/operate/namespaces/{namespace}/sites/{site}/vpm/debug/global/{vesnamespace}/status"
+    operation = openapi.get("paths", {}).get(path, {}).get("get", {})
+    if operation.get("operationId") != "ves.io.schema.operate.debug.CustomPublicAPI.Status":
+        raise ValueError("HA candidate component operation is unsupported")
+    parameters = operation.get("parameters", [])
+    expected = {
+        ("namespace", "path"): (True, "string"),
+        ("site", "path"): (True, "string"),
+        ("vesnamespace", "path"): (True, "string"),
+        ("cached", "query"): (False, "boolean"),
+    }
+    actual = {
+        (item.get("name"), item.get("in")): (
+            item.get("required", False),
+            item.get("schema", {}).get("type"),
+        )
+        for item in parameters
+    }
+    if actual != expected or len(parameters) != len(expected):
+        raise ValueError("HA candidate component parameters are unsupported")
+    response = (
+        operation.get("responses", {})
+        .get("200", {})
+        .get("content", {})
+        .get("application/json", {})
+        .get("schema", {})
+    )
+    if response.get("$ref") != "#/components/schemas/debugStatusResponse":
+        raise ValueError("HA candidate component response is unsupported")
+    status = schemas.get("debugStatusResponse", {}).get("properties", {}).get("status", {})
+    if (
+        status.get("type") != "array"
+        or status.get("items", {}).get("$ref") != "#/components/schemas/debugStatus"
+    ):
+        raise ValueError("HA candidate component row schema is unsupported")
+    properties = schemas.get("debugStatus", {}).get("properties", {})
+    for field in ("node", "name", "status", "message"):
+        if properties.get(field, {}).get("type") != "string":
+            raise ValueError("HA candidate component identity/status field is unsupported")
