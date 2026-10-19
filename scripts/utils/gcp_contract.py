@@ -322,6 +322,7 @@ def validate_gcp_ha_candidate_openapi(openapi: dict[str, Any]) -> None:
         if properties.get(field, {}).get("type") != "string":
             raise ValueError("HA candidate component identity/status field is unsupported")
     _validate_gcp_ha_service_inventory(openapi, schemas)
+    _validate_gcp_ha_diagnosis(openapi, schemas)
 
 
 def _validate_gcp_ha_service_inventory(openapi: dict[str, Any], schemas: dict[str, Any]) -> None:
@@ -366,3 +367,41 @@ def _validate_gcp_ha_service_inventory(openapi: dict[str, Any], schemas: dict[st
     for field in ("node", "name", "value"):
         if properties.get(field, {}).get("type") != "string":
             raise ValueError("HA candidate service inventory identity field is unsupported")
+
+
+def _validate_gcp_ha_diagnosis(openapi: dict[str, Any], schemas: dict[str, Any]) -> None:
+    """Validate diagnostic availability only; its untyped maps cannot qualify service health."""
+    path = "/api/operate/namespaces/system/sites/{site}/vpm/debug/global/diagnosis"
+    operation = openapi.get("paths", {}).get(path, {}).get("get", {})
+    if (
+        operation.get("operationId")
+        != "ves.io.schema.operate.debug.CustomPublicAPI.DiagnosisPublic"
+    ):
+        raise ValueError("HA candidate diagnosis operation is unsupported")
+    parameters = operation.get("parameters", [])
+    expected = {
+        ("site", "path"): (True, "string"),
+        ("console_user", "query"): (False, "string"),
+    }
+    actual = {
+        (item.get("name"), item.get("in")): (
+            item.get("required", False),
+            item.get("schema", {}).get("type"),
+        )
+        for item in parameters
+    }
+    if actual != expected or len(parameters) != len(expected):
+        raise ValueError("HA candidate diagnosis parameters are unsupported")
+    response = (
+        operation.get("responses", {})
+        .get("200", {})
+        .get("content", {})
+        .get("application/json", {})
+        .get("schema", {})
+    )
+    if response.get("$ref") != "#/components/schemas/debugDiagnosisResponse":
+        raise ValueError("HA candidate diagnosis response is unsupported")
+    properties = schemas.get("debugDiagnosisResponse", {}).get("properties", {})
+    for field in ("responses", "curl_response", "registration_status"):
+        if properties.get(field, {}).get("type") != "object":
+            raise ValueError("HA candidate diagnosis map is unsupported")
