@@ -28,6 +28,15 @@ def fixture():
         "properties": {name: {"type": "string"} for name in ("node", "name", "status", "message")}
     }
     path = "/api/operate/namespaces/{namespace}/sites/{site}/vpm/debug/global/{vesnamespace}/status"
+    schemas["debugListServicesResponse"] = {
+        "properties": {
+            "service": {"type": "array", "items": {"$ref": "#/components/schemas/debugService"}}
+        }
+    }
+    schemas["debugService"] = {
+        "properties": {name: {"type": "string"} for name in ("node", "name", "value")}
+    }
+    inventory = "/api/operate/namespaces/{namespace}/sites/{site}/vpm/debug/global/list-service"
     return {
         "components": {"schemas": schemas},
         "paths": {
@@ -56,7 +65,27 @@ def fixture():
                         }
                     },
                 }
-            }
+            },
+            inventory: {
+                "get": {
+                    "operationId": "ves.io.schema.operate.debug.CustomPublicAPI.ListVolterraServices",
+                    "parameters": [
+                        {"name": name, "in": "path", "required": True, "schema": {"type": "string"}}
+                        for name in ("namespace", "site")
+                    ],
+                    "responses": {
+                        "200": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/debugListServicesResponse"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                }
+            },
         },
     }
 
@@ -117,3 +146,45 @@ def test_api_only_evidence_cannot_promote_runtime():
     assert not any(receipt["acceptance"].values())
     assert GCP_SCHEMA_PROFILE["single_node_lifecycle"]["ha"] == "unavailable"
     assert GCP_SCHEMA_PROFILE["global_health_observation"]["ha_health_acceptance"] is False
+
+
+@pytest.mark.parametrize("field", ["node", "name", "value"])
+@pytest.mark.parametrize("change", ["missing", "malformed"])
+def test_rejects_missing_or_malformed_inventory_identity(field, change):
+    spec = fixture()
+    properties = spec["components"]["schemas"]["debugService"]["properties"]
+    if change == "missing":
+        del properties[field]
+    else:
+        properties[field] = {"type": "integer"}
+    with pytest.raises(ValueError, match="HA candidate service inventory"):
+        validate_gcp_ha_candidate_openapi(spec)
+
+
+@pytest.mark.parametrize(
+    "change", ["method", "operation", "selector", "duplicate", "response", "rows"]
+)
+def test_rejects_changed_inventory_wire_contract(change):
+    spec = fixture()
+    item = spec["paths"][
+        "/api/operate/namespaces/{namespace}/sites/{site}/vpm/debug/global/list-service"
+    ]
+    op = item["get"]
+    if change == "method":
+        item["post"] = item.pop("get")
+    elif change == "operation":
+        op["operationId"] = "ves.io.schema.operate.debug.CustomPublicAPI.Status"
+    elif change == "selector":
+        op["parameters"].append({"name": "node", "in": "query", "schema": {"type": "string"}})
+    elif change == "duplicate":
+        op["parameters"].append(deepcopy(op["parameters"][0]))
+    elif change == "response":
+        op["responses"]["200"]["content"]["application/json"]["schema"]["$ref"] = (
+            "#/components/schemas/debugStatusResponse"
+        )
+    else:
+        spec["components"]["schemas"]["debugListServicesResponse"]["properties"]["service"] = {
+            "type": "object"
+        }
+    with pytest.raises(ValueError, match="HA candidate service inventory"):
+        validate_gcp_ha_candidate_openapi(spec)

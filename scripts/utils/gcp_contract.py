@@ -321,3 +321,48 @@ def validate_gcp_ha_candidate_openapi(openapi: dict[str, Any]) -> None:
     for field in ("node", "name", "status", "message"):
         if properties.get(field, {}).get("type") != "string":
             raise ValueError("HA candidate component identity/status field is unsupported")
+    _validate_gcp_ha_service_inventory(openapi, schemas)
+
+
+def _validate_gcp_ha_service_inventory(openapi: dict[str, Any], schemas: dict[str, Any]) -> None:
+    """Require the independent inventory wire shape without assuming critical-service coverage."""
+    path = "/api/operate/namespaces/{namespace}/sites/{site}/vpm/debug/global/list-service"
+    operation = openapi.get("paths", {}).get(path, {}).get("get", {})
+    if (
+        operation.get("operationId")
+        != "ves.io.schema.operate.debug.CustomPublicAPI.ListVolterraServices"
+    ):
+        raise ValueError("HA candidate service inventory operation is unsupported")
+    parameters = operation.get("parameters", [])
+    expected = {
+        ("namespace", "path"): (True, "string"),
+        ("site", "path"): (True, "string"),
+    }
+    actual = {
+        (item.get("name"), item.get("in")): (
+            item.get("required", False),
+            item.get("schema", {}).get("type"),
+        )
+        for item in parameters
+    }
+    if actual != expected or len(parameters) != len(expected):
+        raise ValueError("HA candidate service inventory parameters are unsupported")
+    response = (
+        operation.get("responses", {})
+        .get("200", {})
+        .get("content", {})
+        .get("application/json", {})
+        .get("schema", {})
+    )
+    if response.get("$ref") != "#/components/schemas/debugListServicesResponse":
+        raise ValueError("HA candidate service inventory response is unsupported")
+    service = schemas.get("debugListServicesResponse", {}).get("properties", {}).get("service", {})
+    if (
+        service.get("type") != "array"
+        or service.get("items", {}).get("$ref") != "#/components/schemas/debugService"
+    ):
+        raise ValueError("HA candidate service inventory row schema is unsupported")
+    properties = schemas.get("debugService", {}).get("properties", {})
+    for field in ("node", "name", "value"):
+        if properties.get(field, {}).get("type") != "string":
+            raise ValueError("HA candidate service inventory identity field is unsupported")
