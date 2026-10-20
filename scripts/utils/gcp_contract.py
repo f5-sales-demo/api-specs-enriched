@@ -268,3 +268,209 @@ def validate_gcp_openapi(openapi: dict[str, Any]) -> None:
     ]:
         if schemas.get(schema, {}).get("properties", {}).get(field, {}).get("type") != "string":
             raise ValueError("GCP schema identity field is unsupported")
+
+
+def validate_gcp_ha_candidate_openapi(openapi: dict[str, Any]) -> None:
+    """Check candidate wire shapes only; never promote HA lifecycle or health."""
+    schemas = openapi.get("components", {}).get("schemas", {})
+    for name in (
+        "viewssecuremesh_site_v2CreateSpecType",
+        "viewssecuremesh_site_v2GetSpecType",
+        "viewssecuremesh_site_v2ReplaceSpecType",
+    ):
+        value = schemas.get(name, {}).get("properties", {}).get("enable_ha", {})
+        refs = [value.get("$ref")] + [item.get("$ref") for item in value.get("allOf", [])]
+        if "#/components/schemas/ioschemaEmpty" not in refs:
+            raise ValueError("HA candidate enable_ha schema is unsupported")
+    path = "/api/operate/namespaces/{namespace}/sites/{site}/vpm/debug/global/{vesnamespace}/status"
+    operation = openapi.get("paths", {}).get(path, {}).get("get", {})
+    if operation.get("operationId") != "ves.io.schema.operate.debug.CustomPublicAPI.Status":
+        raise ValueError("HA candidate component operation is unsupported")
+    parameters = operation.get("parameters", [])
+    expected = {
+        ("namespace", "path"): (True, "string"),
+        ("site", "path"): (True, "string"),
+        ("vesnamespace", "path"): (True, "string"),
+        ("cached", "query"): (False, "boolean"),
+    }
+    actual = {
+        (item.get("name"), item.get("in")): (
+            item.get("required", False),
+            item.get("schema", {}).get("type"),
+        )
+        for item in parameters
+    }
+    if actual != expected or len(parameters) != len(expected):
+        raise ValueError("HA candidate component parameters are unsupported")
+    response = (
+        operation.get("responses", {})
+        .get("200", {})
+        .get("content", {})
+        .get("application/json", {})
+        .get("schema", {})
+    )
+    if response.get("$ref") != "#/components/schemas/debugStatusResponse":
+        raise ValueError("HA candidate component response is unsupported")
+    status = schemas.get("debugStatusResponse", {}).get("properties", {}).get("status", {})
+    if (
+        status.get("type") != "array"
+        or status.get("items", {}).get("$ref") != "#/components/schemas/debugStatus"
+    ):
+        raise ValueError("HA candidate component row schema is unsupported")
+    properties = schemas.get("debugStatus", {}).get("properties", {})
+    for field in ("node", "name", "status", "message"):
+        if properties.get(field, {}).get("type") != "string":
+            raise ValueError("HA candidate component identity/status field is unsupported")
+    _validate_gcp_ha_service_inventory(openapi, schemas)
+    _validate_gcp_ha_diagnosis(openapi, schemas)
+
+
+def _validate_gcp_ha_service_inventory(openapi: dict[str, Any], schemas: dict[str, Any]) -> None:
+    """Require the independent inventory wire shape without assuming critical-service coverage."""
+    path = "/api/operate/namespaces/{namespace}/sites/{site}/vpm/debug/global/list-service"
+    operation = openapi.get("paths", {}).get(path, {}).get("get", {})
+    if (
+        operation.get("operationId")
+        != "ves.io.schema.operate.debug.CustomPublicAPI.ListVolterraServices"
+    ):
+        raise ValueError("HA candidate service inventory operation is unsupported")
+    parameters = operation.get("parameters", [])
+    expected = {
+        ("namespace", "path"): (True, "string"),
+        ("site", "path"): (True, "string"),
+    }
+    actual = {
+        (item.get("name"), item.get("in")): (
+            item.get("required", False),
+            item.get("schema", {}).get("type"),
+        )
+        for item in parameters
+    }
+    if actual != expected or len(parameters) != len(expected):
+        raise ValueError("HA candidate service inventory parameters are unsupported")
+    response = (
+        operation.get("responses", {})
+        .get("200", {})
+        .get("content", {})
+        .get("application/json", {})
+        .get("schema", {})
+    )
+    if response.get("$ref") != "#/components/schemas/debugListServicesResponse":
+        raise ValueError("HA candidate service inventory response is unsupported")
+    service = schemas.get("debugListServicesResponse", {}).get("properties", {}).get("service", {})
+    if (
+        service.get("type") != "array"
+        or service.get("items", {}).get("$ref") != "#/components/schemas/debugService"
+    ):
+        raise ValueError("HA candidate service inventory row schema is unsupported")
+    properties = schemas.get("debugService", {}).get("properties", {})
+    for field in ("node", "name", "value"):
+        if properties.get(field, {}).get("type") != "string":
+            raise ValueError("HA candidate service inventory identity field is unsupported")
+
+
+def _validate_gcp_ha_diagnosis(openapi: dict[str, Any], schemas: dict[str, Any]) -> None:
+    """Validate diagnostic availability only; its untyped maps cannot qualify service health."""
+    path = "/api/operate/namespaces/system/sites/{site}/vpm/debug/global/diagnosis"
+    operation = openapi.get("paths", {}).get(path, {}).get("get", {})
+    if (
+        operation.get("operationId")
+        != "ves.io.schema.operate.debug.CustomPublicAPI.DiagnosisPublic"
+    ):
+        raise ValueError("HA candidate diagnosis operation is unsupported")
+    parameters = operation.get("parameters", [])
+    expected = {
+        ("site", "path"): (True, "string"),
+        ("console_user", "query"): (False, "string"),
+    }
+    actual = {
+        (item.get("name"), item.get("in")): (
+            item.get("required", False),
+            item.get("schema", {}).get("type"),
+        )
+        for item in parameters
+    }
+    if actual != expected or len(parameters) != len(expected):
+        raise ValueError("HA candidate diagnosis parameters are unsupported")
+    response = (
+        operation.get("responses", {})
+        .get("200", {})
+        .get("content", {})
+        .get("application/json", {})
+        .get("schema", {})
+    )
+    if response.get("$ref") != "#/components/schemas/debugDiagnosisResponse":
+        raise ValueError("HA candidate diagnosis response is unsupported")
+    properties = schemas.get("debugDiagnosisResponse", {}).get("properties", {})
+    for field in ("responses", "curl_response", "registration_status"):
+        if properties.get(field, {}).get("type") != "object":
+            raise ValueError("HA candidate diagnosis map is unsupported")
+
+
+def validate_gcp_kubernetes_candidate_openapi(openapi: dict[str, Any]) -> None:
+    """Validate site proxy wire shapes; no completeness or core health admission is implied."""
+    schemas = openapi.get("components", {}).get("schemas", {})
+    base = "/api/data/namespaces/system/site/{site}"
+    operations = (
+        ("/api/v1/nodes", "NodeList", "v1NodeList", "corev1Node", False),
+        ("/api/v1/namespaces", "NamespaceList", "v1NamespaceList", "v1Namespace", False),
+        ("/api/v1/pods", "PodList_get_1", "v1PodList", "v1Pod", True),
+        ("/apis/apps/v1/daemonsets", "DaemonSetList_get", "v1DaemonSetList", "v1DaemonSet", True),
+    )
+    for suffix, name, list_schema, row_schema, namespace in operations:
+        operation = openapi.get("paths", {}).get(base + suffix, {}).get("get", {})
+        if operation.get("operationId") != f"ves.io.schema.site.CustomDataK8SAPI.{name}":
+            raise ValueError("Kubernetes candidate operation is unsupported")
+        expected = {("site", "path"): (True, "string")}
+        if namespace:
+            expected[("namespace", "query")] = (False, "string")
+        parameters = operation.get("parameters", [])
+        actual = {
+            (item.get("name"), item.get("in")): (
+                item.get("required", False),
+                item.get("schema", {}).get("type"),
+            )
+            for item in parameters
+        }
+        if actual != expected or len(parameters) != len(expected):
+            raise ValueError("Kubernetes candidate parameters are unsupported")
+        response = (
+            operation.get("responses", {})
+            .get("200", {})
+            .get("content", {})
+            .get("application/json", {})
+            .get("schema", {})
+        )
+        if response.get("$ref") != f"#/components/schemas/{list_schema}":
+            raise ValueError("Kubernetes candidate response is unsupported")
+        properties = schemas.get(list_schema, {}).get("properties", {})
+        items = properties.get("items", {})
+        if (
+            items.get("type") != "array"
+            or items.get("items", {}).get("$ref") != f"#/components/schemas/{row_schema}"
+        ):
+            raise ValueError("Kubernetes candidate list items are unsupported")
+        _validate_gcp_kubernetes_reference(properties.get("metadata", {}), "v1ListMeta")
+        _validate_gcp_kubernetes_reference(
+            schemas.get(row_schema, {}).get("properties", {}).get("metadata", {}), "v1ObjectMeta"
+        )
+    for schema, fields in (
+        ("v1ObjectMeta", ("name", "namespace", "uid", "resourceVersion")),
+        ("v1ListMeta", ("continue", "resourceVersion", "remainingItemCount")),
+        ("v1NodeSpec", ("providerID",)),
+        ("v1PodSpec", ("nodeName",)),
+    ):
+        properties = schemas.get(schema, {}).get("properties", {})
+        if any(properties.get(field, {}).get("type") != "string" for field in fields):
+            raise ValueError("Kubernetes candidate identity/list fields are unsupported")
+    for row, spec in (("corev1Node", "v1NodeSpec"), ("v1Pod", "v1PodSpec")):
+        _validate_gcp_kubernetes_reference(
+            schemas.get(row, {}).get("properties", {}).get("spec", {}), spec
+        )
+
+
+def _validate_gcp_kubernetes_reference(value: dict[str, Any], schema: str) -> None:
+    """Require the owning direct or allOf schema reference without inferring a mapping."""
+    references = [value.get("$ref")] + [item.get("$ref") for item in value.get("allOf", [])]
+    if f"#/components/schemas/{schema}" not in references:
+        raise ValueError("Kubernetes candidate schema reference is unsupported")
