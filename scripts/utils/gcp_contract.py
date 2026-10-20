@@ -650,6 +650,11 @@ def validate_gcp_operational_profile(profile: Any, pinned_digest: str) -> None:
             or not isinstance(role, dict)
         ):
             raise ValueError("Operational role malformed")
+        runtime_role = role.get("runtimeRole")
+        if runtime_role is not None and (
+            not isinstance(runtime_role, str) or not name.fullmatch(runtime_role)
+        ):
+            raise ValueError("Operational runtime role malformed")
         components = role.get("components")
         containers = role.get("containers")
         diagnostics = role.get("diagnostics")
@@ -697,6 +702,24 @@ def validate_gcp_operational_profile(profile: Any, pinned_digest: str) -> None:
         raise ValueError("Operational required placement uncovered")
     if not auxiliaries.issubset(mapped_all | {e["service"] for e in exclusions}):
         raise ValueError("Operational auxiliary coverage missing")
+    if "placementCounts" in profile:
+        counts = profile["placementCounts"]
+        required = set(services) | mapped_all
+        if (
+            not isinstance(counts, dict)
+            or set(counts) != required
+            or any(type(value) is not int or value < 1 or value > 3 for value in counts.values())
+            or any(
+                not role.get("runtimeRole")
+                or not set(GCP_OPERATIONAL_CORE_SEED).issubset(role["components"])
+                for role in roles.values()
+            )
+            or any(
+                counts.get(service) != 3
+                for service in (*GCP_OPERATIONAL_CORE_SEED, *GCP_OPERATIONAL_RUNTIME_DEPENDENCIES)
+            )
+        ):
+            raise ValueError("Operational placement counts or runtime roles incomplete")
 
 
 def validate_gcp_operational_release(

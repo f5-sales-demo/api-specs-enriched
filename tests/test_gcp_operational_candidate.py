@@ -227,3 +227,27 @@ def test_release_receipt_is_separate_from_frozen_contract():
             profile["qualification"], pin(profile["qualification"]), contract_digest
         )
     assert pin(profile) == contract_digest
+
+
+def test_placement_contract_requires_exact_full_counts_and_runtime_roles():
+    profile, pin, validate = profile_fixture()
+    profile["roles"]["control"]["runtimeRole"] = "k8s-master-primary"
+    profile["placementCounts"] = dict.fromkeys(
+        profile["inventoryServices"] + list(GCP_OPERATIONAL_RUNTIME_DEPENDENCIES), 3
+    )
+    validate(profile, pin(profile))
+    for field, change in [
+        ("etcd", 2),
+        ("coredns", 1),
+        ("asaf", True),
+        ("aspen", 0),
+        ("bdbewaf", 4),
+    ]:
+        changed = deepcopy(profile)
+        changed["placementCounts"][field] = change
+        with pytest.raises(ValueError, match="placement"):
+            validate(changed, pin(changed))
+    changed = deepcopy(profile)
+    del changed["roles"]["control"]["runtimeRole"]
+    with pytest.raises(ValueError, match="placement"):
+        validate(changed, pin(changed))
