@@ -12,6 +12,7 @@ from typing import Any
 
 import yaml
 
+from scripts.gcp_operational_release_assets import build_gcp_operational_assets
 from scripts.utils.gcp_contract import validate_gcp_contract
 from scripts.utils.interface_contract_enricher import (
     AWS_SUCCESS_FACTS,
@@ -148,6 +149,7 @@ def build_release_assets(
         EVIDENCE_FILE: evidence_bytes,
         MANIFEST_FILE: manifest_bytes,
     }
+    assets.update(build_gcp_operational_assets(config_path.parent / "gcp-operational-health"))
     for name, content in assets.items():
         (output_dir / name).write_bytes(content)
     return assets

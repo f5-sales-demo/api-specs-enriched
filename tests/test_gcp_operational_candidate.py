@@ -12,6 +12,7 @@ from scripts.utils.gcp_contract import (
     validate_gcp_operational_candidate_openapi,
     validate_gcp_operational_profile,
     validate_gcp_operational_release,
+    validate_gcp_terraform_ha_lifecycle,
 )
 
 
@@ -251,3 +252,44 @@ def test_placement_contract_requires_exact_full_counts_and_runtime_roles():
     del changed["roles"]["control"]["runtimeRole"]
     with pytest.raises(ValueError, match="placement"):
         validate(changed, pin(changed))
+
+
+def lifecycle_fixture():
+    return {
+        "schemaVersion": 2,
+        "scope": "original-three-node-terraform-ha",
+        "region": "northamerica-northeast1",
+        "zones": [
+            "northamerica-northeast1-a",
+            "northamerica-northeast1-b",
+            "northamerica-northeast1-c",
+        ],
+        "machineType": "n2-standard-8",
+        "diskGiB": 80,
+        "imageIdentitySha256": "sha256:" + "a" * 64,
+        "versions": {"terraform": "1.16.6", "google": "8.7.0", "xcsh": "15.13.0"},
+        "providerLockSha256": "sha256:" + "b" * 64,
+        "operationalContractFingerprint": "sha256:" + "c" * 64,
+        "lifecycleEvidenceSha256": "sha256:" + "d" * 64,
+    }
+
+
+@pytest.mark.parametrize("field", list(lifecycle_fixture()))
+def test_lifecycle_scope_rejects_drift(field):
+    profile = lifecycle_fixture()
+    contract = profile["operationalContractFingerprint"]
+    validate_gcp_terraform_ha_lifecycle(profile, contract)
+    profile[field] = None
+    with pytest.raises(ValueError, match="Operational Terraform HA"):
+        validate_gcp_terraform_ha_lifecycle(profile, contract)
+
+
+def test_lifecycle_scope_rejects_extensions_and_integer_booleans():
+    profile = lifecycle_fixture()
+    contract = profile["operationalContractFingerprint"]
+    for changed in (
+        {**profile, "qualificationFingerprint": contract},
+        {**profile, "diskGiB": True},
+    ):
+        with pytest.raises(ValueError, match="Operational Terraform HA"):
+            validate_gcp_terraform_ha_lifecycle(changed, contract)

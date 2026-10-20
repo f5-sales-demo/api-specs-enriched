@@ -754,6 +754,8 @@ def validate_gcp_operational_release(
         for field in ("bindingFingerprint", "evidenceSha256", "campaignCleanupSha256")
     ):
         raise ValueError("Operational release evidence incomplete")
+    if "terraformHaLifecycle" in receipt:
+        validate_gcp_terraform_ha_lifecycle(receipt["terraformHaLifecycle"], contract_digest)
     rounds = receipt.get("healthyRoundFingerprints")
     if (
         not isinstance(rounds, list)
@@ -767,3 +769,57 @@ def validate_gcp_operational_release(
         for field in ("emptyDestroy", "stableState", "repeatedResumeNoSubmission")
     ):
         raise ValueError("Operational release cleanup incomplete")
+
+
+def validate_gcp_terraform_ha_lifecycle(profile: Any, contract_digest: str) -> None:
+    """Validate the fixed lifecycle scope attested by operational qualification."""
+    fields = {
+        "schemaVersion",
+        "scope",
+        "region",
+        "zones",
+        "machineType",
+        "diskGiB",
+        "imageIdentitySha256",
+        "versions",
+        "providerLockSha256",
+        "operationalContractFingerprint",
+        "lifecycleEvidenceSha256",
+    }
+    sha = re.compile(r"^sha256:[a-f0-9]{64}$")
+    if not isinstance(profile, dict) or set(profile) != fields:
+        raise ValueError("Operational Terraform HA lifecycle fields differ")
+    if (
+        not isinstance(profile["schemaVersion"], int)
+        or isinstance(profile["schemaVersion"], bool)
+        or profile["schemaVersion"] != 2
+        or profile["scope"] != "original-three-node-terraform-ha"
+        or profile["region"] != "northamerica-northeast1"
+        or profile["zones"]
+        != [
+            "northamerica-northeast1-a",
+            "northamerica-northeast1-b",
+            "northamerica-northeast1-c",
+        ]
+        or profile["machineType"] != "n2-standard-8"
+        or not isinstance(profile["diskGiB"], int)
+        or isinstance(profile["diskGiB"], bool)
+        or profile["diskGiB"] != 80
+        or profile["versions"]
+        != {
+            "terraform": "1.16.6",
+            "google": "8.7.0",
+            "xcsh": "15.13.0",
+        }
+        or profile["operationalContractFingerprint"] != contract_digest
+        or any(
+            not isinstance(profile[field], str) or not sha.fullmatch(profile[field])
+            for field in (
+                "imageIdentitySha256",
+                "providerLockSha256",
+                "operationalContractFingerprint",
+                "lifecycleEvidenceSha256",
+            )
+        )
+    ):
+        raise ValueError("Operational Terraform HA lifecycle qualification differs")
