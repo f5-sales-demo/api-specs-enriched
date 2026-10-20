@@ -789,37 +789,30 @@ def validate_gcp_terraform_ha_lifecycle(profile: Any, contract_digest: str) -> N
     sha = re.compile(r"^sha256:[a-f0-9]{64}$")
     if not isinstance(profile, dict) or set(profile) != fields:
         raise ValueError("Operational Terraform HA lifecycle fields differ")
-    if (
-        not isinstance(profile["schemaVersion"], int)
-        or isinstance(profile["schemaVersion"], bool)
-        or profile["schemaVersion"] != 2
-        or profile["scope"] != "original-three-node-terraform-ha"
-        or profile["region"] != "northamerica-northeast1"
-        or profile["zones"]
-        != [
+    expected = {
+        "schemaVersion": 2,
+        "scope": "original-three-node-terraform-ha",
+        "region": "northamerica-northeast1",
+        "zones": [
             "northamerica-northeast1-a",
             "northamerica-northeast1-b",
             "northamerica-northeast1-c",
-        ]
-        or profile["machineType"] != "n2-standard-8"
-        or not isinstance(profile["diskGiB"], int)
-        or isinstance(profile["diskGiB"], bool)
-        or profile["diskGiB"] != 80
-        or profile["versions"]
-        != {
-            "terraform": "1.16.6",
-            "google": "8.7.0",
-            "xcsh": "15.13.0",
-        }
-        or profile["operationalContractFingerprint"] != contract_digest
-        or any(
-            not isinstance(profile[field], str) or not sha.fullmatch(profile[field])
-            for field in (
-                "imageIdentitySha256",
-                "providerLockSha256",
-                "operationalContractFingerprint",
-                "lifecycleEvidenceSha256",
-            )
+        ],
+        "machineType": "n2-standard-8",
+        "diskGiB": 80,
+        "versions": {"terraform": "1.16.6", "google": "8.7.0", "xcsh": "15.13.0"},
+        "operationalContractFingerprint": contract_digest,
+    }
+    if any(profile[key] != value for key, value in expected.items()):
+        raise ValueError("Operational Terraform HA lifecycle scope differs")
+    integers = [profile["schemaVersion"], profile["diskGiB"]]
+    if any(not isinstance(value, int) or isinstance(value, bool) for value in integers) or any(
+        not isinstance(profile[field], str) or not sha.fullmatch(profile[field])
+        for field in (
+            "imageIdentitySha256",
+            "providerLockSha256",
+            "operationalContractFingerprint",
+            "lifecycleEvidenceSha256",
         )
     ):
         raise ValueError("Operational Terraform HA lifecycle qualification differs")
