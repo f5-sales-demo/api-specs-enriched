@@ -405,3 +405,72 @@ def _validate_gcp_ha_diagnosis(openapi: dict[str, Any], schemas: dict[str, Any])
     for field in ("responses", "curl_response", "registration_status"):
         if properties.get(field, {}).get("type") != "object":
             raise ValueError("HA candidate diagnosis map is unsupported")
+
+
+def validate_gcp_kubernetes_candidate_openapi(openapi: dict[str, Any]) -> None:
+    """Validate site proxy wire shapes; no completeness or core health admission is implied."""
+    schemas = openapi.get("components", {}).get("schemas", {})
+    base = "/api/data/namespaces/system/site/{site}"
+    operations = (
+        ("/api/v1/nodes", "NodeList", "v1NodeList", "corev1Node", False),
+        ("/api/v1/namespaces", "NamespaceList", "v1NamespaceList", "v1Namespace", False),
+        ("/api/v1/pods", "PodList_get_1", "v1PodList", "v1Pod", True),
+        ("/apis/apps/v1/daemonsets", "DaemonSetList_get", "v1DaemonSetList", "v1DaemonSet", True),
+    )
+    for suffix, name, list_schema, row_schema, namespace in operations:
+        operation = openapi.get("paths", {}).get(base + suffix, {}).get("get", {})
+        if operation.get("operationId") != f"ves.io.schema.site.CustomDataK8SAPI.{name}":
+            raise ValueError("Kubernetes candidate operation is unsupported")
+        expected = {("site", "path"): (True, "string")}
+        if namespace:
+            expected[("namespace", "query")] = (False, "string")
+        parameters = operation.get("parameters", [])
+        actual = {
+            (item.get("name"), item.get("in")): (
+                item.get("required", False),
+                item.get("schema", {}).get("type"),
+            )
+            for item in parameters
+        }
+        if actual != expected or len(parameters) != len(expected):
+            raise ValueError("Kubernetes candidate parameters are unsupported")
+        response = (
+            operation.get("responses", {})
+            .get("200", {})
+            .get("content", {})
+            .get("application/json", {})
+            .get("schema", {})
+        )
+        if response.get("$ref") != f"#/components/schemas/{list_schema}":
+            raise ValueError("Kubernetes candidate response is unsupported")
+        properties = schemas.get(list_schema, {}).get("properties", {})
+        items = properties.get("items", {})
+        if (
+            items.get("type") != "array"
+            or items.get("items", {}).get("$ref") != f"#/components/schemas/{row_schema}"
+        ):
+            raise ValueError("Kubernetes candidate list items are unsupported")
+        _validate_gcp_kubernetes_reference(properties.get("metadata", {}), "v1ListMeta")
+        _validate_gcp_kubernetes_reference(
+            schemas.get(row_schema, {}).get("properties", {}).get("metadata", {}), "v1ObjectMeta"
+        )
+    for schema, fields in (
+        ("v1ObjectMeta", ("name", "namespace", "uid", "resourceVersion")),
+        ("v1ListMeta", ("continue", "resourceVersion", "remainingItemCount")),
+        ("v1NodeSpec", ("providerID",)),
+        ("v1PodSpec", ("nodeName",)),
+    ):
+        properties = schemas.get(schema, {}).get("properties", {})
+        if any(properties.get(field, {}).get("type") != "string" for field in fields):
+            raise ValueError("Kubernetes candidate identity/list fields are unsupported")
+    for row, spec in (("corev1Node", "v1NodeSpec"), ("v1Pod", "v1PodSpec")):
+        _validate_gcp_kubernetes_reference(
+            schemas.get(row, {}).get("properties", {}).get("spec", {}), spec
+        )
+
+
+def _validate_gcp_kubernetes_reference(value: dict[str, Any], schema: str) -> None:
+    """Require the owning direct or allOf schema reference without inferring a mapping."""
+    references = [value.get("$ref")] + [item.get("$ref") for item in value.get("allOf", [])]
+    if f"#/components/schemas/{schema}" not in references:
+        raise ValueError("Kubernetes candidate schema reference is unsupported")
