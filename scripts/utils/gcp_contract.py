@@ -5,7 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
-from typing import Any
+from typing import Any, TypeGuard
 
 GCP_SCHEMA_PROFILE: dict[str, Any] = {
     "schema_version": 1,
@@ -553,7 +553,7 @@ def validate_gcp_operational_profile(profile: Any, pinned_digest: str) -> None:
     sha = re.compile(r"^sha256:[a-f0-9]{64}$")
     name = re.compile(r"^[a-z][a-z0-9-]{0,62}$")
 
-    def names(value: Any) -> bool:
+    def names(value: Any) -> TypeGuard[list[str]]:
         return (
             isinstance(value, list)
             and bool(value)
@@ -641,7 +641,7 @@ def validate_gcp_operational_profile(profile: Any, pinned_digest: str) -> None:
     roles = profile.get("roles")
     if not isinstance(roles, dict) or not roles:
         raise ValueError("Operational roles unavailable")
-    covered = set()
+    covered: set[str] = set()
     mapped_all = set()
     for role_name, role in roles.items():
         if (
