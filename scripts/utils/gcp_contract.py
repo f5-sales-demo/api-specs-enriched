@@ -708,7 +708,10 @@ def validate_gcp_operational_profile(profile: Any, pinned_digest: str) -> None:
         if (
             not isinstance(counts, dict)
             or set(counts) != required
-            or any(type(value) is not int or value < 1 or value > 3 for value in counts.values())
+            or any(
+                not isinstance(value, int) or isinstance(value, bool) or value < 1 or value > 3
+                for value in counts.values()
+            )
             or any(
                 not role.get("runtimeRole")
                 or not set(GCP_OPERATIONAL_CORE_SEED).issubset(role["components"])
