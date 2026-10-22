@@ -137,7 +137,7 @@ def test_tag_commit_is_exposed_and_supplied_to_dispatch() -> None:
 
     push_tag = 'git push origin "v${VERSION}"'
     tag_target = 'git tag -a "v${VERSION}" "$TARGET_COMMIT"'
-    checkout_target = 'git checkout --detach "$TARGET_COMMIT"'
+    checkout_target = 'bash scripts/release/checkout-release-merge.sh "$TARGET_COMMIT"'
     expose_step = 'echo "target_commit=${TARGET_COMMIT}" >> "$GITHUB_OUTPUT"'
     expose_job = "target_commit: ${{ steps.release.outputs.target_commit }}"
     supply_dispatch = "SOURCE_TARGET_COMMIT: ${{ needs.sync-and-enrich.outputs.target_commit }}"
@@ -199,7 +199,7 @@ def test_release_retry_reuses_existing_pr_and_publishes_its_merge() -> None:
     assert "gh pr close" not in release_job
     assert 'gh pr list --state all --head "$BRANCH"' in release_job
     assert "MERGED)" in release_job
-    assert 'git checkout --detach "$TARGET_COMMIT"' in release_job
+    assert 'bash scripts/release/checkout-release-merge.sh "$TARGET_COMMIT"' in release_job
 
 
 def test_release_pr_wait_tolerates_shared_runner_queueing() -> None:
@@ -224,3 +224,23 @@ def test_release_pr_commits_catalog_and_verifies_version_coherence() -> None:
     assert "git add -f CHANGELOG.md .github_release release/api-catalog.json" in release_job
     assert release_job.count("python -m scripts.verify_release_version") >= 3
     assert '--receipt "$RECEIPT_JSON_FILE"' in release_job
+
+
+def test_automatic_pages_uses_verified_existing_release_content() -> None:
+    """A historical release cannot bypass downloaded asset/content verification."""
+    job = (
+        WORKFLOW.read_text()
+        .split("\n  deploy-docs:\n", maxsplit=1)[1]
+        .split(
+            "\n  # =========================================================================",
+            maxsplit=1,
+        )[0]
+    )
+    assert "uses: ./.github/workflows/rebuild-pages-from-release.yml" in job
+    assert "release_tag: v${{ needs.sync-and-enrich.outputs.version }}" in job
+    assert "target_commit: ${{ needs.sync-and-enrich.outputs.target_commit }}" in job
+    rebuild = Path(".github/workflows/rebuild-pages-from-release.yml").read_text()
+    assert "  workflow_call:" in rebuild
+    assert "bash scripts/release/verify-release-docs-ref.sh" in rebuild
+    assert 'test "$(git rev-parse refs/remotes/origin/main)" = "$content_ref"' in rebuild
+    assert 'echo "content_ref=$content_ref"' in rebuild

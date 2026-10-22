@@ -11,6 +11,13 @@ set -euo pipefail
 : "${CHANGE_TYPE:?CHANGE_TYPE must be source, pipeline, or forced}"
 FORCE_RELEASE_TYPE="${FORCE_RELEASE_TYPE:-patch}"
 
+# Explicit recovery preserves a previously tagged release identity, rather than
+# incrementing to another version after packaging failed.
+if [ -n "${RESUME_RELEASE_TAG:-}" ]; then
+  python -m scripts.resolve_resume_release --tag "$RESUME_RELEASE_TAG" --output "$GITHUB_OUTPUT"
+  exit 0
+fi
+
 INDEX_FILE="docs/specifications/api/index.json"
 LATEST_TAG="$(git describe --tags --abbrev=0 2>/dev/null || true)"
 CURRENT_VERSION="${LATEST_TAG#v}"

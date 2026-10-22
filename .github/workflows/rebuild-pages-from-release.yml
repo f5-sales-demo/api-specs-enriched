@@ -13,6 +13,17 @@ on:
         required: true
         type: string
 
+  workflow_call:
+    inputs:
+      release_tag:
+        description: Exact existing vX.Y.Z release tag
+        required: true
+        type: string
+      target_commit:
+        description: Exact 40-character commit the release tag and receipt bind
+        required: true
+        type: string
+
 permissions: {}
 
 concurrency:
@@ -54,12 +65,8 @@ jobs:
           git fetch --no-tags origin "refs/tags/$RELEASE_TAG:refs/tags/$RELEASE_TAG"
           test "$(git rev-parse "$RELEASE_TAG^{commit}")" = "$TARGET_COMMIT"
           git fetch --no-tags origin "+refs/heads/main:refs/remotes/origin/main"
-          test "$(git rev-parse refs/remotes/origin/main)" = "$GITHUB_SHA"
-          git merge-base --is-ancestor "$TARGET_COMMIT" "$GITHUB_SHA"
-          if ! git diff --quiet "$TARGET_COMMIT" "$GITHUB_SHA" -- docs release; then
-            echo '::error::protected-main documentation differs from the verified release'
-            exit 1
-          fi
+          content_ref=$(bash scripts/release/verify-release-docs-ref.sh \
+            "$RELEASE_TAG" "$TARGET_COMMIT" "$GITHUB_SHA")
 
           receipt_dir=$(mktemp -d "$RUNNER_TEMP/api-release.XXXXXX")
           mkdir "$receipt_dir/assets"
@@ -76,7 +83,9 @@ jobs:
           # Refuse a tag move during asset download and verification.
           git fetch --no-tags origin "refs/tags/$RELEASE_TAG:refs/tags/$RELEASE_TAG"
           test "$(git rev-parse "$RELEASE_TAG^{commit}")" = "$TARGET_COMMIT"
-          echo "content_ref=$GITHUB_SHA" >> "$GITHUB_OUTPUT"
+          git fetch --no-tags origin "+refs/heads/main:refs/remotes/origin/main"
+          test "$(git rev-parse refs/remotes/origin/main)" = "$content_ref"
+          echo "content_ref=$content_ref" >> "$GITHUB_OUTPUT"
 
   deploy:
     name: Rebuild verified release Pages
