@@ -48856,9 +48856,27 @@
         "x-ves-proto-message": "ves.io.schema.views.securemesh_site_v2.GetResponse",
         "properties": {
           "create_form": {
-            "allOf": [
+            "anyOf": [
               {
-                "$ref": "#/components/schemas/securemesh_site_v2CreateRequest"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/securemesh_site_v2CreateRequest"
+                  }
+                ],
+                "x-f5xc-description-short": "Configuration parameter for create form.",
+                "x-f5xc-required-for": {
+                  "minimum_config": false,
+                  "create": false,
+                  "update": false,
+                  "read": false
+                }
+              },
+              {
+                "type": "object",
+                "nullable": true,
+                "enum": [
+                  null
+                ]
               }
             ],
             "x-f5xc-description-short": "Configuration parameter for create form.",
@@ -48932,9 +48950,27 @@
             }
           },
           "replace_form": {
-            "allOf": [
+            "anyOf": [
               {
-                "$ref": "#/components/schemas/securemesh_site_v2ReplaceRequest"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/securemesh_site_v2ReplaceRequest"
+                  }
+                ],
+                "x-f5xc-description-short": "Configuration parameter for replace form.",
+                "x-f5xc-required-for": {
+                  "minimum_config": false,
+                  "create": false,
+                  "update": false,
+                  "read": false
+                }
+              },
+              {
+                "type": "object",
+                "nullable": true,
+                "enum": [
+                  null
+                ]
               }
             ],
             "x-f5xc-description-short": "Configuration parameter for replace form.",
@@ -48948,7 +48984,7 @@
           "spec": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/viewssecuremesh_site_v2GetSpecType"
+                "$ref": "#/components/schemas/viewssecuremesh_site_v2GetSpecType__smsv2_read_896d1427ebb4"
               }
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
@@ -48983,7 +49019,7 @@
           "system_metadata": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType__ves_io_schema_api_sec_api_crawler"
+                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType__ves_io_schema_api_sec_api_crawler__smsv2_read_243f1e4c2bb7"
               }
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
@@ -49012,6 +49048,25 @@
           "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "cloud_infrastructure",
+        "x-f5xc-response-nullability": {
+          "issue": "#1975",
+          "paths": [
+            "create_form",
+            "replace_form",
+            "spec.admin_user_credentials",
+            "spec.dns_ntp_config",
+            "spec.load_balancing",
+            "spec.local_vrf",
+            "spec.offline_survivability_mode",
+            "spec.performance_enhancement_mode",
+            "spec.re_select",
+            "spec.software_settings.waf_signatures",
+            "spec.upgrade_settings",
+            "system_metadata.deletion_timestamp",
+            "system_metadata.initializers",
+            "system_metadata.owner_view"
+          ]
+        },
         "x-f5xc-namespace-profile": {
           "constraint": {
             "allowed": [
@@ -121693,6 +121748,1811 @@
           "classification": {
             "category": "infrastructure",
             "multi_tenant_pattern": "per-tenant"
+          }
+        }
+      },
+      "schemaSystemObjectGetMetaType__ves_io_schema_api_sec_api_crawler__smsv2_read_243f1e4c2bb7": {
+        "type": "object",
+        "description": "SystemObjectGetMetaType is metadata generated or populated by the system for all persisted objects and\ncannot be updated directly by users.",
+        "title": "SystemObjectGetMetaType",
+        "x-displayname": "System Metadata.",
+        "x-ves-proto-message": "ves.io.schema.SystemObjectGetMetaType",
+        "properties": {
+          "creation_timestamp": {
+            "type": "string",
+            "description": "CreationTimestamp is a timestamp representing the server time when this object was\ncreated. It is not guaranteed to be set in happens-before order across separate operations.\nClients may not set this value. It is represented in RFC3339 form and is in UTC.",
+            "title": "creation_timestamp",
+            "format": "date-time",
+            "x-displayname": "Creation Timestamp.",
+            "x-f5xc-description-short": "CreationTimestamp is a timestamp representing the server time when this object was created.",
+            "x-f5xc-description-medium": "CreationTimestamp is a timestamp representing the server time when this object was created. It is not guaranteed to be set in happens-before order across separate operations. Clients may not set this value.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "format": "date-time",
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-10-22T11:01:39+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-field-mutability": "read-only"
+          },
+          "creator_class": {
+            "type": "string",
+            "description": "A value identifying the class of the user or service which created this configuration object.",
+            "title": "creator_class",
+            "x-displayname": "Creator Class.",
+            "x-ves-example": "Prism",
+            "x-f5xc-example": "value",
+            "x-f5xc-description-short": "Value identifying the class of the user or service which created this configuration object.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-10-22T11:01:39+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-field-mutability": "read-only"
+          },
+          "creator_id": {
+            "type": "string",
+            "description": "A value identifying the exact user or service that created this configuration object.",
+            "title": "creator_id",
+            "x-displayname": "Creator ID.",
+            "x-ves-example": "Admin@example.com.",
+            "x-f5xc-example": "value",
+            "x-f5xc-description-short": "Value identifying the exact user or service that created this configuration object.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-10-22T11:01:39+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-field-mutability": "read-only"
+          },
+          "deletion_timestamp": {
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "DeletionTimestamp is RFC 3339 date and time at which this resource will be deleted. This\nfield is set by the server when a graceful deletion is requested by the user, and is not\ndirectly settable by a client. The resource is expected to be deleted (no longer visible\nfrom resource lists, and not reachable by name) after the time in this field, once the\nfinalizers list is empty. As long as the finalizers list contains items, deletion is blocked.\nOnce the deletionTimestamp is set, this value may not be unset or be set further into the\nfuture, although it may be shortened or the resource may be deleted prior to this time.\nFor example, a user may request that a pod is deleted in 30 seconds. The Kubelet will react\nby sending a graceful termination signal to the containers in the pod. After that 30 seconds,\nthe Kubelet will send a hard termination signal (SIGKILL) to the container and after cleanup,\nremove the pod from the API. In the presence of network partitions, this object may still\nexist after this timestamp, until an administrator or automated process can determine the\nresource is fully terminated.\nIf not set, graceful deletion of the object has not been requested.\n\nPopulated by the system when a graceful deletion is requested.\nRead-only.",
+                "title": "deletion_timestamp",
+                "format": "date-time",
+                "x-displayname": "Deletion Timestamp.",
+                "x-f5xc-description-short": "DeletionTimestamp is RFC 3339 date and time at which this resource will be deleted.",
+                "x-f5xc-description-medium": "DeletionTimestamp is RFC 3339 date and time at which this resource will be deleted. This field is set by the server when a graceful deletion is requested by the user, and is not directly settable by a client. The resource is expected to be deleted (no longer visible from resource lists, and not...",
+                "maxLength": 1024,
+                "x-f5xc-constraints": {
+                  "constraintType": "string",
+                  "category": "general",
+                  "maxLength": 1024,
+                  "format": "date-time",
+                  "metadata": {
+                    "source": "inferred",
+                    "confidence": 0.85,
+                    "validatedAt": "2026-10-22T11:01:39+00:00"
+                  }
+                },
+                "x-f5xc-required-for": {
+                  "minimum_config": false,
+                  "create": false,
+                  "update": false,
+                  "read": false
+                }
+              },
+              {
+                "type": "object",
+                "nullable": true,
+                "enum": [
+                  null
+                ]
+              }
+            ],
+            "description": "DeletionTimestamp is RFC 3339 date and time at which this resource will be deleted. This\nfield is set by the server when a graceful deletion is requested by the user, and is not\ndirectly settable by a client. The resource is expected to be deleted (no longer visible\nfrom resource lists, and not reachable by name) after the time in this field, once the\nfinalizers list is empty. As long as the finalizers list contains items, deletion is blocked.\nOnce the deletionTimestamp is set, this value may not be unset or be set further into the\nfuture, although it may be shortened or the resource may be deleted prior to this time.\nFor example, a user may request that a pod is deleted in 30 seconds. The Kubelet will react\nby sending a graceful termination signal to the containers in the pod. After that 30 seconds,\nthe Kubelet will send a hard termination signal (SIGKILL) to the container and after cleanup,\nremove the pod from the API. In the presence of network partitions, this object may still\nexist after this timestamp, until an administrator or automated process can determine the\nresource is fully terminated.\nIf not set, graceful deletion of the object has not been requested.\n\nPopulated by the system when a graceful deletion is requested.\nRead-only.",
+            "title": "deletion_timestamp",
+            "x-displayname": "Deletion Timestamp.",
+            "x-f5xc-description-short": "DeletionTimestamp is RFC 3339 date and time at which this resource will be deleted.",
+            "x-f5xc-description-medium": "DeletionTimestamp is RFC 3339 date and time at which this resource will be deleted. This field is set by the server when a graceful deletion is requested by the user, and is not directly settable by a client. The resource is expected to be deleted (no longer visible from resource lists, and not...",
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "format": "date-time",
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-10-22T11:01:39+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "finalizers": {
+            "type": "array",
+            "description": "Must be empty before the object is deleted from the registry. Each entry\nis an identifier for the responsible component that will remove the entry\nfrom the list. If the deletionTimestamp of the object is non-nil, entries\nin this list can only be removed.",
+            "title": "finalizers",
+            "items": {
+              "type": "string"
+            },
+            "x-displayname": "Finalizers.",
+            "x-ves-example": "Value",
+            "x-f5xc-example": "value",
+            "x-f5xc-description-short": "Must be empty before the object is deleted from the registry.",
+            "x-f5xc-description-medium": "Must be empty before the object is deleted from the registry. Each entry is an identifier for the responsible component that will remove the entry from the list. If the deletionTimestamp of the object is non-nil, entries in this list can only be removed.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "initializers": {
+            "anyOf": [
+              {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/schemaInitializersType__ves_io_schema_api_sec_api_crawler"
+                  }
+                ],
+                "x-f5xc-description-short": "Configuration parameter for initializers.",
+                "x-f5xc-required-for": {
+                  "minimum_config": false,
+                  "create": false,
+                  "update": false,
+                  "read": false
+                }
+              },
+              {
+                "type": "object",
+                "nullable": true,
+                "enum": [
+                  null
+                ]
+              }
+            ],
+            "x-f5xc-description-short": "Configuration parameter for initializers.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "labels": {
+            "type": "object",
+            "description": "Map of string keys and values that can be used to organize and categorize\n(scope and select) objects as chosen by the operator or software. Values here can be interpreted\nby software(backend or frontend) to enable certain behavior e.g. Things marked as soft-deleted(restorable).",
+            "title": "labels",
+            "x-displayname": "Labels",
+            "x-ves-example": "'VES.I/O/soft-deleted': 'true'",
+            "x-f5xc-example": "'F5 XC/soft-deleted''true'",
+            "x-f5xc-description-short": "Map of string keys and values that can be used to organize and categorize (scope and select) objects as chosen by the operator or software.",
+            "x-f5xc-description-medium": "Map of string keys and values that can be used to organize and categorize (scope and select) objects as chosen by the operator or software. Values here can be interpreted by software(backend or frontend) to enable certain behavior e.g. Things marked as soft-deleted(restorable).",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "modification_timestamp": {
+            "type": "string",
+            "description": "ModificationTimestamp is a timestamp representing the server time when this object was\nlast modified.",
+            "title": "modification_timestamp",
+            "format": "date-time",
+            "x-displayname": "Modification Timestamp.",
+            "x-f5xc-description-short": "ModificationTimestamp is a timestamp representing the server time when this object was last modified.",
+            "x-f5xc-description-medium": "ModificationTimestamp is a timestamp representing the server time when this object was last modified.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "format": "date-time",
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-10-22T11:01:39+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-field-mutability": "read-only"
+          },
+          "object_index": {
+            "type": "integer",
+            "description": "Unique index for the object. Some objects need a unique integer index to be allocated\nfor each object type. This field will be populated for all objects that need it and will\nbe zero otherwise.",
+            "title": "object_index",
+            "format": "int64",
+            "x-displayname": "Object Index.",
+            "x-ves-example": "0",
+            "x-f5xc-example": "0",
+            "x-f5xc-description-short": "Unique index for the object. Some objects need a unique integer index to be allocated for each object type.",
+            "x-f5xc-description-medium": "Unique index for the object. Some objects need a unique integer index to be allocated for each object type. This field will be populated for all objects that need it and will be zero otherwise.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-field-mutability": "read-only"
+          },
+          "owner_view": {
+            "anyOf": [
+              {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/schemaViewRefType"
+                  }
+                ],
+                "x-f5xc-required-for": {
+                  "minimum_config": false,
+                  "create": false,
+                  "update": false,
+                  "read": false
+                },
+                "x-f5xc-references": [
+                  {
+                    "resource_kind": null,
+                    "field_path": "owner_view",
+                    "gated_by": null,
+                    "required": false,
+                    "cardinality": "single"
+                  }
+                ]
+              },
+              {
+                "type": "object",
+                "nullable": true,
+                "enum": [
+                  null
+                ]
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-references": [
+              {
+                "resource_kind": null,
+                "field_path": "owner_view",
+                "gated_by": null,
+                "required": false,
+                "cardinality": "single"
+              }
+            ]
+          },
+          "tenant": {
+            "type": "string",
+            "description": "Tenant to which this configuration object belongs to. The value for this is found from\npresented credentials.",
+            "title": "tenant",
+            "x-displayname": "Tenant",
+            "x-ves-example": "Example-corp.",
+            "x-f5xc-example": "example-corp",
+            "x-f5xc-description-short": "Tenant to which this configuration object belongs to. The value for this is found from presented credentials.",
+            "x-f5xc-description-medium": "Tenant to which this configuration object belongs to. The value for this is found from presented credentials.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-10-22T11:01:39+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-field-mutability": "read-only",
+            "minLength": 12,
+            "x-reconciled-from-discovery": true,
+            "x-reconciled-at": "2026-10-22T11:01:39+00:00"
+          },
+          "uid": {
+            "type": "string",
+            "description": "Uid is the unique in time and space value for this object. It is generated by\nthe server on successful creation of an object and is not allowed to change on Replace\nAPI. The value of is taken from uid field of ObjectMetaType, if provided.",
+            "title": "uid",
+            "x-displayname": "UID",
+            "x-ves-example": "00000000-0000-4000-8000-0df41b679859.",
+            "x-f5xc-example": "00000000-0000-4000-8000-0df41b679859",
+            "x-f5xc-description-short": "Uid is the unique in time and space value for this object.",
+            "x-f5xc-description-medium": "Uid is the unique in time and space value for this object. It is generated by the server on successful creation of an object and is not allowed to change on Replace API. The value of is taken from uid field of ObjectMetaType, if provided.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-10-22T11:01:39+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-field-mutability": "read-only",
+            "minLength": 36,
+            "format": "uuid",
+            "x-reconciled-from-discovery": true,
+            "x-reconciled-at": "2026-10-22T11:01:39+00:00"
+          }
+        },
+        "x-f5xc-description-short": "SystemObjectGetMetaType is metadata generated or populated by the system for all persisted objects and cannot be updated directly by users.",
+        "x-f5xc-description-medium": "SystemObjectGetMetaType is metadata generated or populated by the system for all persisted objects and cannot be updated directly by users.",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for schemaSystemObjectGetMetaType",
+          "required_fields": [],
+          "mutually_exclusive_groups": [],
+          "example_json": "{}",
+          "example_yaml": "{}"
+        },
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "system"
+            ],
+            "enforced": false
+          },
+          "recommendation": {
+            "primary": "system",
+            "alternatives": [],
+            "rationale": "Cloud site infrastructure managed at platform level"
+          },
+          "classification": {
+            "category": "infrastructure",
+            "multi_tenant_pattern": "none"
+          }
+        }
+      },
+      "securemesh_site_v2SoftwareSettingsType__smsv2_read_12dc578786ad": {
+        "type": "object",
+        "description": "Select OS and Software version for the site. All nodes in the site will run the same OS and Software version. These settings cannot be changed after the site is created.",
+        "title": "F5XC Software Settings",
+        "x-displayname": "F5XC Software Settings.",
+        "x-ves-proto-message": "ves.io.schema.views.securemesh_site_v2.SoftwareSettingsType",
+        "properties": {
+          "os": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/viewsOperatingSystemType"
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "sw": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/viewsVolterraSoftwareType"
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "waf_signatures": {
+            "anyOf": [
+              {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/common_wafLiveSignaturesUpdate"
+                  }
+                ],
+                "x-f5xc-description-short": "Configuration parameter for waf signatures.",
+                "x-f5xc-required-for": {
+                  "minimum_config": false,
+                  "create": false,
+                  "update": false,
+                  "read": false
+                }
+              },
+              {
+                "type": "object",
+                "nullable": true,
+                "enum": [
+                  null
+                ]
+              }
+            ],
+            "x-f5xc-description-short": "Configuration parameter for waf signatures.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          }
+        },
+        "x-f5xc-description-short": "Select OS and Software version for the site. All nodes in the site will run the same OS and Software version.",
+        "x-f5xc-description-medium": "Select OS and Software version for the site. All nodes in the site will run the same OS and Software version. These settings cannot be changed after the site is created.",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for securemesh_site_v2SoftwareSettingsType",
+          "required_fields": [],
+          "mutually_exclusive_groups": [],
+          "example_json": "{}",
+          "example_yaml": "{}"
+        },
+        "x-f5xc-cli-domain": "cloud_infrastructure",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "system"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "system",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "infrastructure",
+            "multi_tenant_pattern": "none"
+          }
+        }
+      },
+      "viewssecuremesh_site_v2GetSpecType__smsv2_read_896d1427ebb4": {
+        "type": "object",
+        "description": "Shape of the Secure Mesh site specification.",
+        "title": "GetSpecType",
+        "x-displayname": "GET Secure Mesh site.",
+        "x-ves-oneof-field-advanced_delivery_choice": "[\"disable_advanced_delivery\",\"enable_advanced_delivery\"]",
+        "x-ves-oneof-field-blocked_services_choice": "[\"block_all_services\",\"blocked_services\"]",
+        "x-ves-oneof-field-enterprise_proxy_choice": "[\"custom_proxy\",\"f5_proxy\",\"private_adn\"]",
+        "x-ves-oneof-field-forward_proxy_choice": "[\"active_forward_proxy_policies\",\"no_forward_proxy\"]",
+        "x-ves-oneof-field-log_anonymization_choice": "[\"disable_log_anonymization\",\"enable_log_anonymization\"]",
+        "x-ves-oneof-field-logs_receiver_choice": "[\"log_receiver_with_net\",\"logs_streaming_disabled\"]",
+        "x-ves-oneof-field-management_network_choice": "[\"disable_management_network\",\"enable_management_network\"]",
+        "x-ves-oneof-field-network_policy_choice": "[\"active_enhanced_firewall_policies\",\"no_network_policy\"]",
+        "x-ves-oneof-field-node_ha_choice": "[\"disable_ha\",\"enable_ha\"]",
+        "x-ves-oneof-field-provider_choice": "[\"aws\",\"azure\",\"baremetal\",\"eks_k8s\",\"equinix\",\"gcp\",\"kvm\",\"nutanix\",\"oci\",\"openshift_virtualization\",\"openstack\",\"vmware\"]",
+        "x-ves-oneof-field-proxy_bypass_choice": "[\"custom_proxy_bypass\",\"no_proxy_bypass\"]",
+        "x-ves-oneof-field-s2s_connectivity_sli_choice": "[\"dc_cluster_group_sli\",\"no_s2s_connectivity_sli\"]",
+        "x-ves-oneof-field-s2s_connectivity_slo_choice": "[\"dc_cluster_group_slo\",\"no_s2s_connectivity_slo\",\"site_mesh_group_on_slo\"]",
+        "x-ves-oneof-field-url_categorization_choice": "[\"disable_url_categorization\",\"enable_url_categorization\"]",
+        "x-ves-proto-message": "ves.io.schema.views.securemesh_site_v2.GetSpecType",
+        "properties": {
+          "active_enhanced_firewall_policies": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemanetwork_firewallActiveEnhancedFirewallPoliciesType"
+              }
+            ],
+            "x-f5xc-description-short": "Configuration parameter for active enhanced firewall policies.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "no_network_policy"
+            ]
+          },
+          "active_forward_proxy_policies": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemanetwork_firewallActiveForwardProxyPoliciesType"
+              }
+            ],
+            "x-f5xc-description-short": "Configuration parameter for active forward proxy policies.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "no_forward_proxy"
+            ]
+          },
+          "admin_user_credentials": {
+            "anyOf": [
+              {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/viewsAdminUserCredentialsType"
+                  }
+                ],
+                "x-f5xc-description-short": "Configuration parameter for admin user credentials.",
+                "x-f5xc-required-for": {
+                  "minimum_config": false,
+                  "create": false,
+                  "update": false,
+                  "read": false
+                }
+              },
+              {
+                "type": "object",
+                "nullable": true,
+                "enum": [
+                  null
+                ]
+              }
+            ],
+            "x-f5xc-description-short": "Configuration parameter for admin user credentials.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "aws": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/securemesh_site_v2AWSProviderType"
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "azure",
+              "baremetal",
+              "eks_k8s",
+              "equinix",
+              "gcp",
+              "kvm",
+              "nutanix",
+              "oci",
+              "openshift_virtualization",
+              "openstack",
+              "vmware"
+            ]
+          },
+          "azure": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/securemesh_site_v2AzureProviderType"
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "aws",
+              "baremetal",
+              "eks_k8s",
+              "equinix",
+              "gcp",
+              "kvm",
+              "nutanix",
+              "oci",
+              "openshift_virtualization",
+              "openstack",
+              "vmware"
+            ]
+          },
+          "baremetal": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/securemesh_site_v2BaremetalProviderType"
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "aws",
+              "azure",
+              "eks_k8s",
+              "equinix",
+              "gcp",
+              "kvm",
+              "nutanix",
+              "oci",
+              "openshift_virtualization",
+              "openstack",
+              "vmware"
+            ]
+          },
+          "block_all_services": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ioschemaEmpty"
+              }
+            ],
+            "x-f5xc-example": "{\"key\": \"value\"}",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "blocked_services"
+            ]
+          },
+          "blocked_services": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/fleetBlockedServicesListType"
+              }
+            ],
+            "x-f5xc-example": "{\"key\": \"value\"}",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "block_all_services"
+            ]
+          },
+          "custom_proxy": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/securemesh_site_v2CustomProxy"
+              }
+            ],
+            "x-f5xc-description-short": "Configuration parameter for custom proxy.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "f5_proxy",
+              "private_adn"
+            ]
+          },
+          "custom_proxy_bypass": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/securemesh_site_v2CustomProxyBypassSettings"
+              }
+            ],
+            "x-f5xc-description-short": "Configuration parameter for custom proxy bypass.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "no_proxy_bypass"
+            ]
+          },
+          "dc_cluster_group_sli": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaviewsObjectRefType"
+              }
+            ],
+            "x-f5xc-example": "{\"key\": \"value\"}",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "no_s2s_connectivity_sli"
+            ],
+            "x-f5xc-references": [
+              {
+                "resource_kind": "dc_cluster_group",
+                "field_path": "dc_cluster_group_sli",
+                "gated_by": {
+                  "choice": "s2s_connectivity_sli_choice"
+                },
+                "required": false,
+                "cardinality": "single"
+              }
+            ]
+          },
+          "dc_cluster_group_slo": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaviewsObjectRefType"
+              }
+            ],
+            "x-f5xc-example": "{\"key\": \"value\"}",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "no_s2s_connectivity_slo",
+              "site_mesh_group_on_slo"
+            ],
+            "x-f5xc-references": [
+              {
+                "resource_kind": "dc_cluster_group",
+                "field_path": "dc_cluster_group_slo",
+                "gated_by": {
+                  "choice": "s2s_connectivity_slo_choice"
+                },
+                "required": false,
+                "cardinality": "single"
+              }
+            ]
+          },
+          "disable_advanced_delivery": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ioschemaEmpty"
+              }
+            ],
+            "x-f5xc-description-short": "Configuration parameter for disable advanced delivery.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "enable_advanced_delivery"
+            ]
+          },
+          "disable_ha": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ioschemaEmpty"
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "enable_ha"
+            ]
+          },
+          "disable_log_anonymization": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ioschemaEmpty"
+              }
+            ],
+            "x-f5xc-description-short": "Configuration parameter for disable log anonymization.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "enable_log_anonymization"
+            ]
+          },
+          "disable_management_network": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ioschemaEmpty"
+              }
+            ],
+            "x-f5xc-description-short": "Configuration parameter for disable management network.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "enable_management_network"
+            ]
+          },
+          "disable_url_categorization": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ioschemaEmpty"
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "enable_url_categorization"
+            ]
+          },
+          "dns_ntp_config": {
+            "anyOf": [
+              {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/securemesh_site_v2DNSNTPServerConfig"
+                  }
+                ],
+                "x-f5xc-required-for": {
+                  "minimum_config": false,
+                  "create": false,
+                  "update": false,
+                  "read": false
+                }
+              },
+              {
+                "type": "object",
+                "nullable": true,
+                "enum": [
+                  null
+                ]
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "eks_k8s": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/securemesh_site_v2KubernetesProviderType"
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "aws",
+              "azure",
+              "baremetal",
+              "equinix",
+              "gcp",
+              "kvm",
+              "nutanix",
+              "oci",
+              "openshift_virtualization",
+              "openstack",
+              "vmware"
+            ]
+          },
+          "enable_advanced_delivery": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ioschemaEmpty"
+              }
+            ],
+            "x-f5xc-description-short": "Configuration parameter for enable advanced delivery.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "disable_advanced_delivery"
+            ]
+          },
+          "enable_ha": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ioschemaEmpty"
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "disable_ha"
+            ]
+          },
+          "enable_log_anonymization": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ioschemaEmpty"
+              }
+            ],
+            "x-f5xc-description-short": "Configuration parameter for enable log anonymization.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "disable_log_anonymization"
+            ]
+          },
+          "enable_management_network": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ioschemaEmpty"
+              }
+            ],
+            "x-f5xc-description-short": "Configuration parameter for enable management network.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "disable_management_network"
+            ]
+          },
+          "enable_url_categorization": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ioschemaEmpty"
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "disable_url_categorization"
+            ]
+          },
+          "equinix": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/securemesh_site_v2EquinixProviderType"
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "aws",
+              "azure",
+              "baremetal",
+              "eks_k8s",
+              "gcp",
+              "kvm",
+              "nutanix",
+              "oci",
+              "openshift_virtualization",
+              "openstack",
+              "vmware"
+            ]
+          },
+          "f5_proxy": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ioschemaEmpty"
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "custom_proxy",
+              "private_adn"
+            ]
+          },
+          "gcp": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/securemesh_site_v2GCPProviderType"
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "aws",
+              "azure",
+              "baremetal",
+              "eks_k8s",
+              "equinix",
+              "kvm",
+              "nutanix",
+              "oci",
+              "openshift_virtualization",
+              "openstack",
+              "vmware"
+            ]
+          },
+          "kvm": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/securemesh_site_v2KVMProviderType"
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "aws",
+              "azure",
+              "baremetal",
+              "eks_k8s",
+              "equinix",
+              "gcp",
+              "nutanix",
+              "oci",
+              "openshift_virtualization",
+              "openstack",
+              "vmware"
+            ]
+          },
+          "load_balancing": {
+            "anyOf": [
+              {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/securemesh_site_v2LoadBalancingSettingsType"
+                  }
+                ],
+                "x-f5xc-description-short": "Configuration parameter for load balancing.",
+                "x-f5xc-required-for": {
+                  "minimum_config": false,
+                  "create": false,
+                  "update": false,
+                  "read": false
+                }
+              },
+              {
+                "type": "object",
+                "nullable": true,
+                "enum": [
+                  null
+                ]
+              }
+            ],
+            "x-f5xc-description-short": "Configuration parameter for load balancing.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "local_vrf": {
+            "anyOf": [
+              {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/securemesh_site_v2LocalVRFSettingType"
+                  }
+                ],
+                "x-f5xc-required-for": {
+                  "minimum_config": false,
+                  "create": false,
+                  "update": false,
+                  "read": false
+                }
+              },
+              {
+                "type": "object",
+                "nullable": true,
+                "enum": [
+                  null
+                ]
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "log_receiver_with_net": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/securemesh_site_v2LogReceiverWithNet"
+              }
+            ],
+            "x-f5xc-description-short": "Configuration parameter for log receiver with net.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "logs_streaming_disabled"
+            ]
+          },
+          "logs_streaming_disabled": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ioschemaEmpty"
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "log_receiver_with_net"
+            ]
+          },
+          "no_forward_proxy": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ioschemaEmpty"
+              }
+            ],
+            "x-f5xc-description-short": "Configuration parameter for no forward proxy.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "active_forward_proxy_policies"
+            ]
+          },
+          "no_network_policy": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ioschemaEmpty"
+              }
+            ],
+            "x-f5xc-description-short": "Policy configuration for this feature.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "active_enhanced_firewall_policies"
+            ]
+          },
+          "no_proxy_bypass": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ioschemaEmpty"
+              }
+            ],
+            "x-f5xc-description-short": "Configuration parameter for no proxy bypass.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "custom_proxy_bypass"
+            ]
+          },
+          "no_s2s_connectivity_sli": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ioschemaEmpty"
+              }
+            ],
+            "x-f5xc-description-short": "Configuration parameter for no s2s connectivity sli.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "dc_cluster_group_sli"
+            ]
+          },
+          "no_s2s_connectivity_slo": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ioschemaEmpty"
+              }
+            ],
+            "x-f5xc-description-short": "Configuration parameter for no s2s connectivity slo.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "dc_cluster_group_slo",
+              "site_mesh_group_on_slo"
+            ]
+          },
+          "nutanix": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/securemesh_site_v2NutanixProviderType"
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "aws",
+              "azure",
+              "baremetal",
+              "eks_k8s",
+              "equinix",
+              "gcp",
+              "kvm",
+              "oci",
+              "openshift_virtualization",
+              "openstack",
+              "vmware"
+            ]
+          },
+          "oci": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/securemesh_site_v2OCIProviderType"
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "aws",
+              "azure",
+              "baremetal",
+              "eks_k8s",
+              "equinix",
+              "gcp",
+              "kvm",
+              "nutanix",
+              "openshift_virtualization",
+              "openstack",
+              "vmware"
+            ]
+          },
+          "offline_survivability_mode": {
+            "anyOf": [
+              {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/viewsOfflineSurvivabilityModeType"
+                  }
+                ],
+                "x-f5xc-description-short": "Configuration parameter for offline survivability mode.",
+                "x-f5xc-required-for": {
+                  "minimum_config": false,
+                  "create": false,
+                  "update": false,
+                  "read": false
+                }
+              },
+              {
+                "type": "object",
+                "nullable": true,
+                "enum": [
+                  null
+                ]
+              }
+            ],
+            "x-f5xc-description-short": "Configuration parameter for offline survivability mode.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "openshift_virtualization": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/securemesh_site_v2OpenShiftProviderType"
+              }
+            ],
+            "x-f5xc-description-short": "Configuration parameter for openshift virtualization.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "aws",
+              "azure",
+              "baremetal",
+              "eks_k8s",
+              "equinix",
+              "gcp",
+              "kvm",
+              "nutanix",
+              "oci",
+              "openstack",
+              "vmware"
+            ]
+          },
+          "openstack": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/securemesh_site_v2OpenstackProviderType"
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "aws",
+              "azure",
+              "baremetal",
+              "eks_k8s",
+              "equinix",
+              "gcp",
+              "kvm",
+              "nutanix",
+              "oci",
+              "openshift_virtualization",
+              "vmware"
+            ]
+          },
+          "operating_system_version": {
+            "type": "string",
+            "description": "Select the Operating System version for the site. By default, latest available Operating System version will be used.",
+            "maxLength": 256,
+            "x-displayname": "Operating System Version.",
+            "x-ves-example": "Value",
+            "x-ves-validation-rules": {
+              "ves.io.schema.rules.string.max_len": "256"
+            },
+            "x-f5xc-example": "value",
+            "x-validation-rules": {
+              "ves.io.schema.rules.string.max_len": "256"
+            },
+            "x-f5xc-description-short": "Select the Operating System version for the site. By default, latest available Operating System version will be used.",
+            "x-f5xc-description-medium": "Select the Operating System version for the site. By default, latest available Operating System version will be used.",
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "discovery",
+              "maxLength": 256,
+              "deterministic": true,
+              "metadata": {
+                "source": "discovery",
+                "confidence": 0.99,
+                "validatedAt": "2026-10-22T11:01:39+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "performance_enhancement_mode": {
+            "anyOf": [
+              {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/viewsPerformanceEnhancementModeType"
+                  }
+                ],
+                "x-f5xc-description-short": "Configuration parameter for performance enhancement mode.",
+                "x-f5xc-required-for": {
+                  "minimum_config": false,
+                  "create": false,
+                  "update": false,
+                  "read": false
+                }
+              },
+              {
+                "type": "object",
+                "nullable": true,
+                "enum": [
+                  null
+                ]
+              }
+            ],
+            "x-f5xc-description-short": "Configuration parameter for performance enhancement mode.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "private_adn": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/securemesh_site_v2PrivateADNType"
+              }
+            ],
+            "x-f5xc-description-short": "Configuration parameter for private adn.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "custom_proxy",
+              "f5_proxy"
+            ]
+          },
+          "re_select": {
+            "anyOf": [
+              {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/viewsRegionalEdgeSelection"
+                  }
+                ],
+                "x-f5xc-required-for": {
+                  "minimum_config": false,
+                  "create": false,
+                  "update": false,
+                  "read": false
+                }
+              },
+              {
+                "type": "object",
+                "nullable": true,
+                "enum": [
+                  null
+                ]
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "segment_vrf": {
+            "type": "array",
+            "description": "The Segment VRF is valid across all Sites of a Tenant. These are identified with a Segment name. Though these VRFs are across all Sites of a Tenant, there are some configurations that are valid\nper Site that can be configured here.",
+            "items": {
+              "$ref": "#/components/schemas/securemesh_site_v2SegmentVRFSettingType"
+            },
+            "x-displayname": "Segment VRF Settings.",
+            "x-ves-validation-rules": {
+              "ves.io.schema.rules.repeated.unique": "true"
+            },
+            "x-validation-rules": {
+              "ves.io.schema.rules.repeated.unique": "true"
+            },
+            "x-f5xc-description-short": "The Segment VRF is valid across all Sites of a Tenant. These are identified with a Segment name.",
+            "x-f5xc-description-medium": "The Segment VRF is valid across all Sites of a Tenant. These are identified with a Segment name. Though these VRFs are across all Sites of a Tenant, there are some configurations that are valid per Site that can be configured here.",
+            "x-f5xc-constraints": {
+              "constraintType": "array",
+              "category": "discovery",
+              "uniqueItems": true,
+              "deterministic": true,
+              "metadata": {
+                "source": "discovery",
+                "confidence": 0.99,
+                "validatedAt": "2026-10-22T11:01:39+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "site_errors": {
+            "type": "array",
+            "description": "Errors on site including suggested action.",
+            "items": {
+              "$ref": "#/components/schemas/viewsSiteError"
+            },
+            "x-displayname": "Site Errors.",
+            "x-ves-example": "Site Errors.",
+            "x-f5xc-example": "Site Errors",
+            "x-f5xc-description-short": "Errors on site including suggested action.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "site_mesh_group_on_slo": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/securemesh_site_v2SiteMeshGroupType"
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "dc_cluster_group_slo",
+              "no_s2s_connectivity_slo"
+            ]
+          },
+          "site_state": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/siteSiteState"
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "software_settings": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/securemesh_site_v2SoftwareSettingsType__smsv2_read_12dc578786ad"
+              }
+            ],
+            "x-f5xc-description-short": "Configuration parameter for software settings.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "tunnel_dead_timeout": {
+            "type": "integer",
+            "description": "Time interval, in millisec, within which any IPsec / SSL connection from the site going down is detected.\nWhen not set (== 0), a default value of 10000 msec will be used.",
+            "format": "int64",
+            "x-displayname": "Tunnel Dead Timeout (msec)",
+            "x-ves-example": "0",
+            "x-ves-validation-rules": {
+              "ves.io.schema.rules.uint32.gte": "0",
+              "ves.io.schema.rules.uint32.lte": "180000"
+            },
+            "x-f5xc-example": "0",
+            "x-validation-rules": {
+              "ves.io.schema.rules.uint32.gte": "0",
+              "ves.io.schema.rules.uint32.lte": "180000"
+            },
+            "x-f5xc-description-short": "Time interval, in millisec, within which any IPsec / SSL connection from the site going down is detected.",
+            "x-f5xc-description-medium": "Time interval, in millisec, within which any IPsec / SSL connection from the site going down is detected. When not set (== 0), a default value of 10000 msec will be used.",
+            "x-f5xc-constraints": {
+              "constraintType": "number",
+              "category": "discovery",
+              "minimum": 0,
+              "maximum": 180000,
+              "deterministic": true,
+              "metadata": {
+                "source": "api-probed",
+                "confidence": 0.99,
+                "validatedAt": "2026-10-22T11:01:39+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "tunnel_type": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/schemaSiteToSiteTunnelType"
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "upgrade_settings": {
+            "anyOf": [
+              {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/securemesh_site_v2UpgradeSettingsType"
+                  }
+                ],
+                "x-f5xc-description-short": "Configuration parameter for upgrade settings.",
+                "x-f5xc-required-for": {
+                  "minimum_config": false,
+                  "create": false,
+                  "update": false,
+                  "read": false
+                }
+              },
+              {
+                "type": "object",
+                "nullable": true,
+                "enum": [
+                  null
+                ]
+              }
+            ],
+            "x-f5xc-description-short": "Configuration parameter for upgrade settings.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "vmware": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/securemesh_site_v2VMwareProviderType"
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "aws",
+              "azure",
+              "baremetal",
+              "eks_k8s",
+              "equinix",
+              "gcp",
+              "kvm",
+              "nutanix",
+              "oci",
+              "openshift_virtualization",
+              "openstack"
+            ]
+          },
+          "volterra_software_version": {
+            "type": "string",
+            "description": "Select the F5XC Software Version for the site. By default, latest available F5XC Software Version will be used.\nRefer to release notes to find required released SW versions.",
+            "maxLength": 256,
+            "x-displayname": "Software Version.",
+            "x-ves-example": "Value",
+            "x-ves-validation-rules": {
+              "ves.io.schema.rules.string.max_len": "256"
+            },
+            "x-f5xc-example": "value",
+            "x-validation-rules": {
+              "ves.io.schema.rules.string.max_len": "256"
+            },
+            "x-f5xc-description-short": "Select the F5XC Software Version for the site. By default, latest available F5XC Software Version will be used.",
+            "x-f5xc-description-medium": "Select the F5XC Software Version for the site. By default, latest available F5XC Software Version will be used. Refer to release notes to find required released SW versions.",
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "discovery",
+              "maxLength": 256,
+              "deterministic": true,
+              "metadata": {
+                "source": "discovery",
+                "confidence": 0.99,
+                "validatedAt": "2026-10-22T11:01:39+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          }
+        },
+        "x-f5xc-description-short": "Shape of the Secure Mesh site specification.",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for viewssecuremesh_site_v2GetSpecType",
+          "required_fields": [],
+          "mutually_exclusive_groups": [],
+          "example_json": "{}",
+          "example_yaml": "{}"
+        },
+        "x-f5xc-cli-domain": "cloud_infrastructure",
+        "x-f5xc-recommended-oneof-variant": {
+          "provider_choice": "azure",
+          "node_ha_choice": "disable_ha",
+          "blocked_services_choice": "block_all_services",
+          "network_policy_choice": "no_network_policy",
+          "forward_proxy_choice": "no_forward_proxy",
+          "logs_receiver_choice": "logs_streaming_disabled"
+        },
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "system"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "system",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "infrastructure",
+            "multi_tenant_pattern": "none"
           }
         }
       }
