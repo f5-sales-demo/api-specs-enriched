@@ -1,6 +1,6 @@
 # Enrichment coverage
 
-Version: 12.2.2; dialect: 3.0.3
+Version: 12.3.0; dialect: 3.0.3
 
 | Measurement | Count |
 | --- | ---: |
@@ -8,8 +8,8 @@ Version: 12.2.2; dialect: 3.0.3
 | catalogCategories | 881 |
 | catalogFieldEntries | 45286 |
 | catalogMethodPaths | 1779 |
-| componentSchemas | 6080 |
-| directProperties | 23115 |
+| componentSchemas | 6089 |
+| directProperties | 23262 |
 | mapRuleFamilies | 19 |
 | mapRuleOccurrences | 285 |
 | mapSites | 89 |
