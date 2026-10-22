@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
-from typing import Any
+import hashlib
+import json
+import re
+from typing import Any, TypeGuard
 
 GCP_SCHEMA_PROFILE: dict[str, Any] = {
     "schema_version": 1,
@@ -268,3 +271,548 @@ def validate_gcp_openapi(openapi: dict[str, Any]) -> None:
     ]:
         if schemas.get(schema, {}).get("properties", {}).get(field, {}).get("type") != "string":
             raise ValueError("GCP schema identity field is unsupported")
+
+
+def validate_gcp_ha_candidate_openapi(openapi: dict[str, Any]) -> None:
+    """Check candidate wire shapes only; never promote HA lifecycle or health."""
+    schemas = openapi.get("components", {}).get("schemas", {})
+    for name in (
+        "viewssecuremesh_site_v2CreateSpecType",
+        "viewssecuremesh_site_v2GetSpecType",
+        "viewssecuremesh_site_v2ReplaceSpecType",
+    ):
+        value = schemas.get(name, {}).get("properties", {}).get("enable_ha", {})
+        refs = [value.get("$ref")] + [item.get("$ref") for item in value.get("allOf", [])]
+        if "#/components/schemas/ioschemaEmpty" not in refs:
+            raise ValueError("HA candidate enable_ha schema is unsupported")
+    path = "/api/operate/namespaces/{namespace}/sites/{site}/vpm/debug/global/{vesnamespace}/status"
+    operation = openapi.get("paths", {}).get(path, {}).get("get", {})
+    if operation.get("operationId") != "ves.io.schema.operate.debug.CustomPublicAPI.Status":
+        raise ValueError("HA candidate component operation is unsupported")
+    parameters = operation.get("parameters", [])
+    expected = {
+        ("namespace", "path"): (True, "string"),
+        ("site", "path"): (True, "string"),
+        ("vesnamespace", "path"): (True, "string"),
+        ("cached", "query"): (False, "boolean"),
+    }
+    actual = {
+        (item.get("name"), item.get("in")): (
+            item.get("required", False),
+            item.get("schema", {}).get("type"),
+        )
+        for item in parameters
+    }
+    if actual != expected or len(parameters) != len(expected):
+        raise ValueError("HA candidate component parameters are unsupported")
+    response = (
+        operation.get("responses", {})
+        .get("200", {})
+        .get("content", {})
+        .get("application/json", {})
+        .get("schema", {})
+    )
+    if response.get("$ref") != "#/components/schemas/debugStatusResponse":
+        raise ValueError("HA candidate component response is unsupported")
+    status = schemas.get("debugStatusResponse", {}).get("properties", {}).get("status", {})
+    if (
+        status.get("type") != "array"
+        or status.get("items", {}).get("$ref") != "#/components/schemas/debugStatus"
+    ):
+        raise ValueError("HA candidate component row schema is unsupported")
+    properties = schemas.get("debugStatus", {}).get("properties", {})
+    for field in ("node", "name", "status", "message"):
+        if properties.get(field, {}).get("type") != "string":
+            raise ValueError("HA candidate component identity/status field is unsupported")
+    _validate_gcp_ha_service_inventory(openapi, schemas)
+    _validate_gcp_ha_diagnosis(openapi, schemas)
+
+
+def _validate_gcp_ha_service_inventory(openapi: dict[str, Any], schemas: dict[str, Any]) -> None:
+    """Require the independent inventory wire shape without assuming critical-service coverage."""
+    path = "/api/operate/namespaces/{namespace}/sites/{site}/vpm/debug/global/list-service"
+    operation = openapi.get("paths", {}).get(path, {}).get("get", {})
+    if (
+        operation.get("operationId")
+        != "ves.io.schema.operate.debug.CustomPublicAPI.ListVolterraServices"
+    ):
+        raise ValueError("HA candidate service inventory operation is unsupported")
+    parameters = operation.get("parameters", [])
+    expected = {
+        ("namespace", "path"): (True, "string"),
+        ("site", "path"): (True, "string"),
+    }
+    actual = {
+        (item.get("name"), item.get("in")): (
+            item.get("required", False),
+            item.get("schema", {}).get("type"),
+        )
+        for item in parameters
+    }
+    if actual != expected or len(parameters) != len(expected):
+        raise ValueError("HA candidate service inventory parameters are unsupported")
+    response = (
+        operation.get("responses", {})
+        .get("200", {})
+        .get("content", {})
+        .get("application/json", {})
+        .get("schema", {})
+    )
+    if response.get("$ref") != "#/components/schemas/debugListServicesResponse":
+        raise ValueError("HA candidate service inventory response is unsupported")
+    service = schemas.get("debugListServicesResponse", {}).get("properties", {}).get("service", {})
+    if (
+        service.get("type") != "array"
+        or service.get("items", {}).get("$ref") != "#/components/schemas/debugService"
+    ):
+        raise ValueError("HA candidate service inventory row schema is unsupported")
+    properties = schemas.get("debugService", {}).get("properties", {})
+    for field in ("node", "name", "value"):
+        if properties.get(field, {}).get("type") != "string":
+            raise ValueError("HA candidate service inventory identity field is unsupported")
+
+
+def _validate_gcp_ha_diagnosis(openapi: dict[str, Any], schemas: dict[str, Any]) -> None:
+    """Validate diagnostic availability only; its untyped maps cannot qualify service health."""
+    path = "/api/operate/namespaces/system/sites/{site}/vpm/debug/global/diagnosis"
+    operation = openapi.get("paths", {}).get(path, {}).get("get", {})
+    if (
+        operation.get("operationId")
+        != "ves.io.schema.operate.debug.CustomPublicAPI.DiagnosisPublic"
+    ):
+        raise ValueError("HA candidate diagnosis operation is unsupported")
+    parameters = operation.get("parameters", [])
+    expected = {
+        ("site", "path"): (True, "string"),
+        ("console_user", "query"): (False, "string"),
+    }
+    actual = {
+        (item.get("name"), item.get("in")): (
+            item.get("required", False),
+            item.get("schema", {}).get("type"),
+        )
+        for item in parameters
+    }
+    if actual != expected or len(parameters) != len(expected):
+        raise ValueError("HA candidate diagnosis parameters are unsupported")
+    response = (
+        operation.get("responses", {})
+        .get("200", {})
+        .get("content", {})
+        .get("application/json", {})
+        .get("schema", {})
+    )
+    if response.get("$ref") != "#/components/schemas/debugDiagnosisResponse":
+        raise ValueError("HA candidate diagnosis response is unsupported")
+    properties = schemas.get("debugDiagnosisResponse", {}).get("properties", {})
+    for field in ("responses", "curl_response", "registration_status"):
+        if properties.get(field, {}).get("type") != "object":
+            raise ValueError("HA candidate diagnosis map is unsupported")
+
+
+def validate_gcp_kubernetes_candidate_openapi(openapi: dict[str, Any]) -> None:
+    """Validate site proxy wire shapes; no completeness or core health admission is implied."""
+    schemas = openapi.get("components", {}).get("schemas", {})
+    base = "/api/data/namespaces/system/site/{site}"
+    operations = (
+        ("/api/v1/nodes", "NodeList", "v1NodeList", "corev1Node", False),
+        ("/api/v1/namespaces", "NamespaceList", "v1NamespaceList", "v1Namespace", False),
+        ("/api/v1/pods", "PodList_get_1", "v1PodList", "v1Pod", True),
+        ("/apis/apps/v1/daemonsets", "DaemonSetList_get", "v1DaemonSetList", "v1DaemonSet", True),
+    )
+    for suffix, name, list_schema, row_schema, namespace in operations:
+        operation = openapi.get("paths", {}).get(base + suffix, {}).get("get", {})
+        if operation.get("operationId") != f"ves.io.schema.site.CustomDataK8SAPI.{name}":
+            raise ValueError("Kubernetes candidate operation is unsupported")
+        expected = {("site", "path"): (True, "string")}
+        if namespace:
+            expected[("namespace", "query")] = (False, "string")
+        parameters = operation.get("parameters", [])
+        actual = {
+            (item.get("name"), item.get("in")): (
+                item.get("required", False),
+                item.get("schema", {}).get("type"),
+            )
+            for item in parameters
+        }
+        if actual != expected or len(parameters) != len(expected):
+            raise ValueError("Kubernetes candidate parameters are unsupported")
+        response = (
+            operation.get("responses", {})
+            .get("200", {})
+            .get("content", {})
+            .get("application/json", {})
+            .get("schema", {})
+        )
+        if response.get("$ref") != f"#/components/schemas/{list_schema}":
+            raise ValueError("Kubernetes candidate response is unsupported")
+        properties = schemas.get(list_schema, {}).get("properties", {})
+        items = properties.get("items", {})
+        if (
+            items.get("type") != "array"
+            or items.get("items", {}).get("$ref") != f"#/components/schemas/{row_schema}"
+        ):
+            raise ValueError("Kubernetes candidate list items are unsupported")
+        _validate_gcp_kubernetes_reference(properties.get("metadata", {}), "v1ListMeta")
+        _validate_gcp_kubernetes_reference(
+            schemas.get(row_schema, {}).get("properties", {}).get("metadata", {}), "v1ObjectMeta"
+        )
+    for schema, fields in (
+        ("v1ObjectMeta", ("name", "namespace", "uid", "resourceVersion")),
+        ("v1ListMeta", ("continue", "resourceVersion", "remainingItemCount")),
+        ("v1NodeSpec", ("providerID",)),
+        ("v1PodSpec", ("nodeName",)),
+    ):
+        properties = schemas.get(schema, {}).get("properties", {})
+        if any(properties.get(field, {}).get("type") != "string" for field in fields):
+            raise ValueError("Kubernetes candidate identity/list fields are unsupported")
+    for row, spec in (("corev1Node", "v1NodeSpec"), ("v1Pod", "v1PodSpec")):
+        _validate_gcp_kubernetes_reference(
+            schemas.get(row, {}).get("properties", {}).get("spec", {}), spec
+        )
+
+
+def _validate_gcp_kubernetes_reference(value: dict[str, Any], schema: str) -> None:
+    """Require the owning direct or allOf schema reference without inferring a mapping."""
+    references = [value.get("$ref")] + [item.get("$ref") for item in value.get("allOf", [])]
+    if f"#/components/schemas/{schema}" not in references:
+        raise ValueError("Kubernetes candidate schema reference is unsupported")
+
+
+GCP_OPERATIONAL_CORE_SEED = (
+    "argo",
+    "asaf",
+    "aspen",
+    "bdbewaf",
+    "clank",
+    "envoy",
+    "etcd",
+    "frr",
+    "gubernator",
+    "ike",
+    "keepalived",
+    "komodo",
+    "obelix",
+    "openvpn",
+    "opera",
+    "pmtud",
+    "ver",
+)
+GCP_OPERATIONAL_RUNTIME_DEPENDENCIES = ("coredns", "kube-proxy", "kube-multus-ds")
+GCP_OPERATIONAL_COMMANDS = {
+    "list": ["crictl-ps-a"],
+    "inspect": ["crictl-inspect", "current_original_node_container_id"],
+    "diagnosis": ["diagnosis"],
+}
+
+
+def validate_gcp_operational_candidate_openapi(openapi: dict[str, Any]) -> None:
+    """Validate the documented lower-privilege read-only transport without granting health acceptance."""
+    path = "/api/operate/namespaces/{namespace}/sites/{site}/vpm/debug/{node}/exec-user"
+    operation = openapi.get("paths", {}).get(path, {}).get("post", {})
+    if operation.get("operationId") != "ves.io.schema.operate.debug.CustomPublicAPI.ExecUser":
+        raise ValueError("Operational Site CLI operation is unsupported")
+    parameters = operation.get("parameters", [])
+    expected = {(name, "path"): (True, "string") for name in ("namespace", "site", "node")}
+    actual = {
+        (p.get("name"), p.get("in")): (p.get("required"), p.get("schema", {}).get("type"))
+        for p in parameters
+    }
+    if actual != expected or len(parameters) != 3:
+        raise ValueError("Operational Site CLI parameters are unsupported")
+    request = operation.get("requestBody", {})
+    if (
+        request.get("required") is not True
+        or request.get("content", {}).get("application/json", {}).get("schema", {}).get("$ref")
+        != "#/components/schemas/debugExecRequest"
+    ):
+        raise ValueError("Operational Site CLI request is unsupported")
+    response = (
+        operation.get("responses", {})
+        .get("200", {})
+        .get("content", {})
+        .get("application/json", {})
+        .get("schema", {})
+    )
+    if response.get("$ref") != "#/components/schemas/debugExecResponse":
+        raise ValueError("Operational Site CLI response is unsupported")
+    schemas = openapi.get("components", {}).get("schemas", {})
+    command = schemas.get("debugExecRequest", {}).get("properties", {}).get("command", {})
+    if command.get("type") != "array" or command.get("items", {}).get("type") != "string":
+        raise ValueError("Operational Site CLI command wire shape is unsupported")
+    fields = schemas.get("debugExecResponse", {}).get("properties", {})
+    if (
+        fields.get("output", {}).get("type") != "string"
+        or fields.get("return_code", {}).get("type") != "integer"
+    ):
+        raise ValueError("Operational Site CLI result wire shape is unsupported")
+
+
+def validate_gcp_operational_profile(profile: Any, pinned_digest: str) -> None:
+    """Validate frozen operational coverage; a matching pin does not grant live acceptance."""
+    sha = re.compile(r"^sha256:[a-f0-9]{64}$")
+    name = re.compile(r"^[a-z][a-z0-9-]{0,62}$")
+
+    def names(value: Any) -> TypeGuard[list[str]]:
+        return (
+            isinstance(value, list)
+            and bool(value)
+            and all(isinstance(v, str) and name.fullmatch(v) for v in value)
+            and len(set(value)) == len(value)
+        )
+
+    if (
+        not isinstance(profile, dict)
+        or not isinstance(pinned_digest, str)
+        or not sha.fullmatch(pinned_digest)
+    ):
+        raise ValueError("Operational profile or pin malformed")
+    try:
+        actual = (
+            "sha256:"
+            + hashlib.sha256(
+                json.dumps(profile, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()
+            ).hexdigest()
+        )
+    except (TypeError, ValueError) as error:
+        raise ValueError("Operational profile malformed") from error
+    if actual != pinned_digest:
+        raise ValueError("Operational profile fingerprint differs")
+    if (
+        profile.get("schemaVersion") != 2
+        or profile.get("scope") != "original-three-node-operational-health"
+    ):
+        raise ValueError("Operational profile scope unsupported")
+    if profile.get("maximumAgeMs") != 300000 or profile.get("minimumRoundIntervalMs") != 45000:
+        raise ValueError("Operational observation bounds changed")
+    for field in ("sourceHashes", "qualification"):
+        values = profile.get(field)
+        if (
+            not isinstance(values, dict)
+            or not values
+            or any(not isinstance(v, str) or not sha.fullmatch(v) for v in values.values())
+        ):
+            raise ValueError("Operational qualification provenance incomplete")
+    if set(profile["qualification"]) != {
+        "evidenceSha256",
+        "discoveryCleanupSha256",
+    }:
+        raise ValueError("Operational qualification receipts incomplete")
+    versions = profile.get("parserVersions")
+    if (
+        not isinstance(versions, dict)
+        or not versions
+        or any(
+            not isinstance(v, str) or not re.fullmatch(r"[a-z0-9/-]+/v[1-9][0-9]*", v)
+            for v in versions.values()
+        )
+    ):
+        raise ValueError("Operational parser versions incomplete")
+    states = profile.get("verRunningStates")
+    if (
+        not isinstance(states, list)
+        or not states
+        or any(
+            not isinstance(v, str) or not re.fullmatch(r"[A-Za-z][A-Za-z0-9_/-]{0,62}", v)
+            for v in states
+        )
+        or len(set(states)) != len(states)
+    ):
+        raise ValueError("Operational VER states unqualified")
+    services = profile.get("inventoryServices")
+    if not names(services) or not set(GCP_OPERATIONAL_CORE_SEED).issubset(services):
+        raise ValueError("Operational minimum coverage reduced")
+    exclusions = profile.get("exclusions")
+    auxiliaries = {"vector-agent", "voucher", "kube-state-metrics"}
+    if (
+        not isinstance(exclusions, list)
+        or any(
+            not isinstance(e, dict)
+            or not isinstance(e.get("service"), str)
+            or e["service"] not in auxiliaries
+            or e.get("reason") != "auxiliary-outside-operational-scope"
+            or not isinstance(e.get("evidenceSha256"), str)
+            or not sha.fullmatch(e["evidenceSha256"])
+            for e in exclusions
+        )
+        or len({e["service"] for e in exclusions}) != len(exclusions)
+    ):
+        raise ValueError("Operational exclusions unqualified")
+    roles = profile.get("roles")
+    if not isinstance(roles, dict) or not roles:
+        raise ValueError("Operational roles unavailable")
+    covered: set[str] = set()
+    mapped_all = set()
+    for role_name, role in roles.items():
+        if (
+            not isinstance(role_name, str)
+            or not name.fullmatch(role_name)
+            or not isinstance(role, dict)
+        ):
+            raise ValueError("Operational role malformed")
+        runtime_role = role.get("runtimeRole")
+        if runtime_role is not None and (
+            not isinstance(runtime_role, str) or not name.fullmatch(runtime_role)
+        ):
+            raise ValueError("Operational runtime role malformed")
+        components = role.get("components")
+        containers = role.get("containers")
+        diagnostics = role.get("diagnostics")
+        if (
+            not names(components)
+            or not set(components).issubset(services)
+            or not isinstance(containers, list)
+            or not containers
+        ):
+            raise ValueError("Operational role coverage incomplete")
+        if not names(diagnostics) or not {"peer-connectivity", "required-domains"}.issubset(
+            diagnostics
+        ):
+            raise ValueError("Operational required diagnostics missing")
+        mapped = set()
+        identities = set()
+        for container in containers:
+            if not isinstance(container, dict) or any(
+                not isinstance(container.get(field), str) or not name.fullmatch(container[field])
+                for field in ("service", "name", "namespace")
+            ):
+                raise ValueError("Operational runtime mapping malformed")
+            prefix = container.get("podPrefix")
+            shape = container.get("podShape")
+            if (
+                not isinstance(prefix, str)
+                or not re.fullmatch(r"[a-z][a-z0-9-]{0,251}", prefix)
+                or not isinstance(shape, str)
+                or shape not in {"daemon", "deployment", "stateful"}
+            ):
+                raise ValueError("Operational pod mapping unqualified")
+            identity = (container["namespace"], container["name"], prefix, shape)
+            if identity in identities:
+                raise ValueError("Operational runtime mapping ambiguous")
+            identities.add(identity)
+            mapped.add(container["service"])
+        if not set(components).issubset(mapped) or not set(
+            GCP_OPERATIONAL_RUNTIME_DEPENDENCIES
+        ).issubset(mapped):
+            raise ValueError("Operational core runtime coverage missing")
+        covered.update(components)
+        covered.update(mapped)
+        mapped_all.update(mapped)
+    if not set(services).issubset(covered):
+        raise ValueError("Operational required placement uncovered")
+    if not auxiliaries.issubset(mapped_all | {e["service"] for e in exclusions}):
+        raise ValueError("Operational auxiliary coverage missing")
+    if "placementCounts" in profile:
+        counts = profile["placementCounts"]
+        required = set(services) | mapped_all
+        if (
+            not isinstance(counts, dict)
+            or set(counts) != required
+            or any(
+                not isinstance(value, int) or isinstance(value, bool) or value < 1 or value > 3
+                for value in counts.values()
+            )
+            or any(
+                not role.get("runtimeRole")
+                or not set(GCP_OPERATIONAL_CORE_SEED).issubset(role["components"])
+                for role in roles.values()
+            )
+            or any(
+                counts.get(service) != 3
+                for service in (*GCP_OPERATIONAL_CORE_SEED, *GCP_OPERATIONAL_RUNTIME_DEPENDENCIES)
+            )
+        ):
+            raise ValueError("Operational placement counts or runtime roles incomplete")
+
+
+def validate_gcp_operational_release(
+    receipt: Any, pinned_digest: str, contract_digest: str
+) -> None:
+    """Check the separately pinned attestation for the unchanged campaign contract."""
+    sha = re.compile(r"^sha256:[a-f0-9]{64}$")
+    if (
+        not isinstance(receipt, dict)
+        or not isinstance(pinned_digest, str)
+        or not sha.fullmatch(pinned_digest)
+    ):
+        raise ValueError("Operational release receipt malformed")
+    actual = (
+        "sha256:"
+        + hashlib.sha256(
+            json.dumps(receipt, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()
+        ).hexdigest()
+    )
+    if (
+        actual != pinned_digest
+        or receipt.get("contractFingerprint") != contract_digest
+        or not isinstance(contract_digest, str)
+        or not sha.fullmatch(contract_digest)
+    ):
+        raise ValueError("Operational release fingerprint differs")
+    if receipt.get("schemaVersion") != 2 or any(
+        not isinstance(receipt.get(field), str) or not sha.fullmatch(receipt[field])
+        for field in ("bindingFingerprint", "evidenceSha256", "campaignCleanupSha256")
+    ):
+        raise ValueError("Operational release evidence incomplete")
+    if "terraformHaLifecycle" in receipt:
+        validate_gcp_terraform_ha_lifecycle(receipt["terraformHaLifecycle"], contract_digest)
+    rounds = receipt.get("healthyRoundFingerprints")
+    if (
+        not isinstance(rounds, list)
+        or len(rounds) != 2
+        or any(not isinstance(v, str) or not sha.fullmatch(v) for v in rounds)
+        or rounds[0] == rounds[1]
+    ):
+        raise ValueError("Operational release rounds incomplete")
+    if receipt.get("objectsAbsent") != 18 or any(
+        receipt.get(field) is not True
+        for field in ("emptyDestroy", "stableState", "repeatedResumeNoSubmission")
+    ):
+        raise ValueError("Operational release cleanup incomplete")
+
+
+def validate_gcp_terraform_ha_lifecycle(profile: Any, contract_digest: str) -> None:
+    """Validate the fixed lifecycle scope attested by operational qualification."""
+    fields = {
+        "schemaVersion",
+        "scope",
+        "region",
+        "zones",
+        "machineType",
+        "diskGiB",
+        "imageIdentitySha256",
+        "versions",
+        "providerLockSha256",
+        "operationalContractFingerprint",
+        "lifecycleEvidenceSha256",
+    }
+    sha = re.compile(r"^sha256:[a-f0-9]{64}$")
+    if not isinstance(profile, dict) or set(profile) != fields:
+        raise ValueError("Operational Terraform HA lifecycle fields differ")
+    expected = {
+        "schemaVersion": 2,
+        "scope": "original-three-node-terraform-ha",
+        "region": "northamerica-northeast1",
+        "zones": [
+            "northamerica-northeast1-a",
+            "northamerica-northeast1-b",
+            "northamerica-northeast1-c",
+        ],
+        "machineType": "n2-standard-8",
+        "diskGiB": 80,
+        "versions": {"terraform": "1.16.6", "google": "8.7.0", "xcsh": "15.13.0"},
+        "operationalContractFingerprint": contract_digest,
+    }
+    if any(profile[key] != value for key, value in expected.items()):
+        raise ValueError("Operational Terraform HA lifecycle scope differs")
+    integers = [profile["schemaVersion"], profile["diskGiB"]]
+    if any(not isinstance(value, int) or isinstance(value, bool) for value in integers) or any(
+        not isinstance(profile[field], str) or not sha.fullmatch(profile[field])
+        for field in (
+            "imageIdentitySha256",
+            "providerLockSha256",
+            "operationalContractFingerprint",
+            "lifecycleEvidenceSha256",
+        )
+    ):
+        raise ValueError("Operational Terraform HA lifecycle qualification differs")

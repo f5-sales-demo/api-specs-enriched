@@ -9,7 +9,7 @@ import pytest
 
 from scripts.discovery.image_resolution_probe import collect_receipt, main, project_response
 
-TENANT = "https://tenant.example.test"
+API_URL = "https://tenant.example.test"
 SECRET = "synthetic-private-value"
 
 
@@ -79,8 +79,8 @@ def test_transport_sends_one_documented_request_and_never_retries_or_redirects(s
         )
 
     receipt = collect_receipt(
-        TENANT,
-        TENANT,
+        API_URL,
+        API_URL,
         SECRET,
         "baseline",
         "a" * 40,
@@ -104,9 +104,9 @@ def test_transport_sends_one_documented_request_and_never_retries_or_redirects(s
 @pytest.mark.parametrize(
     ("actual", "expected"),
     [
-        (TENANT, "https://other.example.test"),
+        (API_URL, "https://other.example.test"),
         ("http://tenant.example.test", "http://tenant.example.test"),
-        (TENANT + "/path", TENANT + "/path"),
+        (API_URL + "/path", API_URL + "/path"),
     ],
 )
 def test_tenant_mismatch_fails_before_network(actual, expected):
@@ -133,8 +133,8 @@ def test_network_exception_is_sanitized_and_not_retried():
         raise httpx.ReadTimeout(SECRET, request=request)
 
     result = collect_receipt(
-        TENANT,
-        TENANT,
+        API_URL,
+        API_URL,
         SECRET,
         "baseline",
         "a" * 40,
@@ -148,8 +148,8 @@ def test_network_exception_is_sanitized_and_not_retried():
 
 def test_oversized_response_is_bounded_and_sanitized():
     result = collect_receipt(
-        TENANT,
-        TENANT,
+        API_URL,
+        API_URL,
         SECRET,
         "baseline",
         "a" * 40,
@@ -172,7 +172,7 @@ def test_cli_disables_http_logging_before_authenticated_requests(monkeypatch, ca
         [
             "probe",
             "--expected-url",
-            TENANT,
+            API_URL,
             "--phase",
             "baseline",
             "--source-commit",
