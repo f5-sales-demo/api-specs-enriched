@@ -29,6 +29,10 @@ from scripts.site_curation import curate_spec, load_policy
 from scripts.utils.additive_allowlist import is_additive_change
 from scripts.utils.canonical_merge import canonical_merge_sources
 from scripts.utils.deprecated_operations import remove_deprecated_operations
+from scripts.utils.permission_catalog_nullability import (
+    qualify_health_gpu_nullability,
+    qualify_permission_catalog_nullability,
+)
 from scripts.utils.schema_override_enricher import (
     CONFIG_PATH as SCHEMA_OVERRIDES_PATH,
     SchemaOverrideEnricher,
@@ -372,6 +376,8 @@ def run_contract_diff(
     # Normalize only the exact reviewed response qualification (#1975).
     # Shared/request schemas and all other response changes remain diffed.
     qualify_smsv2_get_nullability(input_spec)
+    qualify_permission_catalog_nullability(input_spec)
+    qualify_health_gpu_nullability(input_spec)
     input_spec = _flatten_allof_refs(input_spec)
     output_spec = _flatten_allof_refs(output_spec)
     diff = DeepDiff(

@@ -22526,7 +22526,7 @@
             "description": "Items represents the collection in response.",
             "title": "items",
             "items": {
-              "$ref": "#/components/schemas/api_groupListResponseItem"
+              "$ref": "#/components/schemas/api_groupListResponseItem__catalog_read_e325d349d6a5"
             },
             "x-displayname": "Items",
             "x-f5xc-example": "[\"item1\", \"item2\", \"item3\"]",
@@ -22559,6 +22559,19 @@
           "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "api",
+        "x-f5xc-response-nullability": {
+          "issue": "#1984",
+          "paths": [
+            "items.*.get_spec",
+            "items.*.metadata",
+            "items.*.owner_view",
+            "items.*.system_metadata",
+            "items.*.system_metadata.deletion_timestamp",
+            "items.*.system_metadata.modification_timestamp",
+            "items.*.system_metadata.initializers",
+            "items.*.system_metadata.owner_view"
+          ]
+        },
         "x-f5xc-namespace-profile": {
           "constraint": {
             "allowed": [
@@ -23609,7 +23622,7 @@
             "description": "Items represents the collection in response.",
             "title": "items",
             "items": {
-              "$ref": "#/components/schemas/api_group_elementListResponseItem"
+              "$ref": "#/components/schemas/api_group_elementListResponseItem__catalog_read_7c6e412cad61"
             },
             "x-displayname": "Items",
             "x-f5xc-example": "[\"item1\", \"item2\", \"item3\"]",
@@ -23642,6 +23655,19 @@
           "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "api",
+        "x-f5xc-response-nullability": {
+          "issue": "#1984",
+          "paths": [
+            "items.*.get_spec",
+            "items.*.metadata",
+            "items.*.owner_view",
+            "items.*.system_metadata",
+            "items.*.system_metadata.deletion_timestamp",
+            "items.*.system_metadata.modification_timestamp",
+            "items.*.system_metadata.initializers",
+            "items.*.system_metadata.owner_view"
+          ]
+        },
         "x-f5xc-namespace-profile": {
           "constraint": {
             "allowed": [
@@ -45605,6 +45631,1718 @@
           },
           "classification": {
             "category": "networking",
+            "multi_tenant_pattern": "none"
+          }
+        }
+      },
+      "api_groupListResponseItem__catalog_read_e325d349d6a5": {
+        "type": "object",
+        "description": "By default a summary of api_group is returned in 'List'. By setting\n'report_fields' in the ListRequest more details of each item can be got.",
+        "title": "ListResponseItem is an individual item in a collection of api_group",
+        "x-displayname": "List Item",
+        "x-ves-proto-message": "ves.io.schema.api_group.ListResponseItem",
+        "properties": {
+          "annotations": {
+            "type": "object",
+            "description": "The set of annotations present on this api_group.",
+            "title": "annotations",
+            "x-displayname": "Annotations.",
+            "x-f5xc-example": "{\"key\": \"value\"}",
+            "x-f5xc-description-short": "The set of annotations present on this api_group.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "description": {
+            "type": "string",
+            "description": "The description set for this api_group.",
+            "title": "description",
+            "x-displayname": "Description.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "content",
+              "maxLength": 1024,
+              "minLength": 0,
+              "characterSet": {
+                "description": "Free text with UTF-8 support"
+              },
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.8,
+                "validatedAt": "2026-10-22T11:01:39+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "minLength": 21,
+            "x-reconciled-from-discovery": true,
+            "x-reconciled-at": "2026-10-22T11:01:39+00:00"
+          },
+          "disabled": {
+            "type": "boolean",
+            "description": "A value of true indicates api_group is administratively disabled.",
+            "title": "disabled",
+            "x-displayname": "Disabled",
+            "x-f5xc-example": "True",
+            "x-f5xc-description-short": "Value of true indicates api_group is administratively disabled.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "get_spec": {
+            "anyOf": [
+              {
+                "nullable": true,
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/schemaapi_groupGetSpecType"
+                  }
+                ],
+                "description": "Desired state specification",
+                "x-f5xc-required-for": {
+                  "minimum_config": false,
+                  "create": false,
+                  "update": false,
+                  "read": false
+                }
+              },
+              {
+                "type": "object",
+                "nullable": true,
+                "enum": [
+                  null
+                ]
+              }
+            ],
+            "description": "Desired state specification",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "labels": {
+            "type": "object",
+            "description": "The set of labels present on this api_group.",
+            "title": "labels",
+            "x-displayname": "Labels",
+            "x-f5xc-example": "{\"key\": \"value\"}",
+            "x-f5xc-description-short": "The set of labels present on this api_group.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "metadata": {
+            "anyOf": [
+              {
+                "nullable": true,
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/schemaObjectGetMetaType"
+                  }
+                ],
+                "description": "Metadata associated with the resource",
+                "x-f5xc-example": "{\"key\": \"value\"}",
+                "x-f5xc-required-for": {
+                  "minimum_config": false,
+                  "create": false,
+                  "update": false,
+                  "read": false
+                }
+              },
+              {
+                "type": "object",
+                "nullable": true,
+                "enum": [
+                  null
+                ]
+              }
+            ],
+            "description": "Metadata associated with the resource",
+            "x-f5xc-example": "{\"key\": \"value\"}",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "name": {
+            "type": "string",
+            "description": "The name of this api_group.",
+            "title": "name",
+            "x-displayname": "Name",
+            "x-ves-example": "Name",
+            "x-f5xc-example": "name",
+            "maxLength": 63,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "naming",
+              "maxLength": 63,
+              "minLength": 1,
+              "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+              "characterSet": {
+                "allowed": "[a-z0-9-]",
+                "restricted": "[^a-z0-9-]",
+                "required": "[a-z0-9]",
+                "description": "Lowercase letter start, alphanumeric with hyphens, alphanumeric end"
+              },
+              "format": "dns-label",
+              "formatDescription": "DNS-1035 label: must start with a lowercase letter, may contain lowercase alphanumeric and hyphens, must end with alphanumeric",
+              "validation": {
+                "rfc": "RFC 1035",
+                "standard": "DNS-1035 label (alpha-first)"
+              },
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.99,
+                "validatedAt": "2026-10-22T11:01:39+00:00"
+              },
+              "deterministic": true
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "minLength": 1,
+            "x-reconciled-from-discovery": true,
+            "x-reconciled-at": "2026-10-22T11:01:39+00:00",
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
+          },
+          "namespace": {
+            "type": "string",
+            "description": "The namespace this item belongs to.",
+            "title": "namespace",
+            "x-displayname": "Namespace",
+            "x-ves-example": "Ns1",
+            "x-f5xc-example": "ns1",
+            "maxLength": 63,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "naming",
+              "maxLength": 63,
+              "minLength": 1,
+              "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+              "characterSet": {
+                "allowed": "[a-z0-9-]",
+                "restricted": "[^a-z0-9-]",
+                "required": "[a-z0-9]",
+                "description": "Lowercase letter start, alphanumeric with hyphens, alphanumeric end"
+              },
+              "format": "dns-label",
+              "formatDescription": "DNS-1035 label: must start with a lowercase letter",
+              "validation": {
+                "rfc": "RFC 1035",
+                "standard": "DNS-1035 label (alpha-first)"
+              },
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.99,
+                "validatedAt": "2026-10-22T11:01:39+00:00"
+              },
+              "deterministic": true
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "minLength": 1,
+            "x-reconciled-from-discovery": true,
+            "x-reconciled-at": "2026-10-22T11:01:39+00:00",
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
+          },
+          "owner_view": {
+            "anyOf": [
+              {
+                "nullable": true,
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/schemaViewRefType"
+                  }
+                ],
+                "description": "Owner or responsible party",
+                "x-f5xc-required-for": {
+                  "minimum_config": false,
+                  "create": false,
+                  "update": false,
+                  "read": false
+                },
+                "x-f5xc-references": [
+                  {
+                    "resource_kind": null,
+                    "field_path": "owner_view",
+                    "gated_by": null,
+                    "required": false,
+                    "cardinality": "single"
+                  }
+                ]
+              },
+              {
+                "type": "object",
+                "nullable": true,
+                "enum": [
+                  null
+                ]
+              }
+            ],
+            "description": "Owner or responsible party",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-references": [
+              {
+                "resource_kind": null,
+                "field_path": "owner_view",
+                "gated_by": null,
+                "required": false,
+                "cardinality": "single"
+              }
+            ]
+          },
+          "status_set": {
+            "type": "array",
+            "description": "The status reported by different services for this configuration object.",
+            "title": "status",
+            "items": {
+              "$ref": "#/components/schemas/api_groupStatusObject"
+            },
+            "x-displayname": "Status",
+            "x-f5xc-description-short": "The status reported by different services for this configuration object.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "system_metadata": {
+            "anyOf": [
+              {
+                "nullable": true,
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/schemaSystemObjectGetMetaType__ves_io_schema_api_sec_api_crawler__catalog_read_1ba2171a7424"
+                  }
+                ],
+                "description": "Data or content configuration",
+                "x-f5xc-example": "{\"key\": \"value\"}",
+                "x-f5xc-required-for": {
+                  "minimum_config": false,
+                  "create": false,
+                  "update": false,
+                  "read": false
+                }
+              },
+              {
+                "type": "object",
+                "nullable": true,
+                "enum": [
+                  null
+                ]
+              }
+            ],
+            "description": "Data or content configuration",
+            "x-f5xc-example": "{\"key\": \"value\"}",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "tenant": {
+            "type": "string",
+            "description": "The tenant this item belongs to.",
+            "title": "tenant",
+            "x-displayname": "Tenant",
+            "x-ves-example": "Example-corp.",
+            "x-f5xc-example": "example-corp",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-10-22T11:01:39+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-field-mutability": "read-only",
+            "minLength": 12,
+            "x-reconciled-from-discovery": true,
+            "x-reconciled-at": "2026-10-22T11:01:39+00:00"
+          },
+          "uid": {
+            "type": "string",
+            "description": "The unique uid of this api_group.",
+            "title": "uid",
+            "x-displayname": "UID",
+            "x-ves-example": "00000000-0000-4000-8000-d36e055b3ea2.",
+            "x-f5xc-example": "00000000-0000-4000-8000-d36e055b3ea2",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-10-22T11:01:39+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-field-mutability": "read-only",
+            "minLength": 36,
+            "format": "uuid",
+            "x-reconciled-from-discovery": true,
+            "x-reconciled-at": "2026-10-22T11:01:39+00:00"
+          }
+        },
+        "x-f5xc-description-short": "By default a summary of api_group is returned in 'List'. By setting 'report_fields' in the ListRequest more details of each item can be got.",
+        "x-f5xc-description-medium": "By default a summary of api_group is returned in 'List'. By setting 'report_fields' in the ListRequest more details of each item can be got.",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for api_groupListResponseItem",
+          "required_fields": [],
+          "mutually_exclusive_groups": [],
+          "example_json": "{}",
+          "example_yaml": "{}"
+        },
+        "x-f5xc-cli-domain": "api",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "system"
+            ],
+            "enforced": false
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "security",
+            "multi_tenant_pattern": "none"
+          }
+        }
+      },
+      "schemaSystemObjectGetMetaType__ves_io_schema_api_sec_api_crawler__catalog_read_1ba2171a7424": {
+        "type": "object",
+        "description": "SystemObjectGetMetaType is metadata generated or populated by the system for all persisted objects and\ncannot be updated directly by users.",
+        "title": "SystemObjectGetMetaType",
+        "x-displayname": "System Metadata.",
+        "x-ves-proto-message": "ves.io.schema.SystemObjectGetMetaType",
+        "properties": {
+          "creation_timestamp": {
+            "type": "string",
+            "description": "CreationTimestamp is a timestamp representing the server time when this object was\ncreated. It is not guaranteed to be set in happens-before order across separate operations.\nClients may not set this value. It is represented in RFC3339 form and is in UTC.",
+            "title": "creation_timestamp",
+            "format": "date-time",
+            "x-displayname": "Creation Timestamp.",
+            "x-f5xc-description-short": "CreationTimestamp is a timestamp representing the server time when this object was created.",
+            "x-f5xc-description-medium": "CreationTimestamp is a timestamp representing the server time when this object was created. It is not guaranteed to be set in happens-before order across separate operations. Clients may not set this value.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "format": "date-time",
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-10-22T11:01:39+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-field-mutability": "read-only"
+          },
+          "creator_class": {
+            "type": "string",
+            "description": "A value identifying the class of the user or service which created this configuration object.",
+            "title": "creator_class",
+            "x-displayname": "Creator Class.",
+            "x-ves-example": "Prism",
+            "x-f5xc-example": "value",
+            "x-f5xc-description-short": "Value identifying the class of the user or service which created this configuration object.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-10-22T11:01:39+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-field-mutability": "read-only"
+          },
+          "creator_id": {
+            "type": "string",
+            "description": "A value identifying the exact user or service that created this configuration object.",
+            "title": "creator_id",
+            "x-displayname": "Creator ID.",
+            "x-ves-example": "Admin@example.com.",
+            "x-f5xc-example": "value",
+            "x-f5xc-description-short": "Value identifying the exact user or service that created this configuration object.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-10-22T11:01:39+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-field-mutability": "read-only"
+          },
+          "deletion_timestamp": {
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "DeletionTimestamp is RFC 3339 date and time at which this resource will be deleted. This\nfield is set by the server when a graceful deletion is requested by the user, and is not\ndirectly settable by a client. The resource is expected to be deleted (no longer visible\nfrom resource lists, and not reachable by name) after the time in this field, once the\nfinalizers list is empty. As long as the finalizers list contains items, deletion is blocked.\nOnce the deletionTimestamp is set, this value may not be unset or be set further into the\nfuture, although it may be shortened or the resource may be deleted prior to this time.\nFor example, a user may request that a pod is deleted in 30 seconds. The Kubelet will react\nby sending a graceful termination signal to the containers in the pod. After that 30 seconds,\nthe Kubelet will send a hard termination signal (SIGKILL) to the container and after cleanup,\nremove the pod from the API. In the presence of network partitions, this object may still\nexist after this timestamp, until an administrator or automated process can determine the\nresource is fully terminated.\nIf not set, graceful deletion of the object has not been requested.\n\nPopulated by the system when a graceful deletion is requested.\nRead-only.",
+                "title": "deletion_timestamp",
+                "format": "date-time",
+                "x-displayname": "Deletion Timestamp.",
+                "x-f5xc-description-short": "DeletionTimestamp is RFC 3339 date and time at which this resource will be deleted.",
+                "x-f5xc-description-medium": "DeletionTimestamp is RFC 3339 date and time at which this resource will be deleted. This field is set by the server when a graceful deletion is requested by the user, and is not directly settable by a client. The resource is expected to be deleted (no longer visible from resource lists, and not...",
+                "maxLength": 1024,
+                "x-f5xc-constraints": {
+                  "constraintType": "string",
+                  "category": "general",
+                  "maxLength": 1024,
+                  "format": "date-time",
+                  "metadata": {
+                    "source": "inferred",
+                    "confidence": 0.85,
+                    "validatedAt": "2026-10-22T11:01:39+00:00"
+                  }
+                },
+                "x-f5xc-required-for": {
+                  "minimum_config": false,
+                  "create": false,
+                  "update": false,
+                  "read": false
+                }
+              },
+              {
+                "type": "object",
+                "nullable": true,
+                "enum": [
+                  null
+                ]
+              }
+            ],
+            "description": "DeletionTimestamp is RFC 3339 date and time at which this resource will be deleted. This\nfield is set by the server when a graceful deletion is requested by the user, and is not\ndirectly settable by a client. The resource is expected to be deleted (no longer visible\nfrom resource lists, and not reachable by name) after the time in this field, once the\nfinalizers list is empty. As long as the finalizers list contains items, deletion is blocked.\nOnce the deletionTimestamp is set, this value may not be unset or be set further into the\nfuture, although it may be shortened or the resource may be deleted prior to this time.\nFor example, a user may request that a pod is deleted in 30 seconds. The Kubelet will react\nby sending a graceful termination signal to the containers in the pod. After that 30 seconds,\nthe Kubelet will send a hard termination signal (SIGKILL) to the container and after cleanup,\nremove the pod from the API. In the presence of network partitions, this object may still\nexist after this timestamp, until an administrator or automated process can determine the\nresource is fully terminated.\nIf not set, graceful deletion of the object has not been requested.\n\nPopulated by the system when a graceful deletion is requested.\nRead-only.",
+            "title": "deletion_timestamp",
+            "x-displayname": "Deletion Timestamp.",
+            "x-f5xc-description-short": "DeletionTimestamp is RFC 3339 date and time at which this resource will be deleted.",
+            "x-f5xc-description-medium": "DeletionTimestamp is RFC 3339 date and time at which this resource will be deleted. This field is set by the server when a graceful deletion is requested by the user, and is not directly settable by a client. The resource is expected to be deleted (no longer visible from resource lists, and not...",
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "format": "date-time",
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-10-22T11:01:39+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "finalizers": {
+            "type": "array",
+            "description": "Must be empty before the object is deleted from the registry. Each entry\nis an identifier for the responsible component that will remove the entry\nfrom the list. If the deletionTimestamp of the object is non-nil, entries\nin this list can only be removed.",
+            "title": "finalizers",
+            "items": {
+              "type": "string"
+            },
+            "x-displayname": "Finalizers.",
+            "x-ves-example": "Value",
+            "x-f5xc-example": "value",
+            "x-f5xc-description-short": "Must be empty before the object is deleted from the registry.",
+            "x-f5xc-description-medium": "Must be empty before the object is deleted from the registry. Each entry is an identifier for the responsible component that will remove the entry from the list. If the deletionTimestamp of the object is non-nil, entries in this list can only be removed.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "initializers": {
+            "anyOf": [
+              {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/schemaInitializersType__ves_io_schema_api_sec_api_crawler"
+                  }
+                ],
+                "x-f5xc-description-short": "Configuration parameter for initializers.",
+                "x-f5xc-required-for": {
+                  "minimum_config": false,
+                  "create": false,
+                  "update": false,
+                  "read": false
+                }
+              },
+              {
+                "type": "object",
+                "nullable": true,
+                "enum": [
+                  null
+                ]
+              }
+            ],
+            "x-f5xc-description-short": "Configuration parameter for initializers.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "labels": {
+            "type": "object",
+            "description": "Map of string keys and values that can be used to organize and categorize\n(scope and select) objects as chosen by the operator or software. Values here can be interpreted\nby software(backend or frontend) to enable certain behavior e.g. Things marked as soft-deleted(restorable).",
+            "title": "labels",
+            "x-displayname": "Labels",
+            "x-ves-example": "'VES.I/O/soft-deleted': 'true'",
+            "x-f5xc-example": "'F5 XC/soft-deleted''true'",
+            "x-f5xc-description-short": "Map of string keys and values that can be used to organize and categorize (scope and select) objects as chosen by the operator or software.",
+            "x-f5xc-description-medium": "Map of string keys and values that can be used to organize and categorize (scope and select) objects as chosen by the operator or software. Values here can be interpreted by software(backend or frontend) to enable certain behavior e.g. Things marked as soft-deleted(restorable).",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "modification_timestamp": {
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "ModificationTimestamp is a timestamp representing the server time when this object was\nlast modified.",
+                "title": "modification_timestamp",
+                "format": "date-time",
+                "x-displayname": "Modification Timestamp.",
+                "x-f5xc-description-short": "ModificationTimestamp is a timestamp representing the server time when this object was last modified.",
+                "x-f5xc-description-medium": "ModificationTimestamp is a timestamp representing the server time when this object was last modified.",
+                "maxLength": 1024,
+                "x-f5xc-constraints": {
+                  "constraintType": "string",
+                  "category": "general",
+                  "maxLength": 1024,
+                  "format": "date-time",
+                  "metadata": {
+                    "source": "inferred",
+                    "confidence": 0.85,
+                    "validatedAt": "2026-10-22T11:01:39+00:00"
+                  }
+                },
+                "x-f5xc-required-for": {
+                  "minimum_config": false,
+                  "create": false,
+                  "update": false,
+                  "read": false
+                },
+                "x-field-mutability": "read-only"
+              },
+              {
+                "type": "object",
+                "nullable": true,
+                "enum": [
+                  null
+                ]
+              }
+            ],
+            "description": "ModificationTimestamp is a timestamp representing the server time when this object was\nlast modified.",
+            "title": "modification_timestamp",
+            "x-displayname": "Modification Timestamp.",
+            "x-f5xc-description-short": "ModificationTimestamp is a timestamp representing the server time when this object was last modified.",
+            "x-f5xc-description-medium": "ModificationTimestamp is a timestamp representing the server time when this object was last modified.",
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "format": "date-time",
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-10-22T11:01:39+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-field-mutability": "read-only"
+          },
+          "object_index": {
+            "type": "integer",
+            "description": "Unique index for the object. Some objects need a unique integer index to be allocated\nfor each object type. This field will be populated for all objects that need it and will\nbe zero otherwise.",
+            "title": "object_index",
+            "format": "int64",
+            "x-displayname": "Object Index.",
+            "x-ves-example": "0",
+            "x-f5xc-example": "0",
+            "x-f5xc-description-short": "Unique index for the object. Some objects need a unique integer index to be allocated for each object type.",
+            "x-f5xc-description-medium": "Unique index for the object. Some objects need a unique integer index to be allocated for each object type. This field will be populated for all objects that need it and will be zero otherwise.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-field-mutability": "read-only"
+          },
+          "owner_view": {
+            "anyOf": [
+              {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/schemaViewRefType"
+                  }
+                ],
+                "x-f5xc-required-for": {
+                  "minimum_config": false,
+                  "create": false,
+                  "update": false,
+                  "read": false
+                },
+                "x-f5xc-references": [
+                  {
+                    "resource_kind": null,
+                    "field_path": "owner_view",
+                    "gated_by": null,
+                    "required": false,
+                    "cardinality": "single"
+                  }
+                ]
+              },
+              {
+                "type": "object",
+                "nullable": true,
+                "enum": [
+                  null
+                ]
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-references": [
+              {
+                "resource_kind": null,
+                "field_path": "owner_view",
+                "gated_by": null,
+                "required": false,
+                "cardinality": "single"
+              }
+            ]
+          },
+          "tenant": {
+            "type": "string",
+            "description": "Tenant to which this configuration object belongs to. The value for this is found from\npresented credentials.",
+            "title": "tenant",
+            "x-displayname": "Tenant",
+            "x-ves-example": "Example-corp.",
+            "x-f5xc-example": "example-corp",
+            "x-f5xc-description-short": "Tenant to which this configuration object belongs to. The value for this is found from presented credentials.",
+            "x-f5xc-description-medium": "Tenant to which this configuration object belongs to. The value for this is found from presented credentials.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-10-22T11:01:39+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-field-mutability": "read-only",
+            "minLength": 12,
+            "x-reconciled-from-discovery": true,
+            "x-reconciled-at": "2026-10-22T11:01:39+00:00"
+          },
+          "uid": {
+            "type": "string",
+            "description": "Uid is the unique in time and space value for this object. It is generated by\nthe server on successful creation of an object and is not allowed to change on Replace\nAPI. The value of is taken from uid field of ObjectMetaType, if provided.",
+            "title": "uid",
+            "x-displayname": "UID",
+            "x-ves-example": "00000000-0000-4000-8000-0df41b679859.",
+            "x-f5xc-example": "00000000-0000-4000-8000-0df41b679859",
+            "x-f5xc-description-short": "Uid is the unique in time and space value for this object.",
+            "x-f5xc-description-medium": "Uid is the unique in time and space value for this object. It is generated by the server on successful creation of an object and is not allowed to change on Replace API. The value of is taken from uid field of ObjectMetaType, if provided.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-10-22T11:01:39+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-field-mutability": "read-only",
+            "minLength": 36,
+            "format": "uuid",
+            "x-reconciled-from-discovery": true,
+            "x-reconciled-at": "2026-10-22T11:01:39+00:00"
+          }
+        },
+        "x-f5xc-description-short": "SystemObjectGetMetaType is metadata generated or populated by the system for all persisted objects and cannot be updated directly by users.",
+        "x-f5xc-description-medium": "SystemObjectGetMetaType is metadata generated or populated by the system for all persisted objects and cannot be updated directly by users.",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for schemaSystemObjectGetMetaType",
+          "required_fields": [],
+          "mutually_exclusive_groups": [],
+          "example_json": "{}",
+          "example_yaml": "{}"
+        },
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "system"
+            ],
+            "enforced": false
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "security",
+            "multi_tenant_pattern": "none"
+          }
+        }
+      },
+      "api_group_elementListResponseItem__catalog_read_7c6e412cad61": {
+        "type": "object",
+        "description": "By default a summary of api_group_element is returned in 'List'. By setting\n'report_fields' in the ListRequest more details of each item can be got.",
+        "title": "ListResponseItem is an individual item in a collection of api_group_element",
+        "x-displayname": "List Item",
+        "x-ves-proto-message": "ves.io.schema.api_group_element.ListResponseItem",
+        "properties": {
+          "annotations": {
+            "type": "object",
+            "description": "The set of annotations present on this api_group_element.",
+            "title": "annotations",
+            "x-displayname": "Annotations.",
+            "x-f5xc-example": "{\"key\": \"value\"}",
+            "x-f5xc-description-short": "The set of annotations present on this api_group_element.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "description": {
+            "type": "string",
+            "description": "The description set for this api_group_element.",
+            "title": "description",
+            "x-displayname": "Description.",
+            "x-f5xc-description-short": "The description set for this api_group_element.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "content",
+              "maxLength": 1024,
+              "minLength": 0,
+              "characterSet": {
+                "description": "Free text with UTF-8 support"
+              },
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.8,
+                "validatedAt": "2026-10-22T11:01:39+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "minLength": 21,
+            "x-reconciled-from-discovery": true,
+            "x-reconciled-at": "2026-10-22T11:01:39+00:00"
+          },
+          "disabled": {
+            "type": "boolean",
+            "description": "A value of true indicates api_group_element is administratively disabled.",
+            "title": "disabled",
+            "x-displayname": "Disabled",
+            "x-f5xc-example": "True",
+            "x-f5xc-description-short": "Value of true indicates api_group_element is administratively disabled.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "get_spec": {
+            "anyOf": [
+              {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/api_group_elementGetSpecType"
+                  }
+                ],
+                "x-f5xc-required-for": {
+                  "minimum_config": false,
+                  "create": false,
+                  "update": false,
+                  "read": false
+                }
+              },
+              {
+                "type": "object",
+                "nullable": true,
+                "enum": [
+                  null
+                ]
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "labels": {
+            "type": "object",
+            "description": "The set of labels present on this api_group_element.",
+            "title": "labels",
+            "x-displayname": "Labels",
+            "x-f5xc-example": "{\"key\": \"value\"}",
+            "x-f5xc-description-short": "The set of labels present on this api_group_element.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "metadata": {
+            "anyOf": [
+              {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/schemaObjectGetMetaType"
+                  }
+                ],
+                "x-f5xc-example": "{\"key\": \"value\"}",
+                "x-f5xc-required-for": {
+                  "minimum_config": false,
+                  "create": false,
+                  "update": false,
+                  "read": false
+                }
+              },
+              {
+                "type": "object",
+                "nullable": true,
+                "enum": [
+                  null
+                ]
+              }
+            ],
+            "x-f5xc-example": "{\"key\": \"value\"}",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "name": {
+            "type": "string",
+            "description": "The name of this api_group_element.",
+            "title": "name",
+            "x-displayname": "Name",
+            "x-ves-example": "Name",
+            "x-f5xc-example": "name",
+            "maxLength": 63,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "naming",
+              "maxLength": 63,
+              "minLength": 1,
+              "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+              "characterSet": {
+                "allowed": "[a-z0-9-]",
+                "restricted": "[^a-z0-9-]",
+                "required": "[a-z0-9]",
+                "description": "Lowercase letter start, alphanumeric with hyphens, alphanumeric end"
+              },
+              "format": "dns-label",
+              "formatDescription": "DNS-1035 label: must start with a lowercase letter, may contain lowercase alphanumeric and hyphens, must end with alphanumeric",
+              "validation": {
+                "rfc": "RFC 1035",
+                "standard": "DNS-1035 label (alpha-first)"
+              },
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.99,
+                "validatedAt": "2026-10-22T11:01:39+00:00"
+              },
+              "deterministic": true
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "minLength": 1,
+            "x-reconciled-from-discovery": true,
+            "x-reconciled-at": "2026-10-22T11:01:39+00:00",
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
+          },
+          "namespace": {
+            "type": "string",
+            "description": "The namespace this item belongs to.",
+            "title": "namespace",
+            "x-displayname": "Namespace",
+            "x-ves-example": "Ns1",
+            "x-f5xc-example": "ns1",
+            "maxLength": 63,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "naming",
+              "maxLength": 63,
+              "minLength": 1,
+              "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+              "characterSet": {
+                "allowed": "[a-z0-9-]",
+                "restricted": "[^a-z0-9-]",
+                "required": "[a-z0-9]",
+                "description": "Lowercase letter start, alphanumeric with hyphens, alphanumeric end"
+              },
+              "format": "dns-label",
+              "formatDescription": "DNS-1035 label: must start with a lowercase letter",
+              "validation": {
+                "rfc": "RFC 1035",
+                "standard": "DNS-1035 label (alpha-first)"
+              },
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.99,
+                "validatedAt": "2026-10-22T11:01:39+00:00"
+              },
+              "deterministic": true
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "minLength": 1,
+            "x-reconciled-from-discovery": true,
+            "x-reconciled-at": "2026-10-22T11:01:39+00:00",
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
+          },
+          "owner_view": {
+            "anyOf": [
+              {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/schemaViewRefType"
+                  }
+                ],
+                "x-f5xc-required-for": {
+                  "minimum_config": false,
+                  "create": false,
+                  "update": false,
+                  "read": false
+                },
+                "x-f5xc-references": [
+                  {
+                    "resource_kind": null,
+                    "field_path": "owner_view",
+                    "gated_by": null,
+                    "required": false,
+                    "cardinality": "single"
+                  }
+                ]
+              },
+              {
+                "type": "object",
+                "nullable": true,
+                "enum": [
+                  null
+                ]
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-references": [
+              {
+                "resource_kind": null,
+                "field_path": "owner_view",
+                "gated_by": null,
+                "required": false,
+                "cardinality": "single"
+              }
+            ]
+          },
+          "status_set": {
+            "type": "array",
+            "description": "The status reported by different services for this configuration object.",
+            "title": "status",
+            "items": {
+              "$ref": "#/components/schemas/api_group_elementStatusObject"
+            },
+            "x-displayname": "Status",
+            "x-f5xc-description-short": "The status reported by different services for this configuration object.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "system_metadata": {
+            "anyOf": [
+              {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/schemaSystemObjectGetMetaType__ves_io_schema_api_sec_api_crawler__catalog_read_4eb9a84be927"
+                  }
+                ],
+                "x-f5xc-example": "{\"key\": \"value\"}",
+                "x-f5xc-required-for": {
+                  "minimum_config": false,
+                  "create": false,
+                  "update": false,
+                  "read": false
+                }
+              },
+              {
+                "type": "object",
+                "nullable": true,
+                "enum": [
+                  null
+                ]
+              }
+            ],
+            "x-f5xc-example": "{\"key\": \"value\"}",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "tenant": {
+            "type": "string",
+            "description": "The tenant this item belongs to.",
+            "title": "tenant",
+            "x-displayname": "Tenant",
+            "x-ves-example": "Example-corp.",
+            "x-f5xc-example": "example-corp",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-10-22T11:01:39+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-field-mutability": "read-only",
+            "minLength": 12,
+            "x-reconciled-from-discovery": true,
+            "x-reconciled-at": "2026-10-22T11:01:39+00:00"
+          },
+          "uid": {
+            "type": "string",
+            "description": "The unique uid of this api_group_element.",
+            "title": "uid",
+            "x-displayname": "UID",
+            "x-ves-example": "00000000-0000-4000-8000-d36e055b3ea2.",
+            "x-f5xc-example": "00000000-0000-4000-8000-d36e055b3ea2",
+            "x-f5xc-description-short": "The unique uid of this api_group_element.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-10-22T11:01:39+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-field-mutability": "read-only",
+            "minLength": 36,
+            "format": "uuid",
+            "x-reconciled-from-discovery": true,
+            "x-reconciled-at": "2026-10-22T11:01:39+00:00"
+          }
+        },
+        "x-f5xc-description-short": "By default a summary of api_group_element is returned in 'List'. By setting 'report_fields' in the ListRequest more details of each item can be got.",
+        "x-f5xc-description-medium": "By default a summary of api_group_element is returned in 'List'. By setting 'report_fields' in the ListRequest more details of each item can be got.",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for api_group_elementListResponseItem",
+          "required_fields": [],
+          "mutually_exclusive_groups": [],
+          "example_json": "{}",
+          "example_yaml": "{}"
+        },
+        "x-f5xc-cli-domain": "api",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "system"
+            ],
+            "enforced": false
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "security",
+            "multi_tenant_pattern": "none"
+          }
+        }
+      },
+      "schemaSystemObjectGetMetaType__ves_io_schema_api_sec_api_crawler__catalog_read_4eb9a84be927": {
+        "type": "object",
+        "description": "SystemObjectGetMetaType is metadata generated or populated by the system for all persisted objects and\ncannot be updated directly by users.",
+        "title": "SystemObjectGetMetaType",
+        "x-displayname": "System Metadata.",
+        "x-ves-proto-message": "ves.io.schema.SystemObjectGetMetaType",
+        "properties": {
+          "creation_timestamp": {
+            "type": "string",
+            "description": "CreationTimestamp is a timestamp representing the server time when this object was\ncreated. It is not guaranteed to be set in happens-before order across separate operations.\nClients may not set this value. It is represented in RFC3339 form and is in UTC.",
+            "title": "creation_timestamp",
+            "format": "date-time",
+            "x-displayname": "Creation Timestamp.",
+            "x-f5xc-description-short": "CreationTimestamp is a timestamp representing the server time when this object was created.",
+            "x-f5xc-description-medium": "CreationTimestamp is a timestamp representing the server time when this object was created. It is not guaranteed to be set in happens-before order across separate operations. Clients may not set this value.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "format": "date-time",
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-10-22T11:01:39+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-field-mutability": "read-only"
+          },
+          "creator_class": {
+            "type": "string",
+            "description": "A value identifying the class of the user or service which created this configuration object.",
+            "title": "creator_class",
+            "x-displayname": "Creator Class.",
+            "x-ves-example": "Prism",
+            "x-f5xc-example": "value",
+            "x-f5xc-description-short": "Value identifying the class of the user or service which created this configuration object.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-10-22T11:01:39+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-field-mutability": "read-only"
+          },
+          "creator_id": {
+            "type": "string",
+            "description": "A value identifying the exact user or service that created this configuration object.",
+            "title": "creator_id",
+            "x-displayname": "Creator ID.",
+            "x-ves-example": "Admin@example.com.",
+            "x-f5xc-example": "value",
+            "x-f5xc-description-short": "Value identifying the exact user or service that created this configuration object.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-10-22T11:01:39+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-field-mutability": "read-only"
+          },
+          "deletion_timestamp": {
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "DeletionTimestamp is RFC 3339 date and time at which this resource will be deleted. This\nfield is set by the server when a graceful deletion is requested by the user, and is not\ndirectly settable by a client. The resource is expected to be deleted (no longer visible\nfrom resource lists, and not reachable by name) after the time in this field, once the\nfinalizers list is empty. As long as the finalizers list contains items, deletion is blocked.\nOnce the deletionTimestamp is set, this value may not be unset or be set further into the\nfuture, although it may be shortened or the resource may be deleted prior to this time.\nFor example, a user may request that a pod is deleted in 30 seconds. The Kubelet will react\nby sending a graceful termination signal to the containers in the pod. After that 30 seconds,\nthe Kubelet will send a hard termination signal (SIGKILL) to the container and after cleanup,\nremove the pod from the API. In the presence of network partitions, this object may still\nexist after this timestamp, until an administrator or automated process can determine the\nresource is fully terminated.\nIf not set, graceful deletion of the object has not been requested.\n\nPopulated by the system when a graceful deletion is requested.\nRead-only.",
+                "title": "deletion_timestamp",
+                "format": "date-time",
+                "x-displayname": "Deletion Timestamp.",
+                "x-f5xc-description-short": "DeletionTimestamp is RFC 3339 date and time at which this resource will be deleted.",
+                "x-f5xc-description-medium": "DeletionTimestamp is RFC 3339 date and time at which this resource will be deleted. This field is set by the server when a graceful deletion is requested by the user, and is not directly settable by a client. The resource is expected to be deleted (no longer visible from resource lists, and not...",
+                "maxLength": 1024,
+                "x-f5xc-constraints": {
+                  "constraintType": "string",
+                  "category": "general",
+                  "maxLength": 1024,
+                  "format": "date-time",
+                  "metadata": {
+                    "source": "inferred",
+                    "confidence": 0.85,
+                    "validatedAt": "2026-10-22T11:01:39+00:00"
+                  }
+                },
+                "x-f5xc-required-for": {
+                  "minimum_config": false,
+                  "create": false,
+                  "update": false,
+                  "read": false
+                }
+              },
+              {
+                "type": "object",
+                "nullable": true,
+                "enum": [
+                  null
+                ]
+              }
+            ],
+            "description": "DeletionTimestamp is RFC 3339 date and time at which this resource will be deleted. This\nfield is set by the server when a graceful deletion is requested by the user, and is not\ndirectly settable by a client. The resource is expected to be deleted (no longer visible\nfrom resource lists, and not reachable by name) after the time in this field, once the\nfinalizers list is empty. As long as the finalizers list contains items, deletion is blocked.\nOnce the deletionTimestamp is set, this value may not be unset or be set further into the\nfuture, although it may be shortened or the resource may be deleted prior to this time.\nFor example, a user may request that a pod is deleted in 30 seconds. The Kubelet will react\nby sending a graceful termination signal to the containers in the pod. After that 30 seconds,\nthe Kubelet will send a hard termination signal (SIGKILL) to the container and after cleanup,\nremove the pod from the API. In the presence of network partitions, this object may still\nexist after this timestamp, until an administrator or automated process can determine the\nresource is fully terminated.\nIf not set, graceful deletion of the object has not been requested.\n\nPopulated by the system when a graceful deletion is requested.\nRead-only.",
+            "title": "deletion_timestamp",
+            "x-displayname": "Deletion Timestamp.",
+            "x-f5xc-description-short": "DeletionTimestamp is RFC 3339 date and time at which this resource will be deleted.",
+            "x-f5xc-description-medium": "DeletionTimestamp is RFC 3339 date and time at which this resource will be deleted. This field is set by the server when a graceful deletion is requested by the user, and is not directly settable by a client. The resource is expected to be deleted (no longer visible from resource lists, and not...",
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "format": "date-time",
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-10-22T11:01:39+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "finalizers": {
+            "type": "array",
+            "description": "Must be empty before the object is deleted from the registry. Each entry\nis an identifier for the responsible component that will remove the entry\nfrom the list. If the deletionTimestamp of the object is non-nil, entries\nin this list can only be removed.",
+            "title": "finalizers",
+            "items": {
+              "type": "string"
+            },
+            "x-displayname": "Finalizers.",
+            "x-ves-example": "Value",
+            "x-f5xc-example": "value",
+            "x-f5xc-description-short": "Must be empty before the object is deleted from the registry.",
+            "x-f5xc-description-medium": "Must be empty before the object is deleted from the registry. Each entry is an identifier for the responsible component that will remove the entry from the list. If the deletionTimestamp of the object is non-nil, entries in this list can only be removed.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "initializers": {
+            "anyOf": [
+              {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/schemaInitializersType__ves_io_schema_api_sec_api_crawler"
+                  }
+                ],
+                "x-f5xc-description-short": "Configuration parameter for initializers.",
+                "x-f5xc-required-for": {
+                  "minimum_config": false,
+                  "create": false,
+                  "update": false,
+                  "read": false
+                }
+              },
+              {
+                "type": "object",
+                "nullable": true,
+                "enum": [
+                  null
+                ]
+              }
+            ],
+            "x-f5xc-description-short": "Configuration parameter for initializers.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "labels": {
+            "type": "object",
+            "description": "Map of string keys and values that can be used to organize and categorize\n(scope and select) objects as chosen by the operator or software. Values here can be interpreted\nby software(backend or frontend) to enable certain behavior e.g. Things marked as soft-deleted(restorable).",
+            "title": "labels",
+            "x-displayname": "Labels",
+            "x-ves-example": "'VES.I/O/soft-deleted': 'true'",
+            "x-f5xc-example": "'F5 XC/soft-deleted''true'",
+            "x-f5xc-description-short": "Map of string keys and values that can be used to organize and categorize (scope and select) objects as chosen by the operator or software.",
+            "x-f5xc-description-medium": "Map of string keys and values that can be used to organize and categorize (scope and select) objects as chosen by the operator or software. Values here can be interpreted by software(backend or frontend) to enable certain behavior e.g. Things marked as soft-deleted(restorable).",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "modification_timestamp": {
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "ModificationTimestamp is a timestamp representing the server time when this object was\nlast modified.",
+                "title": "modification_timestamp",
+                "format": "date-time",
+                "x-displayname": "Modification Timestamp.",
+                "x-f5xc-description-short": "ModificationTimestamp is a timestamp representing the server time when this object was last modified.",
+                "x-f5xc-description-medium": "ModificationTimestamp is a timestamp representing the server time when this object was last modified.",
+                "maxLength": 1024,
+                "x-f5xc-constraints": {
+                  "constraintType": "string",
+                  "category": "general",
+                  "maxLength": 1024,
+                  "format": "date-time",
+                  "metadata": {
+                    "source": "inferred",
+                    "confidence": 0.85,
+                    "validatedAt": "2026-10-22T11:01:39+00:00"
+                  }
+                },
+                "x-f5xc-required-for": {
+                  "minimum_config": false,
+                  "create": false,
+                  "update": false,
+                  "read": false
+                },
+                "x-field-mutability": "read-only"
+              },
+              {
+                "type": "object",
+                "nullable": true,
+                "enum": [
+                  null
+                ]
+              }
+            ],
+            "description": "ModificationTimestamp is a timestamp representing the server time when this object was\nlast modified.",
+            "title": "modification_timestamp",
+            "x-displayname": "Modification Timestamp.",
+            "x-f5xc-description-short": "ModificationTimestamp is a timestamp representing the server time when this object was last modified.",
+            "x-f5xc-description-medium": "ModificationTimestamp is a timestamp representing the server time when this object was last modified.",
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "format": "date-time",
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-10-22T11:01:39+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-field-mutability": "read-only"
+          },
+          "object_index": {
+            "type": "integer",
+            "description": "Unique index for the object. Some objects need a unique integer index to be allocated\nfor each object type. This field will be populated for all objects that need it and will\nbe zero otherwise.",
+            "title": "object_index",
+            "format": "int64",
+            "x-displayname": "Object Index.",
+            "x-ves-example": "0",
+            "x-f5xc-example": "0",
+            "x-f5xc-description-short": "Unique index for the object. Some objects need a unique integer index to be allocated for each object type.",
+            "x-f5xc-description-medium": "Unique index for the object. Some objects need a unique integer index to be allocated for each object type. This field will be populated for all objects that need it and will be zero otherwise.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-field-mutability": "read-only"
+          },
+          "owner_view": {
+            "anyOf": [
+              {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/schemaViewRefType"
+                  }
+                ],
+                "x-f5xc-required-for": {
+                  "minimum_config": false,
+                  "create": false,
+                  "update": false,
+                  "read": false
+                },
+                "x-f5xc-references": [
+                  {
+                    "resource_kind": null,
+                    "field_path": "owner_view",
+                    "gated_by": null,
+                    "required": false,
+                    "cardinality": "single"
+                  }
+                ]
+              },
+              {
+                "type": "object",
+                "nullable": true,
+                "enum": [
+                  null
+                ]
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-references": [
+              {
+                "resource_kind": null,
+                "field_path": "owner_view",
+                "gated_by": null,
+                "required": false,
+                "cardinality": "single"
+              }
+            ]
+          },
+          "tenant": {
+            "type": "string",
+            "description": "Tenant to which this configuration object belongs to. The value for this is found from\npresented credentials.",
+            "title": "tenant",
+            "x-displayname": "Tenant",
+            "x-ves-example": "Example-corp.",
+            "x-f5xc-example": "example-corp",
+            "x-f5xc-description-short": "Tenant to which this configuration object belongs to. The value for this is found from presented credentials.",
+            "x-f5xc-description-medium": "Tenant to which this configuration object belongs to. The value for this is found from presented credentials.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-10-22T11:01:39+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-field-mutability": "read-only",
+            "minLength": 12,
+            "x-reconciled-from-discovery": true,
+            "x-reconciled-at": "2026-10-22T11:01:39+00:00"
+          },
+          "uid": {
+            "type": "string",
+            "description": "Uid is the unique in time and space value for this object. It is generated by\nthe server on successful creation of an object and is not allowed to change on Replace\nAPI. The value of is taken from uid field of ObjectMetaType, if provided.",
+            "title": "uid",
+            "x-displayname": "UID",
+            "x-ves-example": "00000000-0000-4000-8000-0df41b679859.",
+            "x-f5xc-example": "00000000-0000-4000-8000-0df41b679859",
+            "x-f5xc-description-short": "Uid is the unique in time and space value for this object.",
+            "x-f5xc-description-medium": "Uid is the unique in time and space value for this object. It is generated by the server on successful creation of an object and is not allowed to change on Replace API. The value of is taken from uid field of ObjectMetaType, if provided.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-10-22T11:01:39+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-field-mutability": "read-only",
+            "minLength": 36,
+            "format": "uuid",
+            "x-reconciled-from-discovery": true,
+            "x-reconciled-at": "2026-10-22T11:01:39+00:00"
+          }
+        },
+        "x-f5xc-description-short": "SystemObjectGetMetaType is metadata generated or populated by the system for all persisted objects and cannot be updated directly by users.",
+        "x-f5xc-description-medium": "SystemObjectGetMetaType is metadata generated or populated by the system for all persisted objects and cannot be updated directly by users.",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for schemaSystemObjectGetMetaType",
+          "required_fields": [],
+          "mutually_exclusive_groups": [],
+          "example_json": "{}",
+          "example_yaml": "{}"
+        },
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "system"
+            ],
+            "enforced": false
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Standard tenant resource"
+          },
+          "classification": {
+            "category": "security",
             "multi_tenant_pattern": "none"
           }
         }

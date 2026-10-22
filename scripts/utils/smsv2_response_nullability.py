@@ -46,26 +46,39 @@ def references(value: Any) -> set[str]:
 
 
 def qualify_smsv2_get_nullability(spec: dict[str, Any]) -> None:
+    """Qualify the reviewed SMSv2 read response only."""
+    qualify_response_nullability(spec, ROOT, OPERATION, PATHS, PROVENANCE)
+
+
+def qualify_response_nullability(
+    spec: dict[str, Any],
+    root: str,
+    operation_id: str,
+    paths: tuple[tuple[str, ...], ...],
+    provenance: dict[str, Any],
+    clone_kind: str = "smsv2_read",
+) -> None:
     """Isolate response branches before adding null-only alternatives.
 
     Referenced request/shared components remain unchanged. Missing or ambiguous
     qualified fields fail closed. An existing identical qualification is a no-op.
     """
     schemas = spec.get("components", {}).get("schemas", {})
-    if ROOT not in schemas:
+    if root not in schemas:
         return
     operations = [
         methods["get"]
         for methods in spec.get("paths", {}).values()
-        if isinstance(methods.get("get"), dict) and methods["get"].get("operationId") == OPERATION
+        if isinstance(methods.get("get"), dict)
+        and methods["get"].get("operationId") == operation_id
     ]
     if not operations:
         return
-    if len(operations) != 1 or ROOT not in references(operations[0].get("responses", {})):
-        raise ValueError("Ambiguous SMSv2 GET response operation mapping")
-    marker = schemas[ROOT].get(X_F5XC_RESPONSE_NULLABILITY)
+    if len(operations) != 1 or root not in references(operations[0].get("responses", {})):
+        raise ValueError("Ambiguous Qualified read response operation mapping")
+    marker = schemas[root].get(X_F5XC_RESPONSE_NULLABILITY)
     if marker is not None:
-        if marker != PROVENANCE:
+        if marker != provenance:
             raise ValueError("Conflicting SMSv2 response nullability qualification")
         return
 
@@ -80,8 +93,8 @@ def qualify_smsv2_get_nullability(spec: dict[str, Any]) -> None:
         name = pending.pop()
         if name in visited:
             continue
-        if name == ROOT:
-            raise ValueError("SMSv2 GET response is reachable from a request schema")
+        if name == root:
+            raise ValueError("Qualified read response is reachable from a request schema")
         visited.add(name)
         pending.extend(references(schemas.get(name, {})))
 
@@ -118,7 +131,7 @@ def qualify_smsv2_get_nullability(spec: dict[str, Any]) -> None:
                 raise ValueError("Qualified response property is absent")
             if name not in created:
                 suffix = hashlib.sha256(".".join(context).encode()).hexdigest()[:12]
-                clone = f"{name}__smsv2_read_{suffix}"
+                clone = f"{name}__{clone_kind}_{suffix}"
                 if clone in working:
                     raise ValueError("Response schema clone identity collision")
                 working[clone] = copy.deepcopy(working[name])
@@ -131,10 +144,16 @@ def qualify_smsv2_get_nullability(spec: dict[str, Any]) -> None:
             raise ValueError("Qualified response property is absent or ambiguous")
         return container(matches[0], key, context)
 
-    for path in PATHS:
-        node = working[ROOT]
+    # Qualify children before making their parent nullable.
+    for path in sorted(paths, key=len, reverse=True):
+        node = working[root]
         for index, field in enumerate(path):
-            properties = container(node, field, (ROOT, *path[:index]))
+            if field == "*":
+                if node.get("type") != "array" or not isinstance(node.get("items"), dict):
+                    raise ValueError("Qualified response array is absent or malformed")
+                node = node["items"]
+                continue
+            properties = container(node, field, (root, *path[:index]))
             original = properties[field]
             if index == len(path) - 1:
                 properties[field] = {
@@ -151,8 +170,8 @@ def qualify_smsv2_get_nullability(spec: dict[str, Any]) -> None:
                 }
             else:
                 node = original
-    working[ROOT][X_F5XC_RESPONSE_NULLABILITY] = copy.deepcopy(PROVENANCE)
+    working[root][X_F5XC_RESPONSE_NULLABILITY] = copy.deepcopy(provenance)
     # Commit only the isolated response root and new response components.
-    schemas[ROOT] = working[ROOT]
+    schemas[root] = working[root]
     for name in sorted(created):
         schemas[name] = working[name]

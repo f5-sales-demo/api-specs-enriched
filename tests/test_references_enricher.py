@@ -185,3 +185,32 @@ def test_idempotent(enricher):
         "protocol_policer"
     ][X_F5XC_REFERENCES]
     assert len(refs) == 1
+
+
+def test_nullable_reference_retains_outer_and_original_annotations():
+    import copy
+
+    original = {"allOf": [{"$ref": "#/components/schemas/schemaObjectRefType"}]}
+    nullable = {
+        "anyOf": [copy.deepcopy(original), {"type": "object", "nullable": True, "enum": [None]}]
+    }
+    spec = _spec({"Example": {"properties": {"owner_view": nullable}}})
+    enricher = ReferencesEnricher()
+    enricher.enrich_spec(spec)
+    assert nullable[X_F5XC_REFERENCES] == nullable["anyOf"][0][X_F5XC_REFERENCES]
+    assert nullable[X_F5XC_REFERENCES][0]["resource_kind"] is None
+    once = copy.deepcopy(spec)
+    enricher.enrich_spec(spec)
+    assert spec == once
+
+
+def test_arbitrary_anyof_reference_alternatives_are_not_reclassified():
+    prop = {
+        "anyOf": [
+            {"allOf": [{"$ref": "#/components/schemas/schemaObjectRefType"}]},
+            {"type": "string"},
+        ]
+    }
+    spec = _spec({"Example": {"properties": {"field": prop}}})
+    ReferencesEnricher().enrich_spec(spec)
+    assert X_F5XC_REFERENCES not in prop

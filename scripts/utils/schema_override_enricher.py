@@ -12,6 +12,10 @@ from typing import Any
 
 import yaml
 
+from scripts.utils.permission_catalog_nullability import (
+    qualify_health_gpu_nullability,
+    qualify_permission_catalog_nullability,
+)
 from scripts.utils.smsv2_response_nullability import qualify_smsv2_get_nullability
 
 logger = logging.getLogger(__name__)
@@ -386,6 +390,8 @@ class SchemaOverrideEnricher:
 
         if not corrections_only and not removals_only:
             qualify_smsv2_get_nullability(spec)
+            qualify_permission_catalog_nullability(spec)
+            qualify_health_gpu_nullability(spec)
 
         return spec
 
