@@ -96,9 +96,22 @@ def _evidence(contract: dict[str, Any]) -> dict[str, Any]:
         "profiles": evidence.get("profiles"),
         "receipts": evidence.get("receipts"),
         "kvm_image_resolution": _kvm_image_evidence(contract),
+        "azure_global_health": _azure_health_evidence(contract),
     }
     _assert_sanitized_evidence(receipt)
     return receipt
+
+
+def _azure_health_evidence(contract: dict[str, Any]) -> dict[str, Any]:
+    """Include hash-bound read-only evidence without widening acceptance."""
+    profile = contract.get("providers", {}).get("azure")
+    validate_azure_runtime_contract(profile)
+    provenance = profile["runtime"]["health"]["qualification"]
+    source = Path(__file__).parents[1] / provenance["receipt_path"]
+    body = source.read_bytes()
+    if digest(body) != provenance["receipt_sha256"]:
+        raise Smsv2ReleaseValidationError("Azure health qualification receipt differs")
+    return {"source_sha256": provenance["receipt_sha256"], "receipt": json.loads(body)}
 
 
 def _kvm_image_evidence(contract: dict[str, Any]) -> dict[str, Any]:
@@ -246,6 +259,8 @@ def validate_release_assets(
         validate_azure_runtime_contract(contract.get("providers", {}).get("azure"))
     except InterfaceContractValidationError as error:
         raise Smsv2ReleaseValidationError(str(error)) from error
+    if evidence.get("azure_global_health") != _azure_health_evidence(contract):
+        raise Smsv2ReleaseValidationError("Azure health evidence differs from its source receipt")
     aws = contract.get("providers", {}).get("aws", {})
     expected_aws_fields = {
         "node_list_path": "aws.not_managed.node_list[]",
