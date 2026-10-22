@@ -65,7 +65,12 @@ def test_validates_stable_receipted_release(tmp_path: Path) -> None:
     assets = _assets(tmp_path)
     manifest = json.loads(assets[MANIFEST_FILE])
     contract = validate_release_assets(
-        assets[MANIFEST_FILE], assets, _release(), _receipt(manifest), now=_NOW
+        assets[MANIFEST_FILE],
+        assets,
+        _release(),
+        _receipt(manifest),
+        resolved_tag={"tag": "v7.0.0", "sha": _COMMIT},
+        now=_NOW,
     )
     assert contract["version"] == "7.1.0"
     assert contract["providers"]["aws"]["availability"] == "evidence_backed"
@@ -115,7 +120,7 @@ def test_validates_stable_receipted_release(tmp_path: Path) -> None:
         ({"prerelease": True}, {}, None, "draft"),
         ({"immutable": False}, {}, None, "mutable"),
         ({"published_at": "2020-01-01T00:00:00Z"}, {}, None, "stale"),
-        ({"target_commitish": "deadbeef"}, {}, None, "commit"),
+        ({"tag_name": "deadbeef"}, {}, None, "tag"),
         ({}, {"commit": "b" * 40}, None, "commit"),
         ({}, {}, CONTRACT_FILE, "checksum"),
     ],
@@ -135,7 +140,12 @@ def test_rejects_unavailable_or_tampered_release(
         assets[asset_name] += b"tampered"
     with pytest.raises(Smsv2ReleaseValidationError, match=message):
         validate_release_assets(
-            assets[MANIFEST_FILE], assets, _release(**release_overrides), receipt, now=_NOW
+            assets[MANIFEST_FILE],
+            assets,
+            _release(**release_overrides),
+            receipt,
+            resolved_tag={"tag": "v7.0.0", "sha": _COMMIT},
+            now=_NOW,
         )
 
 
@@ -144,7 +154,14 @@ def test_rejects_malformed_manifest_and_sensitive_evidence(tmp_path: Path) -> No
     manifest = json.loads(assets[MANIFEST_FILE])
     receipt = _receipt(manifest)
     with pytest.raises(Smsv2ReleaseValidationError, match="malformed"):
-        validate_release_assets(b"{", assets, _release(), receipt, now=_NOW)
+        validate_release_assets(
+            b"{",
+            assets,
+            _release(),
+            receipt,
+            resolved_tag={"tag": "v7.0.0", "sha": _COMMIT},
+            now=_NOW,
+        )
     evidence = json.loads(assets[EVIDENCE_FILE])
     evidence["receipts"][0]["source_url"] = "https://example.invalid/?authorization=Bearer%20bad"
     assets[EVIDENCE_FILE] = json.dumps(evidence, sort_keys=True, separators=(",", ":")).encode()
@@ -152,7 +169,14 @@ def test_rejects_malformed_manifest_and_sensitive_evidence(tmp_path: Path) -> No
     assets[MANIFEST_FILE] = json.dumps(manifest, sort_keys=True, separators=(",", ":")).encode()
     receipt = _receipt(manifest)
     with pytest.raises(Smsv2ReleaseValidationError, match="sensitive"):
-        validate_release_assets(assets[MANIFEST_FILE], assets, _release(), receipt, now=_NOW)
+        validate_release_assets(
+            assets[MANIFEST_FILE],
+            assets,
+            _release(),
+            receipt,
+            resolved_tag={"tag": "v7.0.0", "sha": _COMMIT},
+            now=_NOW,
+        )
 
 
 def test_rejects_tampered_success_evidence(tmp_path: Path) -> None:
@@ -166,7 +190,12 @@ def test_rejects_tampered_success_evidence(tmp_path: Path) -> None:
 
     with pytest.raises(Smsv2ReleaseValidationError, match="success evidence"):
         validate_release_assets(
-            assets[MANIFEST_FILE], assets, _release(), _receipt(manifest), now=_NOW
+            assets[MANIFEST_FILE],
+            assets,
+            _release(),
+            _receipt(manifest),
+            resolved_tag={"tag": "v7.0.0", "sha": _COMMIT},
+            now=_NOW,
         )
 
 
@@ -181,7 +210,12 @@ def test_rejects_tampered_site_upgrade_evidence(tmp_path: Path) -> None:
 
     with pytest.raises(Smsv2ReleaseValidationError, match="site upgrade evidence"):
         validate_release_assets(
-            assets[MANIFEST_FILE], assets, _release(), _receipt(manifest), now=_NOW
+            assets[MANIFEST_FILE],
+            assets,
+            _release(),
+            _receipt(manifest),
+            resolved_tag={"tag": "v7.0.0", "sha": _COMMIT},
+            now=_NOW,
         )
 
 
@@ -214,7 +248,12 @@ def test_validates_schema_only_release_with_blocking_receipt(tmp_path: Path) -> 
     manifest = json.loads(assets[MANIFEST_FILE])
 
     contract = validate_release_assets(
-        assets[MANIFEST_FILE], assets, _release(), _receipt(manifest), now=_NOW
+        assets[MANIFEST_FILE],
+        assets,
+        _release(),
+        _receipt(manifest),
+        resolved_tag={"tag": "v7.0.0", "sha": _COMMIT},
+        now=_NOW,
     )
 
     assert contract["providers"]["aws"]["availability"] == "schema_only"
@@ -229,6 +268,7 @@ def test_rejects_release_race_with_changed_tag(tmp_path: Path) -> None:
             assets,
             _release(tag_name="v6.1.1"),
             _receipt(manifest),
+            resolved_tag={"tag": "v7.0.0", "sha": _COMMIT},
             now=_NOW,
         )
 
@@ -316,7 +356,14 @@ def test_rejects_legacy_or_inconsistent_v3_contract_assets(
     assets = _assets(tmp_path)
     assets, receipt = _mutate_contract_asset(assets, mutation)
     with pytest.raises(Smsv2ReleaseValidationError, match=message):
-        validate_release_assets(assets[MANIFEST_FILE], assets, _release(), receipt, now=_NOW)
+        validate_release_assets(
+            assets[MANIFEST_FILE],
+            assets,
+            _release(),
+            receipt,
+            resolved_tag={"tag": "v7.0.0", "sha": _COMMIT},
+            now=_NOW,
+        )
 
 
 def test_preboot_interface_evidence_preserves_api_observations_and_azure_separation(
@@ -391,6 +438,61 @@ def test_rejects_rehashed_fabricated_azure_health_evidence(tmp_path: Path) -> No
     manifest["assets"][EVIDENCE_FILE] = digest(assets[EVIDENCE_FILE])
     assets[MANIFEST_FILE] = json.dumps(manifest, sort_keys=True, separators=(",", ":")).encode()
     with pytest.raises(Smsv2ReleaseValidationError, match="Azure health evidence differs"):
+        validate_release_assets(
+            assets[MANIFEST_FILE],
+            assets,
+            _release(),
+            _receipt(manifest),
+            resolved_tag={"tag": "v7.0.0", "sha": _COMMIT},
+            now=_NOW,
+        )
+
+
+def test_validates_branch_named_release_with_resolved_tag(tmp_path: Path) -> None:
+    assets = _assets(tmp_path)
+    manifest = json.loads(assets[MANIFEST_FILE])
+    contract = validate_release_assets(
+        assets[MANIFEST_FILE],
+        assets,
+        _release(target_commitish="main"),
+        _receipt(manifest),
+        resolved_tag={"tag": "v7.0.0", "sha": _COMMIT},
+        now=_NOW,
+    )
+    assert contract["contract_id"] == "f5xc-smsv2-api/v1"
+
+
+@pytest.mark.parametrize(
+    "resolved_tag",
+    [
+        None,
+        {},
+        {"tag": "v7.0.0"},
+        {"tag": "v7.0.0", "sha": "main"},
+        {"tag": "v7.0.0", "sha": "deadbeef"},
+        {"tag": "v7.0.0", "sha": "A" * 40},
+        {"tag": "v6.1.1", "sha": _COMMIT},
+        {"tag": "v7.0.0", "sha": "b" * 40},
+    ],
+)
+def test_rejects_unverified_or_moved_tag_resolution(tmp_path: Path, resolved_tag: object) -> None:
+    assets = _assets(tmp_path)
+    manifest = json.loads(assets[MANIFEST_FILE])
+    with pytest.raises(Smsv2ReleaseValidationError, match=r"tag|commit"):
+        validate_release_assets(
+            assets[MANIFEST_FILE],
+            assets,
+            _release(target_commitish="main"),
+            _receipt(manifest),
+            resolved_tag=resolved_tag,
+            now=_NOW,
+        )
+
+
+def test_requires_independent_tag_resolution(tmp_path: Path) -> None:
+    assets = _assets(tmp_path)
+    manifest = json.loads(assets[MANIFEST_FILE])
+    with pytest.raises(TypeError, match="resolved_tag"):
         validate_release_assets(
             assets[MANIFEST_FILE], assets, _release(), _receipt(manifest), now=_NOW
         )
