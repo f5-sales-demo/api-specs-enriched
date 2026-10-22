@@ -20,6 +20,8 @@ from pathlib import Path
 from typing import Any
 
 import yaml
+from openapi_schema_validator import OAS30Validator, OAS31Validator
+from referencing import Registry
 
 from .extension_constants import (
     X_F5XC_RECOMMENDED_ONEOF_VARIANT,
@@ -42,6 +44,8 @@ class DefaultValueEnrichmentStats:
     nested_recommended_added: int = 0
     oneof_recommended_added: int = 0
     markers_added: int = 0
+    null_defaults_rejected: int = 0
+    rejected_null_defaults: list[dict[str, str]] = field(default_factory=list)
     errors: list[dict[str, Any]] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
@@ -55,6 +59,8 @@ class DefaultValueEnrichmentStats:
             "nested_recommended_added": self.nested_recommended_added,
             "oneof_recommended_added": self.oneof_recommended_added,
             "markers_added": self.markers_added,
+            "null_defaults_rejected": self.null_defaults_rejected,
+            "rejected_null_defaults": self.rejected_null_defaults,
             "error_count": len(self.errors),
             "errors": self.errors,
         }
@@ -85,6 +91,7 @@ class DefaultValueEnricher:
         self.resources: dict[str, dict[str, Any]] = {}
         self.settings: dict[str, Any] = {}
         self.stats = DefaultValueEnrichmentStats()
+        self._validator_class = OAS30Validator
         self._compiled_patterns: dict[str, re.Pattern[str]] = {}
 
         self._load_config()
@@ -137,6 +144,9 @@ class DefaultValueEnricher:
             logger.debug("No resource definitions loaded, skipping default value enrichment")
             return spec
 
+        self._validator_class = (
+            OAS31Validator if str(spec.get("openapi", "")).startswith("3.1") else OAS30Validator
+        )
         schemas = spec.get("components", {}).get("schemas", {})
         logger.info("Enriching %d schemas with server-applied defaults", len(schemas))
 
@@ -170,7 +180,7 @@ class DefaultValueEnricher:
         try:
             # Apply top-level defaults
             defaults = resource_config.get("defaults", {})
-            self._apply_defaults_to_properties(schema, defaults)
+            self._apply_defaults_to_properties(schema, defaults, all_schemas)
 
             # Apply nested defaults
             nested = resource_config.get("nested", {})
@@ -220,12 +230,14 @@ class DefaultValueEnricher:
         self,
         schema: dict[str, Any],
         defaults: dict[str, Any],
+        all_schemas: dict[str, Any] | None = None,
     ) -> None:
         """Apply default values to schema properties.
 
         Args:
             schema: Schema definition
             defaults: Dictionary of property_name -> default_value
+            all_schemas: Local reference targets for validating null defaults
         """
         properties = schema.get("properties", {})
         if not properties:
@@ -237,6 +249,10 @@ class DefaultValueEnricher:
         for prop_name, default_value in defaults.items():
             if prop_name in properties:
                 prop_schema = properties[prop_name]
+                if default_value is None and self._reject_null_default(
+                    prop_schema, all_schemas, prop_name
+                ):
+                    continue
 
                 # Add OpenAPI standard 'default' field
                 if use_default:
@@ -247,6 +263,31 @@ class DefaultValueEnricher:
                 if add_marker:
                     prop_schema[X_F5XC_SERVER_DEFAULT] = True
                     self.stats.markers_added += 1
+
+    def _reject_null_default(
+        self,
+        schema: dict[str, Any],
+        all_schemas: dict[str, Any] | None,
+        property_name: str,
+    ) -> bool:
+        """Retain discovery evidence without promoting an invalid request default."""
+        document = {
+            "type": "object",
+            "properties": {"value": schema},
+            "components": {"schemas": all_schemas or {}},
+        }
+        try:
+            # An explicit empty registry prohibits remote reference retrieval.
+            allowed = self._validator_class(document, registry=Registry()).is_valid({"value": None})
+        except Exception:
+            allowed = False
+        if allowed:
+            return False
+        self.stats.null_defaults_rejected += 1
+        self.stats.rejected_null_defaults.append(
+            {"property": property_name, "reason": "null_not_accepted_by_request_schema"}
+        )
+        return True
 
     def _apply_nested_defaults(
         self,
@@ -323,6 +364,10 @@ class DefaultValueEnricher:
             for nested_prop_name, default_value in nested_defaults.items():
                 if nested_prop_name in nested_properties:
                     nested_prop_schema = nested_properties[nested_prop_name]
+                    if default_value is None and self._reject_null_default(
+                        nested_prop_schema, all_schemas, f"{parent_prop_name}.{nested_prop_name}"
+                    ):
+                        continue
 
                     if use_default:
                         nested_prop_schema["default"] = default_value
