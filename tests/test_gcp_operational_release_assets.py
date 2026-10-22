@@ -34,7 +34,7 @@ def test_missing_qualification_cannot_publish(tmp_path: Path):
         build_gcp_operational_assets(tmp_path)
 
 
-def test_exact_assets_publish_and_changed_pin_or_bytes_fail(tmp_path: Path):
+def test_formatted_inputs_publish_exact_bytes_and_changed_pins_fail(tmp_path: Path):
     profile, pin, _ = profile_fixture()
     contract = pin(profile)
     qualification = {
@@ -88,8 +88,10 @@ def test_exact_assets_publish_and_changed_pin_or_bytes_fail(tmp_path: Path):
     (tmp_path / "pins.json").write_text(json.dumps(pins))
     qualification_path = tmp_path / "gcp-operational-qualification-v2.json"
     qualification_path.write_bytes(assets[qualification_path.name] + b"\n")
-    with pytest.raises(ValueError, match="canonical"):
-        build_gcp_operational_assets(tmp_path)
+    assert build_gcp_operational_assets(tmp_path) == assets
+    for name, content in assets.items():
+        (tmp_path / name).write_text(json.dumps(json.loads(content), indent=2) + "\n")
+    assert build_gcp_operational_assets(tmp_path) == assets
     qualification_path.write_bytes(assets[qualification_path.name])
     pins["qualificationFingerprint"] = "sha256:" + "f" * 64
     (tmp_path / "pins.json").write_text(json.dumps(pins))

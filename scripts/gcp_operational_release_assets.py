@@ -72,8 +72,8 @@ def build_gcp_operational_assets(source: Path) -> dict[str, bytes]:
             canonical,
         ):
             raise ValueError("Operational publication projection contains private evidence")
-        if assets[name] != canonical:
-            raise ValueError("Operational publication asset must be canonical JSON")
+        # Source inputs may be formatted; published bytes retain the exact canonical pin.
+        assets[name] = canonical
         expected = pin[
             "contractFingerprint" if name == PROFILE_FILE else "qualificationFingerprint"
         ]
