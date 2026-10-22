@@ -224,3 +224,23 @@ def test_release_pr_commits_catalog_and_verifies_version_coherence() -> None:
     assert "git add -f CHANGELOG.md .github_release release/api-catalog.json" in release_job
     assert release_job.count("python -m scripts.verify_release_version") >= 3
     assert '--receipt "$RECEIPT_JSON_FILE"' in release_job
+
+
+def test_automatic_pages_uses_verified_existing_release_content() -> None:
+    """A historical release cannot bypass downloaded asset/content verification."""
+    job = (
+        WORKFLOW.read_text()
+        .split("\n  deploy-docs:\n", maxsplit=1)[1]
+        .split(
+            "\n  # =========================================================================",
+            maxsplit=1,
+        )[0]
+    )
+    assert "uses: ./.github/workflows/rebuild-pages-from-release.yml" in job
+    assert "release_tag: v${{ needs.sync-and-enrich.outputs.version }}" in job
+    assert "target_commit: ${{ needs.sync-and-enrich.outputs.target_commit }}" in job
+    rebuild = Path(".github/workflows/rebuild-pages-from-release.yml").read_text()
+    assert "  workflow_call:" in rebuild
+    assert "bash scripts/release/verify-release-docs-ref.sh" in rebuild
+    assert 'test "$(git rev-parse refs/remotes/origin/main)" = "$content_ref"' in rebuild
+    assert 'echo "content_ref=$content_ref"' in rebuild
