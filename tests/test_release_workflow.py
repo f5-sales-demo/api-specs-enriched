@@ -137,7 +137,7 @@ def test_tag_commit_is_exposed_and_supplied_to_dispatch() -> None:
 
     push_tag = 'git push origin "v${VERSION}"'
     tag_target = 'git tag -a "v${VERSION}" "$TARGET_COMMIT"'
-    checkout_target = 'git checkout --detach "$TARGET_COMMIT"'
+    checkout_target = 'bash scripts/release/checkout-release-merge.sh "$TARGET_COMMIT"'
     expose_step = 'echo "target_commit=${TARGET_COMMIT}" >> "$GITHUB_OUTPUT"'
     expose_job = "target_commit: ${{ steps.release.outputs.target_commit }}"
     supply_dispatch = "SOURCE_TARGET_COMMIT: ${{ needs.sync-and-enrich.outputs.target_commit }}"
@@ -199,7 +199,7 @@ def test_release_retry_reuses_existing_pr_and_publishes_its_merge() -> None:
     assert "gh pr close" not in release_job
     assert 'gh pr list --state all --head "$BRANCH"' in release_job
     assert "MERGED)" in release_job
-    assert 'git checkout --detach "$TARGET_COMMIT"' in release_job
+    assert 'bash scripts/release/checkout-release-merge.sh "$TARGET_COMMIT"' in release_job
 
 
 def test_release_pr_wait_tolerates_shared_runner_queueing() -> None:

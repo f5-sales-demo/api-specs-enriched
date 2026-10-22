@@ -42,6 +42,10 @@ on:
           - patch
           - minor
         default: patch
+      resume_release_tag:
+        description: Resume an existing merged and tagged release that has no published assets.
+        type: string
+        default: ''
       skip_downstream_dispatch:
         description: Publish and deploy this release without notifying downstream repositories.
         type: boolean
@@ -338,7 +342,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # Inert on every trigger except a dispatch that asks for it.
-          FORCE_RELEASE: ${{ inputs.force_release || false }}
+          FORCE_RELEASE: ${{ inputs.force_release || (inputs.resume_release_tag && true) || false }}
         # Output-driven gate: compares the generated, tracked output in the
         # working tree against HEAD. Lives in a script so it can be unit
         # tested (tests/shell/test_detect_release_changes.py) — the inline
@@ -351,6 +355,8 @@ jobs:
         env:
           CHANGE_TYPE: ${{ steps.detect.outputs.change_type }}
           FORCE_RELEASE_TYPE: ${{ inputs.force_release_type || 'patch' }}
+          RESUME_RELEASE_TAG: ${{ inputs.resume_release_tag || '' }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: bash scripts/release/calculate-version.sh
 
       - name: Update version in specs
@@ -591,7 +597,7 @@ jobs:
               git tag -a "v${VERSION}" "$TARGET_COMMIT" -m "Release v${VERSION} (${BUMP_TYPE})"
               git push origin "v${VERSION}"
             fi
-            git checkout --detach "$TARGET_COMMIT"
+            bash scripts/release/checkout-release-merge.sh "$TARGET_COMMIT"
             echo "release_commit=${TARGET_COMMIT}" >> "$GITHUB_ENV"
             echo "target_commit=${TARGET_COMMIT}" >> "$GITHUB_OUTPUT"
             echo "::notice::Released v${VERSION} from immutable merge ${TARGET_COMMIT}"
@@ -688,6 +694,15 @@ jobs:
             }
             publish_tag "$TARGET_COMMIT"
           fi
+
+      - name: Preserve release checkout diagnostics
+        if: always() && steps.detect.outputs.has_changes == 'true'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: release-checkout-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/release-checkout-evidence/
+          if-no-files-found: ignore
+          retention-days: 7
 
       - name: Create release package
         if: steps.detect.outputs.has_changes == 'true'
