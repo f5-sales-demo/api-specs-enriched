@@ -234,6 +234,22 @@ stubby as long as the `### x-name` header exists and the
 
 ## Injected — schema-level (component schemas)
 
+### x-f5xc-response-nullability
+
+- **Applied at:** `securemesh_site_v2GetResponse` component schema for the exact SMSv2 GET operation
+- **Purpose:** Records the issue and response paths qualified to accept observed optional null values.
+- **Consumers:** response validators, contract-diff gate, CE qualification tools
+- **Value type:** object with an issue reference and an array of response property paths
+- **Value schema:** `{"type": "object", "properties": {"issue": {"type": "string"}, "paths": {"type": "array", "items": {"type": "string"}}}, "required": ["issue", "paths"]}`
+- **Injected by:** scripts/utils/smsv2_response_nullability.py
+- **Driven by config:** exact qualified paths in the module and config/evidence/smsv2-get-null-response-20261022.json
+- **Example:** `"x-f5xc-response-nullability": {"issue": "#1975", "paths": ["create_form", "replace_form"]}`
+- **Pass-through from upstream:** no
+
+The published marker lists all fourteen qualified paths from [issue #1975](https://github.com/f5-sales-demo/api-specs-enriched/issues/1975). The example shows two paths.
+Response branches are isolated before adding null-only alternatives; original non-null constraints and shared request schemas remain strict.
+Missing or ambiguous mappings and request reachability reject qualification. This metadata does not establish interface freshness, link transitions, or live acceptance.
+
 ### x-f5xc-immutable-oneof-groups
 
 - **Applied at:** schema
