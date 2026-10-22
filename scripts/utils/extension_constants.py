@@ -57,6 +57,7 @@ X_F5XC_TERRAFORM_RESOURCE = "x-f5xc-terraform-resource"
 X_F5XC_DISPLAY_NAME = "x-f5xc-display-name"
 X_F5XC_ACTION = "x-f5xc-action"
 X_F5XC_UPSTREAM_DEFECT = "x-f5xc-upstream-defect"
+X_F5XC_RESPONSE_NULLABILITY = "x-f5xc-response-nullability"
 
 # Checksum-bound Secure Mesh Site v2 automation contract (Issue #1508)
 X_F5XC_CE_AUTOMATION_CONTRACT = "x-f5xc-ce-automation-contract"
@@ -245,6 +246,7 @@ VALID_X_F5XC_EXTENSIONS = frozenset(
         X_F5XC_DISPLAY_NAME,
         X_F5XC_ACTION,
         X_F5XC_UPSTREAM_DEFECT,
+        X_F5XC_RESPONSE_NULLABILITY,
         X_F5XC_CE_AUTOMATION_CONTRACT,
         # Property-level
         X_F5XC_DESCRIPTION,

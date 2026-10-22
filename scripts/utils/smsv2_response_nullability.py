@@ -6,6 +6,8 @@ import copy
 import hashlib
 from typing import Any
 
+from scripts.utils.extension_constants import X_F5XC_RESPONSE_NULLABILITY
+
 ROOT = "securemesh_site_v2GetResponse"
 PREFIX = "#/components/schemas/"
 OPERATION = "ves.io.schema.views.securemesh_site_v2.API.Get"
@@ -61,7 +63,7 @@ def qualify_smsv2_get_nullability(spec: dict[str, Any]) -> None:
         return
     if len(operations) != 1 or ROOT not in references(operations[0].get("responses", {})):
         raise ValueError("Ambiguous SMSv2 GET response operation mapping")
-    marker = schemas[ROOT].get("x-f5xc-response-nullability")
+    marker = schemas[ROOT].get(X_F5XC_RESPONSE_NULLABILITY)
     if marker is not None:
         if marker != PROVENANCE:
             raise ValueError("Conflicting SMSv2 response nullability qualification")
@@ -149,7 +151,7 @@ def qualify_smsv2_get_nullability(spec: dict[str, Any]) -> None:
                 }
             else:
                 node = original
-    working[ROOT]["x-f5xc-response-nullability"] = copy.deepcopy(PROVENANCE)
+    working[ROOT][X_F5XC_RESPONSE_NULLABILITY] = copy.deepcopy(PROVENANCE)
     # Commit only the isolated response root and new response components.
     schemas[ROOT] = working[ROOT]
     for name in sorted(created):
