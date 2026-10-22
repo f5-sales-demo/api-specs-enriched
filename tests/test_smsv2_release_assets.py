@@ -476,7 +476,7 @@ def test_validates_branch_named_release_with_resolved_tag(tmp_path: Path) -> Non
         {"tag": "v7.0.0", "sha": "b" * 40},
     ],
 )
-def test_rejects_unverified_or_moved_tag_resolution(tmp_path: Path, resolved_tag: object) -> None:
+def test_rejects_unverified_or_moved_tag_resolution(tmp_path: Path, resolved_tag: Any) -> None:
     assets = _assets(tmp_path)
     manifest = json.loads(assets[MANIFEST_FILE])
     with pytest.raises(Smsv2ReleaseValidationError, match=r"tag|commit"):
