@@ -828,6 +828,16 @@ jobs:
             release-package/smsv2-contract-manifest.json
           )
 
+          # Operational health is opt-in only after exact private qualification.
+          # The producer requires both frozen assets and pins before emitting either.
+          if [ -f release-package/gcp-operational-health-v2.json ]; then
+            test -f release-package/gcp-operational-qualification-v2.json
+            ASSET_PATHS+=(
+              release-package/gcp-operational-health-v2.json
+              release-package/gcp-operational-qualification-v2.json
+            )
+          fi
+
           # Publication receipt: binds each asset's SHA-256 to the commit the tag
           # resolves to, so a consumer can prove the bundle it downloaded is the one
           # this release published. Consumers refuse a release without it
