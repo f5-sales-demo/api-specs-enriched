@@ -6,6 +6,7 @@ import copy
 import json
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import Any
 
 import pytest
 import yaml
@@ -489,10 +490,13 @@ def test_rejects_unverified_or_moved_tag_resolution(tmp_path: Path, resolved_tag
         )
 
 
-def test_requires_independent_tag_resolution(tmp_path: Path) -> None:
+@pytest.mark.parametrize("optional_inputs", [{}, {"now": _NOW}])
+def test_requires_independent_tag_resolution(
+    tmp_path: Path, optional_inputs: dict[str, Any]
+) -> None:
     assets = _assets(tmp_path)
     manifest = json.loads(assets[MANIFEST_FILE])
     with pytest.raises(TypeError, match="resolved_tag"):
         validate_release_assets(
-            assets[MANIFEST_FILE], assets, _release(), _receipt(manifest), now=_NOW
+            assets[MANIFEST_FILE], assets, _release(), _receipt(manifest), **optional_inputs
         )
