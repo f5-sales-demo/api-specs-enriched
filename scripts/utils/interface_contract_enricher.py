@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import copy
+import hashlib
 import re
 from dataclasses import asdict, dataclass
 from pathlib import Path
@@ -18,8 +19,8 @@ from .extension_constants import X_F5XC_CE_AUTOMATION_CONTRACT
 
 CONFIG_PATH = Path(__file__).parent.parent.parent / "config" / "interface_contracts.yaml"
 SUPPORTED_ROLES = frozenset({"slo", "external", "sli"})
-CONFIG_VERSION = "7.0.0"
-CONTRACT_VERSION = "7.0.0"
+CONFIG_VERSION = "7.1.0"
+CONTRACT_VERSION = "7.1.0"
 CONTRACT_ID = "f5xc-smsv2-api/v1"
 CAPABILITY_STATES = frozenset({"available", "unavailable"})
 STABLE_IDENTITY_FIELDS = frozenset(
@@ -244,6 +245,50 @@ AZURE_BGP_CONFIGURATION = {
         "retention": "field_shapes_only_no_names_addresses_tokens_or_raw_response",
     },
 }
+AZURE_GLOBAL_HEALTH = {
+    **copy.deepcopy(AWS_V3_RUNTIME["health"]),
+    "state_schema": "debugVpmState",
+    "state_values": [
+        "WAITING_FOR_CONFIG",
+        "WAITING_FOR_APPROVAL",
+        "PROVISIONING",
+        "PROVISIONED",
+        "FAILED",
+        "RESETTING",
+    ],
+    "healthy_state": "PROVISIONED",
+    "scope": "site_global_representative_node",
+    "per_node_health": "unknown",
+    "exact_node_join_required": True,
+    "interface_state_authority": False,
+    "mutation_admission": False,
+    "freshness": {
+        "original_ce_sample_time": "unqualified",
+        "collector_timestamp": "request_receipt_only_not_ce_heartbeat",
+        "publication_staleness": "unqualified",
+    },
+    "permissions": {
+        "tested_context": "existing_authorized_api_context",
+        "role_mapping": "not_independently_verified",
+        "least_privilege": "unqualified",
+    },
+    "unknown_conditions": [
+        "missing",
+        "malformed",
+        "foreign_node",
+        "unavailable",
+        "unauthorized",
+        "incomplete_node_coverage",
+    ],
+    "qualification": {
+        "receipt_path": "config/evidence/azure-global-health-20261022.json",
+        "receipt_sha256": "sha256:2a0f55281f5664cfc0ac7666f3e00fd8a2e922da6f9a49e97209eb527630c645",
+        "installed_public_health_path": False,
+        "ha_health_acceptance": False,
+        "full_ce_acceptance": False,
+        "fresh_published_asset_qualification_required": True,
+    },
+}
 AZURE_RUNTIME = {
     "configuration": {
         **copy.deepcopy(AWS_V3_RUNTIME["configuration"]),
@@ -254,6 +299,7 @@ AZURE_RUNTIME = {
             "device": "ethernet_interface.device",
         },
     },
+    "health": copy.deepcopy(AZURE_GLOBAL_HEALTH),
     "bgp_configuration": copy.deepcopy(AZURE_BGP_CONFIGURATION),
     "bgp_peers": copy.deepcopy(AWS_V3_RUNTIME["bgp_peers"]),
     "bgp_routes": copy.deepcopy(AWS_V3_RUNTIME["bgp_routes"]),
@@ -601,6 +647,14 @@ def validate_azure_runtime_contract(profile: object) -> None:
     """Validate Azure read-only mappings and the Route Server request capability boundary."""
     if not isinstance(profile, dict) or profile.get("runtime") != AZURE_RUNTIME:
         raise InterfaceContractValidationError("Azure runtime endpoints or schemas are incomplete")
+    provenance = AZURE_GLOBAL_HEALTH["qualification"]
+    receipt_path = Path(__file__).parents[2] / provenance["receipt_path"]
+    if (
+        not receipt_path.is_file()
+        or "sha256:" + hashlib.sha256(receipt_path.read_bytes()).hexdigest()
+        != provenance["receipt_sha256"]
+    ):
+        raise InterfaceContractValidationError("Azure health qualification receipt differs")
     if profile.get("route_server_ebgp_multihop") != AZURE_ROUTE_SERVER_EBGP_MULTIHOP:
         raise InterfaceContractValidationError(
             "Azure Route Server eBGP multihop capability is unavailable or lacks exact provenance"

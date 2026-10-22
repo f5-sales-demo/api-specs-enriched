@@ -67,7 +67,7 @@ def test_validates_stable_receipted_release(tmp_path: Path) -> None:
     contract = validate_release_assets(
         assets[MANIFEST_FILE], assets, _release(), _receipt(manifest), now=_NOW
     )
-    assert contract["version"] == "7.0.0"
+    assert contract["version"] == "7.1.0"
     assert contract["providers"]["aws"]["availability"] == "evidence_backed"
     assert contract["providers"]["aws"]["capabilities"] == {
         "aws_ce_create": "available",
@@ -365,3 +365,32 @@ def test_native_preboot_receipt_limits_registration_proof_to_observed_topology(
     assert {"three-node-ha", "terraform-replacement", "azure-runtime", "full-parity"}.issubset(
         receipt["excludedAcceptance"]
     )
+
+
+def test_release_embeds_hash_bound_azure_health_limits(tmp_path: Path) -> None:
+    assets = _assets(tmp_path)
+    contract = json.loads(assets[CONTRACT_FILE])
+    evidence = json.loads(assets[EVIDENCE_FILE])["azure_global_health"]
+    health = contract["providers"]["azure"]["runtime"]["health"]
+    path = Path(__file__).parents[1] / health["qualification"]["receipt_path"]
+    assert digest(path.read_bytes()) == evidence["source_sha256"]
+    assert evidence["receipt"] == json.loads(path.read_bytes())
+    assert evidence["receipt"]["health_state"] == "PROVISIONED"
+    assert evidence["receipt"]["per_node_health"] == "unknown"
+    assert evidence["receipt"]["original_ce_sample_freshness"] == "unqualified"
+    assert evidence["receipt"]["public_health_path_qualified"] is False
+    assert evidence["receipt"]["full_ce_acceptance"] is False
+
+
+def test_rejects_rehashed_fabricated_azure_health_evidence(tmp_path: Path) -> None:
+    assets = _assets(tmp_path)
+    evidence = json.loads(assets[EVIDENCE_FILE])
+    evidence["azure_global_health"]["receipt"]["per_node_health"] = "healthy"
+    assets[EVIDENCE_FILE] = json.dumps(evidence, sort_keys=True, separators=(",", ":")).encode()
+    manifest = json.loads(assets[MANIFEST_FILE])
+    manifest["assets"][EVIDENCE_FILE] = digest(assets[EVIDENCE_FILE])
+    assets[MANIFEST_FILE] = json.dumps(manifest, sort_keys=True, separators=(",", ":")).encode()
+    with pytest.raises(Smsv2ReleaseValidationError, match="Azure health evidence differs"):
+        validate_release_assets(
+            assets[MANIFEST_FILE], assets, _release(), _receipt(manifest), now=_NOW
+        )
