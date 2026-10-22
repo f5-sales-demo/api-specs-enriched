@@ -88,7 +88,9 @@ def test_workflow_cannot_deploy_without_release_verification() -> None:
     text = Path(".github/workflows/rebuild-pages-from-release.yml").read_text()
     assert "needs: verify" in text
     assert "target-commit: ${{ needs.verify.outputs.content_ref }}" in text
-    assert 'git diff --quiet "$TARGET_COMMIT" "$GITHUB_SHA" -- docs release' in text
+    assert "verify-release-docs-ref.sh" in text
+    selector = Path("scripts/release/verify-release-docs-ref.sh").read_text()
+    assert 'git diff --quiet "$release_commit" "$protected_main" -- docs release' in selector
     assert "verify_existing_publication.py" in text
     assert "gh release download" in text
     assert "gh release create" not in text

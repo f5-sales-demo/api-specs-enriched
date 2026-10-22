@@ -875,11 +875,12 @@ jobs:
     name: Deploy Documentation
     needs: sync-and-enrich
     if: needs.sync-and-enrich.outputs.has_changes == 'true'
-    uses: ./.github/workflows/github-pages-deploy.yml
-    # The reusable builder verifies this immutable protected-main release commit
-    # before producing the static Pages artifact.
+    uses: ./.github/workflows/rebuild-pages-from-release.yml
+    # Verify published bytes and unchanged protected-main documentation before
+    # selecting the exact content commit accepted by the owning Pages builder.
     with:
-      target-commit: ${{ needs.sync-and-enrich.outputs.target_commit }}
+      release_tag: v${{ needs.sync-and-enrich.outputs.version }}
+      target_commit: ${{ needs.sync-and-enrich.outputs.target_commit }}
     permissions:
       contents: read
       packages: read # Pull the pinned docs-builder image from GHCR.
