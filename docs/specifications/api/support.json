@@ -20937,7 +20937,7 @@
           "os_info": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/siteOsInfo"
+                "$ref": "#/components/schemas/siteOsInfo__health_read_b9ead95ab1fb"
               }
             ],
             "x-f5xc-required-for": {
@@ -21134,6 +21134,12 @@
           "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "other",
+        "x-f5xc-response-nullability": {
+          "issue": "#1984",
+          "paths": [
+            "os_info.gpu"
+          ]
+        },
         "x-f5xc-namespace-profile": {
           "constraint": {
             "allowed": [
@@ -33250,6 +33256,266 @@
           "classification": {
             "category": "application",
             "multi_tenant_pattern": "per-tenant"
+          }
+        }
+      },
+      "siteOsInfo__health_read_b9ead95ab1fb": {
+        "type": "object",
+        "description": "OsInfo holds information about host OS and HW.",
+        "title": "OsInfo",
+        "x-displayname": "OS Info",
+        "x-ves-proto-message": "ves.io.schema.site.OsInfo",
+        "properties": {
+          "bios": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/siteBios"
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "board": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/siteBoard"
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "chassis": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/siteChassis"
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "cpu": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/siteCpu"
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "gpu": {
+            "anyOf": [
+              {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/siteGPU"
+                  }
+                ],
+                "x-f5xc-required-for": {
+                  "minimum_config": false,
+                  "create": false,
+                  "update": false,
+                  "read": false
+                }
+              },
+              {
+                "type": "object",
+                "nullable": true,
+                "enum": [
+                  null
+                ]
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "kernel": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/siteKernel"
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "memory": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/siteMemory"
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "network": {
+            "type": "array",
+            "description": "List of network devices in server.",
+            "title": "network",
+            "items": {
+              "$ref": "#/components/schemas/siteNetworkDevice"
+            },
+            "x-displayname": "Network",
+            "x-f5xc-example": "192.0.2.0/24",
+            "x-f5xc-constraints": {
+              "constraintType": "array",
+              "category": "networking",
+              "minItems": 0,
+              "maxItems": 32,
+              "uniqueItems": false,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.8,
+                "validatedAt": "2026-10-22T11:01:39+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "numa_nodes": {
+            "type": "integer",
+            "description": "Non-uniform memory access (NUMA) nodes count.",
+            "title": "NUMA Nodes Count",
+            "format": "int32",
+            "x-displayname": "NUMA nodes count.",
+            "x-ves-example": "1",
+            "x-ves-validation-rules": {
+              "ves.io.schema.rules.int32.gte": "0"
+            },
+            "x-f5xc-example": "1",
+            "x-validation-rules": {
+              "ves.io.schema.rules.int32.gte": "0"
+            },
+            "x-f5xc-description-short": "Non-uniform memory access (NUMA) nodes count.",
+            "x-f5xc-constraints": {
+              "constraintType": "number",
+              "category": "discovery",
+              "minimum": 0,
+              "deterministic": true,
+              "metadata": {
+                "source": "discovery",
+                "confidence": 0.99,
+                "validatedAt": "2026-10-22T11:01:39+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "os": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/siteOS"
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "product": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/siteProduct"
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "storage": {
+            "type": "array",
+            "description": "List of storage devices in server.",
+            "title": "storage",
+            "items": {
+              "$ref": "#/components/schemas/siteStorageDevice"
+            },
+            "x-displayname": "Storage",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "usb": {
+            "type": "array",
+            "description": "List of USB devices in server.",
+            "title": "USBDevice",
+            "items": {
+              "$ref": "#/components/schemas/siteUSBDevice"
+            },
+            "x-displayname": "USB devices.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          }
+        },
+        "x-f5xc-description-short": "OsInfo holds information about host OS and HW.",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for siteOsInfo",
+          "required_fields": [],
+          "mutually_exclusive_groups": [],
+          "example_json": "{}",
+          "example_yaml": "{}"
+        },
+        "x-f5xc-cli-domain": "other",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "system"
+            ],
+            "enforced": false
+          },
+          "recommendation": {
+            "primary": "system",
+            "alternatives": [],
+            "rationale": "Sites are platform-level infrastructure"
+          },
+          "classification": {
+            "category": "infrastructure",
+            "multi_tenant_pattern": "none"
           }
         }
       }

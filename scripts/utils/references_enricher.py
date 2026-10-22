@@ -20,6 +20,7 @@ Reuses oneOf-group extraction (choice-gating) — see ConflictsWithEnricher.
 Issue: resource-reference dependency metadata (x-f5xc-references)
 """
 
+import copy
 import json
 import logging
 from dataclasses import dataclass
@@ -113,9 +114,29 @@ class ReferencesEnricher:
         # Map each field to the oneOf group that gates it (choice-gating).
         field_gate = self._field_to_oneof_group(schema)
         for field_name, prop in props.items():
-            if not isinstance(prop, dict) or not self._is_object_ref(prop):
+            if not isinstance(prop, dict):
                 continue
-            self._stamp(schema_name, field_name, prop, field_gate.get(field_name))
+            branch = self._reference_branch(prop)
+            if branch is None:
+                continue
+            self._stamp(schema_name, field_name, branch, field_gate.get(field_name))
+            if branch is not prop:
+                prop[X_F5XC_REFERENCES] = copy.deepcopy(branch[X_F5XC_REFERENCES])
+
+    def _reference_branch(self, prop: dict[str, Any]) -> dict[str, Any] | None:
+        """Preserve reference annotations through exact null-only wrappers."""
+        if self._is_object_ref(prop):
+            return prop
+        alternatives = prop.get("anyOf", [])
+        if (
+            isinstance(alternatives, list)
+            and len(alternatives) == 2
+            and alternatives[1] == {"type": "object", "nullable": True, "enum": [None]}
+            and isinstance(alternatives[0], dict)
+            and self._is_object_ref(alternatives[0])
+        ):
+            return alternatives[0]
+        return None
 
     def _is_object_ref(self, prop: dict[str, Any]) -> bool:
         """True when a property is an ObjectRefType reference (allOf → *RefType)."""
