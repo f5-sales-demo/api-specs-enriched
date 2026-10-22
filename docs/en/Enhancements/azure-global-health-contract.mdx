@@ -1,0 +1,26 @@
+# Azure global health observation
+
+The SMSv2 contract 7.1.0 adds the Azure read-only health mapping used by CE lifecycle observers.
+It maps `GET /api/operate/namespaces/system/sites/{site}/vpm/debug/global/health` to
+`ves.io.schema.operate.debug.CustomPublicAPI.HealthPublic` and `debugHealthResponse`.
+The response fields are `hostname` and `state`; `PROVISIONED` describes site provisioning.
+Consumers must join the returned hostname to the owned, configured node.
+
+This endpoint returns site-global health for a representative node. It does not establish complete
+per-node HA health or operational interface state. Missing, malformed, foreign-node, unavailable,
+unauthorized or incomplete observations remain unknown. Admission still needs independently
+qualified interface evidence.
+
+The retained Azure Terraform single-node diagnostic observed HTTP 200 and `PROVISIONED`, with
+matching owned-node identity. The installed public health path failed before its HTTP request
+because the older contract omitted the Azure mapping. The diagnostic does not qualify that path.
+The hash-bound [sanitized receipt](https://github.com/f5-sales-demo/api-specs-enriched/blob/main/config/evidence/azure-global-health-20261022.json)
+records these limits and pending local artifact cleanup.
+
+Original CE sample time and publication staleness remain unqualified. A collector receipt timestamp
+is not a CE heartbeat. The diagnostic used an existing authorized API context; the exact role mapping
+and least-privilege permission set remain unqualified.
+
+Producer publication, qualification of the exact published assets in a fresh owned fixture, and
+installed consumer execution are separate pending gates. This mapping does not close issue #1930
+or establish full CE UAT acceptance.
