@@ -97,9 +97,22 @@ def _evidence(contract: dict[str, Any]) -> dict[str, Any]:
         "profiles": evidence.get("profiles"),
         "receipts": evidence.get("receipts"),
         "kvm_image_resolution": _kvm_image_evidence(contract),
+        "azure_global_health": _azure_health_evidence(contract),
     }
     _assert_sanitized_evidence(receipt)
     return receipt
+
+
+def _azure_health_evidence(contract: dict[str, Any]) -> dict[str, Any]:
+    """Include hash-bound read-only evidence without widening acceptance."""
+    profile = contract.get("providers", {}).get("azure")
+    validate_azure_runtime_contract(profile)
+    provenance = profile["runtime"]["health"]["qualification"]
+    source = Path(__file__).parents[1] / provenance["receipt_path"]
+    body = source.read_bytes()
+    if digest(body) != provenance["receipt_sha256"]:
+        raise Smsv2ReleaseValidationError("Azure health qualification receipt differs")
+    return {"source_sha256": provenance["receipt_sha256"], "receipt": json.loads(body)}
 
 
 def _kvm_image_evidence(contract: dict[str, Any]) -> dict[str, Any]:
@@ -161,10 +174,17 @@ def validate_release_assets(
     release: dict[str, Any],
     receipt: dict[str, Any],
     *,
+    resolved_tag: dict[str, Any],
     now: datetime | None = None,
     max_age: timedelta = timedelta(days=180),
 ) -> dict[str, Any]:
-    """Validate a stable GitHub release, manifest, receipt, and asset checksums."""
+    """Validate assets against the independently resolved immutable release tag.
+
+    ``resolved_tag`` must bind the requested tag to the commit ``sha`` returned
+    by GitHub's commits/{tag} endpoint. Preserve the original release metadata:
+    ``target_commitish`` names the release nomination, which may be a branch.
+    Never derive the tag resolution from the manifest or publication receipt.
+    """
     try:
         manifest = json.loads(manifest_bytes)
     except json.JSONDecodeError as error:
@@ -185,9 +205,11 @@ def validate_release_assets(
     release_identity = manifest.get("release")
     if not isinstance(release_identity, dict) or release_identity.get("tag") != tag:
         raise Smsv2ReleaseValidationError("release tag does not match contract manifest")
-    commit = release.get("target_commitish")
+    if not isinstance(resolved_tag, dict) or resolved_tag.get("tag") != tag:
+        raise Smsv2ReleaseValidationError("resolved release tag is missing or mismatched")
+    commit = resolved_tag.get("sha")
     if not isinstance(commit, str) or not _COMMIT.fullmatch(commit):
-        raise Smsv2ReleaseValidationError("release commit identity is malformed")
+        raise Smsv2ReleaseValidationError("resolved release tag commit identity is malformed")
     if release_identity.get("commit") != commit or receipt.get("commit") != commit:
         raise Smsv2ReleaseValidationError(
             "release commit identity does not match manifest and receipt"
@@ -248,6 +270,8 @@ def validate_release_assets(
         validate_azure_runtime_contract(contract.get("providers", {}).get("azure"))
     except InterfaceContractValidationError as error:
         raise Smsv2ReleaseValidationError(str(error)) from error
+    if evidence.get("azure_global_health") != _azure_health_evidence(contract):
+        raise Smsv2ReleaseValidationError("Azure health evidence differs from its source receipt")
     aws = contract.get("providers", {}).get("aws", {})
     expected_aws_fields = {
         "node_list_path": "aws.not_managed.node_list[]",

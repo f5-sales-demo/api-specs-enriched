@@ -7,7 +7,10 @@ Tests the enrichment of OpenAPI specs with externalDocs metadata
 providing links to F5's official documentation.
 """
 
+from copy import deepcopy
+
 import pytest
+from openapi_spec_validator import validate
 
 from scripts.utils.extension_constants import X_F5XC_CLI_DOMAIN
 from scripts.utils.external_docs_enricher import ExternalDocsEnricher, ExternalDocsStats
@@ -179,9 +182,9 @@ class TestSpecEnrichment:
             "paths": {},
         }
         result = enricher.enrich_spec(spec, filename="http_loadbalancer.json")
-        assert "externalDocs" in result["info"]
-        assert "url" in result["info"]["externalDocs"]
-        assert "description" in result["info"]["externalDocs"]
+        assert "externalDocs" in result
+        assert "url" in result["externalDocs"]
+        assert "description" in result["externalDocs"]
 
     def test_enrich_spec_virtual_domain(self):
         """Test enrichment of virtual domain spec."""
@@ -194,10 +197,10 @@ class TestSpecEnrichment:
             "paths": {},
         }
         result = enricher.enrich_spec(spec)
-        assert "externalDocs" in result["info"]
+        assert "externalDocs" in result
         assert (
-            "load-balancer" in result["info"]["externalDocs"]["url"].lower()
-            or "http" in result["info"]["externalDocs"]["url"].lower()
+            "load-balancer" in result["externalDocs"]["url"].lower()
+            or "http" in result["externalDocs"]["url"].lower()
         )
         assert enricher.stats.docs_added == 1
 
@@ -212,8 +215,8 @@ class TestSpecEnrichment:
             "paths": {},
         }
         result = enricher.enrich_spec(spec)
-        assert "externalDocs" in result["info"]
-        external_docs = result["info"]["externalDocs"]
+        assert "externalDocs" in result
+        external_docs = result["externalDocs"]
         assert "waf" in external_docs["url"].lower() or "firewall" in external_docs["url"].lower()
 
     def test_enrich_spec_idempotent(self):
@@ -231,8 +234,8 @@ class TestSpecEnrichment:
         }
         result = enricher.enrich_spec(spec)
         # Should preserve existing externalDocs
-        assert result["info"]["externalDocs"]["url"] == "https://example.com/docs"
-        assert result["info"]["externalDocs"]["description"] == "Existing docs"
+        assert result["externalDocs"]["url"] == "https://example.com/docs"
+        assert result["externalDocs"]["description"] == "Existing docs"
         assert enricher.stats.already_had_docs == 1
 
     def test_enrich_spec_preserves_existing_info(self):
@@ -252,7 +255,7 @@ class TestSpecEnrichment:
         assert result["info"]["version"] == "1.0.0"
         assert result["info"]["description"] == "API description"
         assert result["info"][X_F5XC_CLI_DOMAIN] == "virtual"
-        assert "externalDocs" in result["info"]
+        assert "externalDocs" in result
 
     def test_enrich_spec_creates_info_if_missing(self):
         """Test that enrichment creates info section if missing."""
@@ -262,7 +265,7 @@ class TestSpecEnrichment:
         }
         result = enricher.enrich_spec(spec)
         assert "info" in result
-        assert "externalDocs" in result["info"]
+        assert "externalDocs" in result
 
     def test_enrich_spec_stats_updated(self):
         """Test that stats are updated after enrichment."""
@@ -347,7 +350,7 @@ class TestEdgeCases:
         spec = {}
         result = enricher.enrich_spec(spec)
         assert "info" in result
-        assert "externalDocs" in result["info"]
+        assert "externalDocs" in result
 
     def test_enrich_spec_with_empty_info(self):
         """Test enriching spec with empty info section."""
@@ -357,7 +360,7 @@ class TestEdgeCases:
             "paths": {},
         }
         result = enricher.enrich_spec(spec)
-        assert "externalDocs" in result["info"]
+        assert "externalDocs" in result
 
     def test_external_docs_structure(self):
         """Test that externalDocs has required OpenAPI fields."""
@@ -367,7 +370,7 @@ class TestEdgeCases:
             "paths": {},
         }
         result = enricher.enrich_spec(spec)
-        external_docs = result["info"]["externalDocs"]
+        external_docs = result["externalDocs"]
         # OpenAPI 3.0 externalDocs requires url and allows description
         assert "url" in external_docs
         assert isinstance(external_docs["url"], str)
@@ -426,7 +429,7 @@ class TestIntegrationPatterns:
             "paths": {},
         }
         result = enricher.enrich_spec(spec)
-        assert "externalDocs" in result["info"]
+        assert "externalDocs" in result
         # Should still have other extensions
         assert X_F5XC_CLI_DOMAIN in result["info"]
         assert "x-f5xc-minimum-configuration" in result["info"]
@@ -447,7 +450,7 @@ class TestIntegrationPatterns:
             "paths": {},
         }
         result = enricher.enrich_spec(spec)
-        assert "externalDocs" in result["info"]
+        assert "externalDocs" in result
         assert "x-f5xc-namespace-profile" in result["info"]
 
 
@@ -668,3 +671,67 @@ class TestApiReferenceUrlField:
         }
         result = enricher.enrich_spec(spec, filename="shape.json")
         assert "x-f5xc-api-reference-url" not in result["info"]
+
+
+class TestOpenApiDocumentValidity:
+    """Validate metadata placement against OpenAPI rather than fixture shape."""
+
+    @pytest.mark.parametrize("version", ["3.0.3", "3.1.0"])
+    def test_enriched_document_validates_and_is_stable(self, version):
+        """Generated root documentation validates and repeated enrichment is stable."""
+        spec = {
+            "openapi": version,
+            "info": {"title": "Test API", "version": "1.0.0"},
+            "paths": {},
+        }
+        enricher = ExternalDocsEnricher()
+        result = enricher.enrich_spec(spec)
+        validate(result)
+        assert "externalDocs" not in result["info"]
+        snapshot = deepcopy(result)
+        assert enricher.enrich_spec(result) == snapshot
+        validate(result)
+
+    @pytest.mark.parametrize("has_root_docs", [False, True])
+    def test_legacy_docs_relocated_without_overwriting_root(self, has_root_docs):
+        """Legacy metadata is removed and authoritative root docs are preserved."""
+        legacy = {"url": "https://example.com/legacy", "description": "Legacy"}
+        root = {"url": "https://example.com/root", "description": "Root"}
+        spec = {
+            "openapi": "3.0.3",
+            "info": {"title": "Test API", "version": "1.0.0", "externalDocs": legacy},
+            "paths": {},
+        }
+        if has_root_docs:
+            spec["externalDocs"] = root
+        result = ExternalDocsEnricher().enrich_spec(spec)
+        assert result["externalDocs"] == (root if has_root_docs else legacy)
+        assert "externalDocs" not in result["info"]
+        validate(result)
+
+    def test_existing_root_docs_do_not_skip_operation_rewrite(self):
+        """Preserving root docs still rewrites newly added operation references."""
+        root = {"url": "https://example.com/root"}
+        spec = {
+            "info": {"title": "Test API", X_F5XC_CLI_DOMAIN: "shape"},
+            "externalDocs": root,
+            "paths": {
+                "/test": {
+                    "get": {
+                        "externalDocs": {
+                            "url": TestApiReferenceRewrite.OLD_PREFIX + "shape-api-list",
+                        },
+                    },
+                },
+            },
+        }
+        enricher = ExternalDocsEnricher()
+        result = enricher.enrich_spec(spec)
+        assert result["externalDocs"] == root
+        assert result["paths"]["/test"]["get"]["externalDocs"]["url"] == (
+            TestApiReferenceRewrite.NEW_BASE + "/shape/"
+        )
+        assert enricher.stats.api_links_rewritten == 1
+        snapshot = deepcopy(result)
+        assert enricher.enrich_spec(result) == snapshot
+        assert enricher.stats.api_links_rewritten == 1

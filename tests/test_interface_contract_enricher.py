@@ -321,7 +321,7 @@ def test_contract_defines_stable_identity_and_role_invariants() -> None:
     assert contract["api"]["namespace"] == "system"
     assert contract["api"]["operations"] == ["create", "read", "replace", "delete"]
     assert contract["providers"]["aws"]["availability"] == "evidence_backed"
-    assert contract["version"] == "7.0.0"
+    assert contract["version"] == "7.1.0"
     assert contract["providers"]["aws"]["capabilities"] == {
         "aws_ce_create": "available",
         "aws_node_configuration": "available",
@@ -397,6 +397,7 @@ def test_contract_defines_stable_identity_and_role_invariants() -> None:
     assert azure["runtime"]["bgp_routes"]["response_schema"] == "bgpBGPRoutesResponse"
     assert azure["runtime"]["bgp_routes"] == contract["providers"]["aws"]["runtime"]["bgp_routes"]
     assert set(azure["runtime"]) == {
+        "health",
         "configuration",
         "bgp_configuration",
         "bgp_peers",
@@ -630,7 +631,7 @@ def test_accepts_additive_current_contract_fields(
 
     enricher = InterfaceContractEnricher(_write_config(tmp_path, compatible))
 
-    assert enricher.contracts[0][1]["version"] == "7.0.0"
+    assert enricher.contracts[0][1]["version"] == "7.1.0"
     assert enricher.contracts[0][1]["providers"]["gcp"]["availability"] == "schema_only"
 
 
@@ -742,7 +743,7 @@ def test_rejects_unsanitized_aws_evidence(tmp_path: Path, contract_config: dict[
 def test_aws_evidence_receipt_has_closed_modern_shape(
     contract_config: dict[str, Any],
 ) -> None:
-    assert contract_config["version"] == "7.0.0"
+    assert contract_config["version"] == "7.1.0"
     receipt = _contract(contract_config)["providers"]["aws"]["evidence"]["receipts"][0]
     assert set(receipt) == {
         "operations",
@@ -975,3 +976,52 @@ def test_rejects_unverified_bootstrap_contract(
     target[field] = value
     with pytest.raises(InterfaceContractValidationError, match="bootstrap"):
         InterfaceContractEnricher(_write_config(tmp_path, invalid))
+
+
+def test_azure_health_contract_preserves_observation_boundaries(
+    contract_config: dict[str, Any],
+) -> None:
+    azure = _azure_contract(contract_config)
+    health = azure["runtime"]["health"]
+    assert health["operation_id"] == "ves.io.schema.operate.debug.CustomPublicAPI.HealthPublic"
+    assert health["response_schema"] == "debugHealthResponse"
+    assert health["response_mappings"] == {"node": "hostname", "health": "state"}
+    assert health["scope"] == "site_global_representative_node"
+    assert health["per_node_health"] == "unknown"
+    assert health["freshness"]["original_ce_sample_time"] == "unqualified"
+    assert health["permissions"]["least_privilege"] == "unqualified"
+    assert health["interface_state_authority"] is False
+    assert health["mutation_admission"] is False
+
+
+@pytest.mark.parametrize(
+    "mutate",
+    [
+        lambda health: health.update({"path": "/unsupported"}),
+        lambda health: health.update({"scope": "per_node"}),
+        lambda health: health.update({"mutation_admission": True}),
+        lambda health: health["freshness"].update({"original_ce_sample_time": "observed_at"}),
+        lambda health: health["permissions"].update({"least_privilege": "verified"}),
+        lambda health: health["qualification"].update({"installed_public_health_path": True}),
+    ],
+)
+def test_rejects_fabricated_azure_health_capability(
+    tmp_path: Path, contract_config: dict[str, Any], mutate: Callable[[dict[str, Any]], Any]
+) -> None:
+    invalid = copy.deepcopy(contract_config)
+    mutate(_azure_contract(invalid)["runtime"]["health"])
+    with pytest.raises(InterfaceContractValidationError, match="Azure runtime"):
+        InterfaceContractEnricher(_write_config(tmp_path, invalid))
+
+
+def test_azure_health_mapping_matches_public_schema(contract_config: dict[str, Any]) -> None:
+    source = Path(__file__).parents[1] / "docs/specifications/api/support.json"
+    spec = json.loads(source.read_bytes())
+    health = _azure_contract(contract_config)["runtime"]["health"]
+    operation = spec["paths"][health["path"]]["get"]
+    assert operation["operationId"] == health["operation_id"]
+    schemas = spec["components"]["schemas"]
+    assert schemas[health["state_schema"]]["enum"] == health["state_values"]
+    assert set(health["response_mappings"].values()) <= set(
+        schemas[health["response_schema"]]["properties"]
+    )
