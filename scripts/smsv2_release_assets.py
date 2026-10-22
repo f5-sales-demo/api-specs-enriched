@@ -172,10 +172,17 @@ def validate_release_assets(
     release: dict[str, Any],
     receipt: dict[str, Any],
     *,
+    resolved_tag: dict[str, Any],
     now: datetime | None = None,
     max_age: timedelta = timedelta(days=180),
 ) -> dict[str, Any]:
-    """Validate a stable GitHub release, manifest, receipt, and asset checksums."""
+    """Validate assets against the independently resolved immutable release tag.
+
+    ``resolved_tag`` must bind the requested tag to the commit ``sha`` returned
+    by GitHub's commits/{tag} endpoint. Preserve the original release metadata:
+    ``target_commitish`` names the release nomination, which may be a branch.
+    Never derive the tag resolution from the manifest or publication receipt.
+    """
     try:
         manifest = json.loads(manifest_bytes)
     except json.JSONDecodeError as error:
@@ -196,9 +203,11 @@ def validate_release_assets(
     release_identity = manifest.get("release")
     if not isinstance(release_identity, dict) or release_identity.get("tag") != tag:
         raise Smsv2ReleaseValidationError("release tag does not match contract manifest")
-    commit = release.get("target_commitish")
+    if not isinstance(resolved_tag, dict) or resolved_tag.get("tag") != tag:
+        raise Smsv2ReleaseValidationError("resolved release tag is missing or mismatched")
+    commit = resolved_tag.get("sha")
     if not isinstance(commit, str) or not _COMMIT.fullmatch(commit):
-        raise Smsv2ReleaseValidationError("release commit identity is malformed")
+        raise Smsv2ReleaseValidationError("resolved release tag commit identity is malformed")
     if release_identity.get("commit") != commit or receipt.get("commit") != commit:
         raise Smsv2ReleaseValidationError(
             "release commit identity does not match manifest and receipt"
