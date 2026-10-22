@@ -5,7 +5,7 @@
 This enricher adds externalDocs metadata to OpenAPI specs,
 providing direct links to F5's official documentation.
 
-Adds the standard OpenAPI externalDocs field to the info section with:
+Adds the standard OpenAPI externalDocs field at the document root with:
 - url: Link to relevant F5 XC documentation
 - description: Brief description of the documentation
 
@@ -52,7 +52,7 @@ class ExternalDocsStats:
 class ExternalDocsEnricher:
     """Enrich OpenAPI specs with external documentation links.
 
-    Adds standard OpenAPI externalDocs field to the spec's info section,
+    Adds standard OpenAPI externalDocs field at the document root,
     providing direct links to F5's official documentation based on
     the spec's domain categorization.
 
@@ -132,7 +132,7 @@ class ExternalDocsEnricher:
     ) -> dict[str, Any]:
         """Enrich OpenAPI specification with external documentation link.
 
-        Adds externalDocs to the spec's info section based on
+        Adds externalDocs at the document root based on
         the domain detected from the spec title or filename.
 
         Args:
@@ -143,42 +143,26 @@ class ExternalDocsEnricher:
             Enriched specification
         """
         try:
-            info = spec.get("info", {})
-
-            # Check if already enriched (idempotent)
-            if "externalDocs" in info:
-                self.stats.already_had_docs += 1
-                self.stats.specs_enriched += 1
-                if X_F5XC_API_REFERENCE_URL not in info:
-                    domain = self._detect_domain(spec, filename)
-                    api_ref_url = self._get_api_reference_url(domain)
-                    if api_ref_url:
-                        spec["info"][X_F5XC_API_REFERENCE_URL] = api_ref_url
-                return spec
-
-            # Detect domain from filename or spec
+            info = spec.setdefault("info", {})
             domain = self._detect_domain(spec, filename)
-            external_docs = self._get_docs_for_domain(domain)
 
-            # Add externalDocs to info section
-            if "info" not in spec:
-                spec["info"] = {}
-            spec["info"]["externalDocs"] = external_docs
+            # Repair metadata emitted by older versions without replacing root docs.
+            legacy_docs = info.pop("externalDocs", None)
+            if "externalDocs" in spec:
+                self.stats.already_had_docs += 1
+            elif legacy_docs is not None:
+                spec["externalDocs"] = legacy_docs
+                self.stats.already_had_docs += 1
+            else:
+                spec["externalDocs"] = self._get_docs_for_domain(domain)
+                self.stats.docs_added += 1
 
-            api_ref_url = self._get_api_reference_url(domain)
-            if api_ref_url:
-                spec["info"][X_F5XC_API_REFERENCE_URL] = api_ref_url
+            if X_F5XC_API_REFERENCE_URL not in info:
+                api_ref_url = self._get_api_reference_url(domain)
+                if api_ref_url:
+                    info[X_F5XC_API_REFERENCE_URL] = api_ref_url
 
-            # Update stats
             self.stats.specs_enriched += 1
-            self.stats.docs_added += 1
-
-            logger.debug(
-                "Added externalDocs for domain '%s': %s",
-                domain,
-                external_docs["url"],
-            )
-
             self._rewrite_operation_docs(spec, domain)
 
         except Exception as e:
