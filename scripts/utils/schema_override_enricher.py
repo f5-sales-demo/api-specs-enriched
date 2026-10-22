@@ -12,6 +12,8 @@ from typing import Any
 
 import yaml
 
+from scripts.utils.smsv2_response_nullability import qualify_smsv2_get_nullability
+
 logger = logging.getLogger(__name__)
 
 CONFIG_PATH = Path(__file__).parent.parent.parent / "config" / "schema_overrides.yaml"
@@ -381,6 +383,9 @@ class SchemaOverrideEnricher:
                 canonical_only=canonical_only,
                 removals_only=removals_only,
             )
+
+        if not corrections_only and not removals_only:
+            qualify_smsv2_get_nullability(spec)
 
         return spec
 

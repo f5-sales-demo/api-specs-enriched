@@ -34,6 +34,7 @@ from scripts.utils.schema_override_enricher import (
     SchemaOverrideEnricher,
     remove_schema_property,
 )
+from scripts.utils.smsv2_response_nullability import qualify_smsv2_get_nullability
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Sequence
@@ -368,6 +369,9 @@ def run_contract_diff(
     # direct $ref, and either spec may use either form. Flattening only the
     # output turned upstream-wrapped properties into a phantom `allOf` removal
     # plus `$ref` add.
+    # Normalize only the exact reviewed response qualification (#1975).
+    # Shared/request schemas and all other response changes remain diffed.
+    qualify_smsv2_get_nullability(input_spec)
     input_spec = _flatten_allof_refs(input_spec)
     output_spec = _flatten_allof_refs(output_spec)
     diff = DeepDiff(
