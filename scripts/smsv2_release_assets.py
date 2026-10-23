@@ -98,9 +98,22 @@ def _evidence(contract: dict[str, Any]) -> dict[str, Any]:
         "receipts": evidence.get("receipts"),
         "kvm_image_resolution": _kvm_image_evidence(contract),
         "azure_global_health": _azure_health_evidence(contract),
+        "aws_physical_interfaces": _aws_interface_evidence(contract),
     }
     _assert_sanitized_evidence(receipt)
     return receipt
+
+
+def _aws_interface_evidence(contract: dict[str, Any]) -> dict[str, Any]:
+    """Carry actual read-only interface evidence with all live limits intact."""
+    profile = contract.get("providers", {}).get("aws")
+    validate_aws_v3_contract(profile)
+    provenance = profile["runtime"]["physical_interfaces"]["qualification"]
+    source = Path(__file__).parents[1] / provenance["receipt_path"]
+    body = source.read_bytes()
+    if digest(body) != provenance["receipt_sha256"]:
+        raise Smsv2ReleaseValidationError("AWS physical interface qualification receipt differs")
+    return {"source_sha256": provenance["receipt_sha256"], "receipt": json.loads(body)}
 
 
 def _azure_health_evidence(contract: dict[str, Any]) -> dict[str, Any]:
@@ -287,6 +300,10 @@ def validate_release_assets(
         validate_aws_v3_contract(aws)
     except InterfaceContractValidationError as error:
         raise Smsv2ReleaseValidationError(str(error)) from error
+    if evidence.get("aws_physical_interfaces") != _aws_interface_evidence(contract):
+        raise Smsv2ReleaseValidationError(
+            "AWS physical interface evidence differs from its source receipt"
+        )
     availability = aws.get("availability")
     if availability == "evidence_backed":
         if (

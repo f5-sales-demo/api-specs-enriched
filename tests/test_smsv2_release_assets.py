@@ -73,7 +73,7 @@ def test_validates_stable_receipted_release(tmp_path: Path) -> None:
         resolved_tag={"tag": "v7.0.0", "sha": _COMMIT},
         now=_NOW,
     )
-    assert contract["version"] == "7.2.0"
+    assert contract["version"] == "7.3.0"
     assert contract["providers"]["aws"]["availability"] == "evidence_backed"
     assert contract["providers"]["aws"]["capabilities"] == {
         "aws_ce_create": "available",

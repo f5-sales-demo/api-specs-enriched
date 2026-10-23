@@ -15,13 +15,14 @@ from scripts.utils.gcp_contract import validate_gcp_contract
 from scripts.utils.kvm_image_contract import validate_kvm_image_contract
 from scripts.utils.smsv2_bootstrap_contract import validate_bootstrap_contract
 
+from .aws_interface_observation_contract import AWS_PHYSICAL_INTERFACES
 from .azure_slo_bgp_contract import AZURE_SLO_BGP_RELAY
 from .extension_constants import X_F5XC_CE_AUTOMATION_CONTRACT
 
 CONFIG_PATH = Path(__file__).parent.parent.parent / "config" / "interface_contracts.yaml"
 SUPPORTED_ROLES = frozenset({"slo", "external", "sli"})
-CONFIG_VERSION = "7.2.0"
-CONTRACT_VERSION = "7.2.0"
+CONFIG_VERSION = "7.3.0"
+CONTRACT_VERSION = "7.3.0"
 CONTRACT_ID = "f5xc-smsv2-api/v1"
 CAPABILITY_STATES = frozenset({"available", "unavailable"})
 STABLE_IDENTITY_FIELDS = frozenset(
@@ -97,6 +98,7 @@ AWS_V3_ROLES = [
     {"name": "sli", "network_option": "site_local_inside_network"},
 ]
 AWS_V3_RUNTIME: dict[str, Any] = {
+    "physical_interfaces": copy.deepcopy(AWS_PHYSICAL_INTERFACES),
     "configuration": {
         "method": "GET",
         "path": "/api/config/namespaces/{namespace}/securemesh_site_v2s/{site}",
@@ -637,6 +639,16 @@ def validate_aws_v3_contract(profile: object) -> None:
     if profile.get("runtime") != AWS_V3_RUNTIME:
         raise InterfaceContractValidationError(
             "AWS runtime endpoints or schemas are incomplete or legacy"
+        )
+    provenance = AWS_PHYSICAL_INTERFACES["qualification"]
+    receipt_path = Path(__file__).parents[2] / provenance["receipt_path"]
+    if (
+        not receipt_path.is_file()
+        or "sha256:" + hashlib.sha256(receipt_path.read_bytes()).hexdigest()
+        != provenance["receipt_sha256"]
+    ):
+        raise InterfaceContractValidationError(
+            "AWS physical interface qualification receipt differs"
         )
     if profile.get("site_upgrade") != AWS_SITE_UPGRADE:
         raise InterfaceContractValidationError("AWS site upgrade contract is incomplete")
