@@ -94,3 +94,62 @@ def test_workflow_cannot_deploy_without_release_verification() -> None:
     assert "verify_existing_publication.py" in text
     assert "gh release download" in text
     assert "gh release create" not in text
+
+
+OPERATIONAL = {"gcp-operational-health-v2.json", "gcp-operational-qualification-v2.json"}
+
+
+def add_assets(release: dict, assets: Path, names: set[str]) -> None:
+    receipt_line = release["body"].split("publication-receipt:", 1)[1].split(" -->", 1)[0]
+    receipt = json.loads(receipt_line)
+    for name in names:
+        content = f"verified-{name}".encode()
+        (assets / name).write_bytes(content)
+        digest = "sha256:" + hashlib.sha256(content).hexdigest()
+        receipt["assets"][name] = digest
+        release["assets"].append({"name": name, "digest": digest})
+    release["body"] = (
+        "<!-- publication-receipt:"
+        + json.dumps(receipt, sort_keys=True, separators=(",", ":"))
+        + " -->"
+    )
+
+
+def test_complete_operational_pair_passes(tmp_path: Path) -> None:
+    release, assets = publication(tmp_path)
+    add_assets(release, assets, OPERATIONAL)
+    verify_release(release, assets, TAG, COMMIT)
+
+
+@pytest.mark.parametrize(
+    "names",
+    [
+        {"gcp-operational-health-v2.json"},
+        {"gcp-operational-qualification-v2.json"},
+        OPERATIONAL | {"unrelated.json"},
+    ],
+)
+def test_partial_or_extra_operational_set_fails(tmp_path: Path, names: set[str]) -> None:
+    release, assets = publication(tmp_path)
+    add_assets(release, assets, names)
+    with pytest.raises(PublicationError, match="asset set"):
+        verify_release(release, assets, TAG, COMMIT)
+
+
+@pytest.mark.parametrize("mutation", ["duplicate", "bytes", "metadata", "missing-download"])
+def test_operational_pair_preserves_exact_evidence_checks(tmp_path: Path, mutation: str) -> None:
+    release, assets = publication(tmp_path)
+    add_assets(release, assets, OPERATIONAL)
+    name = "gcp-operational-health-v2.json"
+    if mutation == "duplicate":
+        release["assets"].append(next(row for row in release["assets"] if row["name"] == name))
+    elif mutation == "bytes":
+        (assets / name).write_bytes(b"changed")
+    elif mutation == "metadata":
+        next(row for row in release["assets"] if row["name"] == name)["digest"] = (
+            "sha256:" + "0" * 64
+        )
+    else:
+        (assets / name).unlink()
+    with pytest.raises(PublicationError):
+        verify_release(release, assets, TAG, COMMIT)
