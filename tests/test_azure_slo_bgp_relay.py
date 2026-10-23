@@ -94,7 +94,7 @@ def test_rejects_missing_relay_contract() -> None:
 def test_current_config_enriches_an_additive_contract_version() -> None:
     """Every matched schema carries the new contract without a breaking identifier."""
     contract = InterfaceContractEnricher().contracts[0][1]
-    assert contract["version"] == "7.2.0"
+    assert contract["version"] == "7.3.0"
     assert contract["contract_id"] == "f5xc-smsv2-api/v1"
 
 
