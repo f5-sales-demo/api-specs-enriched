@@ -162,7 +162,9 @@ def build_release_assets(
         EVIDENCE_FILE: evidence_bytes,
         MANIFEST_FILE: manifest_bytes,
     }
-    assets.update(build_gcp_operational_assets(config_path.parent / "gcp-operational-health"))
+    assets.update(
+        build_gcp_operational_assets(config_path.parent / "curation" / "gcp-operational-health")
+    )
     for name, content in assets.items():
         (output_dir / name).write_bytes(content)
     return assets

@@ -500,3 +500,18 @@ def test_requires_independent_tag_resolution(
         validate_release_assets(
             assets[MANIFEST_FILE], assets, _release(), _receipt(manifest), **optional_inputs
         )
+
+
+def test_normal_builder_publishes_pinned_operational_curation(tmp_path: Path) -> None:
+    """The workflow's default config must find committed operational inputs."""
+    config = Path(__file__).parents[1] / "config" / "interface_contracts.yaml"
+    source = config.parent / "curation" / "gcp-operational-health"
+    pins = json.loads((source / "pins.json").read_bytes())
+    assets = build_release_assets(config, tmp_path, "v7.0.0", _COMMIT)
+    for name, pin in (
+        ("gcp-operational-health-v2.json", "contractFingerprint"),
+        ("gcp-operational-qualification-v2.json", "qualificationFingerprint"),
+    ):
+        assert name in assets
+        assert digest(assets[name]) == pins[pin]
+        assert (tmp_path / name).read_bytes() == assets[name]
