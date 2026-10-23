@@ -15,12 +15,13 @@ from scripts.utils.gcp_contract import validate_gcp_contract
 from scripts.utils.kvm_image_contract import validate_kvm_image_contract
 from scripts.utils.smsv2_bootstrap_contract import validate_bootstrap_contract
 
+from .azure_slo_bgp_contract import AZURE_SLO_BGP_RELAY
 from .extension_constants import X_F5XC_CE_AUTOMATION_CONTRACT
 
 CONFIG_PATH = Path(__file__).parent.parent.parent / "config" / "interface_contracts.yaml"
 SUPPORTED_ROLES = frozenset({"slo", "external", "sli"})
-CONFIG_VERSION = "7.1.0"
-CONTRACT_VERSION = "7.1.0"
+CONFIG_VERSION = "7.2.0"
+CONTRACT_VERSION = "7.2.0"
 CONTRACT_ID = "f5xc-smsv2-api/v1"
 CAPABILITY_STATES = frozenset({"available", "unavailable"})
 STABLE_IDENTITY_FIELDS = frozenset(
@@ -655,6 +656,16 @@ def validate_azure_runtime_contract(profile: object) -> None:
         != provenance["receipt_sha256"]
     ):
         raise InterfaceContractValidationError("Azure health qualification receipt differs")
+    if profile.get("slo_bgp_relay") != AZURE_SLO_BGP_RELAY:
+        raise InterfaceContractValidationError("Azure SLO BGP relay mapping or evidence differs")
+    relay_provenance = AZURE_SLO_BGP_RELAY["qualification"]
+    relay_receipt = Path(__file__).parents[2] / relay_provenance["receipt_path"]
+    if (
+        not relay_receipt.is_file()
+        or "sha256:" + hashlib.sha256(relay_receipt.read_bytes()).hexdigest()
+        != relay_provenance["receipt_sha256"]
+    ):
+        raise InterfaceContractValidationError("Azure SLO BGP relay qualification receipt differs")
     if profile.get("route_server_ebgp_multihop") != AZURE_ROUTE_SERVER_EBGP_MULTIHOP:
         raise InterfaceContractValidationError(
             "Azure Route Server eBGP multihop capability is unavailable or lacks exact provenance"

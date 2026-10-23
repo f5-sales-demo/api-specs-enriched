@@ -73,7 +73,7 @@ def test_validates_stable_receipted_release(tmp_path: Path) -> None:
         resolved_tag={"tag": "v7.0.0", "sha": _COMMIT},
         now=_NOW,
     )
-    assert contract["version"] == "7.1.0"
+    assert contract["version"] == "7.2.0"
     assert contract["providers"]["aws"]["availability"] == "evidence_backed"
     assert contract["providers"]["aws"]["capabilities"] == {
         "aws_ce_create": "available",
@@ -320,6 +320,24 @@ def _mutate_contract_asset(
                 {"availability": "available"}
             ),
             "Azure Route Server eBGP multihop capability is unavailable",
+        ),
+        (
+            lambda contract: contract["providers"]["azure"]["slo_bgp_relay"].update(
+                {"availability": "available"}
+            ),
+            "Azure SLO BGP relay",
+        ),
+        (
+            lambda contract: contract["providers"]["azure"]["slo_bgp_relay"][
+                "qualification"
+            ].update({"live_acceptance": True}),
+            "Azure SLO BGP relay",
+        ),
+        (
+            lambda contract: contract["providers"]["azure"]["slo_bgp_relay"]["ce_mappings"].update(
+                {"peer_asn": "route_server.asn"}
+            ),
+            "Azure SLO BGP relay",
         ),
         (
             lambda contract: contract["providers"]["aws"]["capabilities"].update(
