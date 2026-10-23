@@ -182,6 +182,22 @@ jobs:
           fetch-tags: true  # Explicitly fetch tags for version calculation
           token: ${{ secrets.VERSION_BUMP_PAT }}  # Use admin PAT for bypass permissions
 
+      # Publication tooling follows the workflow revision, while release assets
+      # follow the immutable release merge selected later. Retain this one
+      # validator outside the checkout so a resume can repair publication without
+      # changing the tagged source or rebuilding from a newer asset contract.
+      - name: Freeze publication receipt builder
+        run: |
+          set -euo pipefail
+          BUILDER_DIR="$RUNNER_TEMP/publication-receipt-builder"
+          mkdir "$BUILDER_DIR"
+          cp scripts/release/build-publication-receipt.sh "$BUILDER_DIR/"
+          git rev-parse HEAD > "$BUILDER_DIR/source-commit.txt"
+          (
+            cd "$BUILDER_DIR"
+            sha256sum build-publication-receipt.sh > builder.sha256
+          )
+
       - name: Setup Python
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
@@ -700,7 +716,9 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: release-checkout-evidence-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/release-checkout-evidence/
+          path: |
+            ${{ runner.temp }}/release-checkout-evidence/
+            ${{ runner.temp }}/publication-receipt-builder/
           if-no-files-found: ignore
           retention-days: 7
 
@@ -853,7 +871,9 @@ jobs:
           RECEIPT_JSON_FILE=$(mktemp)
           trap 'rm -f "$NOTES_FILE" "$RECEIPT_LINE_FILE" "$RECEIPT_JSON_FILE"' EXIT
 
-          bash scripts/release/build-publication-receipt.sh \
+          # Check the frozen publisher before using it with exact tagged assets.
+          (cd "$RUNNER_TEMP/publication-receipt-builder" && sha256sum -c builder.sha256)
+          bash "$RUNNER_TEMP/publication-receipt-builder/build-publication-receipt.sh" \
             "$VERSION" "$release_commit" "${ASSET_PATHS[@]}" > "$RECEIPT_LINE_FILE"
           sed -n 's/^<!-- publication-receipt:\(.*\) -->$/\1/p' \
             "$RECEIPT_LINE_FILE" > "$RECEIPT_JSON_FILE"

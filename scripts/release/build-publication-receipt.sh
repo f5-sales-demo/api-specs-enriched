@@ -76,6 +76,13 @@ done
 
 expected=$(jq -cnS --arg bundle "f5xc-api-specs-v${version}.zip" \
   '["api-catalog.json", "enrichment-coverage.json", "concurrency_contracts.json", $bundle, "index.json", "minimal-export-defaults.json", "openapi.json", "smsv2-contract.json", "smsv2-evidence-receipt.json", "smsv2-contract-manifest.json", "smsv2_parity_manifest.json", "upstream-contract-changes.json", "upstream-contract-removals.json"] | sort')
+# Operational qualification is optional for legacy releases, but its profile
+# and qualification receipt must be published together. Add the complete pair
+# when either is present; exact set equality below still rejects partial pairs
+# and unrelated assets.
+if [ "$(jq -r 'has("gcp-operational-health-v2.json") or has("gcp-operational-qualification-v2.json")' <<<"$assets")" = "true" ]; then
+  expected=$(jq -cS '. + ["gcp-operational-health-v2.json", "gcp-operational-qualification-v2.json"] | sort' <<<"$expected")
+fi
 actual=$(jq -cS 'keys | sort' <<<"$assets")
 if [ "$actual" != "$expected" ]; then
   fail "asset set does not match the release asset contract for v${version}"$'\n'"  expected: ${expected}"$'\n'"  actual:   ${actual}"
