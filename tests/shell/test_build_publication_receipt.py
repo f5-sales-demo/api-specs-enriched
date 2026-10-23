@@ -20,9 +20,12 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import re
 import subprocess
 from pathlib import Path
+
+import yaml
 
 _SCRIPT = (
     Path(__file__).resolve().parents[2] / "scripts" / "release" / "build-publication-receipt.sh"
@@ -198,3 +201,115 @@ def test_rejects_uppercase_commit(tmp_path: Path) -> None:
     result = _run(paths, commit="A" * 40)
     assert result.returncode != 0
     assert "commit" in result.stderr.lower()
+
+
+_OPERATIONAL_ASSETS = ["gcp-operational-health-v2.json", "gcp-operational-qualification-v2.json"]
+
+
+def test_emits_complete_operational_asset_pair(tmp_path: Path) -> None:
+    paths = _write_assets(tmp_path, [*_asset_names(_VERSION), *_OPERATIONAL_ASSETS])
+    result = _run(paths)
+    assert result.returncode == 0, result.stderr
+    receipt = _parse(result.stdout)
+    for path in paths:
+        assert (
+            receipt["assets"][path.name]
+            == "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest()
+        )
+
+
+def test_rejects_partial_operational_asset_pair(tmp_path: Path) -> None:
+    for name in _OPERATIONAL_ASSETS:
+        result = _run(_write_assets(tmp_path, [*_asset_names(_VERSION), name]))
+        assert result.returncode != 0
+        assert "asset set" in result.stderr
+
+
+def test_operational_pair_does_not_admit_foreign_assets(tmp_path: Path) -> None:
+    result = _run(
+        _write_assets(tmp_path, [*_asset_names(_VERSION), *_OPERATIONAL_ASSETS, "foreign.json"])
+    )
+    assert result.returncode != 0
+    assert "asset set" in result.stderr
+
+
+def test_resume_uses_current_receipt_builder_with_exact_tagged_assets(tmp_path: Path) -> None:
+    """A resume must not restore the broken publisher from the release tag."""
+    root = _SCRIPT.parents[2]
+    workflow = yaml.safe_load((root / ".github/workflows/sync-and-enrich.yml").read_text())
+    steps = workflow["jobs"]["sync-and-enrich"]["steps"]
+    snapshot = next(
+        (step for step in steps if step.get("name") == "Freeze publication receipt builder"), None
+    )
+    assert snapshot is not None, "receipt builder must survive exact release checkout"
+    create = next(step["run"] for step in steps if step.get("name") == "Create release")
+    # YAML removes the workflow indentation; match the actual receipt invocation.
+    invocation = re.search(r"(?m)^\s*bash (.+) \\$", create)
+    assert invocation is not None
+    repo = tmp_path / "repo"
+    repo.mkdir()
+
+    def git(*args: str) -> str:
+        return subprocess.check_output(["git", *args], cwd=repo, text=True).strip()
+
+    git("init")
+    git("config", "user.email", "test@example.com")
+    git("config", "user.name", "Test")
+    builder = repo / "scripts/release/build-publication-receipt.sh"
+    builder.parent.mkdir(parents=True)
+    builder.write_text("#!/usr/bin/env bash\nexit 1\n")
+    paths = _write_assets(repo, [*_asset_names(_VERSION), *_OPERATIONAL_ASSETS])
+    git("add", ".")
+    git("commit", "-m", "chore: original tagged release")
+    target = git("rev-parse", "HEAD")
+    git("tag", "-a", f"v{_VERSION}", "-m", "release")
+    tag = git("rev-parse", f"v{_VERSION}")
+    builder.write_bytes(_SCRIPT.read_bytes())
+    git("commit", "-am", "fix: receipt publisher")
+    publisher_commit = git("rev-parse", "HEAD")
+    temp = tmp_path / "runner"
+    temp.mkdir()
+    env = os.environ | {"RUNNER_TEMP": str(temp), "GITHUB_ENV": str(temp / "env")}
+    subprocess.run(
+        ["bash", "-euo", "pipefail", "-c", snapshot["run"]], cwd=repo, env=env, check=True
+    )
+    subprocess.run(
+        ["bash", str(root / "scripts/release/checkout-release-merge.sh"), target],
+        cwd=repo,
+        env=env,
+        check=True,
+    )
+    result = subprocess.run(
+        [
+            "bash",
+            "-euo",
+            "pipefail",
+            "-c",
+            "bash " + invocation.group(1) + ' "$@"',
+            "receipt",
+            _VERSION,
+            target,
+            *map(str, paths),
+        ],
+        cwd=repo,
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr
+    receipt = _parse(result.stdout)
+    assert receipt["commit"] == target
+    assert sorted(receipt["assets"]) == sorted(path.name for path in paths)
+    for path in paths:
+        assert (
+            receipt["assets"][path.name]
+            == "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest()
+        )
+    assert git("rev-parse", "HEAD") == target
+    assert git("rev-parse", f"v{_VERSION}") == tag
+    assert git("status", "--porcelain") == ""
+    evidence = temp / "publication-receipt-builder"
+    assert (evidence / "source-commit.txt").read_text().strip() == publisher_commit
+    assert (evidence / "build-publication-receipt.sh").read_bytes() == _SCRIPT.read_bytes()
+    subprocess.run(["sha256sum", "-c", "builder.sha256"], cwd=evidence, check=True)
