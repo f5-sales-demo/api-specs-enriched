@@ -80,8 +80,16 @@ def verify_release(release: dict[str, Any], assets_dir: Path, tag: str, commit: 
         raise PublicationError("publication receipt does not bind the tag and commit")
     expected = expected_assets(version)
     attested = receipt["assets"]
-    if not isinstance(attested, dict) or set(attested) != expected:
+    operational = {
+        "gcp-operational-health-v2.json",
+        "gcp-operational-qualification-v2.json",
+    }
+    if not isinstance(attested, dict) or set(attested) not in (
+        expected,
+        expected | operational,
+    ):
         raise PublicationError("publication receipt asset set is incomplete or extra")
+    expected = set(attested)
 
     metadata = release.get("assets")
     if not isinstance(metadata, list) or len(metadata) != len(expected):
