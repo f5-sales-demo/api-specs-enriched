@@ -536,3 +536,11 @@ def test_all_create_path_resources_have_explicit_namespace_profile() -> None:
         f"classification (add to namespace_profile.yaml or regenerate "
         f"namespace_verdicts.yaml): {missing}"
     )
+
+
+@pytest.mark.parametrize("resource", ["acme_issuer", "bot_fullsite_policy", "entitlement"])
+def test_current_upstream_resources_have_explicit_advisory_profiles(resource: str) -> None:
+    enricher = NamespaceProfileEnricher()
+    assert enricher.is_resource_explicit(resource)
+    assert enricher.get_profile_for_resource(resource)["constraint"]["enforced"] is False
+    assert enricher.get_verification_status(resource)["status"] == "unverified"

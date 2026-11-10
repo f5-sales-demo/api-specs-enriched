@@ -1,3 +1,4 @@
+---
 version: "1.0.0"
 description: "Minimum configuration definitions for F5 XC resources"
 
@@ -2047,7 +2048,23 @@ resources:
 
     mutually_exclusive_groups:
       - name: "provider_choice"
-        fields: ["spec.aws", "spec.azure", "spec.baremetal", "spec.eks_k8s", "spec.equinix", "spec.gcp", "spec.kvm", "spec.nutanix", "spec.oci", "spec.openshift_virtualization", "spec.openstack", "spec.vmware"]
+        fields:
+          - "spec.aks_k8s"
+          - "spec.aws"
+          - "spec.azure"
+          - "spec.baremetal"
+          - "spec.eks_k8s"
+          - "spec.equinix"
+          - "spec.gcp"
+          - "spec.gke_k8s"
+          - "spec.hyper_v"
+          - "spec.kvm"
+          - "spec.nutanix"
+          - "spec.oci"
+          - "spec.oci_k8s"
+          - "spec.openshift_virtualization"
+          - "spec.openstack"
+          - "spec.vmware"
         required: true
         reason: "Choose exactly one cloud provider"
       - name: "node_ha_choice"

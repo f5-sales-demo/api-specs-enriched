@@ -274,7 +274,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_ai_assistant"
+                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_acme_issuer"
                 }
               }
             }
@@ -505,7 +505,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_ai_assistant"
+                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_acme_issuer"
                 }
               }
             }
@@ -744,7 +744,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_ai_assistant"
+                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_acme_issuer"
                 }
               }
             }
@@ -988,7 +988,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_ai_assistant"
+                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_acme_issuer"
                 }
               }
             }
@@ -1219,7 +1219,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_ai_assistant"
+                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_acme_issuer"
                 }
               }
             }
@@ -1462,7 +1462,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_ai_assistant"
+                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_acme_issuer"
                 }
               }
             }
@@ -1694,7 +1694,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_ai_assistant"
+                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_acme_issuer"
                 }
               }
             }
@@ -1934,7 +1934,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_ai_assistant"
+                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_acme_issuer"
                 }
               }
             }
@@ -2182,7 +2182,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_ai_assistant"
+                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_acme_issuer"
                 }
               }
             }
@@ -2414,7 +2414,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_ai_assistant"
+                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_acme_issuer"
                 }
               }
             }
@@ -2549,6 +2549,496 @@
       "x-ves-proto-service": "ves.io.schema.certificate.API",
       "x-ves-proto-service-type": "AUTO_CRUD_PUBLIC"
     },
+    "/api/config/namespaces/{namespace}/certificates/{name}/retry": {
+      "post": {
+        "summary": "Retry Certificate Issuance.",
+        "description": "Retries certificate issuance after a corrected error or wait condition.\nA retry for a valid certificate is a no-op unless force_renew is true.\nAn active issuance or renewal is not duplicated.",
+        "operationId": "ves.io.schema.certificate.CustomAPI.RetryIssuance",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/certificateRetryIssuanceResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Returned when operation is not authorized.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Returned when there is no permission to access resource.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Returned when resource is not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Returned when operation on resource is conflicting with current value.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Returned when operation has been rejected as it is happening too frequently.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Returned when server encountered an error in processing API.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Returned when service is unavailable temporarily.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Returned when server timed out processing request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_acme_issuer"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "description": "Namespace\n\nx-required\nNamespace of the certificate.",
+            "in": "path",
+            "required": true,
+            "x-displayname": "Namespace",
+            "schema": {
+              "type": "string"
+            },
+            "x-f5xc-example": "system"
+          },
+          {
+            "name": "name",
+            "description": "Name\n\nx-required\nName of the certificate.",
+            "in": "path",
+            "required": true,
+            "x-displayname": "Name",
+            "schema": {
+              "type": "string"
+            },
+            "x-f5xc-example": "example-certificate"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/certificateRetryIssuanceRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "externalDocs": {
+          "description": "Examples of this operation.",
+          "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/certificates/"
+        },
+        "x-ves-proto-rpc": "ves.io.schema.certificate.CustomAPI.RetryIssuance",
+        "tags": [
+          "config"
+        ],
+        "x-f5xc-operation-metadata": {
+          "purpose": "Resource creation operation",
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.name",
+            "path.namespace"
+          ],
+          "optional_fields": [],
+          "field_docs": {},
+          "conditions": {
+            "prerequisites": [
+              "Active namespace",
+              "Certificate file or data"
+            ],
+            "postconditions": [
+              "Retry resource created",
+              "Resource assigned unique identifier"
+            ]
+          },
+          "side_effects": {
+            "creates": [
+              "retry"
+            ]
+          },
+          "danger_level": "medium",
+          "confirmation_required": false,
+          "common_errors": [
+            {
+              "code": 401,
+              "message": "Authentication required",
+              "solution": "Provide valid API credentials"
+            },
+            {
+              "code": 403,
+              "message": "Permission denied",
+              "solution": "Check access permissions for this operation"
+            },
+            {
+              "code": 404,
+              "message": "Resource not found",
+              "solution": "Verify resource name, namespace, and path"
+            },
+            {
+              "code": 409,
+              "message": "Resource already exists",
+              "solution": "Use different name or update existing resource"
+            },
+            {
+              "code": 429,
+              "message": "Rate limit exceeded",
+              "solution": "Wait before retrying the operation"
+            },
+            {
+              "code": 500,
+              "message": "Server error",
+              "solution": "Retry operation or contact support"
+            }
+          ],
+          "performance_impact": {
+            "latency": "low",
+            "resource_usage": "low"
+          }
+        },
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.name",
+          "path.namespace"
+        ],
+        "x-f5xc-danger-level": "medium",
+        "x-f5xc-side-effects": {
+          "creates": [
+            "retry"
+          ]
+        },
+        "x-f5xc-discovered-response-time": {
+          "p50_ms": 1000,
+          "p95_ms": 3000,
+          "p99_ms": 8000,
+          "sample_count": 0,
+          "source": "estimate"
+        }
+      },
+      "x-displayname": "Certificate.",
+      "x-ves-proto-service": "ves.io.schema.certificate.CustomAPI",
+      "x-ves-proto-service-type": "CUSTOM_PUBLIC"
+    },
+    "/api/config/namespaces/{namespace}/certificates/{name}/revoke": {
+      "post": {
+        "summary": "Revoke Certificate.",
+        "description": "Revokes an issued certificate by sending an ACME revocation request to the\nissuing CA. The certificate is added to the CA's revocation list (CRL/OCSP)\nand will no longer be trusted by clients that check revocation status.\nThe certificate object is not deleted — it transitions to the REVOKED state.",
+        "operationId": "ves.io.schema.certificate.CustomAPI.RevokeCertificate",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/certificateRevokeCertificateResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Returned when operation is not authorized.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Returned when there is no permission to access resource.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Returned when resource is not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Returned when operation on resource is conflicting with current value.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Returned when operation has been rejected as it is happening too frequently.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Returned when server encountered an error in processing API.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Returned when service is unavailable temporarily.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Returned when server timed out processing request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "string"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_acme_issuer"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "description": "Namespace\n\nx-required\nNamespace of the certificate.",
+            "in": "path",
+            "required": true,
+            "x-displayname": "Namespace",
+            "schema": {
+              "type": "string"
+            },
+            "x-f5xc-example": "system"
+          },
+          {
+            "name": "name",
+            "description": "Name\n\nx-required\nName of the certificate.",
+            "in": "path",
+            "required": true,
+            "x-displayname": "Name",
+            "schema": {
+              "type": "string"
+            },
+            "x-f5xc-example": "example-certificate"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/certificateRevokeCertificateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "externalDocs": {
+          "description": "Examples of this operation.",
+          "url": "https://f5-sales-demo.github.io/api-specs-enriched/api-reference/certificates/"
+        },
+        "x-ves-proto-rpc": "ves.io.schema.certificate.CustomAPI.RevokeCertificate",
+        "tags": [
+          "config"
+        ],
+        "x-f5xc-operation-metadata": {
+          "purpose": "Resource creation operation",
+          "required_fields": [
+            "metadata.name",
+            "metadata.namespace",
+            "path.name",
+            "path.namespace"
+          ],
+          "optional_fields": [],
+          "field_docs": {},
+          "conditions": {
+            "prerequisites": [
+              "Active namespace",
+              "Certificate file or data"
+            ],
+            "postconditions": [
+              "Revoke resource created",
+              "Resource assigned unique identifier"
+            ]
+          },
+          "side_effects": {
+            "creates": [
+              "revoke"
+            ]
+          },
+          "danger_level": "medium",
+          "confirmation_required": false,
+          "common_errors": [
+            {
+              "code": 401,
+              "message": "Authentication required",
+              "solution": "Provide valid API credentials"
+            },
+            {
+              "code": 403,
+              "message": "Permission denied",
+              "solution": "Check access permissions for this operation"
+            },
+            {
+              "code": 404,
+              "message": "Resource not found",
+              "solution": "Verify resource name, namespace, and path"
+            },
+            {
+              "code": 409,
+              "message": "Resource already exists",
+              "solution": "Use different name or update existing resource"
+            },
+            {
+              "code": 429,
+              "message": "Rate limit exceeded",
+              "solution": "Wait before retrying the operation"
+            },
+            {
+              "code": 500,
+              "message": "Server error",
+              "solution": "Retry operation or contact support"
+            }
+          ],
+          "performance_impact": {
+            "latency": "low",
+            "resource_usage": "low"
+          }
+        },
+        "x-f5xc-required-fields": [
+          "metadata.name",
+          "metadata.namespace",
+          "path.name",
+          "path.namespace"
+        ],
+        "x-f5xc-danger-level": "medium",
+        "x-f5xc-side-effects": {
+          "creates": [
+            "revoke"
+          ]
+        },
+        "x-f5xc-discovered-response-time": {
+          "p50_ms": 1000,
+          "p95_ms": 3000,
+          "p99_ms": 8000,
+          "sample_count": 0,
+          "source": "estimate"
+        }
+      },
+      "x-displayname": "Certificate.",
+      "x-ves-proto-service": "ves.io.schema.certificate.CustomAPI",
+      "x-ves-proto-service-type": "CUSTOM_PUBLIC"
+    },
     "/api/config/namespaces/{metadata.namespace}/certificate_chains": {
       "post": {
         "summary": "Create Certificate Chain.",
@@ -2658,7 +3148,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_ai_assistant"
+                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_acme_issuer"
                 }
               }
             }
@@ -2890,7 +3380,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_ai_assistant"
+                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_acme_issuer"
                 }
               }
             }
@@ -3130,7 +3620,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_ai_assistant"
+                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_acme_issuer"
                 }
               }
             }
@@ -3378,7 +3868,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_ai_assistant"
+                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_acme_issuer"
                 }
               }
             }
@@ -3610,7 +4100,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_ai_assistant"
+                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_acme_issuer"
                 }
               }
             }
@@ -3854,7 +4344,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_ai_assistant"
+                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_acme_issuer"
                 }
               }
             }
@@ -4085,7 +4575,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_ai_assistant"
+                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_acme_issuer"
                 }
               }
             }
@@ -4324,7 +4814,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_ai_assistant"
+                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_acme_issuer"
                 }
               }
             }
@@ -4568,7 +5058,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_ai_assistant"
+                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_acme_issuer"
                 }
               }
             }
@@ -4799,7 +5289,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_ai_assistant"
+                  "$ref": "#/components/schemas/runtimeError__ves_io_schema_acme_issuer"
                 }
               }
             }
@@ -5049,7 +5539,7 @@
           "system_metadata": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType__ves_io_schema_api_sec_api_crawler"
+                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType__ves_io_schema_acme_issuer"
               }
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
@@ -5135,7 +5625,7 @@
               "metadata": {
                 "source": "api-probed",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5182,7 +5672,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5216,7 +5706,7 @@
               "metadata": {
                 "source": "api-probed",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5250,7 +5740,7 @@
               "metadata": {
                 "source": "api-probed",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               },
               "deterministic": true
             },
@@ -5391,7 +5881,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               },
               "deterministic": true
             },
@@ -5403,7 +5893,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00",
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace": {
@@ -5436,7 +5926,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               },
               "deterministic": true
             },
@@ -5448,7 +5938,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00",
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           }
         },
@@ -5610,12 +6100,12 @@
             "maxLength": 17,
             "minLength": 17,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00"
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00"
           },
           "system_metadata": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType__ves_io_schema_api_sec_api_crawler"
+                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType__ves_io_schema_acme_issuer"
               }
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
@@ -5710,7 +6200,7 @@
               "metadata": {
                 "source": "api-probed",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5746,7 +6236,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5780,7 +6270,7 @@
               "metadata": {
                 "source": "api-probed",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -5814,7 +6304,7 @@
               "metadata": {
                 "source": "api-probed",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               },
               "deterministic": true
             },
@@ -5890,7 +6380,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               },
               "deterministic": true
             },
@@ -5942,7 +6432,7 @@
             "description": "Errors(if any) while listing items from collection.",
             "title": "errors",
             "items": {
-              "$ref": "#/components/schemas/schemaErrorType__ves_io_schema_ai_assistant"
+              "$ref": "#/components/schemas/schemaErrorType__ves_io_schema_acme_issuer"
             },
             "x-displayname": "Errors",
             "x-f5xc-description-short": "Errors(if any) while listing items from collection.",
@@ -5972,7 +6462,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.7,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6049,7 +6539,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.8,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6060,7 +6550,7 @@
             },
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00"
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00"
           },
           "disabled": {
             "type": "boolean",
@@ -6145,7 +6635,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               },
               "deterministic": true
             },
@@ -6157,7 +6647,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00",
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace": {
@@ -6189,7 +6679,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               },
               "deterministic": true
             },
@@ -6201,7 +6691,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00",
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "owner_view": {
@@ -6245,7 +6735,7 @@
           "system_metadata": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType__ves_io_schema_api_sec_api_crawler"
+                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType__ves_io_schema_acme_issuer"
               }
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
@@ -6271,7 +6761,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6283,7 +6773,7 @@
             "x-field-mutability": "read-only",
             "minLength": 12,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00"
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00"
           },
           "uid": {
             "type": "string",
@@ -6300,7 +6790,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6313,7 +6803,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00"
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00"
           }
         },
         "x-f5xc-description-short": "By default a summary of CRL is returned in 'List'. By setting 'report_fields' in the ListRequest more details of each item can be got.",
@@ -6496,7 +6986,7 @@
               "metadata": {
                 "source": "api-probed",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6532,7 +7022,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6566,7 +7056,7 @@
               "metadata": {
                 "source": "api-probed",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6600,7 +7090,7 @@
               "metadata": {
                 "source": "api-probed",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               },
               "deterministic": true
             },
@@ -6726,7 +7216,7 @@
           }
         }
       },
-      "protobufAny__ves_io_schema_ai_assistant": {
+      "protobufAny__ves_io_schema_acme_issuer": {
         "type": "object",
         "description": "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form\nof utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\nFoo foo = ...;\nAny any;\nany.packfrom(foo);\n...\nIf (any.unpackto(&foo)) {\n...\n}\n\nExample 2: Pack and unpack a message in Java.\n\nFoo foo = ...;\nAny any = any.pack(foo);\n...\nIf (any.is(foo.class)) {\nfoo = any.unpack(foo.class);\n}\n\nExample 3: Pack and unpack a message in Python.\n\nFoo = Foo(...)\nany = Any()\nany.pack(foo)\n...\nIf any.is(foo.descriptor):\nany.unpack(foo)\n...\n\nExample 4: Pack and unpack a message in Go\n\nfoo := &pb.foo{...}\nany, err := ptypes.marshalany(foo)\n...\nFoo := &pb.foo{}\nif err := ptypes.unmarshalany(any, foo); err != nil {\n...\n}\n\nThe pack methods provided by protobuf library will by default use\n'type.googleapis.com/full.type.name' as the type URL and the unpack\nmethods only use the fully qualified type name after the last '/'\nin the type URL, for example \"foo.example.com/x/y.z\" will yield type\nname \"y.z\".\n\nJSON\n====\nThe JSON representation of an `Any` value uses the regular\nrepresentation of the deserialized, embedded message, with an\nadditional field `@type` which contains the type URL. Example:\n\npackage google.profile;\nmessage Person {\nstring first_name = 1;\nstring last_name = 2;\n}\n\n{\n\"@type\": \"type.googleapis.com/google.profile.person\",\n\"firstName\": <string>,\n\"lastName\": <string>\n}\n\nIf the embedded message type is well-known and has a custom JSON\nrepresentation, that representation will be embedded adding a field\n`value` which holds the custom JSON in addition to the `@type`\nfield. Example (for message [google.protobuf.duration][]):\n\n{\n\"@type\": \"type.googleapis.com/google.protobuf.duration\",\n\"value\": \"1.212s\"\n}",
         "properties": {
@@ -6743,7 +7233,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6766,7 +7256,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6777,7 +7267,7 @@
             },
             "minLength": 3,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00"
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00"
           }
         },
         "x-f5xc-description-short": "Contains an arbitrary serialized protocol buffer message along with a URL that describes the type of the serialized message.",
@@ -6810,7 +7300,7 @@
           }
         }
       },
-      "runtimeError__ves_io_schema_ai_assistant": {
+      "runtimeError__ves_io_schema_acme_issuer": {
         "type": "object",
         "properties": {
           "code": {
@@ -6827,7 +7317,7 @@
           "details": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/protobufAny__ves_io_schema_ai_assistant"
+              "$ref": "#/components/schemas/protobufAny__ves_io_schema_acme_issuer"
             },
             "description": "Configuration parameter for details",
             "x-f5xc-required-for": {
@@ -6848,7 +7338,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6869,7 +7359,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6936,7 +7426,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.95,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               },
               "deterministic": true
             },
@@ -6964,7 +7454,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -6990,7 +7480,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7001,7 +7491,7 @@
             },
             "minLength": 27,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00"
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00"
           },
           "service_name": {
             "type": "string",
@@ -7018,7 +7508,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7030,19 +7520,19 @@
           },
           "status": {
             "type": "string",
-            "description": "Status of the condition\n\"Success\" Validation has succeeded. Requested operation was successful.\n\"Failed\" Validation has failed.\n\"Incomplete\" Validation of configuration has failed due to missing configuration.\n\"Installed\" Validation has passed and configuration has been installed in data path or K8s\n\"Down\" Configuration is operationally down. E.g. Down interface\n\"Disabled\" Configuration is administratively disabled i.e. objectmetatype.disable = true.\n\"NotApplicable\" Configuration is not applicable e.g. Tenant service_policy_set(s) in system namespace are not applicable on REs.",
+            "description": "Status of the condition\n\"Success\" Validation has succeeded. Requested operation was successful.\n\"Failed\" Validation or operation has failed.\n\"Incomplete\" Validation of configuration has failed due to missing configuration.\n\"Installed\" Validation has passed and configuration has been installed in data path or K8s.\n\"Down\" Configuration is operationally down. E.g. Down interface.\n\"Disabled\" Configuration is administratively disabled i.e. objectmetatype.disable = true.\n\"NotApplicable\" Configuration is not applicable e.g. Tenant service_policy_set(s) in system namespace are not applicable on REs.\n\"InProgress\" Operation is in progress.",
             "title": "status",
             "x-displayname": "Status",
             "x-ves-example": "Failed",
             "x-ves-validation-rules": {
-              "ves.io.schema.rules.string.in": "[\\\"Success\\\",\\\"Failed\\\",\\\"Incomplete\\\",\\\"Installed\\\",\\\"Down\\\",\\\"Disabled\\\",\\\"NotApplicable\\\"]"
+              "ves.io.schema.rules.string.in": "[\\\"Success\\\",\\\"Failed\\\",\\\"Incomplete\\\",\\\"Installed\\\",\\\"Down\\\",\\\"Disabled\\\",\\\"NotApplicable\\\",\\\"InProgress\\\"]"
             },
             "x-f5xc-example": "Failed",
             "x-validation-rules": {
-              "ves.io.schema.rules.string.in": "[\\\"Success\\\",\\\"Failed\\\",\\\"Incomplete\\\",\\\"Installed\\\",\\\"Down\\\",\\\"Disabled\\\",\\\"NotApplicable\\\"]"
+              "ves.io.schema.rules.string.in": "[\\\"Success\\\",\\\"Failed\\\",\\\"Incomplete\\\",\\\"Installed\\\",\\\"Down\\\",\\\"Disabled\\\",\\\"NotApplicable\\\",\\\"InProgress\\\"]"
             },
             "x-f5xc-description-short": "Status of the condition \"Success\" Validation has succeeded.",
-            "x-f5xc-description-medium": "Status of the condition \"Success\" Validation has succeeded. Requested operation was successful. \"Failed\" Validation has failed. \"Incomplete\" Validation of configuration has failed due to missing configuration. \"Installed\" Validation has passed and configuration has been installed in data path or...",
+            "x-f5xc-description-medium": "Status of the condition \"Success\" Validation has succeeded. Requested operation was successful. \"Failed\" Validation or operation has failed. \"Incomplete\" Validation of configuration has failed due to missing configuration. \"Installed\" Validation has passed and configuration has been installed in...",
             "maxLength": 1024,
             "enum": [
               "Success",
@@ -7051,7 +7541,8 @@
               "Installed",
               "Down",
               "Disabled",
-              "NotApplicable"
+              "NotApplicable",
+              "InProgress"
             ],
             "x-f5xc-constraints": {
               "constraintType": "string",
@@ -7060,7 +7551,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7071,7 +7562,7 @@
             },
             "minLength": 17,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00"
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00"
           },
           "type": {
             "type": "string",
@@ -7100,7 +7591,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7189,7 +7680,7 @@
           }
         }
       },
-      "schemaErrorType__ves_io_schema_ai_assistant": {
+      "schemaErrorType__ves_io_schema_acme_issuer": {
         "type": "object",
         "description": "Information about a error in API operation.",
         "title": "ErrorType",
@@ -7212,7 +7703,7 @@
           "error_obj": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/protobufAny__ves_io_schema_ai_assistant"
+                "$ref": "#/components/schemas/protobufAny__ves_io_schema_acme_issuer"
               }
             ],
             "x-f5xc-required-for": {
@@ -7237,7 +7728,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -7313,7 +7804,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               },
               "deterministic": true
             },
@@ -7325,7 +7816,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00",
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           }
         },
@@ -7358,7 +7849,7 @@
           }
         }
       },
-      "schemaInitializersType__ves_io_schema_api_sec_api_crawler": {
+      "schemaInitializersType__ves_io_schema_acme_issuer": {
         "type": "object",
         "description": "Initializers tracks the progress of initialization of a configuration object.",
         "title": "InitializersType",
@@ -7455,7 +7946,7 @@
                 "metadata": {
                   "source": "inferred",
                   "confidence": 0.85,
-                  "validatedAt": "2026-10-29T12:14:42+00:00"
+                  "validatedAt": "2026-11-09T17:58:55+00:00"
                 }
               }
             },
@@ -7522,7 +8013,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               },
               "byteLength": {
                 "max": 1200
@@ -7537,7 +8028,7 @@
             },
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00",
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00",
             "x-f5xc-console-field": {
               "resources": {
                 "certificate": {
@@ -7634,7 +8125,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               },
               "deterministic": true
             },
@@ -7646,7 +8137,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00",
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
             "x-f5xc-console-field": {
               "resources": {
@@ -7696,7 +8187,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               },
               "deterministic": true
             },
@@ -7708,7 +8199,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00",
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           }
         },
@@ -7774,7 +8265,7 @@
                 "metadata": {
                   "source": "inferred",
                   "confidence": 0.85,
-                  "validatedAt": "2026-10-29T12:14:42+00:00"
+                  "validatedAt": "2026-11-09T17:58:55+00:00"
                 }
               }
             },
@@ -7841,7 +8332,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               },
               "byteLength": {
                 "max": 1200
@@ -7856,7 +8347,7 @@
             },
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00"
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00"
           },
           "disable": {
             "type": "boolean",
@@ -7927,7 +8418,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               },
               "deterministic": true
             },
@@ -7939,7 +8430,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00",
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace": {
@@ -7973,7 +8464,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               },
               "deterministic": true
             },
@@ -7985,7 +8476,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00",
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           }
         },
@@ -8044,7 +8535,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8056,7 +8547,7 @@
             "readOnly": true,
             "minLength": 12,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00"
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00"
           },
           "name": {
             "type": "string",
@@ -8075,7 +8566,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8086,7 +8577,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00"
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00"
           },
           "namespace": {
             "type": "string",
@@ -8119,7 +8610,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               },
               "deterministic": true
             },
@@ -8131,7 +8622,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00",
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "tenant": {
@@ -8151,7 +8642,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8164,7 +8655,7 @@
             "x-field-mutability": "read-only",
             "minLength": 12,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00"
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00"
           },
           "uid": {
             "type": "string",
@@ -8183,7 +8674,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8197,7 +8688,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00"
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00"
           }
         },
         "x-f5xc-description-short": "Type establishes a 'direct reference' from one object(the referrer) to another(the referred).",
@@ -8261,7 +8752,7 @@
                 "metadata": {
                   "source": "inferred",
                   "confidence": 0.85,
-                  "validatedAt": "2026-10-29T12:14:42+00:00"
+                  "validatedAt": "2026-11-09T17:58:55+00:00"
                 }
               }
             },
@@ -8328,7 +8819,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               },
               "byteLength": {
                 "max": 1200
@@ -8343,7 +8834,7 @@
             },
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00"
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00"
           },
           "disable": {
             "type": "boolean",
@@ -8412,7 +8903,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               },
               "deterministic": true
             },
@@ -8424,7 +8915,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00",
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace": {
@@ -8458,7 +8949,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               },
               "deterministic": true
             },
@@ -8470,7 +8961,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00",
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           }
         },
@@ -8529,7 +9020,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8557,7 +9048,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8585,7 +9076,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8624,7 +9115,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8651,7 +9142,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8664,7 +9155,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00"
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00"
           },
           "vtrp_id": {
             "type": "string",
@@ -8680,7 +9171,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8815,7 +9306,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8826,7 +9317,7 @@
             },
             "minLength": 27,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00"
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00"
           },
           "status": {
             "type": "string",
@@ -8844,7 +9335,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8855,7 +9346,7 @@
             },
             "minLength": 17,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00"
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00"
           }
         },
         "x-f5xc-description-short": "Status is a return value for calls that don't return other objects.",
@@ -8887,7 +9378,7 @@
           }
         }
       },
-      "schemaSystemObjectGetMetaType__ves_io_schema_api_sec_api_crawler": {
+      "schemaSystemObjectGetMetaType__ves_io_schema_acme_issuer": {
         "type": "object",
         "description": "SystemObjectGetMetaType is metadata generated or populated by the system for all persisted objects and\ncannot be updated directly by users.",
         "title": "SystemObjectGetMetaType",
@@ -8911,7 +9402,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8938,7 +9429,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8965,7 +9456,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -8993,7 +9484,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9025,7 +9516,7 @@
           "initializers": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/schemaInitializersType__ves_io_schema_api_sec_api_crawler"
+                "$ref": "#/components/schemas/schemaInitializersType__ves_io_schema_acme_issuer"
               }
             ],
             "x-f5xc-description-short": "Configuration parameter for initializers.",
@@ -9069,7 +9560,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9137,7 +9628,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9149,7 +9640,7 @@
             "x-field-mutability": "read-only",
             "minLength": 12,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00"
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00"
           },
           "uid": {
             "type": "string",
@@ -9168,7 +9659,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9181,7 +9672,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00"
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00"
           }
         },
         "x-f5xc-description-short": "SystemObjectGetMetaType is metadata generated or populated by the system for all persisted objects and cannot be updated directly by users.",
@@ -9236,7 +9727,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9247,7 +9738,7 @@
             },
             "minLength": 12,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00"
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00"
           },
           "name": {
             "type": "string",
@@ -9280,7 +9771,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               },
               "deterministic": true
             },
@@ -9292,7 +9783,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00",
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace": {
@@ -9326,7 +9817,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               },
               "deterministic": true
             },
@@ -9338,7 +9829,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00",
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "uid": {
@@ -9356,7 +9847,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -9369,7 +9860,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00"
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00"
           }
         },
         "x-f5xc-description-short": "ViewRefType represents a reference to a view.",
@@ -9398,6 +9889,400 @@
           "classification": {
             "category": "certificate",
             "multi_tenant_pattern": "shared-ref"
+          }
+        }
+      },
+      "certificateAutoCertConfig": {
+        "type": "object",
+        "description": "Configuration for automated ACME certificate issuance and lifecycle management.",
+        "title": "Auto Certificate Configuration",
+        "x-displayname": "Auto Certificate Configuration.",
+        "x-ves-oneof-field-challenge_choice": "[\"dns_01\",\"pre_validated\"]",
+        "x-ves-oneof-field-issuer_choice": "[\"custom_issuer\",\"default\"]",
+        "x-ves-proto-message": "ves.io.schema.certificate.AutoCertConfig",
+        "properties": {
+          "custom_issuer": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/certificateCustomIssuer"
+              }
+            ],
+            "x-f5xc-description-short": "Configuration parameter for custom issuer.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "default"
+            ]
+          },
+          "default": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ioschemaEmpty"
+              }
+            ],
+            "x-f5xc-example": "True",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "custom_issuer"
+            ]
+          },
+          "dns_01": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/certificateDNS01ChallengeConfig"
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "pre_validated"
+            ]
+          },
+          "domains": {
+            "type": "array",
+            "description": "Domains this certificate covers. These are used as Subject Alternative Names (SANs)\nin the ACME certificate order. At least one domain is required.",
+            "title": "Domains",
+            "minItems": 1,
+            "maxItems": 100,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 253,
+              "x-f5xc-constraints": {
+                "constraintType": "string",
+                "category": "general",
+                "minLength": 1,
+                "maxLength": 253,
+                "metadata": {
+                  "source": "inferred",
+                  "confidence": 0.85,
+                  "validatedAt": "2026-11-09T17:58:55+00:00"
+                }
+              }
+            },
+            "x-displayname": "Domains",
+            "x-ves-example": "example.com.",
+            "x-ves-required": "true",
+            "x-ves-validation-rules": {
+              "ves.io.schema.rules.message.required": "true",
+              "ves.io.schema.rules.repeated.items.string.max_len": "253",
+              "ves.io.schema.rules.repeated.items.string.min_len": "1",
+              "ves.io.schema.rules.repeated.items.string.vh_domain": "true",
+              "ves.io.schema.rules.repeated.max_items": "100",
+              "ves.io.schema.rules.repeated.min_items": "1",
+              "ves.io.schema.rules.repeated.unique": "true"
+            },
+            "x-f5xc-example": "example.com",
+            "x-validation-rules": {
+              "ves.io.schema.rules.message.required": "true",
+              "ves.io.schema.rules.repeated.items.string.max_len": "253",
+              "ves.io.schema.rules.repeated.items.string.min_len": "1",
+              "ves.io.schema.rules.repeated.items.string.vh_domain": "true",
+              "ves.io.schema.rules.repeated.max_items": "100",
+              "ves.io.schema.rules.repeated.min_items": "1",
+              "ves.io.schema.rules.repeated.unique": "true"
+            },
+            "x-f5xc-description-short": "Domains this certificate covers. These are used as Subject Alternative Names (SANs) in the ACME certificate order.",
+            "x-f5xc-description-medium": "Domains this certificate covers. These are used as Subject Alternative Names (SANs) in the ACME certificate order. At least one domain is required.",
+            "x-f5xc-constraints": {
+              "constraintType": "array",
+              "category": "discovery",
+              "minItems": 1,
+              "maxItems": 100,
+              "uniqueItems": true,
+              "metadata": {
+                "source": "discovery",
+                "confidence": 0.99,
+                "validatedAt": "2026-11-09T17:58:55+00:00"
+              },
+              "deterministic": true
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": true,
+              "create": true,
+              "update": false,
+              "read": false
+            }
+          },
+          "key_algorithm": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/certificateKeyAlgorithm"
+              }
+            ],
+            "x-f5xc-description-short": "Configuration parameter for key algorithm.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "pre_validated": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/certificatePreValidatedConfig"
+              }
+            ],
+            "x-f5xc-description-short": "Configuration parameter for pre validated.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "dns_01"
+            ]
+          },
+          "renew_before_days": {
+            "type": "integer",
+            "description": "Days before certificate expiration to trigger renewal. Recommended: two-thirds of the\ncertificate lifespan.\nIf this value is greater than or nearly equal to the certificate's actual lifetime,\nsuch that renewal would occur less than 24 hours after its validity begins, renewal\nwill default to two-thirds through its actual lifetime.",
+            "title": "Renew Before Days",
+            "format": "int64",
+            "x-displayname": "Renew Before Expiry (Days)",
+            "x-ves-example": "15",
+            "x-ves-validation-rules": {
+              "ves.io.schema.rules.uint32.gte": "1",
+              "ves.io.schema.rules.uint32.lte": "90"
+            },
+            "x-f5xc-example": "15",
+            "x-validation-rules": {
+              "ves.io.schema.rules.uint32.gte": "1",
+              "ves.io.schema.rules.uint32.lte": "90"
+            },
+            "x-f5xc-description-short": "Days before certificate expiration to trigger renewal. Recommended: two-thirds of the certificate lifespan.",
+            "x-f5xc-description-medium": "Days before certificate expiration to trigger renewal. Recommended: two-thirds of the certificate lifespan. If this value is greater than or nearly equal to the certificate's actual lifetime, such that renewal would occur less than 24 hours after its validity begins, renewal will default to...",
+            "x-f5xc-constraints": {
+              "constraintType": "number",
+              "category": "discovery",
+              "minimum": 1,
+              "maximum": 90,
+              "deterministic": true,
+              "metadata": {
+                "source": "api-probed",
+                "confidence": 0.99,
+                "validatedAt": "2026-11-09T17:58:55+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": true,
+              "create": true,
+              "update": false,
+              "read": false
+            }
+          }
+        },
+        "x-f5xc-description-short": "Configuration for automated ACME certificate issuance and lifecycle management.",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for certificateAutoCertConfig",
+          "required_fields": [
+            "domains",
+            "renew_before_days"
+          ],
+          "mutually_exclusive_groups": [],
+          "example_json": "{\n  \"domains\": [\n    \"value\"\n  ],\n  \"renew_before_days\": 1\n}",
+          "example_yaml": "domains:\n- value\nrenew_before_days: 1"
+        },
+        "x-f5xc-cli-domain": "certificates",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Certificates can be managed in any namespace"
+          },
+          "classification": {
+            "category": "certificate",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
+      },
+      "certificateCertLifecycleState": {
+        "type": "string",
+        "description": "Lifecycle state of an auto-managed certificate\n\nCertificate object created, issuance not yet started\nACME order created, issuance in progress\nACME challenge (DNS-01 or HTTP-01) is being processed\nCertificate has been issued and is valid\nCertificate renewal is in progress\nCertificate has expired without successful renewal\nCertificate has been revoked\nCertificate issuance or renewal encountered an error\nCertificate revocation is in progress\nWaiting for customer to create required DNS records for certificate validation\nThe last certificate revocation attempt failed and requires an explicit retry.",
+        "title": "Certificate Lifecycle State",
+        "enum": [
+          "CERT_PENDING",
+          "CERT_ISSUING",
+          "CERT_CHALLENGE_IN_PROGRESS",
+          "CERT_VALID",
+          "CERT_RENEWING",
+          "CERT_EXPIRED",
+          "CERT_REVOKED",
+          "CERT_ERROR",
+          "CERT_REVOKING",
+          "CERT_WAITING_FOR_DNS",
+          "CERT_REVOKE_FAILED"
+        ],
+        "default": "CERT_PENDING",
+        "x-displayname": "Certificate Lifecycle State.",
+        "x-ves-proto-enum": "ves.io.schema.certificate.CertLifecycleState",
+        "x-f5xc-description-short": "Lifecycle state of an auto-managed certificate Certificate object created, issuance not yet started ACME order created, issuance in progress ACME...",
+        "x-f5xc-description-medium": "Lifecycle state of an auto-managed certificate Certificate object created, issuance not yet started ACME order created, issuance in progress ACME challenge (DNS-01 or HTTP-01) is being processed Certificate has been issued and is valid Certificate renewal is in progress Certificate has expired...",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for certificateCertLifecycleState",
+          "required_fields": [],
+          "mutually_exclusive_groups": [],
+          "example_json": "\"CERT_PENDING\"",
+          "example_yaml": "CERT_PENDING\n..."
+        },
+        "x-f5xc-cli-domain": "certificates",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Certificates can be managed in any namespace"
+          },
+          "classification": {
+            "category": "certificate",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
+      },
+      "certificateCertificateLifecycleStatus": {
+        "type": "object",
+        "description": "Lifecycle status for auto-managed certificates.",
+        "title": "Certificate Lifecycle Status",
+        "x-displayname": "Certificate Lifecycle Status.",
+        "x-ves-proto-message": "ves.io.schema.certificate.CertificateLifecycleStatus",
+        "properties": {
+          "dns_instructions": {
+            "type": "array",
+            "description": "DNS records the customer must create for non-delegated DNS-01 validation.\nPopulated when the certificate uses DNS-01 with a non-delegated domain\n(CNAME delegation mode). Empty for delegated domains where DNS is managed directly.",
+            "title": "DNS Instructions",
+            "items": {
+              "$ref": "#/components/schemas/certificateDNSInstruction"
+            },
+            "x-displayname": "DNS Instructions.",
+            "x-f5xc-description-short": "DNS records the customer must create for non-delegated DNS-01 validation.",
+            "x-f5xc-description-medium": "DNS records the customer must create for non-delegated DNS-01 validation. Populated when the certificate uses DNS-01 with a non-delegated domain (CNAME delegation mode). Empty for delegated domains where DNS is managed directly.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "error_message": {
+            "type": "string",
+            "description": "Error message if the certificate is in an error state.",
+            "title": "Error Message",
+            "x-displayname": "Error Message.",
+            "x-f5xc-description-short": "Error message if the certificate is in an error state.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-11-09T17:58:55+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "next_renewal_time": {
+            "type": "string",
+            "description": "Time (UTC) when the next certificate renewal is scheduled.",
+            "title": "Next Renewal Time",
+            "format": "date-time",
+            "x-displayname": "Next Renewal Time.",
+            "x-f5xc-description-short": "Time (UTC) when the next certificate renewal is scheduled.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "format": "date-time",
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-11-09T17:58:55+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "state": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/certificateCertLifecycleState"
+              }
+            ],
+            "x-f5xc-example": "running",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          }
+        },
+        "x-f5xc-description-short": "Lifecycle status for auto-managed certificates.",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for certificateCertificateLifecycleStatus",
+          "required_fields": [],
+          "mutually_exclusive_groups": [],
+          "example_json": "{}",
+          "example_yaml": "{}"
+        },
+        "x-f5xc-cli-domain": "certificates",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Certificates can be managed in any namespace"
+          },
+          "classification": {
+            "category": "certificate",
+            "multi_tenant_pattern": "per-tenant"
           }
         }
       },
@@ -9514,7 +10399,7 @@
           "system_metadata": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType__ves_io_schema_api_sec_api_crawler"
+                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType__ves_io_schema_acme_issuer"
               }
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
@@ -9559,9 +10444,27 @@
         "description": "Shape of the Certificate specification.",
         "title": "Create Certificate",
         "x-displayname": "Create Certificate.",
+        "x-ves-displayorder": "1003,1,2,3,7",
         "x-ves-oneof-field-ocsp_stapling_choice": "[\"custom_hash_algorithms\",\"disable_ocsp_stapling\",\"use_system_defaults\"]",
+        "x-ves-oneof-field-provider": "[\"auto_cert\",\"manual\"]",
         "x-ves-proto-message": "ves.io.schema.certificate.CreateSpecType",
         "properties": {
+          "auto_cert": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/certificateAutoCertConfig"
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "manual"
+            ]
+          },
           "certificate_chain": {
             "allOf": [
               {
@@ -9587,45 +10490,38 @@
           },
           "certificate_url": {
             "type": "string",
-            "description": "Certificate.\nCertificate or certificate chain in PEM format including the PEM headers.",
-            "minLength": 1,
+            "description": "Certificate.\nCertificate or certificate chain in PEM format including the PEM headers.\nRequired unless this is an Automatic type certificate (certificate URL will be added once provisioned).",
             "maxLength": 131072,
             "x-displayname": "Certificate.",
             "x-ves-example": "Value",
-            "x-ves-required": "true",
             "x-ves-validation-rules": {
-              "ves.io.schema.rules.message.required": "true",
               "ves.io.schema.rules.string.certificate_url": "true",
-              "ves.io.schema.rules.string.max_bytes": "131072",
-              "ves.io.schema.rules.string.min_bytes": "1"
+              "ves.io.schema.rules.string.max_bytes": "131072"
             },
             "x-f5xc-example": "value",
             "x-validation-rules": {
-              "ves.io.schema.rules.message.required": "true",
               "ves.io.schema.rules.string.certificate_url": "true",
-              "ves.io.schema.rules.string.max_bytes": "131072",
-              "ves.io.schema.rules.string.min_bytes": "1"
+              "ves.io.schema.rules.string.max_bytes": "131072"
             },
             "x-f5xc-description-short": "Certificate. Certificate or certificate chain in PEM format including the PEM headers.",
+            "x-f5xc-description-medium": "Certificate. Certificate or certificate chain in PEM format including the PEM headers. Required unless this is an Automatic type certificate (certificate URL will be added once provisioned).",
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "discovery",
-              "minLength": 1,
               "maxLength": 131072,
               "byteLength": {
-                "max": 131072,
-                "min": 1
+                "max": 131072
               },
               "deterministic": true,
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
-              "minimum_config": true,
-              "create": true,
+              "minimum_config": false,
+              "create": false,
               "update": false,
               "read": false
             },
@@ -9677,10 +10573,27 @@
               "use_system_defaults"
             ]
           },
+          "manual": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ioschemaEmpty"
+              }
+            ],
+            "x-f5xc-example": "{\"key\": \"value\"}",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "auto_cert"
+            ]
+          },
           "private_key": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/schemaSecretType"
+                "$ref": "#/components/schemas/schemaSecretType__ves_io_schema_acme_issuer"
               }
             ],
             "x-f5xc-example": "example",
@@ -9713,12 +10626,10 @@
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for certificateCreateSpecType",
-          "required_fields": [
-            "certificate_url"
-          ],
+          "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_json": "{\n  \"certificate_url\": \"value\"\n}",
-          "example_yaml": "certificate_url: value"
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "certificates",
         "x-f5xc-recommended-oneof-variant": {
@@ -9791,6 +10702,352 @@
           }
         }
       },
+      "certificateCustomIssuer": {
+        "type": "object",
+        "description": "User-selected ACME issuer configuration.",
+        "title": "Custom Issuer",
+        "x-displayname": "Custom Issuer.",
+        "x-ves-proto-message": "ves.io.schema.certificate.CustomIssuer",
+        "properties": {
+          "issuer_ref": {
+            "type": "array",
+            "description": "Select an existing ACME issuer or create a new one.",
+            "title": "Issuer Reference",
+            "minItems": 1,
+            "maxItems": 1,
+            "items": {
+              "$ref": "#/components/schemas/ioschemaObjectRefType"
+            },
+            "x-displayname": "ACME Issuer.",
+            "x-ves-required": "true",
+            "x-ves-validation-rules": {
+              "ves.io.schema.rules.message.required": "true",
+              "ves.io.schema.rules.repeated.max_items": "1",
+              "ves.io.schema.rules.repeated.min_items": "1"
+            },
+            "x-validation-rules": {
+              "ves.io.schema.rules.message.required": "true",
+              "ves.io.schema.rules.repeated.max_items": "1",
+              "ves.io.schema.rules.repeated.min_items": "1"
+            },
+            "x-f5xc-description-short": "Select an existing ACME issuer or create a new one.",
+            "x-f5xc-constraints": {
+              "constraintType": "array",
+              "category": "discovery",
+              "minItems": 1,
+              "maxItems": 1,
+              "deterministic": true,
+              "metadata": {
+                "source": "discovery",
+                "confidence": 0.99,
+                "validatedAt": "2026-11-09T17:58:55+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": true,
+              "create": true,
+              "update": false,
+              "read": false
+            }
+          }
+        },
+        "x-f5xc-description-short": "User-selected ACME issuer configuration.",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for certificateCustomIssuer",
+          "required_fields": [
+            "issuer_ref"
+          ],
+          "mutually_exclusive_groups": [],
+          "example_json": "{\n  \"issuer_ref\": [\n    {}\n  ]\n}",
+          "example_yaml": "issuer_ref:\n- {}"
+        },
+        "x-f5xc-cli-domain": "certificates",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Certificates can be managed in any namespace"
+          },
+          "classification": {
+            "category": "certificate",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
+      },
+      "certificateDNS01ChallengeConfig": {
+        "type": "object",
+        "description": "Configuration for ACME DNS-01 challenge validation.",
+        "title": "DNS-01 Challenge Configuration",
+        "x-displayname": "DNS-01 Challenge Configuration.",
+        "x-ves-oneof-field-dns_provider_choice": "[\"cname_delegation\",\"delegated\"]",
+        "x-ves-proto-message": "ves.io.schema.certificate.DNS01ChallengeConfig",
+        "properties": {
+          "cname_delegation": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ioschemaEmpty"
+              }
+            ],
+            "x-f5xc-example": "example-resource",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "delegated"
+            ]
+          },
+          "delegated": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ioschemaEmpty"
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "cname_delegation"
+            ]
+          }
+        },
+        "x-f5xc-description-short": "Configuration for ACME DNS-01 challenge validation.",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for certificateDNS01ChallengeConfig",
+          "required_fields": [],
+          "mutually_exclusive_groups": [],
+          "example_json": "{}",
+          "example_yaml": "{}"
+        },
+        "x-f5xc-cli-domain": "certificates",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Certificates can be managed in any namespace"
+          },
+          "classification": {
+            "category": "certificate",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
+      },
+      "certificateDNSInstruction": {
+        "type": "object",
+        "description": "A DNS record that the customer must create for non-delegated DNS-01 challenge validation.\nDisplayed in the dashboard/UI to guide the customer through CNAME setup.",
+        "title": "DNS Instruction",
+        "x-displayname": "DNS Instruction.",
+        "x-ves-proto-message": "ves.io.schema.certificate.DNSInstruction",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Full DNS record name that the customer must create at their DNS registrar.",
+            "title": "Name",
+            "x-displayname": "DNS Record Name.",
+            "x-ves-example": "_acme-challenge.app.example.com.",
+            "x-f5xc-example": "_acme-challenge.app.example.com",
+            "x-f5xc-description-short": "Full DNS record name that the customer must create at their DNS registrar.",
+            "maxLength": 63,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "naming",
+              "maxLength": 63,
+              "minLength": 1,
+              "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+              "characterSet": {
+                "allowed": "[a-z0-9-]",
+                "restricted": "[^a-z0-9-]",
+                "required": "[a-z0-9]",
+                "description": "Lowercase letter start, alphanumeric with hyphens, alphanumeric end"
+              },
+              "format": "dns-label",
+              "formatDescription": "DNS-1035 label: must start with a lowercase letter, may contain lowercase alphanumeric and hyphens, must end with alphanumeric",
+              "validation": {
+                "rfc": "RFC 1035",
+                "standard": "DNS-1035 label (alpha-first)"
+              },
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.99,
+                "validatedAt": "2026-11-09T17:58:55+00:00"
+              },
+              "deterministic": true
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "minLength": 1,
+            "x-reconciled-from-discovery": true,
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00",
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
+          },
+          "record_type": {
+            "type": "string",
+            "description": "DNS record type. Always \"CNAME\" for non-delegated DNS-01.",
+            "title": "Record Type",
+            "x-displayname": "Record Type.",
+            "x-f5xc-description-short": "DNS record type. Always \"CNAME\" for non-delegated DNS-01.",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-11-09T17:58:55+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/certificateDNSInstructionStatus"
+              }
+            ],
+            "x-f5xc-example": "active",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "maxLength": 17,
+            "minLength": 17,
+            "x-reconciled-from-discovery": true,
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00"
+          },
+          "value": {
+            "type": "string",
+            "description": "Target value for the DNS record.",
+            "title": "Value",
+            "x-displayname": "DNS Record Value.",
+            "x-ves-example": "abc123.ves.I/O.",
+            "x-f5xc-example": "abc123.F5 XC",
+            "maxLength": 1024,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "general",
+              "maxLength": 1024,
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.85,
+                "validatedAt": "2026-11-09T17:58:55+00:00"
+              }
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "minLength": 3,
+            "x-reconciled-from-discovery": true,
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00"
+          }
+        },
+        "x-f5xc-description-short": "DNS record that the customer must create for non-delegated DNS-01 challenge validation.",
+        "x-f5xc-description-medium": "DNS record that the customer must create for non-delegated DNS-01 challenge validation. Displayed in the dashboard/UI to guide the customer through CNAME setup.",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for certificateDNSInstruction",
+          "required_fields": [],
+          "mutually_exclusive_groups": [],
+          "example_json": "{}",
+          "example_yaml": "{}"
+        },
+        "x-f5xc-cli-domain": "certificates",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Certificates can be managed in any namespace"
+          },
+          "classification": {
+            "category": "certificate",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
+      },
+      "certificateDNSInstructionStatus": {
+        "type": "string",
+        "description": "Verification status for a DNS instruction\n\nThe DNS record has not been created yet. Customer action required.\nThe DNS record has been verified.\nVerification of the DNS record timed out or failed.",
+        "title": "DNS Instruction Status",
+        "enum": [
+          "DNS_INSTRUCTION_PENDING",
+          "DNS_INSTRUCTION_VERIFIED",
+          "DNS_INSTRUCTION_FAILED"
+        ],
+        "default": "DNS_INSTRUCTION_PENDING",
+        "x-displayname": "DNS Instruction Status.",
+        "x-ves-proto-enum": "ves.io.schema.certificate.DNSInstructionStatus",
+        "x-f5xc-description-short": "Verification status for a DNS instruction The DNS record has not been created yet.",
+        "x-f5xc-description-medium": "Verification status for a DNS instruction The DNS record has not been created yet. Customer action required. The DNS record has been verified. Verification of the DNS record timed out or failed.",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for certificateDNSInstructionStatus",
+          "required_fields": [],
+          "mutually_exclusive_groups": [],
+          "example_json": "\"DNS_INSTRUCTION_PENDING\"",
+          "example_yaml": "DNS_INSTRUCTION_PENDING\n..."
+        },
+        "x-f5xc-cli-domain": "certificates",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Certificates can be managed in any namespace"
+          },
+          "classification": {
+            "category": "certificate",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
+      },
       "certificateDeleteRequest": {
         "type": "object",
         "description": "This is the input message of the 'DELETE' RPC.",
@@ -9840,7 +11097,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               },
               "deterministic": true
             },
@@ -9852,7 +11109,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00",
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace": {
@@ -9885,7 +11142,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               },
               "deterministic": true
             },
@@ -9897,7 +11154,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00",
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           }
         },
@@ -10059,12 +11316,12 @@
             "maxLength": 17,
             "minLength": 17,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00"
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00"
           },
           "system_metadata": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType__ves_io_schema_api_sec_api_crawler"
+                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType__ves_io_schema_acme_issuer"
               }
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
@@ -10118,10 +11375,28 @@
         "description": "Shape of the Certificate specification.",
         "title": "Get Certificate",
         "x-displayname": "GET Certificate.",
+        "x-ves-displayorder": "1003,1,2,3,7,1000,1001,1006,1002",
         "x-ves-oneof-field-ocsp_stapling_choice": "[\"custom_hash_algorithms\",\"disable_ocsp_stapling\",\"use_system_defaults\"]",
-        "x-ves-oneof-field-provider": "[\"manual\",\"virtual_host_auto_cert\"]",
+        "x-ves-oneof-field-provider": "[\"auto_cert\",\"manual\",\"virtual_host_auto_cert\"]",
         "x-ves-proto-message": "ves.io.schema.certificate.GetSpecType",
         "properties": {
+          "auto_cert": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/certificateAutoCertConfig"
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "manual",
+              "virtual_host_auto_cert"
+            ]
+          },
           "certificate_chain": {
             "allOf": [
               {
@@ -10147,45 +11422,38 @@
           },
           "certificate_url": {
             "type": "string",
-            "description": "Certificate.\nCertificate or certificate chain in PEM format including the PEM headers.",
-            "minLength": 1,
+            "description": "Certificate.\nCertificate or certificate chain in PEM format including the PEM headers.\nRequired unless this is an Automatic type certificate (certificate URL will be added once provisioned).",
             "maxLength": 131072,
             "x-displayname": "Certificate.",
             "x-ves-example": "Value",
-            "x-ves-required": "true",
             "x-ves-validation-rules": {
-              "ves.io.schema.rules.message.required": "true",
               "ves.io.schema.rules.string.certificate_url": "true",
-              "ves.io.schema.rules.string.max_bytes": "131072",
-              "ves.io.schema.rules.string.min_bytes": "1"
+              "ves.io.schema.rules.string.max_bytes": "131072"
             },
             "x-f5xc-example": "value",
             "x-validation-rules": {
-              "ves.io.schema.rules.message.required": "true",
               "ves.io.schema.rules.string.certificate_url": "true",
-              "ves.io.schema.rules.string.max_bytes": "131072",
-              "ves.io.schema.rules.string.min_bytes": "1"
+              "ves.io.schema.rules.string.max_bytes": "131072"
             },
             "x-f5xc-description-short": "Certificate. Certificate or certificate chain in PEM format including the PEM headers.",
+            "x-f5xc-description-medium": "Certificate. Certificate or certificate chain in PEM format including the PEM headers. Required unless this is an Automatic type certificate (certificate URL will be added once provisioned).",
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "discovery",
-              "minLength": 1,
               "maxLength": 131072,
               "byteLength": {
-                "max": 131072,
-                "min": 1
+                "max": 131072
               },
               "deterministic": true,
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
-              "minimum_config": true,
-              "create": true,
+              "minimum_config": false,
+              "create": false,
               "update": false,
               "read": false
             }
@@ -10269,13 +11537,14 @@
               "read": false
             },
             "x-f5xc-conflicts-with": [
+              "auto_cert",
               "virtual_host_auto_cert"
             ]
           },
           "private_key": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/schemaSecretType"
+                "$ref": "#/components/schemas/schemaSecretType__ves_io_schema_acme_issuer"
               }
             ],
             "x-f5xc-example": "example",
@@ -10333,23 +11602,64 @@
               "read": false
             },
             "x-f5xc-conflicts-with": [
+              "auto_cert",
               "manual"
             ]
           }
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for certificateGetSpecType",
-          "required_fields": [
-            "certificate_url"
-          ],
+          "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_json": "{\n  \"certificate_url\": \"value\"\n}",
-          "example_yaml": "certificate_url: value"
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "certificates",
         "x-f5xc-recommended-oneof-variant": {
           "ocsp_stapling_choice": "use_system_defaults"
         },
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Certificates can be managed in any namespace"
+          },
+          "classification": {
+            "category": "certificate",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
+      },
+      "certificateKeyAlgorithm": {
+        "type": "string",
+        "description": "Cryptographic key algorithm for certificate key pair generation\n\nRSA key with 2048-bit modulus\nRSA key with 4096-bit modulus\nECDSA key using NIST P-256 curve\nECDSA key using NIST P-384 curve.",
+        "title": "Key Algorithm",
+        "enum": [
+          "RSA_2048",
+          "RSA_4096",
+          "ECDSA_P256"
+        ],
+        "default": "RSA_2048",
+        "x-displayname": "Key Algorithm.",
+        "x-ves-proto-enum": "ves.io.schema.certificate.KeyAlgorithm",
+        "x-f5xc-description-short": "Cryptographic key algorithm for certificate key pair generation RSA key with 2048-bit modulus RSA key with 4096-bit modulus ECDSA key using NIST...",
+        "x-f5xc-description-medium": "Cryptographic key algorithm for certificate key pair generation RSA key with 2048-bit modulus RSA key with 4096-bit modulus ECDSA key using NIST P-256 curve ECDSA key using NIST P-384 curve.",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for certificateKeyAlgorithm",
+          "required_fields": [],
+          "mutually_exclusive_groups": [],
+          "example_json": "\"RSA_2048\"",
+          "example_yaml": "RSA_2048\n..."
+        },
+        "x-f5xc-cli-domain": "certificates",
         "x-f5xc-namespace-profile": {
           "constraint": {
             "allowed": [
@@ -10382,7 +11692,7 @@
             "description": "Errors(if any) while listing items from collection.",
             "title": "errors",
             "items": {
-              "$ref": "#/components/schemas/schemaErrorType__ves_io_schema_ai_assistant"
+              "$ref": "#/components/schemas/schemaErrorType__ves_io_schema_acme_issuer"
             },
             "x-displayname": "Errors",
             "x-f5xc-description-short": "Errors(if any) while listing items from collection.",
@@ -10412,7 +11722,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.7,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -10490,7 +11800,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.8,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -10501,7 +11811,7 @@
             },
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00"
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00"
           },
           "disabled": {
             "type": "boolean",
@@ -10587,7 +11897,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               },
               "deterministic": true
             },
@@ -10599,7 +11909,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00",
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace": {
@@ -10631,7 +11941,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               },
               "deterministic": true
             },
@@ -10643,7 +11953,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00",
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "owner_view": {
@@ -10687,7 +11997,7 @@
           "system_metadata": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType__ves_io_schema_api_sec_api_crawler"
+                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType__ves_io_schema_acme_issuer"
               }
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
@@ -10713,7 +12023,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -10725,7 +12035,7 @@
             "x-field-mutability": "read-only",
             "minLength": 12,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00"
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00"
           },
           "uid": {
             "type": "string",
@@ -10742,7 +12052,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -10755,13 +12065,48 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00"
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00"
           }
         },
         "x-f5xc-description-short": "By default a summary of certificate is returned in 'List'. By setting 'report_fields' in the ListRequest more details of each item can be got.",
         "x-f5xc-description-medium": "By default a summary of certificate is returned in 'List'. By setting 'report_fields' in the ListRequest more details of each item can be got.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for certificateListResponseItem",
+          "required_fields": [],
+          "mutually_exclusive_groups": [],
+          "example_json": "{}",
+          "example_yaml": "{}"
+        },
+        "x-f5xc-cli-domain": "certificates",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Certificates can be managed in any namespace"
+          },
+          "classification": {
+            "category": "certificate",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
+      },
+      "certificatePreValidatedConfig": {
+        "type": "object",
+        "description": "Configuration for domains validated directly with the certificate authority.",
+        "title": "Pre-Validated Configuration",
+        "x-displayname": "Pre-Validated Configuration.",
+        "x-ves-proto-message": "ves.io.schema.certificate.PreValidatedConfig",
+        "x-f5xc-description-short": "Configuration for domains validated directly with the certificate authority.",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for certificatePreValidatedConfig",
           "required_fields": [],
           "mutually_exclusive_groups": [],
           "example_json": "{}",
@@ -10906,9 +12251,27 @@
         "description": "Shape of the Certificate specification.",
         "title": "Replace Certificate",
         "x-displayname": "Replace Certificate.",
+        "x-ves-displayorder": "1003,1,2,3,7",
         "x-ves-oneof-field-ocsp_stapling_choice": "[\"custom_hash_algorithms\",\"disable_ocsp_stapling\",\"use_system_defaults\"]",
+        "x-ves-oneof-field-provider": "[\"auto_cert\",\"manual\"]",
         "x-ves-proto-message": "ves.io.schema.certificate.ReplaceSpecType",
         "properties": {
+          "auto_cert": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/certificateAutoCertConfig"
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "manual"
+            ]
+          },
           "certificate_chain": {
             "allOf": [
               {
@@ -10934,45 +12297,38 @@
           },
           "certificate_url": {
             "type": "string",
-            "description": "Certificate.\nCertificate or certificate chain in PEM format including the PEM headers.",
-            "minLength": 1,
+            "description": "Certificate.\nCertificate or certificate chain in PEM format including the PEM headers.\nRequired unless this is an Automatic type certificate (certificate URL will be added once provisioned).",
             "maxLength": 131072,
             "x-displayname": "Certificate.",
             "x-ves-example": "Value",
-            "x-ves-required": "true",
             "x-ves-validation-rules": {
-              "ves.io.schema.rules.message.required": "true",
               "ves.io.schema.rules.string.certificate_url": "true",
-              "ves.io.schema.rules.string.max_bytes": "131072",
-              "ves.io.schema.rules.string.min_bytes": "1"
+              "ves.io.schema.rules.string.max_bytes": "131072"
             },
             "x-f5xc-example": "value",
             "x-validation-rules": {
-              "ves.io.schema.rules.message.required": "true",
               "ves.io.schema.rules.string.certificate_url": "true",
-              "ves.io.schema.rules.string.max_bytes": "131072",
-              "ves.io.schema.rules.string.min_bytes": "1"
+              "ves.io.schema.rules.string.max_bytes": "131072"
             },
             "x-f5xc-description-short": "Certificate. Certificate or certificate chain in PEM format including the PEM headers.",
+            "x-f5xc-description-medium": "Certificate. Certificate or certificate chain in PEM format including the PEM headers. Required unless this is an Automatic type certificate (certificate URL will be added once provisioned).",
             "x-f5xc-constraints": {
               "constraintType": "string",
               "category": "discovery",
-              "minLength": 1,
               "maxLength": 131072,
               "byteLength": {
-                "max": 131072,
-                "min": 1
+                "max": 131072
               },
               "deterministic": true,
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
-              "minimum_config": true,
-              "create": true,
+              "minimum_config": false,
+              "create": false,
               "update": false,
               "read": false
             }
@@ -11013,10 +12369,27 @@
               "use_system_defaults"
             ]
           },
+          "manual": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ioschemaEmpty"
+              }
+            ],
+            "x-f5xc-example": "{\"key\": \"value\"}",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "auto_cert"
+            ]
+          },
           "private_key": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/schemaSecretType"
+                "$ref": "#/components/schemas/schemaSecretType__ves_io_schema_acme_issuer"
               }
             ],
             "x-f5xc-example": "example",
@@ -11049,17 +12422,381 @@
         },
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for certificateReplaceSpecType",
-          "required_fields": [
-            "certificate_url"
-          ],
+          "required_fields": [],
           "mutually_exclusive_groups": [],
-          "example_json": "{\n  \"certificate_url\": \"value\"\n}",
-          "example_yaml": "certificate_url: value"
+          "example_json": "{}",
+          "example_yaml": "{}"
         },
         "x-f5xc-cli-domain": "certificates",
         "x-f5xc-recommended-oneof-variant": {
           "ocsp_stapling_choice": "use_system_defaults"
         },
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Certificates can be managed in any namespace"
+          },
+          "classification": {
+            "category": "certificate",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
+      },
+      "certificateRetryIssuanceRequest": {
+        "type": "object",
+        "description": "Request to retry certificate issuance.",
+        "title": "RetryIssuanceRequest",
+        "x-displayname": "Retry Issuance Request.",
+        "x-ves-proto-message": "ves.io.schema.certificate.RetryIssuanceRequest",
+        "properties": {
+          "force_renew": {
+            "type": "boolean",
+            "description": "Request replacement of a currently valid certificate. When false or\nomitted, retry only RE-drives failed or waiting certificate issuance.\nThis option does not duplicate an issuance or renewal already in progress.",
+            "title": "force_renew",
+            "x-displayname": "Force Renew.",
+            "x-f5xc-description-short": "Request replacement of a currently valid certificate. When false or omitted, retry only RE-drives failed or waiting certificate issuance.",
+            "x-f5xc-description-medium": "Request replacement of a currently valid certificate. When false or omitted, retry only RE-drives failed or waiting certificate issuance. This option does not duplicate an issuance or renewal already in progress.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the certificate.",
+            "title": "name",
+            "x-displayname": "Name",
+            "x-ves-example": "Example-certificate.",
+            "x-ves-required": "true",
+            "x-ves-validation-rules": {
+              "ves.io.schema.rules.message.required": "true"
+            },
+            "x-f5xc-example": "example-certificate",
+            "x-validation-rules": {
+              "ves.io.schema.rules.message.required": "true"
+            },
+            "maxLength": 63,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "naming",
+              "maxLength": 63,
+              "minLength": 1,
+              "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+              "characterSet": {
+                "allowed": "[a-z0-9-]",
+                "restricted": "[^a-z0-9-]",
+                "required": "[a-z0-9]",
+                "description": "Lowercase letter start, alphanumeric with hyphens, alphanumeric end"
+              },
+              "format": "dns-label",
+              "formatDescription": "DNS-1035 label: must start with a lowercase letter, may contain lowercase alphanumeric and hyphens, must end with alphanumeric",
+              "validation": {
+                "rfc": "RFC 1035",
+                "standard": "DNS-1035 label (alpha-first)"
+              },
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.99,
+                "validatedAt": "2026-11-09T17:58:55+00:00"
+              },
+              "deterministic": true
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": true,
+              "create": true,
+              "update": false,
+              "read": false
+            },
+            "minLength": 1,
+            "x-reconciled-from-discovery": true,
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00",
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
+          },
+          "namespace": {
+            "type": "string",
+            "description": "Namespace of the certificate.",
+            "title": "namespace",
+            "x-displayname": "Namespace",
+            "x-ves-example": "System",
+            "x-ves-required": "true",
+            "x-ves-validation-rules": {
+              "ves.io.schema.rules.message.required": "true"
+            },
+            "x-f5xc-example": "system",
+            "x-validation-rules": {
+              "ves.io.schema.rules.message.required": "true"
+            },
+            "maxLength": 63,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "naming",
+              "maxLength": 63,
+              "minLength": 1,
+              "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+              "characterSet": {
+                "allowed": "[a-z0-9-]",
+                "restricted": "[^a-z0-9-]",
+                "required": "[a-z0-9]",
+                "description": "Lowercase letter start, alphanumeric with hyphens, alphanumeric end"
+              },
+              "format": "dns-label",
+              "formatDescription": "DNS-1035 label: must start with a lowercase letter",
+              "validation": {
+                "rfc": "RFC 1035",
+                "standard": "DNS-1035 label (alpha-first)"
+              },
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.99,
+                "validatedAt": "2026-11-09T17:58:55+00:00"
+              },
+              "deterministic": true
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": true,
+              "create": true,
+              "update": false,
+              "read": false
+            },
+            "minLength": 1,
+            "x-reconciled-from-discovery": true,
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00",
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
+          }
+        },
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for certificateRetryIssuanceRequest",
+          "required_fields": [
+            "name",
+            "namespace"
+          ],
+          "mutually_exclusive_groups": [],
+          "example_json": "{\n  \"name\": \"example-certificate\",\n  \"namespace\": \"system\"\n}",
+          "example_yaml": "name: example-certificate\nnamespace: system"
+        },
+        "x-f5xc-cli-domain": "certificates",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Certificates can be managed in any namespace"
+          },
+          "classification": {
+            "category": "certificate",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
+      },
+      "certificateRetryIssuanceResponse": {
+        "type": "object",
+        "description": "Response for retry issuance request.",
+        "title": "RetryIssuanceResponse",
+        "x-displayname": "Retry Issuance Response.",
+        "x-ves-proto-message": "ves.io.schema.certificate.RetryIssuanceResponse",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for certificateRetryIssuanceResponse",
+          "required_fields": [],
+          "mutually_exclusive_groups": [],
+          "example_json": "{}",
+          "example_yaml": "{}"
+        },
+        "x-f5xc-cli-domain": "certificates",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Certificates can be managed in any namespace"
+          },
+          "classification": {
+            "category": "certificate",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
+      },
+      "certificateRevokeCertificateRequest": {
+        "type": "object",
+        "description": "Request to revoke an issued certificate.",
+        "title": "RevokeCertificateRequest",
+        "x-displayname": "Revoke Certificate Request.",
+        "x-ves-proto-message": "ves.io.schema.certificate.RevokeCertificateRequest",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the certificate.",
+            "title": "name",
+            "x-displayname": "Name",
+            "x-ves-example": "Example-certificate.",
+            "x-ves-required": "true",
+            "x-ves-validation-rules": {
+              "ves.io.schema.rules.message.required": "true"
+            },
+            "x-f5xc-example": "example-certificate",
+            "x-validation-rules": {
+              "ves.io.schema.rules.message.required": "true"
+            },
+            "maxLength": 63,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "naming",
+              "maxLength": 63,
+              "minLength": 1,
+              "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+              "characterSet": {
+                "allowed": "[a-z0-9-]",
+                "restricted": "[^a-z0-9-]",
+                "required": "[a-z0-9]",
+                "description": "Lowercase letter start, alphanumeric with hyphens, alphanumeric end"
+              },
+              "format": "dns-label",
+              "formatDescription": "DNS-1035 label: must start with a lowercase letter, may contain lowercase alphanumeric and hyphens, must end with alphanumeric",
+              "validation": {
+                "rfc": "RFC 1035",
+                "standard": "DNS-1035 label (alpha-first)"
+              },
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.99,
+                "validatedAt": "2026-11-09T17:58:55+00:00"
+              },
+              "deterministic": true
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": true,
+              "create": true,
+              "update": false,
+              "read": false
+            },
+            "minLength": 1,
+            "x-reconciled-from-discovery": true,
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00",
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
+          },
+          "namespace": {
+            "type": "string",
+            "description": "Namespace of the certificate.",
+            "title": "namespace",
+            "x-displayname": "Namespace",
+            "x-ves-example": "System",
+            "x-ves-required": "true",
+            "x-ves-validation-rules": {
+              "ves.io.schema.rules.message.required": "true"
+            },
+            "x-f5xc-example": "system",
+            "x-validation-rules": {
+              "ves.io.schema.rules.message.required": "true"
+            },
+            "maxLength": 63,
+            "x-f5xc-constraints": {
+              "constraintType": "string",
+              "category": "naming",
+              "maxLength": 63,
+              "minLength": 1,
+              "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+              "characterSet": {
+                "allowed": "[a-z0-9-]",
+                "restricted": "[^a-z0-9-]",
+                "required": "[a-z0-9]",
+                "description": "Lowercase letter start, alphanumeric with hyphens, alphanumeric end"
+              },
+              "format": "dns-label",
+              "formatDescription": "DNS-1035 label: must start with a lowercase letter",
+              "validation": {
+                "rfc": "RFC 1035",
+                "standard": "DNS-1035 label (alpha-first)"
+              },
+              "metadata": {
+                "source": "inferred",
+                "confidence": 0.99,
+                "validatedAt": "2026-11-09T17:58:55+00:00"
+              },
+              "deterministic": true
+            },
+            "x-f5xc-required-for": {
+              "minimum_config": true,
+              "create": true,
+              "update": false,
+              "read": false
+            },
+            "minLength": 1,
+            "x-reconciled-from-discovery": true,
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00",
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
+          }
+        },
+        "x-f5xc-description-short": "Request to revoke an issued certificate.",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for certificateRevokeCertificateRequest",
+          "required_fields": [
+            "name",
+            "namespace"
+          ],
+          "mutually_exclusive_groups": [],
+          "example_json": "{\n  \"name\": \"example-certificate\",\n  \"namespace\": \"system\"\n}",
+          "example_yaml": "name: example-certificate\nnamespace: system"
+        },
+        "x-f5xc-cli-domain": "certificates",
+        "x-f5xc-namespace-profile": {
+          "constraint": {
+            "allowed": [
+              "custom",
+              "default",
+              "shared"
+            ],
+            "enforced": true
+          },
+          "recommendation": {
+            "primary": "custom",
+            "alternatives": [],
+            "rationale": "Certificates can be managed in any namespace"
+          },
+          "classification": {
+            "category": "certificate",
+            "multi_tenant_pattern": "per-tenant"
+          }
+        }
+      },
+      "certificateRevokeCertificateResponse": {
+        "type": "object",
+        "description": "Response for revoke certificate request.",
+        "title": "RevokeCertificateResponse",
+        "x-displayname": "Revoke Certificate Response.",
+        "x-ves-proto-message": "ves.io.schema.certificate.RevokeCertificateResponse",
+        "x-f5xc-description-short": "Response for revoke certificate request.",
+        "x-f5xc-minimum-configuration": {
+          "description": "Minimum configuration for certificateRevokeCertificateResponse",
+          "required_fields": [],
+          "mutually_exclusive_groups": [],
+          "example_json": "{}",
+          "example_yaml": "{}"
+        },
+        "x-f5xc-cli-domain": "certificates",
         "x-f5xc-namespace-profile": {
           "constraint": {
             "allowed": [
@@ -11096,6 +12833,19 @@
             },
             "x-displayname": "Conditions.",
             "x-f5xc-description-short": "Conditions reported by various component of the system.",
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            }
+          },
+          "lifecycle_status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/certificateCertificateLifecycleStatus"
+              }
+            ],
             "x-f5xc-required-for": {
               "minimum_config": false,
               "create": false,
@@ -11164,7 +12914,7 @@
       },
       "certificateVirtualHostAutoCert": {
         "type": "object",
-        "description": "AutoCert provider information.",
+        "description": "AutoCert provider set by the system when a virtual host manages\nthe certificate. Not user-configurable.",
         "title": "Virtual Host Auto Cert",
         "x-displayname": "Virtual Host Auto Cert.",
         "x-ves-proto-message": "ves.io.schema.certificate.VirtualHostAutoCert",
@@ -11193,7 +12943,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11204,6 +12954,8 @@
             }
           }
         },
+        "x-f5xc-description-short": "AutoCert provider set by the system when a virtual host manages the certificate.",
+        "x-f5xc-description-medium": "AutoCert provider set by the system when a virtual host manages the certificate. Not user-configurable.",
         "x-f5xc-minimum-configuration": {
           "description": "Minimum configuration for certificateVirtualHostAutoCert",
           "required_fields": [],
@@ -11290,7 +13042,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11302,7 +13054,7 @@
             "readOnly": true,
             "minLength": 12,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00"
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00"
           },
           "name": {
             "type": "string",
@@ -11321,7 +13073,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11332,7 +13084,7 @@
             },
             "minLength": 6,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00"
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00"
           },
           "namespace": {
             "type": "string",
@@ -11365,7 +13117,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               },
               "deterministic": true
             },
@@ -11377,7 +13129,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00",
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "tenant": {
@@ -11397,7 +13149,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11410,7 +13162,7 @@
             "x-field-mutability": "read-only",
             "minLength": 12,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00"
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00"
           },
           "uid": {
             "type": "string",
@@ -11429,7 +13181,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11443,7 +13195,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00"
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00"
           }
         },
         "x-f5xc-description-short": "Type establishes a 'direct reference' from one object(the referrer) to another(the referred).",
@@ -11501,7 +13253,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11543,7 +13295,7 @@
                 "confidence": 1.0,
                 "category": "content",
                 "note": "Blindfold envelope encryption (AES-256-GCM + RSA-OAEP) of an RSA-2048 TLS private key produces ~3700 char string:/// URL. 128KB max secret size = ~175KB base64. Discovery reported 1024 which is incorrect.",
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11554,7 +13306,7 @@
             },
             "minLength": 4,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00"
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00"
           },
           "store_provider": {
             "type": "string",
@@ -11573,7 +13325,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11634,7 +13386,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11659,7 +13411,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11682,7 +13434,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11705,7 +13457,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11729,7 +13481,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11810,7 +13562,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -11821,7 +13573,7 @@
             },
             "minLength": 3,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00"
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00"
           },
           "url": {
             "type": "string",
@@ -11860,7 +13612,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               },
               "deterministic": true,
               "byteLength": {
@@ -11989,7 +13741,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -12031,12 +13783,12 @@
           }
         }
       },
-      "schemaSecretType": {
+      "schemaSecretType__ves_io_schema_acme_issuer": {
         "type": "object",
         "description": "SecretType is used in an object to indicate a sensitive/confidential field.",
         "title": "SecretType",
         "x-displayname": "Secret",
-        "x-ves-oneof-field-secret_info_oneof": "[\"blindfold_secret_info\",\"clear_secret_info\"]",
+        "x-ves-oneof-field-secret_info_oneof": "[\"blindfold_secret_info\",\"clear_secret_info\",\"none\"]",
         "x-ves-proto-message": "ves.io.schema.SecretType",
         "properties": {
           "blindfold_secret_info": {
@@ -12052,7 +13804,8 @@
               "read": false
             },
             "x-f5xc-conflicts-with": [
-              "clear_secret_info"
+              "clear_secret_info",
+              "none"
             ]
           },
           "clear_secret_info": {
@@ -12068,7 +13821,25 @@
               "read": false
             },
             "x-f5xc-conflicts-with": [
-              "blindfold_secret_info"
+              "blindfold_secret_info",
+              "none"
+            ]
+          },
+          "none": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ioschemaEmpty"
+              }
+            ],
+            "x-f5xc-required-for": {
+              "minimum_config": false,
+              "create": false,
+              "update": false,
+              "read": false
+            },
+            "x-f5xc-conflicts-with": [
+              "blindfold_secret_info",
+              "clear_secret_info"
             ]
           }
         },
@@ -12141,7 +13912,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -12188,7 +13959,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               },
               "deterministic": true,
               "byteLength": {
@@ -12203,7 +13974,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00",
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "tenant": {
@@ -12233,7 +14004,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -12246,7 +14017,7 @@
             "x-field-mutability": "read-only",
             "minLength": 12,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00"
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00"
           }
         },
         "x-f5xc-description-short": "Type establishes a direct reference from one object(the referrer) to another(the referred).",
@@ -12380,7 +14151,7 @@
           "system_metadata": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType__ves_io_schema_api_sec_api_crawler"
+                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType__ves_io_schema_acme_issuer"
               }
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
@@ -12462,7 +14233,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -12556,7 +14327,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               },
               "deterministic": true
             },
@@ -12568,7 +14339,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00",
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace": {
@@ -12601,7 +14372,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               },
               "deterministic": true
             },
@@ -12613,7 +14384,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00",
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           }
         },
@@ -12775,12 +14546,12 @@
             "maxLength": 17,
             "minLength": 17,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00"
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00"
           },
           "system_metadata": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType__ves_io_schema_api_sec_api_crawler"
+                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType__ves_io_schema_acme_issuer"
               }
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
@@ -12871,7 +14642,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -12942,7 +14713,7 @@
             "description": "Errors(if any) while listing items from collection.",
             "title": "errors",
             "items": {
-              "$ref": "#/components/schemas/schemaErrorType__ves_io_schema_ai_assistant"
+              "$ref": "#/components/schemas/schemaErrorType__ves_io_schema_acme_issuer"
             },
             "x-displayname": "Errors",
             "x-f5xc-description-short": "Errors(if any) while listing items from collection.",
@@ -12972,7 +14743,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.7,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -13050,7 +14821,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.8,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -13061,7 +14832,7 @@
             },
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00"
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00"
           },
           "disabled": {
             "type": "boolean",
@@ -13147,7 +14918,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               },
               "deterministic": true
             },
@@ -13159,7 +14930,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00",
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace": {
@@ -13191,7 +14962,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               },
               "deterministic": true
             },
@@ -13203,7 +14974,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00",
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "owner_view": {
@@ -13247,7 +15018,7 @@
           "system_metadata": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType__ves_io_schema_api_sec_api_crawler"
+                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType__ves_io_schema_acme_issuer"
               }
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
@@ -13273,7 +15044,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -13285,7 +15056,7 @@
             "x-field-mutability": "read-only",
             "minLength": 12,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00"
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00"
           },
           "uid": {
             "type": "string",
@@ -13303,7 +15074,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -13316,7 +15087,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00"
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00"
           }
         },
         "x-f5xc-description-short": "By default a summary of certificate_chain is returned in 'List'. By setting 'report_fields' in the ListRequest more details of each item can be got.",
@@ -13672,7 +15443,7 @@
           "system_metadata": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType__ves_io_schema_api_sec_api_crawler"
+                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType__ves_io_schema_acme_issuer"
               }
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
@@ -13743,7 +15514,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -13832,7 +15603,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               },
               "deterministic": true
             },
@@ -13844,7 +15615,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00",
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace": {
@@ -13877,7 +15648,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               },
               "deterministic": true
             },
@@ -13889,7 +15660,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00",
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           }
         },
@@ -14051,12 +15822,12 @@
             "maxLength": 17,
             "minLength": 17,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00"
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00"
           },
           "system_metadata": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType__ves_io_schema_api_sec_api_crawler"
+                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType__ves_io_schema_acme_issuer"
               }
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
@@ -14151,7 +15922,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -14203,7 +15974,7 @@
             "description": "Errors(if any) while listing items from collection.",
             "title": "errors",
             "items": {
-              "$ref": "#/components/schemas/schemaErrorType__ves_io_schema_ai_assistant"
+              "$ref": "#/components/schemas/schemaErrorType__ves_io_schema_acme_issuer"
             },
             "x-displayname": "Errors",
             "x-f5xc-description-short": "Errors(if any) while listing items from collection.",
@@ -14233,7 +16004,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.7,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -14311,7 +16082,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.8,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -14322,7 +16093,7 @@
             },
             "minLength": 21,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00"
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00"
           },
           "disabled": {
             "type": "boolean",
@@ -14408,7 +16179,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               },
               "deterministic": true
             },
@@ -14420,7 +16191,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00",
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "namespace": {
@@ -14452,7 +16223,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               },
               "deterministic": true
             },
@@ -14464,7 +16235,7 @@
             },
             "minLength": 1,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00",
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00",
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$"
           },
           "owner_view": {
@@ -14508,7 +16279,7 @@
           "system_metadata": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType__ves_io_schema_api_sec_api_crawler"
+                "$ref": "#/components/schemas/schemaSystemObjectGetMetaType__ves_io_schema_acme_issuer"
               }
             ],
             "x-f5xc-example": "{\"key\": \"value\"}",
@@ -14534,7 +16305,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -14546,7 +16317,7 @@
             "x-field-mutability": "read-only",
             "minLength": 12,
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00"
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00"
           },
           "uid": {
             "type": "string",
@@ -14563,7 +16334,7 @@
               "metadata": {
                 "source": "inferred",
                 "confidence": 0.85,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {
@@ -14576,7 +16347,7 @@
             "minLength": 36,
             "format": "uuid",
             "x-reconciled-from-discovery": true,
-            "x-reconciled-at": "2026-10-29T12:14:42+00:00"
+            "x-reconciled-at": "2026-11-09T17:58:55+00:00"
           }
         },
         "x-f5xc-description-short": "By default a summary of trusted_ca_list is returned in 'List'. By setting 'report_fields' in the ListRequest more details of each item can be got.",
@@ -14744,7 +16515,7 @@
               "metadata": {
                 "source": "discovery",
                 "confidence": 0.99,
-                "validatedAt": "2026-10-29T12:14:42+00:00"
+                "validatedAt": "2026-11-09T17:58:55+00:00"
               }
             },
             "x-f5xc-required-for": {

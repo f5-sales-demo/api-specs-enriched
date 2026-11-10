@@ -60,15 +60,19 @@ def test_smsv2_provider_choice_is_complete_and_not_a_synthetic_required_field() 
     )
     assert provider_choice["required"] is True
     assert provider_choice["fields"] == [
+        "spec.aks_k8s",
         "spec.aws",
         "spec.azure",
         "spec.baremetal",
         "spec.eks_k8s",
         "spec.equinix",
         "spec.gcp",
+        "spec.gke_k8s",
+        "spec.hyper_v",
         "spec.kvm",
         "spec.nutanix",
         "spec.oci",
+        "spec.oci_k8s",
         "spec.openshift_virtualization",
         "spec.openstack",
         "spec.vmware",
