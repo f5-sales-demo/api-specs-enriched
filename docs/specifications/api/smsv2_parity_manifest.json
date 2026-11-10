@@ -2,7 +2,7 @@
   "version": "12.5.2",
   "resource": "securemesh_site_v2",
   "root_schema": "securemesh_site_v2CreateRequest",
-  "path_count": 1358,
+  "path_count": 1750,
   "paths": [
     {
       "path": "metadata",
@@ -221,7 +221,7 @@
       "create_required": false,
       "read_only": false,
       "write_only": false,
-      "schema": "schemaSecretType"
+      "schema": "schemaSecretType__ves_io_schema_acme_issuer"
     },
     {
       "path": "spec.admin_user_credentials.admin_password.blindfold_secret_info",
@@ -297,6 +297,17 @@
       "maxLength": 131072
     },
     {
+      "path": "spec.admin_user_credentials.admin_password.none",
+      "wire_key": "none",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
       "path": "spec.admin_user_credentials.ssh_key",
       "wire_key": "ssh_key",
       "type": "string",
@@ -306,6 +317,1089 @@
       "read_only": false,
       "write_only": false,
       "maxLength": 8192
+    },
+    {
+      "path": "spec.aks_k8s",
+      "wire_key": "aks_k8s",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "securemesh_site_v2KubernetesProviderType"
+    },
+    {
+      "path": "spec.aks_k8s.deployment_size",
+      "wire_key": "deployment_size",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "securemesh_site_v2KubernetesDeploymentSize",
+      "default": "KUBERNETES_DEPLOYMENT_SIZE_MEDIUM",
+      "enum": [
+        "KUBERNETES_DEPLOYMENT_SIZE_MEDIUM",
+        "KUBERNETES_DEPLOYMENT_SIZE_LARGE"
+      ]
+    },
+    {
+      "path": "spec.aks_k8s.disable_anti_affinity",
+      "wire_key": "disable_anti_affinity",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.aks_k8s.enable_anti_affinity",
+      "wire_key": "enable_anti_affinity",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "securemesh_site_v2PodAntiAffinityConfigType"
+    },
+    {
+      "path": "spec.aks_k8s.enable_anti_affinity.rules[]",
+      "wire_key": "rules",
+      "type": "array",
+      "cardinality": "list",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false,
+      "minItems": 1,
+      "maxItems": 20
+    },
+    {
+      "path": "spec.aks_k8s.enable_anti_affinity.rules[].label_key",
+      "wire_key": "label_key",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false,
+      "minLength": 1,
+      "maxLength": 253
+    },
+    {
+      "path": "spec.aks_k8s.enable_anti_affinity.rules[].label_value",
+      "wire_key": "label_value",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false,
+      "minLength": 1,
+      "maxLength": 63
+    },
+    {
+      "path": "spec.aks_k8s.enable_anti_affinity.rules[].topology_keys[]",
+      "wire_key": "topology_keys",
+      "type": "array",
+      "cardinality": "list",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false,
+      "minItems": 1,
+      "maxItems": 10
+    },
+    {
+      "path": "spec.aks_k8s.labels",
+      "wire_key": "labels",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.aks_k8s.not_managed",
+      "wire_key": "not_managed",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "securemesh_site_v2NodeList"
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[]",
+      "wire_key": "node_list",
+      "type": "array",
+      "cardinality": "list",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "maxItems": 128
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].hostname",
+      "wire_key": "hostname",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "maxLength": 256
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[]",
+      "wire_key": "interface_list",
+      "type": "array",
+      "cardinality": "list",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "maxItems": 128
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].bond_interface",
+      "wire_key": "bond_interface",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "fleetFleetBondDeviceType"
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].bond_interface.active_backup",
+      "wire_key": "active_backup",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].bond_interface.devices[]",
+      "wire_key": "devices",
+      "type": "array",
+      "cardinality": "list",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false,
+      "minItems": 1,
+      "maxItems": 8
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].bond_interface.lacp",
+      "wire_key": "lacp",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "fleetBondLacpType"
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].bond_interface.lacp.rate",
+      "wire_key": "rate",
+      "type": "integer",
+      "cardinality": "single",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].bond_interface.link_polling_interval",
+      "wire_key": "link_polling_interval",
+      "type": "integer",
+      "cardinality": "single",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].bond_interface.link_up_delay",
+      "wire_key": "link_up_delay",
+      "type": "integer",
+      "cardinality": "single",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].bond_interface.name",
+      "wire_key": "name",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false,
+      "maxLength": 64
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].description",
+      "wire_key": "description",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "maxLength": 256
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].dhcp_client",
+      "wire_key": "dhcp_client",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].dhcp_server",
+      "wire_key": "dhcp_server",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceDHCPServerParametersType"
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].dhcp_server.automatic_from_end",
+      "wire_key": "automatic_from_end",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].dhcp_server.automatic_from_start",
+      "wire_key": "automatic_from_start",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[]",
+      "wire_key": "dhcp_networks",
+      "type": "array",
+      "cardinality": "list",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false,
+      "minItems": 1,
+      "maxItems": 1
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].dgw_address",
+      "wire_key": "dgw_address",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].dns_address",
+      "wire_key": "dns_address",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].first_address",
+      "wire_key": "first_address",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].last_address",
+      "wire_key": "last_address",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].network_prefix",
+      "wire_key": "network_prefix",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].pool_settings",
+      "wire_key": "pool_settings",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceDHCPPoolSettingType",
+      "default": "INCLUDE_IP_ADDRESSES_FROM_DHCP_POOLS",
+      "enum": [
+        "INCLUDE_IP_ADDRESSES_FROM_DHCP_POOLS",
+        "EXCLUDE_IP_ADDRESSES_FROM_DHCP_POOLS"
+      ]
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].pools[]",
+      "wire_key": "pools",
+      "type": "array",
+      "cardinality": "list",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "maxItems": 16
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].pools[].end_ip",
+      "wire_key": "end_ip",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].pools[].exclude",
+      "wire_key": "exclude",
+      "type": "boolean",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].pools[].start_ip",
+      "wire_key": "start_ip",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].same_as_dgw",
+      "wire_key": "same_as_dgw",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_option82_tag",
+      "wire_key": "dhcp_option82_tag",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].dhcp_server.fixed_ip_map",
+      "wire_key": "fixed_ip_map",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].dhcp_server.interface_ip_map",
+      "wire_key": "interface_ip_map",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceDHCPInterfaceIPType"
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].dhcp_server.interface_ip_map.interface_ip_map",
+      "wire_key": "interface_ip_map",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].ethernet_interface",
+      "wire_key": "ethernet_interface",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "viewssecuremesh_site_v2EthernetInterfaceType"
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].ethernet_interface.device",
+      "wire_key": "device",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "minLength": 1,
+      "maxLength": 64
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].ethernet_interface.mac",
+      "wire_key": "mac",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config",
+      "wire_key": "ipv6_auto_config",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceIPV6AutoConfigType"
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.host",
+      "wire_key": "host",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router",
+      "wire_key": "router",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceIPV6AutoConfigRouterType"
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config",
+      "wire_key": "dns_config",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceIPV6DnsConfig"
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.configured_list",
+      "wire_key": "configured_list",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceIPV6DnsList"
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.configured_list.dns_list[]",
+      "wire_key": "dns_list",
+      "type": "array",
+      "cardinality": "list",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false,
+      "minItems": 1,
+      "maxItems": 4
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.local_dns",
+      "wire_key": "local_dns",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceIPV6LocalDnsAddress"
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.local_dns.configured_address",
+      "wire_key": "configured_address",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.local_dns.first_address",
+      "wire_key": "first_address",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.local_dns.last_address",
+      "wire_key": "last_address",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.network_prefix",
+      "wire_key": "network_prefix",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful",
+      "wire_key": "stateful",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceDHCPIPV6StatefulServer"
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.automatic_from_end",
+      "wire_key": "automatic_from_end",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.automatic_from_start",
+      "wire_key": "automatic_from_start",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.dhcp_networks[]",
+      "wire_key": "dhcp_networks",
+      "type": "array",
+      "cardinality": "list",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false,
+      "minItems": 1,
+      "maxItems": 1
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.dhcp_networks[].network_prefix",
+      "wire_key": "network_prefix",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.dhcp_networks[].pool_settings",
+      "wire_key": "pool_settings",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceDHCPPoolSettingType",
+      "default": "INCLUDE_IP_ADDRESSES_FROM_DHCP_POOLS",
+      "enum": [
+        "INCLUDE_IP_ADDRESSES_FROM_DHCP_POOLS",
+        "EXCLUDE_IP_ADDRESSES_FROM_DHCP_POOLS"
+      ]
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.dhcp_networks[].pools[]",
+      "wire_key": "pools",
+      "type": "array",
+      "cardinality": "list",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "maxItems": 16
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.dhcp_networks[].pools[].end_ip",
+      "wire_key": "end_ip",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.dhcp_networks[].pools[].start_ip",
+      "wire_key": "start_ip",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.fixed_ip_map",
+      "wire_key": "fixed_ip_map",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.interface_ip_map",
+      "wire_key": "interface_ip_map",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceDHCPInterfaceIPV6Type"
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.interface_ip_map.interface_ip_map",
+      "wire_key": "interface_ip_map",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].is_management",
+      "wire_key": "is_management",
+      "type": "boolean",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": true,
+      "write_only": false
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].is_primary",
+      "wire_key": "is_primary",
+      "type": "boolean",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": true,
+      "write_only": false
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].labels",
+      "wire_key": "labels",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].monitor",
+      "wire_key": "monitor",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceLinkQualityMonitorConfig"
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].monitor_disabled",
+      "wire_key": "monitor_disabled",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].mtu",
+      "wire_key": "mtu",
+      "type": "integer",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].name",
+      "wire_key": "name",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "maxLength": 256
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].network_option",
+      "wire_key": "network_option",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "viewsNetworkSelectType"
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].network_option.site_local_inside_network",
+      "wire_key": "site_local_inside_network",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].network_option.site_local_network",
+      "wire_key": "site_local_network",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].no_ipv4_address",
+      "wire_key": "no_ipv4_address",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].no_ipv6_address",
+      "wire_key": "no_ipv6_address",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].priority",
+      "wire_key": "priority",
+      "type": "integer",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].site_to_site_connectivity_interface_disabled",
+      "wire_key": "site_to_site_connectivity_interface_disabled",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].site_to_site_connectivity_interface_enabled",
+      "wire_key": "site_to_site_connectivity_interface_enabled",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].static_ip",
+      "wire_key": "static_ip",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceStaticIpParametersNodeType"
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].static_ip.default_gw",
+      "wire_key": "default_gw",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].static_ip.dns_server",
+      "wire_key": "dns_server",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].static_ip.ip_address",
+      "wire_key": "ip_address",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].static_ipv6_address",
+      "wire_key": "static_ipv6_address",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceStaticIPParametersType"
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].static_ipv6_address.cluster_static_ip",
+      "wire_key": "cluster_static_ip",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceStaticIpParametersClusterType"
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].static_ipv6_address.cluster_static_ip.interface_ip_map",
+      "wire_key": "interface_ip_map",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].static_ipv6_address.node_static_ip",
+      "wire_key": "node_static_ip",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceStaticIpParametersNodeType"
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].static_ipv6_address.node_static_ip.default_gw",
+      "wire_key": "default_gw",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].static_ipv6_address.node_static_ip.dns_server",
+      "wire_key": "dns_server",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].static_ipv6_address.node_static_ip.ip_address",
+      "wire_key": "ip_address",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].vlan_interface",
+      "wire_key": "vlan_interface",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "securemesh_site_v2VlanInterfaceType"
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].vlan_interface.device",
+      "wire_key": "device",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false,
+      "minLength": 1,
+      "maxLength": 64
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].interface_list[].vlan_interface.vlan_id",
+      "wire_key": "vlan_id",
+      "type": "integer",
+      "cardinality": "single",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].public_ip",
+      "wire_key": "public_ip",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "maxLength": 256
+    },
+    {
+      "path": "spec.aks_k8s.not_managed.node_list[].type",
+      "wire_key": "type",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "enum": [
+        "Control",
+        "Worker"
+      ]
     },
     {
       "path": "spec.aws",
@@ -3403,7 +4497,7 @@
       "create_required": false,
       "read_only": false,
       "write_only": false,
-      "schema": "schemaSecretType"
+      "schema": "schemaSecretType__ves_io_schema_acme_issuer"
     },
     {
       "path": "spec.custom_proxy.password.blindfold_secret_info",
@@ -3477,6 +4571,17 @@
       "read_only": false,
       "write_only": false,
       "maxLength": 131072
+    },
+    {
+      "path": "spec.custom_proxy.password.none",
+      "wire_key": "none",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
     },
     {
       "path": "spec.custom_proxy.proxy_ip_address",
@@ -3729,6 +4834,28 @@
       "read_only": false,
       "write_only": false,
       "maxItems": 64
+    },
+    {
+      "path": "spec.dns_ntp_config.disable_cedns_record",
+      "wire_key": "disable_cedns_record",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.dns_ntp_config.enable_cedns_record",
+      "wire_key": "enable_cedns_record",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
     },
     {
       "path": "spec.dns_ntp_config.f5_dns_default",
@@ -6863,6 +7990,2076 @@
     },
     {
       "path": "spec.gcp.not_managed.node_list[].type",
+      "wire_key": "type",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "enum": [
+        "Control",
+        "Worker"
+      ]
+    },
+    {
+      "path": "spec.gke_k8s",
+      "wire_key": "gke_k8s",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "securemesh_site_v2KubernetesProviderType"
+    },
+    {
+      "path": "spec.gke_k8s.deployment_size",
+      "wire_key": "deployment_size",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "securemesh_site_v2KubernetesDeploymentSize",
+      "default": "KUBERNETES_DEPLOYMENT_SIZE_MEDIUM",
+      "enum": [
+        "KUBERNETES_DEPLOYMENT_SIZE_MEDIUM",
+        "KUBERNETES_DEPLOYMENT_SIZE_LARGE"
+      ]
+    },
+    {
+      "path": "spec.gke_k8s.disable_anti_affinity",
+      "wire_key": "disable_anti_affinity",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.gke_k8s.enable_anti_affinity",
+      "wire_key": "enable_anti_affinity",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "securemesh_site_v2PodAntiAffinityConfigType"
+    },
+    {
+      "path": "spec.gke_k8s.enable_anti_affinity.rules[]",
+      "wire_key": "rules",
+      "type": "array",
+      "cardinality": "list",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false,
+      "minItems": 1,
+      "maxItems": 20
+    },
+    {
+      "path": "spec.gke_k8s.enable_anti_affinity.rules[].label_key",
+      "wire_key": "label_key",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false,
+      "minLength": 1,
+      "maxLength": 253
+    },
+    {
+      "path": "spec.gke_k8s.enable_anti_affinity.rules[].label_value",
+      "wire_key": "label_value",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false,
+      "minLength": 1,
+      "maxLength": 63
+    },
+    {
+      "path": "spec.gke_k8s.enable_anti_affinity.rules[].topology_keys[]",
+      "wire_key": "topology_keys",
+      "type": "array",
+      "cardinality": "list",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false,
+      "minItems": 1,
+      "maxItems": 10
+    },
+    {
+      "path": "spec.gke_k8s.labels",
+      "wire_key": "labels",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.gke_k8s.not_managed",
+      "wire_key": "not_managed",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "securemesh_site_v2NodeList"
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[]",
+      "wire_key": "node_list",
+      "type": "array",
+      "cardinality": "list",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "maxItems": 128
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].hostname",
+      "wire_key": "hostname",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "maxLength": 256
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[]",
+      "wire_key": "interface_list",
+      "type": "array",
+      "cardinality": "list",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "maxItems": 128
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].bond_interface",
+      "wire_key": "bond_interface",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "fleetFleetBondDeviceType"
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].bond_interface.active_backup",
+      "wire_key": "active_backup",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].bond_interface.devices[]",
+      "wire_key": "devices",
+      "type": "array",
+      "cardinality": "list",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false,
+      "minItems": 1,
+      "maxItems": 8
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].bond_interface.lacp",
+      "wire_key": "lacp",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "fleetBondLacpType"
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].bond_interface.lacp.rate",
+      "wire_key": "rate",
+      "type": "integer",
+      "cardinality": "single",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].bond_interface.link_polling_interval",
+      "wire_key": "link_polling_interval",
+      "type": "integer",
+      "cardinality": "single",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].bond_interface.link_up_delay",
+      "wire_key": "link_up_delay",
+      "type": "integer",
+      "cardinality": "single",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].bond_interface.name",
+      "wire_key": "name",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false,
+      "maxLength": 64
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].description",
+      "wire_key": "description",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "maxLength": 256
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].dhcp_client",
+      "wire_key": "dhcp_client",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].dhcp_server",
+      "wire_key": "dhcp_server",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceDHCPServerParametersType"
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].dhcp_server.automatic_from_end",
+      "wire_key": "automatic_from_end",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].dhcp_server.automatic_from_start",
+      "wire_key": "automatic_from_start",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[]",
+      "wire_key": "dhcp_networks",
+      "type": "array",
+      "cardinality": "list",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false,
+      "minItems": 1,
+      "maxItems": 1
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].dgw_address",
+      "wire_key": "dgw_address",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].dns_address",
+      "wire_key": "dns_address",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].first_address",
+      "wire_key": "first_address",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].last_address",
+      "wire_key": "last_address",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].network_prefix",
+      "wire_key": "network_prefix",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].pool_settings",
+      "wire_key": "pool_settings",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceDHCPPoolSettingType",
+      "default": "INCLUDE_IP_ADDRESSES_FROM_DHCP_POOLS",
+      "enum": [
+        "INCLUDE_IP_ADDRESSES_FROM_DHCP_POOLS",
+        "EXCLUDE_IP_ADDRESSES_FROM_DHCP_POOLS"
+      ]
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].pools[]",
+      "wire_key": "pools",
+      "type": "array",
+      "cardinality": "list",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "maxItems": 16
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].pools[].end_ip",
+      "wire_key": "end_ip",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].pools[].exclude",
+      "wire_key": "exclude",
+      "type": "boolean",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].pools[].start_ip",
+      "wire_key": "start_ip",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].same_as_dgw",
+      "wire_key": "same_as_dgw",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_option82_tag",
+      "wire_key": "dhcp_option82_tag",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].dhcp_server.fixed_ip_map",
+      "wire_key": "fixed_ip_map",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].dhcp_server.interface_ip_map",
+      "wire_key": "interface_ip_map",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceDHCPInterfaceIPType"
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].dhcp_server.interface_ip_map.interface_ip_map",
+      "wire_key": "interface_ip_map",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].ethernet_interface",
+      "wire_key": "ethernet_interface",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "viewssecuremesh_site_v2EthernetInterfaceType"
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].ethernet_interface.device",
+      "wire_key": "device",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "minLength": 1,
+      "maxLength": 64
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].ethernet_interface.mac",
+      "wire_key": "mac",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config",
+      "wire_key": "ipv6_auto_config",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceIPV6AutoConfigType"
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.host",
+      "wire_key": "host",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router",
+      "wire_key": "router",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceIPV6AutoConfigRouterType"
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config",
+      "wire_key": "dns_config",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceIPV6DnsConfig"
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.configured_list",
+      "wire_key": "configured_list",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceIPV6DnsList"
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.configured_list.dns_list[]",
+      "wire_key": "dns_list",
+      "type": "array",
+      "cardinality": "list",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false,
+      "minItems": 1,
+      "maxItems": 4
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.local_dns",
+      "wire_key": "local_dns",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceIPV6LocalDnsAddress"
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.local_dns.configured_address",
+      "wire_key": "configured_address",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.local_dns.first_address",
+      "wire_key": "first_address",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.local_dns.last_address",
+      "wire_key": "last_address",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.network_prefix",
+      "wire_key": "network_prefix",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful",
+      "wire_key": "stateful",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceDHCPIPV6StatefulServer"
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.automatic_from_end",
+      "wire_key": "automatic_from_end",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.automatic_from_start",
+      "wire_key": "automatic_from_start",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.dhcp_networks[]",
+      "wire_key": "dhcp_networks",
+      "type": "array",
+      "cardinality": "list",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false,
+      "minItems": 1,
+      "maxItems": 1
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.dhcp_networks[].network_prefix",
+      "wire_key": "network_prefix",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.dhcp_networks[].pool_settings",
+      "wire_key": "pool_settings",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceDHCPPoolSettingType",
+      "default": "INCLUDE_IP_ADDRESSES_FROM_DHCP_POOLS",
+      "enum": [
+        "INCLUDE_IP_ADDRESSES_FROM_DHCP_POOLS",
+        "EXCLUDE_IP_ADDRESSES_FROM_DHCP_POOLS"
+      ]
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.dhcp_networks[].pools[]",
+      "wire_key": "pools",
+      "type": "array",
+      "cardinality": "list",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "maxItems": 16
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.dhcp_networks[].pools[].end_ip",
+      "wire_key": "end_ip",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.dhcp_networks[].pools[].start_ip",
+      "wire_key": "start_ip",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.fixed_ip_map",
+      "wire_key": "fixed_ip_map",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.interface_ip_map",
+      "wire_key": "interface_ip_map",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceDHCPInterfaceIPV6Type"
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.interface_ip_map.interface_ip_map",
+      "wire_key": "interface_ip_map",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].is_management",
+      "wire_key": "is_management",
+      "type": "boolean",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": true,
+      "write_only": false
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].is_primary",
+      "wire_key": "is_primary",
+      "type": "boolean",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": true,
+      "write_only": false
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].labels",
+      "wire_key": "labels",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].monitor",
+      "wire_key": "monitor",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceLinkQualityMonitorConfig"
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].monitor_disabled",
+      "wire_key": "monitor_disabled",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].mtu",
+      "wire_key": "mtu",
+      "type": "integer",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].name",
+      "wire_key": "name",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "maxLength": 256
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].network_option",
+      "wire_key": "network_option",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "viewsNetworkSelectType"
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].network_option.site_local_inside_network",
+      "wire_key": "site_local_inside_network",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].network_option.site_local_network",
+      "wire_key": "site_local_network",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].no_ipv4_address",
+      "wire_key": "no_ipv4_address",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].no_ipv6_address",
+      "wire_key": "no_ipv6_address",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].priority",
+      "wire_key": "priority",
+      "type": "integer",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].site_to_site_connectivity_interface_disabled",
+      "wire_key": "site_to_site_connectivity_interface_disabled",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].site_to_site_connectivity_interface_enabled",
+      "wire_key": "site_to_site_connectivity_interface_enabled",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].static_ip",
+      "wire_key": "static_ip",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceStaticIpParametersNodeType"
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].static_ip.default_gw",
+      "wire_key": "default_gw",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].static_ip.dns_server",
+      "wire_key": "dns_server",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].static_ip.ip_address",
+      "wire_key": "ip_address",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].static_ipv6_address",
+      "wire_key": "static_ipv6_address",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceStaticIPParametersType"
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].static_ipv6_address.cluster_static_ip",
+      "wire_key": "cluster_static_ip",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceStaticIpParametersClusterType"
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].static_ipv6_address.cluster_static_ip.interface_ip_map",
+      "wire_key": "interface_ip_map",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].static_ipv6_address.node_static_ip",
+      "wire_key": "node_static_ip",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceStaticIpParametersNodeType"
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].static_ipv6_address.node_static_ip.default_gw",
+      "wire_key": "default_gw",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].static_ipv6_address.node_static_ip.dns_server",
+      "wire_key": "dns_server",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].static_ipv6_address.node_static_ip.ip_address",
+      "wire_key": "ip_address",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].vlan_interface",
+      "wire_key": "vlan_interface",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "securemesh_site_v2VlanInterfaceType"
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].vlan_interface.device",
+      "wire_key": "device",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false,
+      "minLength": 1,
+      "maxLength": 64
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].interface_list[].vlan_interface.vlan_id",
+      "wire_key": "vlan_id",
+      "type": "integer",
+      "cardinality": "single",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].public_ip",
+      "wire_key": "public_ip",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "maxLength": 256
+    },
+    {
+      "path": "spec.gke_k8s.not_managed.node_list[].type",
+      "wire_key": "type",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "enum": [
+        "Control",
+        "Worker"
+      ]
+    },
+    {
+      "path": "spec.hyper_v",
+      "wire_key": "hyper_v",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "securemesh_site_v2HyperVProviderType"
+    },
+    {
+      "path": "spec.hyper_v.not_managed",
+      "wire_key": "not_managed",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "securemesh_site_v2NodeList"
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[]",
+      "wire_key": "node_list",
+      "type": "array",
+      "cardinality": "list",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "maxItems": 128
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].hostname",
+      "wire_key": "hostname",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "maxLength": 256
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[]",
+      "wire_key": "interface_list",
+      "type": "array",
+      "cardinality": "list",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "maxItems": 128
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].bond_interface",
+      "wire_key": "bond_interface",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "fleetFleetBondDeviceType"
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].bond_interface.active_backup",
+      "wire_key": "active_backup",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].bond_interface.devices[]",
+      "wire_key": "devices",
+      "type": "array",
+      "cardinality": "list",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false,
+      "minItems": 1,
+      "maxItems": 8
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].bond_interface.lacp",
+      "wire_key": "lacp",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "fleetBondLacpType"
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].bond_interface.lacp.rate",
+      "wire_key": "rate",
+      "type": "integer",
+      "cardinality": "single",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].bond_interface.link_polling_interval",
+      "wire_key": "link_polling_interval",
+      "type": "integer",
+      "cardinality": "single",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].bond_interface.link_up_delay",
+      "wire_key": "link_up_delay",
+      "type": "integer",
+      "cardinality": "single",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].bond_interface.name",
+      "wire_key": "name",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false,
+      "maxLength": 64
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].description",
+      "wire_key": "description",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "maxLength": 256
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].dhcp_client",
+      "wire_key": "dhcp_client",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].dhcp_server",
+      "wire_key": "dhcp_server",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceDHCPServerParametersType"
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].dhcp_server.automatic_from_end",
+      "wire_key": "automatic_from_end",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].dhcp_server.automatic_from_start",
+      "wire_key": "automatic_from_start",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[]",
+      "wire_key": "dhcp_networks",
+      "type": "array",
+      "cardinality": "list",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false,
+      "minItems": 1,
+      "maxItems": 1
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].dgw_address",
+      "wire_key": "dgw_address",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].dns_address",
+      "wire_key": "dns_address",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].first_address",
+      "wire_key": "first_address",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].last_address",
+      "wire_key": "last_address",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].network_prefix",
+      "wire_key": "network_prefix",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].pool_settings",
+      "wire_key": "pool_settings",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceDHCPPoolSettingType",
+      "default": "INCLUDE_IP_ADDRESSES_FROM_DHCP_POOLS",
+      "enum": [
+        "INCLUDE_IP_ADDRESSES_FROM_DHCP_POOLS",
+        "EXCLUDE_IP_ADDRESSES_FROM_DHCP_POOLS"
+      ]
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].pools[]",
+      "wire_key": "pools",
+      "type": "array",
+      "cardinality": "list",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "maxItems": 16
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].pools[].end_ip",
+      "wire_key": "end_ip",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].pools[].exclude",
+      "wire_key": "exclude",
+      "type": "boolean",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].pools[].start_ip",
+      "wire_key": "start_ip",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].same_as_dgw",
+      "wire_key": "same_as_dgw",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].dhcp_server.dhcp_option82_tag",
+      "wire_key": "dhcp_option82_tag",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].dhcp_server.fixed_ip_map",
+      "wire_key": "fixed_ip_map",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].dhcp_server.interface_ip_map",
+      "wire_key": "interface_ip_map",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceDHCPInterfaceIPType"
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].dhcp_server.interface_ip_map.interface_ip_map",
+      "wire_key": "interface_ip_map",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].ethernet_interface",
+      "wire_key": "ethernet_interface",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "viewssecuremesh_site_v2EthernetInterfaceType"
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].ethernet_interface.device",
+      "wire_key": "device",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "minLength": 1,
+      "maxLength": 64
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].ethernet_interface.mac",
+      "wire_key": "mac",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].ipv6_auto_config",
+      "wire_key": "ipv6_auto_config",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceIPV6AutoConfigType"
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].ipv6_auto_config.host",
+      "wire_key": "host",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].ipv6_auto_config.router",
+      "wire_key": "router",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceIPV6AutoConfigRouterType"
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config",
+      "wire_key": "dns_config",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceIPV6DnsConfig"
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.configured_list",
+      "wire_key": "configured_list",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceIPV6DnsList"
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.configured_list.dns_list[]",
+      "wire_key": "dns_list",
+      "type": "array",
+      "cardinality": "list",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false,
+      "minItems": 1,
+      "maxItems": 4
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.local_dns",
+      "wire_key": "local_dns",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceIPV6LocalDnsAddress"
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.local_dns.configured_address",
+      "wire_key": "configured_address",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.local_dns.first_address",
+      "wire_key": "first_address",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.local_dns.last_address",
+      "wire_key": "last_address",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].ipv6_auto_config.router.network_prefix",
+      "wire_key": "network_prefix",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful",
+      "wire_key": "stateful",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceDHCPIPV6StatefulServer"
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.automatic_from_end",
+      "wire_key": "automatic_from_end",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.automatic_from_start",
+      "wire_key": "automatic_from_start",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.dhcp_networks[]",
+      "wire_key": "dhcp_networks",
+      "type": "array",
+      "cardinality": "list",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false,
+      "minItems": 1,
+      "maxItems": 1
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.dhcp_networks[].network_prefix",
+      "wire_key": "network_prefix",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.dhcp_networks[].pool_settings",
+      "wire_key": "pool_settings",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceDHCPPoolSettingType",
+      "default": "INCLUDE_IP_ADDRESSES_FROM_DHCP_POOLS",
+      "enum": [
+        "INCLUDE_IP_ADDRESSES_FROM_DHCP_POOLS",
+        "EXCLUDE_IP_ADDRESSES_FROM_DHCP_POOLS"
+      ]
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.dhcp_networks[].pools[]",
+      "wire_key": "pools",
+      "type": "array",
+      "cardinality": "list",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "maxItems": 16
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.dhcp_networks[].pools[].end_ip",
+      "wire_key": "end_ip",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.dhcp_networks[].pools[].start_ip",
+      "wire_key": "start_ip",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.fixed_ip_map",
+      "wire_key": "fixed_ip_map",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.interface_ip_map",
+      "wire_key": "interface_ip_map",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceDHCPInterfaceIPV6Type"
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.interface_ip_map.interface_ip_map",
+      "wire_key": "interface_ip_map",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].is_management",
+      "wire_key": "is_management",
+      "type": "boolean",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": true,
+      "write_only": false
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].is_primary",
+      "wire_key": "is_primary",
+      "type": "boolean",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": true,
+      "write_only": false
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].labels",
+      "wire_key": "labels",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].monitor",
+      "wire_key": "monitor",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceLinkQualityMonitorConfig"
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].monitor_disabled",
+      "wire_key": "monitor_disabled",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].mtu",
+      "wire_key": "mtu",
+      "type": "integer",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].name",
+      "wire_key": "name",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "maxLength": 256
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].network_option",
+      "wire_key": "network_option",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "viewsNetworkSelectType"
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].network_option.site_local_inside_network",
+      "wire_key": "site_local_inside_network",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].network_option.site_local_network",
+      "wire_key": "site_local_network",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].no_ipv4_address",
+      "wire_key": "no_ipv4_address",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].no_ipv6_address",
+      "wire_key": "no_ipv6_address",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].priority",
+      "wire_key": "priority",
+      "type": "integer",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].site_to_site_connectivity_interface_disabled",
+      "wire_key": "site_to_site_connectivity_interface_disabled",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].site_to_site_connectivity_interface_enabled",
+      "wire_key": "site_to_site_connectivity_interface_enabled",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].static_ip",
+      "wire_key": "static_ip",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceStaticIpParametersNodeType"
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].static_ip.default_gw",
+      "wire_key": "default_gw",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].static_ip.dns_server",
+      "wire_key": "dns_server",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].static_ip.ip_address",
+      "wire_key": "ip_address",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].static_ipv6_address",
+      "wire_key": "static_ipv6_address",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceStaticIPParametersType"
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].static_ipv6_address.cluster_static_ip",
+      "wire_key": "cluster_static_ip",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceStaticIpParametersClusterType"
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].static_ipv6_address.cluster_static_ip.interface_ip_map",
+      "wire_key": "interface_ip_map",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].static_ipv6_address.node_static_ip",
+      "wire_key": "node_static_ip",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceStaticIpParametersNodeType"
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].static_ipv6_address.node_static_ip.default_gw",
+      "wire_key": "default_gw",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].static_ipv6_address.node_static_ip.dns_server",
+      "wire_key": "dns_server",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].static_ipv6_address.node_static_ip.ip_address",
+      "wire_key": "ip_address",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].vlan_interface",
+      "wire_key": "vlan_interface",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "securemesh_site_v2VlanInterfaceType"
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].vlan_interface.device",
+      "wire_key": "device",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false,
+      "minLength": 1,
+      "maxLength": 64
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].interface_list[].vlan_interface.vlan_id",
+      "wire_key": "vlan_id",
+      "type": "integer",
+      "cardinality": "single",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].public_ip",
+      "wire_key": "public_ip",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "maxLength": 256
+    },
+    {
+      "path": "spec.hyper_v.not_managed.node_list[].type",
       "wire_key": "type",
       "type": "string",
       "cardinality": "single",
@@ -10828,6 +14025,1089 @@
       ]
     },
     {
+      "path": "spec.oci_k8s",
+      "wire_key": "oci_k8s",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "securemesh_site_v2KubernetesProviderType"
+    },
+    {
+      "path": "spec.oci_k8s.deployment_size",
+      "wire_key": "deployment_size",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "securemesh_site_v2KubernetesDeploymentSize",
+      "default": "KUBERNETES_DEPLOYMENT_SIZE_MEDIUM",
+      "enum": [
+        "KUBERNETES_DEPLOYMENT_SIZE_MEDIUM",
+        "KUBERNETES_DEPLOYMENT_SIZE_LARGE"
+      ]
+    },
+    {
+      "path": "spec.oci_k8s.disable_anti_affinity",
+      "wire_key": "disable_anti_affinity",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.oci_k8s.enable_anti_affinity",
+      "wire_key": "enable_anti_affinity",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "securemesh_site_v2PodAntiAffinityConfigType"
+    },
+    {
+      "path": "spec.oci_k8s.enable_anti_affinity.rules[]",
+      "wire_key": "rules",
+      "type": "array",
+      "cardinality": "list",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false,
+      "minItems": 1,
+      "maxItems": 20
+    },
+    {
+      "path": "spec.oci_k8s.enable_anti_affinity.rules[].label_key",
+      "wire_key": "label_key",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false,
+      "minLength": 1,
+      "maxLength": 253
+    },
+    {
+      "path": "spec.oci_k8s.enable_anti_affinity.rules[].label_value",
+      "wire_key": "label_value",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false,
+      "minLength": 1,
+      "maxLength": 63
+    },
+    {
+      "path": "spec.oci_k8s.enable_anti_affinity.rules[].topology_keys[]",
+      "wire_key": "topology_keys",
+      "type": "array",
+      "cardinality": "list",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false,
+      "minItems": 1,
+      "maxItems": 10
+    },
+    {
+      "path": "spec.oci_k8s.labels",
+      "wire_key": "labels",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.oci_k8s.not_managed",
+      "wire_key": "not_managed",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "securemesh_site_v2NodeList"
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[]",
+      "wire_key": "node_list",
+      "type": "array",
+      "cardinality": "list",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "maxItems": 128
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].hostname",
+      "wire_key": "hostname",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "maxLength": 256
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[]",
+      "wire_key": "interface_list",
+      "type": "array",
+      "cardinality": "list",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "maxItems": 128
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].bond_interface",
+      "wire_key": "bond_interface",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "fleetFleetBondDeviceType"
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].bond_interface.active_backup",
+      "wire_key": "active_backup",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].bond_interface.devices[]",
+      "wire_key": "devices",
+      "type": "array",
+      "cardinality": "list",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false,
+      "minItems": 1,
+      "maxItems": 8
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].bond_interface.lacp",
+      "wire_key": "lacp",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "fleetBondLacpType"
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].bond_interface.lacp.rate",
+      "wire_key": "rate",
+      "type": "integer",
+      "cardinality": "single",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].bond_interface.link_polling_interval",
+      "wire_key": "link_polling_interval",
+      "type": "integer",
+      "cardinality": "single",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].bond_interface.link_up_delay",
+      "wire_key": "link_up_delay",
+      "type": "integer",
+      "cardinality": "single",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].bond_interface.name",
+      "wire_key": "name",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false,
+      "maxLength": 64
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].description",
+      "wire_key": "description",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "maxLength": 256
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].dhcp_client",
+      "wire_key": "dhcp_client",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].dhcp_server",
+      "wire_key": "dhcp_server",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceDHCPServerParametersType"
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].dhcp_server.automatic_from_end",
+      "wire_key": "automatic_from_end",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].dhcp_server.automatic_from_start",
+      "wire_key": "automatic_from_start",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[]",
+      "wire_key": "dhcp_networks",
+      "type": "array",
+      "cardinality": "list",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false,
+      "minItems": 1,
+      "maxItems": 1
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].dgw_address",
+      "wire_key": "dgw_address",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].dns_address",
+      "wire_key": "dns_address",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].first_address",
+      "wire_key": "first_address",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].last_address",
+      "wire_key": "last_address",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].network_prefix",
+      "wire_key": "network_prefix",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].pool_settings",
+      "wire_key": "pool_settings",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceDHCPPoolSettingType",
+      "default": "INCLUDE_IP_ADDRESSES_FROM_DHCP_POOLS",
+      "enum": [
+        "INCLUDE_IP_ADDRESSES_FROM_DHCP_POOLS",
+        "EXCLUDE_IP_ADDRESSES_FROM_DHCP_POOLS"
+      ]
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].pools[]",
+      "wire_key": "pools",
+      "type": "array",
+      "cardinality": "list",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "maxItems": 16
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].pools[].end_ip",
+      "wire_key": "end_ip",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].pools[].exclude",
+      "wire_key": "exclude",
+      "type": "boolean",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].pools[].start_ip",
+      "wire_key": "start_ip",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].same_as_dgw",
+      "wire_key": "same_as_dgw",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_option82_tag",
+      "wire_key": "dhcp_option82_tag",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].dhcp_server.fixed_ip_map",
+      "wire_key": "fixed_ip_map",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].dhcp_server.interface_ip_map",
+      "wire_key": "interface_ip_map",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceDHCPInterfaceIPType"
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].dhcp_server.interface_ip_map.interface_ip_map",
+      "wire_key": "interface_ip_map",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].ethernet_interface",
+      "wire_key": "ethernet_interface",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "viewssecuremesh_site_v2EthernetInterfaceType"
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].ethernet_interface.device",
+      "wire_key": "device",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "minLength": 1,
+      "maxLength": 64
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].ethernet_interface.mac",
+      "wire_key": "mac",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config",
+      "wire_key": "ipv6_auto_config",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceIPV6AutoConfigType"
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.host",
+      "wire_key": "host",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router",
+      "wire_key": "router",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceIPV6AutoConfigRouterType"
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config",
+      "wire_key": "dns_config",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceIPV6DnsConfig"
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.configured_list",
+      "wire_key": "configured_list",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceIPV6DnsList"
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.configured_list.dns_list[]",
+      "wire_key": "dns_list",
+      "type": "array",
+      "cardinality": "list",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false,
+      "minItems": 1,
+      "maxItems": 4
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.local_dns",
+      "wire_key": "local_dns",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceIPV6LocalDnsAddress"
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.local_dns.configured_address",
+      "wire_key": "configured_address",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.local_dns.first_address",
+      "wire_key": "first_address",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.local_dns.last_address",
+      "wire_key": "last_address",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.network_prefix",
+      "wire_key": "network_prefix",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful",
+      "wire_key": "stateful",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceDHCPIPV6StatefulServer"
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.automatic_from_end",
+      "wire_key": "automatic_from_end",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.automatic_from_start",
+      "wire_key": "automatic_from_start",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.dhcp_networks[]",
+      "wire_key": "dhcp_networks",
+      "type": "array",
+      "cardinality": "list",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false,
+      "minItems": 1,
+      "maxItems": 1
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.dhcp_networks[].network_prefix",
+      "wire_key": "network_prefix",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.dhcp_networks[].pool_settings",
+      "wire_key": "pool_settings",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceDHCPPoolSettingType",
+      "default": "INCLUDE_IP_ADDRESSES_FROM_DHCP_POOLS",
+      "enum": [
+        "INCLUDE_IP_ADDRESSES_FROM_DHCP_POOLS",
+        "EXCLUDE_IP_ADDRESSES_FROM_DHCP_POOLS"
+      ]
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.dhcp_networks[].pools[]",
+      "wire_key": "pools",
+      "type": "array",
+      "cardinality": "list",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "maxItems": 16
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.dhcp_networks[].pools[].end_ip",
+      "wire_key": "end_ip",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.dhcp_networks[].pools[].start_ip",
+      "wire_key": "start_ip",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.fixed_ip_map",
+      "wire_key": "fixed_ip_map",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.interface_ip_map",
+      "wire_key": "interface_ip_map",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceDHCPInterfaceIPV6Type"
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.interface_ip_map.interface_ip_map",
+      "wire_key": "interface_ip_map",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].is_management",
+      "wire_key": "is_management",
+      "type": "boolean",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": true,
+      "write_only": false
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].is_primary",
+      "wire_key": "is_primary",
+      "type": "boolean",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": true,
+      "write_only": false
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].labels",
+      "wire_key": "labels",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].monitor",
+      "wire_key": "monitor",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceLinkQualityMonitorConfig"
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].monitor_disabled",
+      "wire_key": "monitor_disabled",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].mtu",
+      "wire_key": "mtu",
+      "type": "integer",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].name",
+      "wire_key": "name",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "maxLength": 256
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].network_option",
+      "wire_key": "network_option",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "viewsNetworkSelectType"
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].network_option.site_local_inside_network",
+      "wire_key": "site_local_inside_network",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].network_option.site_local_network",
+      "wire_key": "site_local_network",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].no_ipv4_address",
+      "wire_key": "no_ipv4_address",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].no_ipv6_address",
+      "wire_key": "no_ipv6_address",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].priority",
+      "wire_key": "priority",
+      "type": "integer",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].site_to_site_connectivity_interface_disabled",
+      "wire_key": "site_to_site_connectivity_interface_disabled",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].site_to_site_connectivity_interface_enabled",
+      "wire_key": "site_to_site_connectivity_interface_enabled",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "ioschemaEmpty"
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].static_ip",
+      "wire_key": "static_ip",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceStaticIpParametersNodeType"
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].static_ip.default_gw",
+      "wire_key": "default_gw",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].static_ip.dns_server",
+      "wire_key": "dns_server",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].static_ip.ip_address",
+      "wire_key": "ip_address",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].static_ipv6_address",
+      "wire_key": "static_ipv6_address",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceStaticIPParametersType"
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].static_ipv6_address.cluster_static_ip",
+      "wire_key": "cluster_static_ip",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceStaticIpParametersClusterType"
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].static_ipv6_address.cluster_static_ip.interface_ip_map",
+      "wire_key": "interface_ip_map",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].static_ipv6_address.node_static_ip",
+      "wire_key": "node_static_ip",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "network_interfaceStaticIpParametersNodeType"
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].static_ipv6_address.node_static_ip.default_gw",
+      "wire_key": "default_gw",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].static_ipv6_address.node_static_ip.dns_server",
+      "wire_key": "dns_server",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].static_ipv6_address.node_static_ip.ip_address",
+      "wire_key": "ip_address",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].vlan_interface",
+      "wire_key": "vlan_interface",
+      "type": "object",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "schema": "securemesh_site_v2VlanInterfaceType"
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].vlan_interface.device",
+      "wire_key": "device",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false,
+      "minLength": 1,
+      "maxLength": 64
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].interface_list[].vlan_interface.vlan_id",
+      "wire_key": "vlan_id",
+      "type": "integer",
+      "cardinality": "single",
+      "required": false,
+      "create_required": true,
+      "read_only": false,
+      "write_only": false
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].public_ip",
+      "wire_key": "public_ip",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "maxLength": 256
+    },
+    {
+      "path": "spec.oci_k8s.not_managed.node_list[].type",
+      "wire_key": "type",
+      "type": "string",
+      "cardinality": "single",
+      "required": false,
+      "create_required": false,
+      "read_only": false,
+      "write_only": false,
+      "enum": [
+        "Control",
+        "Worker"
+      ]
+    },
+    {
       "path": "spec.offline_survivability_mode",
       "wire_key": "offline_survivability_mode",
       "type": "object",
@@ -14755,11 +19035,95 @@
   "choice_groups": {
     "spec.admin_user_credentials.admin_password.secret_info_oneof": [
       "spec.admin_user_credentials.admin_password.blindfold_secret_info",
-      "spec.admin_user_credentials.admin_password.clear_secret_info"
+      "spec.admin_user_credentials.admin_password.clear_secret_info",
+      "spec.admin_user_credentials.admin_password.none"
     ],
     "spec.advanced_delivery_choice": [
       "spec.disable_advanced_delivery",
       "spec.enable_advanced_delivery"
+    ],
+    "spec.aks_k8s.anti_affinity_choice": [
+      "spec.aks_k8s.disable_anti_affinity",
+      "spec.aks_k8s.enable_anti_affinity"
+    ],
+    "spec.aks_k8s.not_managed.node_list[].interface_list[].address_choice": [
+      "spec.aks_k8s.not_managed.node_list[].interface_list[].dhcp_client",
+      "spec.aks_k8s.not_managed.node_list[].interface_list[].dhcp_server",
+      "spec.aks_k8s.not_managed.node_list[].interface_list[].no_ipv4_address",
+      "spec.aks_k8s.not_managed.node_list[].interface_list[].static_ip"
+    ],
+    "spec.aks_k8s.not_managed.node_list[].interface_list[].bond_interface.lacp_choice": [
+      "spec.aks_k8s.not_managed.node_list[].interface_list[].bond_interface.active_backup",
+      "spec.aks_k8s.not_managed.node_list[].interface_list[].bond_interface.lacp"
+    ],
+    "spec.aks_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].dns_choice": [
+      "spec.aks_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].dns_address",
+      "spec.aks_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].same_as_dgw"
+    ],
+    "spec.aks_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].gateway_choice": [
+      "spec.aks_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].dgw_address",
+      "spec.aks_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].first_address",
+      "spec.aks_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].last_address"
+    ],
+    "spec.aks_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].network_prefix_choice": [
+      "spec.aks_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].network_prefix"
+    ],
+    "spec.aks_k8s.not_managed.node_list[].interface_list[].dhcp_server.interfaces_addressing_choice": [
+      "spec.aks_k8s.not_managed.node_list[].interface_list[].dhcp_server.automatic_from_end",
+      "spec.aks_k8s.not_managed.node_list[].interface_list[].dhcp_server.automatic_from_start",
+      "spec.aks_k8s.not_managed.node_list[].interface_list[].dhcp_server.interface_ip_map"
+    ],
+    "spec.aks_k8s.not_managed.node_list[].interface_list[].interface_choice": [
+      "spec.aks_k8s.not_managed.node_list[].interface_list[].bond_interface",
+      "spec.aks_k8s.not_managed.node_list[].interface_list[].ethernet_interface",
+      "spec.aks_k8s.not_managed.node_list[].interface_list[].vlan_interface"
+    ],
+    "spec.aks_k8s.not_managed.node_list[].interface_list[].ipv6_address_choice": [
+      "spec.aks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config",
+      "spec.aks_k8s.not_managed.node_list[].interface_list[].no_ipv6_address",
+      "spec.aks_k8s.not_managed.node_list[].interface_list[].static_ipv6_address"
+    ],
+    "spec.aks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.autoconfig_choice": [
+      "spec.aks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.host",
+      "spec.aks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router"
+    ],
+    "spec.aks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.address_choice": [
+      "spec.aks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.network_prefix",
+      "spec.aks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful"
+    ],
+    "spec.aks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.dns_choice": [
+      "spec.aks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.configured_list",
+      "spec.aks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.local_dns"
+    ],
+    "spec.aks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.local_dns.local_dns_choice": [
+      "spec.aks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.local_dns.configured_address",
+      "spec.aks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.local_dns.first_address",
+      "spec.aks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.local_dns.last_address"
+    ],
+    "spec.aks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.dhcp_networks[].network_prefix_choice": [
+      "spec.aks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.dhcp_networks[].network_prefix"
+    ],
+    "spec.aks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.interfaces_addressing_choice": [
+      "spec.aks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.automatic_from_end",
+      "spec.aks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.automatic_from_start",
+      "spec.aks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.interface_ip_map"
+    ],
+    "spec.aks_k8s.not_managed.node_list[].interface_list[].monitoring_choice": [
+      "spec.aks_k8s.not_managed.node_list[].interface_list[].monitor",
+      "spec.aks_k8s.not_managed.node_list[].interface_list[].monitor_disabled"
+    ],
+    "spec.aks_k8s.not_managed.node_list[].interface_list[].network_option.network_choice": [
+      "spec.aks_k8s.not_managed.node_list[].interface_list[].network_option.segment_network",
+      "spec.aks_k8s.not_managed.node_list[].interface_list[].network_option.site_local_inside_network",
+      "spec.aks_k8s.not_managed.node_list[].interface_list[].network_option.site_local_network"
+    ],
+    "spec.aks_k8s.not_managed.node_list[].interface_list[].site_to_site_connectivity_interface_choice": [
+      "spec.aks_k8s.not_managed.node_list[].interface_list[].site_to_site_connectivity_interface_disabled",
+      "spec.aks_k8s.not_managed.node_list[].interface_list[].site_to_site_connectivity_interface_enabled"
+    ],
+    "spec.aks_k8s.not_managed.node_list[].interface_list[].static_ipv6_address.network_prefix_choice": [
+      "spec.aks_k8s.not_managed.node_list[].interface_list[].static_ipv6_address.cluster_static_ip",
+      "spec.aks_k8s.not_managed.node_list[].interface_list[].static_ipv6_address.node_static_ip"
     ],
     "spec.aws.not_managed.node_list[].interface_list[].address_choice": [
       "spec.aws.not_managed.node_list[].interface_list[].dhcp_client",
@@ -15018,11 +19382,16 @@
     ],
     "spec.custom_proxy.password.secret_info_oneof": [
       "spec.custom_proxy.password.blindfold_secret_info",
-      "spec.custom_proxy.password.clear_secret_info"
+      "spec.custom_proxy.password.clear_secret_info",
+      "spec.custom_proxy.password.none"
     ],
     "spec.custom_proxy.use_for_re_tunnel_choice": [
       "spec.custom_proxy.disable_re_tunnel",
       "spec.custom_proxy.enable_re_tunnel"
+    ],
+    "spec.dns_ntp_config.cedns_record_choice": [
+      "spec.dns_ntp_config.disable_cedns_record",
+      "spec.dns_ntp_config.enable_cedns_record"
     ],
     "spec.dns_ntp_config.dns_server_choice": [
       "spec.dns_ntp_config.custom_dns",
@@ -15287,6 +19656,171 @@
     ],
     "spec.gcp.orchestration_choice": [
       "spec.gcp.not_managed"
+    ],
+    "spec.gke_k8s.anti_affinity_choice": [
+      "spec.gke_k8s.disable_anti_affinity",
+      "spec.gke_k8s.enable_anti_affinity"
+    ],
+    "spec.gke_k8s.not_managed.node_list[].interface_list[].address_choice": [
+      "spec.gke_k8s.not_managed.node_list[].interface_list[].dhcp_client",
+      "spec.gke_k8s.not_managed.node_list[].interface_list[].dhcp_server",
+      "spec.gke_k8s.not_managed.node_list[].interface_list[].no_ipv4_address",
+      "spec.gke_k8s.not_managed.node_list[].interface_list[].static_ip"
+    ],
+    "spec.gke_k8s.not_managed.node_list[].interface_list[].bond_interface.lacp_choice": [
+      "spec.gke_k8s.not_managed.node_list[].interface_list[].bond_interface.active_backup",
+      "spec.gke_k8s.not_managed.node_list[].interface_list[].bond_interface.lacp"
+    ],
+    "spec.gke_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].dns_choice": [
+      "spec.gke_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].dns_address",
+      "spec.gke_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].same_as_dgw"
+    ],
+    "spec.gke_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].gateway_choice": [
+      "spec.gke_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].dgw_address",
+      "spec.gke_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].first_address",
+      "spec.gke_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].last_address"
+    ],
+    "spec.gke_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].network_prefix_choice": [
+      "spec.gke_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].network_prefix"
+    ],
+    "spec.gke_k8s.not_managed.node_list[].interface_list[].dhcp_server.interfaces_addressing_choice": [
+      "spec.gke_k8s.not_managed.node_list[].interface_list[].dhcp_server.automatic_from_end",
+      "spec.gke_k8s.not_managed.node_list[].interface_list[].dhcp_server.automatic_from_start",
+      "spec.gke_k8s.not_managed.node_list[].interface_list[].dhcp_server.interface_ip_map"
+    ],
+    "spec.gke_k8s.not_managed.node_list[].interface_list[].interface_choice": [
+      "spec.gke_k8s.not_managed.node_list[].interface_list[].bond_interface",
+      "spec.gke_k8s.not_managed.node_list[].interface_list[].ethernet_interface",
+      "spec.gke_k8s.not_managed.node_list[].interface_list[].vlan_interface"
+    ],
+    "spec.gke_k8s.not_managed.node_list[].interface_list[].ipv6_address_choice": [
+      "spec.gke_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config",
+      "spec.gke_k8s.not_managed.node_list[].interface_list[].no_ipv6_address",
+      "spec.gke_k8s.not_managed.node_list[].interface_list[].static_ipv6_address"
+    ],
+    "spec.gke_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.autoconfig_choice": [
+      "spec.gke_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.host",
+      "spec.gke_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router"
+    ],
+    "spec.gke_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.address_choice": [
+      "spec.gke_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.network_prefix",
+      "spec.gke_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful"
+    ],
+    "spec.gke_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.dns_choice": [
+      "spec.gke_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.configured_list",
+      "spec.gke_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.local_dns"
+    ],
+    "spec.gke_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.local_dns.local_dns_choice": [
+      "spec.gke_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.local_dns.configured_address",
+      "spec.gke_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.local_dns.first_address",
+      "spec.gke_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.local_dns.last_address"
+    ],
+    "spec.gke_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.dhcp_networks[].network_prefix_choice": [
+      "spec.gke_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.dhcp_networks[].network_prefix"
+    ],
+    "spec.gke_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.interfaces_addressing_choice": [
+      "spec.gke_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.automatic_from_end",
+      "spec.gke_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.automatic_from_start",
+      "spec.gke_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.interface_ip_map"
+    ],
+    "spec.gke_k8s.not_managed.node_list[].interface_list[].monitoring_choice": [
+      "spec.gke_k8s.not_managed.node_list[].interface_list[].monitor",
+      "spec.gke_k8s.not_managed.node_list[].interface_list[].monitor_disabled"
+    ],
+    "spec.gke_k8s.not_managed.node_list[].interface_list[].network_option.network_choice": [
+      "spec.gke_k8s.not_managed.node_list[].interface_list[].network_option.segment_network",
+      "spec.gke_k8s.not_managed.node_list[].interface_list[].network_option.site_local_inside_network",
+      "spec.gke_k8s.not_managed.node_list[].interface_list[].network_option.site_local_network"
+    ],
+    "spec.gke_k8s.not_managed.node_list[].interface_list[].site_to_site_connectivity_interface_choice": [
+      "spec.gke_k8s.not_managed.node_list[].interface_list[].site_to_site_connectivity_interface_disabled",
+      "spec.gke_k8s.not_managed.node_list[].interface_list[].site_to_site_connectivity_interface_enabled"
+    ],
+    "spec.gke_k8s.not_managed.node_list[].interface_list[].static_ipv6_address.network_prefix_choice": [
+      "spec.gke_k8s.not_managed.node_list[].interface_list[].static_ipv6_address.cluster_static_ip",
+      "spec.gke_k8s.not_managed.node_list[].interface_list[].static_ipv6_address.node_static_ip"
+    ],
+    "spec.hyper_v.not_managed.node_list[].interface_list[].address_choice": [
+      "spec.hyper_v.not_managed.node_list[].interface_list[].dhcp_client",
+      "spec.hyper_v.not_managed.node_list[].interface_list[].dhcp_server",
+      "spec.hyper_v.not_managed.node_list[].interface_list[].no_ipv4_address",
+      "spec.hyper_v.not_managed.node_list[].interface_list[].static_ip"
+    ],
+    "spec.hyper_v.not_managed.node_list[].interface_list[].bond_interface.lacp_choice": [
+      "spec.hyper_v.not_managed.node_list[].interface_list[].bond_interface.active_backup",
+      "spec.hyper_v.not_managed.node_list[].interface_list[].bond_interface.lacp"
+    ],
+    "spec.hyper_v.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].dns_choice": [
+      "spec.hyper_v.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].dns_address",
+      "spec.hyper_v.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].same_as_dgw"
+    ],
+    "spec.hyper_v.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].gateway_choice": [
+      "spec.hyper_v.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].dgw_address",
+      "spec.hyper_v.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].first_address",
+      "spec.hyper_v.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].last_address"
+    ],
+    "spec.hyper_v.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].network_prefix_choice": [
+      "spec.hyper_v.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].network_prefix"
+    ],
+    "spec.hyper_v.not_managed.node_list[].interface_list[].dhcp_server.interfaces_addressing_choice": [
+      "spec.hyper_v.not_managed.node_list[].interface_list[].dhcp_server.automatic_from_end",
+      "spec.hyper_v.not_managed.node_list[].interface_list[].dhcp_server.automatic_from_start",
+      "spec.hyper_v.not_managed.node_list[].interface_list[].dhcp_server.interface_ip_map"
+    ],
+    "spec.hyper_v.not_managed.node_list[].interface_list[].interface_choice": [
+      "spec.hyper_v.not_managed.node_list[].interface_list[].bond_interface",
+      "spec.hyper_v.not_managed.node_list[].interface_list[].ethernet_interface",
+      "spec.hyper_v.not_managed.node_list[].interface_list[].vlan_interface"
+    ],
+    "spec.hyper_v.not_managed.node_list[].interface_list[].ipv6_address_choice": [
+      "spec.hyper_v.not_managed.node_list[].interface_list[].ipv6_auto_config",
+      "spec.hyper_v.not_managed.node_list[].interface_list[].no_ipv6_address",
+      "spec.hyper_v.not_managed.node_list[].interface_list[].static_ipv6_address"
+    ],
+    "spec.hyper_v.not_managed.node_list[].interface_list[].ipv6_auto_config.autoconfig_choice": [
+      "spec.hyper_v.not_managed.node_list[].interface_list[].ipv6_auto_config.host",
+      "spec.hyper_v.not_managed.node_list[].interface_list[].ipv6_auto_config.router"
+    ],
+    "spec.hyper_v.not_managed.node_list[].interface_list[].ipv6_auto_config.router.address_choice": [
+      "spec.hyper_v.not_managed.node_list[].interface_list[].ipv6_auto_config.router.network_prefix",
+      "spec.hyper_v.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful"
+    ],
+    "spec.hyper_v.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.dns_choice": [
+      "spec.hyper_v.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.configured_list",
+      "spec.hyper_v.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.local_dns"
+    ],
+    "spec.hyper_v.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.local_dns.local_dns_choice": [
+      "spec.hyper_v.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.local_dns.configured_address",
+      "spec.hyper_v.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.local_dns.first_address",
+      "spec.hyper_v.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.local_dns.last_address"
+    ],
+    "spec.hyper_v.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.dhcp_networks[].network_prefix_choice": [
+      "spec.hyper_v.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.dhcp_networks[].network_prefix"
+    ],
+    "spec.hyper_v.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.interfaces_addressing_choice": [
+      "spec.hyper_v.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.automatic_from_end",
+      "spec.hyper_v.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.automatic_from_start",
+      "spec.hyper_v.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.interface_ip_map"
+    ],
+    "spec.hyper_v.not_managed.node_list[].interface_list[].monitoring_choice": [
+      "spec.hyper_v.not_managed.node_list[].interface_list[].monitor",
+      "spec.hyper_v.not_managed.node_list[].interface_list[].monitor_disabled"
+    ],
+    "spec.hyper_v.not_managed.node_list[].interface_list[].network_option.network_choice": [
+      "spec.hyper_v.not_managed.node_list[].interface_list[].network_option.segment_network",
+      "spec.hyper_v.not_managed.node_list[].interface_list[].network_option.site_local_inside_network",
+      "spec.hyper_v.not_managed.node_list[].interface_list[].network_option.site_local_network"
+    ],
+    "spec.hyper_v.not_managed.node_list[].interface_list[].site_to_site_connectivity_interface_choice": [
+      "spec.hyper_v.not_managed.node_list[].interface_list[].site_to_site_connectivity_interface_disabled",
+      "spec.hyper_v.not_managed.node_list[].interface_list[].site_to_site_connectivity_interface_enabled"
+    ],
+    "spec.hyper_v.not_managed.node_list[].interface_list[].static_ipv6_address.network_prefix_choice": [
+      "spec.hyper_v.not_managed.node_list[].interface_list[].static_ipv6_address.cluster_static_ip",
+      "spec.hyper_v.not_managed.node_list[].interface_list[].static_ipv6_address.node_static_ip"
+    ],
+    "spec.hyper_v.orchestration_choice": [
+      "spec.hyper_v.not_managed"
     ],
     "spec.kvm.not_managed.node_list[].interface_list[].address_choice": [
       "spec.kvm.not_managed.node_list[].interface_list[].dhcp_client",
@@ -15602,6 +20136,89 @@
     "spec.oci.orchestration_choice": [
       "spec.oci.not_managed"
     ],
+    "spec.oci_k8s.anti_affinity_choice": [
+      "spec.oci_k8s.disable_anti_affinity",
+      "spec.oci_k8s.enable_anti_affinity"
+    ],
+    "spec.oci_k8s.not_managed.node_list[].interface_list[].address_choice": [
+      "spec.oci_k8s.not_managed.node_list[].interface_list[].dhcp_client",
+      "spec.oci_k8s.not_managed.node_list[].interface_list[].dhcp_server",
+      "spec.oci_k8s.not_managed.node_list[].interface_list[].no_ipv4_address",
+      "spec.oci_k8s.not_managed.node_list[].interface_list[].static_ip"
+    ],
+    "spec.oci_k8s.not_managed.node_list[].interface_list[].bond_interface.lacp_choice": [
+      "spec.oci_k8s.not_managed.node_list[].interface_list[].bond_interface.active_backup",
+      "spec.oci_k8s.not_managed.node_list[].interface_list[].bond_interface.lacp"
+    ],
+    "spec.oci_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].dns_choice": [
+      "spec.oci_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].dns_address",
+      "spec.oci_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].same_as_dgw"
+    ],
+    "spec.oci_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].gateway_choice": [
+      "spec.oci_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].dgw_address",
+      "spec.oci_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].first_address",
+      "spec.oci_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].last_address"
+    ],
+    "spec.oci_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].network_prefix_choice": [
+      "spec.oci_k8s.not_managed.node_list[].interface_list[].dhcp_server.dhcp_networks[].network_prefix"
+    ],
+    "spec.oci_k8s.not_managed.node_list[].interface_list[].dhcp_server.interfaces_addressing_choice": [
+      "spec.oci_k8s.not_managed.node_list[].interface_list[].dhcp_server.automatic_from_end",
+      "spec.oci_k8s.not_managed.node_list[].interface_list[].dhcp_server.automatic_from_start",
+      "spec.oci_k8s.not_managed.node_list[].interface_list[].dhcp_server.interface_ip_map"
+    ],
+    "spec.oci_k8s.not_managed.node_list[].interface_list[].interface_choice": [
+      "spec.oci_k8s.not_managed.node_list[].interface_list[].bond_interface",
+      "spec.oci_k8s.not_managed.node_list[].interface_list[].ethernet_interface",
+      "spec.oci_k8s.not_managed.node_list[].interface_list[].vlan_interface"
+    ],
+    "spec.oci_k8s.not_managed.node_list[].interface_list[].ipv6_address_choice": [
+      "spec.oci_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config",
+      "spec.oci_k8s.not_managed.node_list[].interface_list[].no_ipv6_address",
+      "spec.oci_k8s.not_managed.node_list[].interface_list[].static_ipv6_address"
+    ],
+    "spec.oci_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.autoconfig_choice": [
+      "spec.oci_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.host",
+      "spec.oci_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router"
+    ],
+    "spec.oci_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.address_choice": [
+      "spec.oci_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.network_prefix",
+      "spec.oci_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful"
+    ],
+    "spec.oci_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.dns_choice": [
+      "spec.oci_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.configured_list",
+      "spec.oci_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.local_dns"
+    ],
+    "spec.oci_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.local_dns.local_dns_choice": [
+      "spec.oci_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.local_dns.configured_address",
+      "spec.oci_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.local_dns.first_address",
+      "spec.oci_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.dns_config.local_dns.last_address"
+    ],
+    "spec.oci_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.dhcp_networks[].network_prefix_choice": [
+      "spec.oci_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.dhcp_networks[].network_prefix"
+    ],
+    "spec.oci_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.interfaces_addressing_choice": [
+      "spec.oci_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.automatic_from_end",
+      "spec.oci_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.automatic_from_start",
+      "spec.oci_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.interface_ip_map"
+    ],
+    "spec.oci_k8s.not_managed.node_list[].interface_list[].monitoring_choice": [
+      "spec.oci_k8s.not_managed.node_list[].interface_list[].monitor",
+      "spec.oci_k8s.not_managed.node_list[].interface_list[].monitor_disabled"
+    ],
+    "spec.oci_k8s.not_managed.node_list[].interface_list[].network_option.network_choice": [
+      "spec.oci_k8s.not_managed.node_list[].interface_list[].network_option.segment_network",
+      "spec.oci_k8s.not_managed.node_list[].interface_list[].network_option.site_local_inside_network",
+      "spec.oci_k8s.not_managed.node_list[].interface_list[].network_option.site_local_network"
+    ],
+    "spec.oci_k8s.not_managed.node_list[].interface_list[].site_to_site_connectivity_interface_choice": [
+      "spec.oci_k8s.not_managed.node_list[].interface_list[].site_to_site_connectivity_interface_disabled",
+      "spec.oci_k8s.not_managed.node_list[].interface_list[].site_to_site_connectivity_interface_enabled"
+    ],
+    "spec.oci_k8s.not_managed.node_list[].interface_list[].static_ipv6_address.network_prefix_choice": [
+      "spec.oci_k8s.not_managed.node_list[].interface_list[].static_ipv6_address.cluster_static_ip",
+      "spec.oci_k8s.not_managed.node_list[].interface_list[].static_ipv6_address.node_static_ip"
+    ],
     "spec.offline_survivability_mode.offline_survivability_mode_choice": [
       "spec.offline_survivability_mode.enable_offline_survivability_mode",
       "spec.offline_survivability_mode.no_offline_survivability_mode"
@@ -15783,15 +20400,19 @@
       "spec.performance_enhancement_mode.perf_mode_l7_enhanced.jumbo_enabled"
     ],
     "spec.provider_choice": [
+      "spec.aks_k8s",
       "spec.aws",
       "spec.azure",
       "spec.baremetal",
       "spec.eks_k8s",
       "spec.equinix",
       "spec.gcp",
+      "spec.gke_k8s",
+      "spec.hyper_v",
       "spec.kvm",
       "spec.nutanix",
       "spec.oci",
+      "spec.oci_k8s",
       "spec.openshift_virtualization",
       "spec.openstack",
       "spec.vmware"

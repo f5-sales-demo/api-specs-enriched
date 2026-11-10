@@ -17,10 +17,16 @@
           "webhook"
         ],
         "spec.opsgenie.api_key.blindfold_secret_info": [
-          "clear_secret_info"
+          "clear_secret_info",
+          "none"
         ],
         "spec.opsgenie.api_key.clear_secret_info": [
-          "blindfold_secret_info"
+          "blindfold_secret_info",
+          "none"
+        ],
+        "spec.opsgenie.api_key.none": [
+          "blindfold_secret_info",
+          "clear_secret_info"
         ],
         "spec.pagerduty": [
           "email",
@@ -30,10 +36,16 @@
           "webhook"
         ],
         "spec.pagerduty.routing_key.blindfold_secret_info": [
-          "clear_secret_info"
+          "clear_secret_info",
+          "none"
         ],
         "spec.pagerduty.routing_key.clear_secret_info": [
-          "blindfold_secret_info"
+          "blindfold_secret_info",
+          "none"
+        ],
+        "spec.pagerduty.routing_key.none": [
+          "blindfold_secret_info",
+          "clear_secret_info"
         ],
         "spec.slack": [
           "email",
@@ -43,10 +55,16 @@
           "webhook"
         ],
         "spec.slack.url.blindfold_secret_info": [
-          "clear_secret_info"
+          "clear_secret_info",
+          "none"
         ],
         "spec.slack.url.clear_secret_info": [
-          "blindfold_secret_info"
+          "blindfold_secret_info",
+          "none"
+        ],
+        "spec.slack.url.none": [
+          "blindfold_secret_info",
+          "clear_secret_info"
         ],
         "spec.sms": [
           "email",
@@ -68,10 +86,16 @@
           "no_authorization"
         ],
         "spec.webhook.http_config.auth_token.token.blindfold_secret_info": [
-          "clear_secret_info"
+          "clear_secret_info",
+          "none"
         ],
         "spec.webhook.http_config.auth_token.token.clear_secret_info": [
-          "blindfold_secret_info"
+          "blindfold_secret_info",
+          "none"
+        ],
+        "spec.webhook.http_config.auth_token.token.none": [
+          "blindfold_secret_info",
+          "clear_secret_info"
         ],
         "spec.webhook.http_config.basic_auth": [
           "auth_token",
@@ -79,10 +103,16 @@
           "no_authorization"
         ],
         "spec.webhook.http_config.basic_auth.password.blindfold_secret_info": [
-          "clear_secret_info"
+          "clear_secret_info",
+          "none"
         ],
         "spec.webhook.http_config.basic_auth.password.clear_secret_info": [
-          "blindfold_secret_info"
+          "blindfold_secret_info",
+          "none"
+        ],
+        "spec.webhook.http_config.basic_auth.password.none": [
+          "blindfold_secret_info",
+          "clear_secret_info"
         ],
         "spec.webhook.http_config.client_cert_obj": [
           "auth_token",
@@ -113,10 +143,16 @@
           "use_server_verification"
         ],
         "spec.webhook.url.blindfold_secret_info": [
-          "clear_secret_info"
+          "clear_secret_info",
+          "none"
         ],
         "spec.webhook.url.clear_secret_info": [
-          "blindfold_secret_info"
+          "blindfold_secret_info",
+          "none"
+        ],
+        "spec.webhook.url.none": [
+          "blindfold_secret_info",
+          "clear_secret_info"
         ]
       },
       "fieldDefaults": {},
@@ -360,6 +396,27 @@
     },
     "certificate": {
       "fieldConflicts": {
+        "spec.auto_cert": [
+          "manual"
+        ],
+        "spec.auto_cert.custom_issuer": [
+          "default"
+        ],
+        "spec.auto_cert.default": [
+          "custom_issuer"
+        ],
+        "spec.auto_cert.dns_01": [
+          "pre_validated"
+        ],
+        "spec.auto_cert.dns_01.cname_delegation": [
+          "delegated"
+        ],
+        "spec.auto_cert.dns_01.delegated": [
+          "cname_delegation"
+        ],
+        "spec.auto_cert.pre_validated": [
+          "dns_01"
+        ],
         "spec.custom_hash_algorithms": [
           "disable_ocsp_stapling",
           "use_system_defaults"
@@ -368,11 +425,20 @@
           "custom_hash_algorithms",
           "use_system_defaults"
         ],
+        "spec.manual": [
+          "auto_cert"
+        ],
         "spec.private_key.blindfold_secret_info": [
-          "clear_secret_info"
+          "clear_secret_info",
+          "none"
         ],
         "spec.private_key.clear_secret_info": [
-          "blindfold_secret_info"
+          "blindfold_secret_info",
+          "none"
+        ],
+        "spec.private_key.none": [
+          "blindfold_secret_info",
+          "clear_secret_info"
         ],
         "spec.use_system_defaults": [
           "custom_hash_algorithms",
@@ -381,8 +447,10 @@
       },
       "fieldDefaults": {},
       "minimumConfigFields": [
+        "spec.auto_cert.custom_issuer.issuer_ref",
+        "spec.auto_cert.domains",
+        "spec.auto_cert.renew_before_days",
         "spec.certificate_chain.name",
-        "spec.certificate_url",
         "spec.custom_hash_algorithms.hash_algorithms",
         "spec.private_key.blindfold_secret_info.location",
         "spec.private_key.clear_secret_info.url"
@@ -391,6 +459,27 @@
     },
     "certificate_views": {
       "fieldConflicts": {
+        "spec.auto_cert": [
+          "manual"
+        ],
+        "spec.auto_cert.custom_issuer": [
+          "default"
+        ],
+        "spec.auto_cert.default": [
+          "custom_issuer"
+        ],
+        "spec.auto_cert.dns_01": [
+          "pre_validated"
+        ],
+        "spec.auto_cert.dns_01.cname_delegation": [
+          "delegated"
+        ],
+        "spec.auto_cert.dns_01.delegated": [
+          "cname_delegation"
+        ],
+        "spec.auto_cert.pre_validated": [
+          "dns_01"
+        ],
         "spec.custom_hash_algorithms": [
           "disable_ocsp_stapling",
           "use_system_defaults"
@@ -399,11 +488,20 @@
           "custom_hash_algorithms",
           "use_system_defaults"
         ],
+        "spec.manual": [
+          "auto_cert"
+        ],
         "spec.private_key.blindfold_secret_info": [
-          "clear_secret_info"
+          "clear_secret_info",
+          "none"
         ],
         "spec.private_key.clear_secret_info": [
-          "blindfold_secret_info"
+          "blindfold_secret_info",
+          "none"
+        ],
+        "spec.private_key.none": [
+          "blindfold_secret_info",
+          "clear_secret_info"
         ],
         "spec.use_system_defaults": [
           "custom_hash_algorithms",
@@ -412,8 +510,10 @@
       },
       "fieldDefaults": {},
       "minimumConfigFields": [
+        "spec.auto_cert.custom_issuer.issuer_ref",
+        "spec.auto_cert.domains",
+        "spec.auto_cert.renew_before_days",
         "spec.certificate_chain.name",
-        "spec.certificate_url",
         "spec.custom_hash_algorithms.hash_algorithms",
         "spec.private_key.blindfold_secret_info.location",
         "spec.private_key.clear_secret_info.url"
@@ -655,10 +755,16 @@
           "sumo_logic_receiver"
         ],
         "spec.azure_event_hubs_receiver.connection_string.blindfold_secret_info": [
-          "clear_secret_info"
+          "clear_secret_info",
+          "none"
         ],
         "spec.azure_event_hubs_receiver.connection_string.clear_secret_info": [
-          "blindfold_secret_info"
+          "blindfold_secret_info",
+          "none"
+        ],
+        "spec.azure_event_hubs_receiver.connection_string.none": [
+          "blindfold_secret_info",
+          "clear_secret_info"
         ],
         "spec.azure_receiver": [
           "aws_cloud_watch_receiver",
@@ -704,10 +810,16 @@
           "compression_gzip"
         ],
         "spec.azure_receiver.connection_string.blindfold_secret_info": [
-          "clear_secret_info"
+          "clear_secret_info",
+          "none"
         ],
         "spec.azure_receiver.connection_string.clear_secret_info": [
-          "blindfold_secret_info"
+          "blindfold_secret_info",
+          "none"
+        ],
+        "spec.azure_receiver.connection_string.none": [
+          "blindfold_secret_info",
+          "clear_secret_info"
         ],
         "spec.azure_receiver.filename_options.custom_folder": [
           "log_type_folder",
@@ -765,10 +877,16 @@
           "compression_gzip"
         ],
         "spec.datadog_receiver.datadog_api_key.blindfold_secret_info": [
-          "clear_secret_info"
+          "clear_secret_info",
+          "none"
         ],
         "spec.datadog_receiver.datadog_api_key.clear_secret_info": [
-          "blindfold_secret_info"
+          "blindfold_secret_info",
+          "none"
+        ],
+        "spec.datadog_receiver.datadog_api_key.none": [
+          "blindfold_secret_info",
+          "clear_secret_info"
         ],
         "spec.datadog_receiver.endpoint": [
           "site"
@@ -801,10 +919,16 @@
           "mtls_disabled"
         ],
         "spec.datadog_receiver.use_tls.mtls_enable.key_url.blindfold_secret_info": [
-          "clear_secret_info"
+          "clear_secret_info",
+          "none"
         ],
         "spec.datadog_receiver.use_tls.mtls_enable.key_url.clear_secret_info": [
-          "blindfold_secret_info"
+          "blindfold_secret_info",
+          "none"
+        ],
+        "spec.datadog_receiver.use_tls.mtls_enable.key_url.none": [
+          "blindfold_secret_info",
+          "clear_secret_info"
         ],
         "spec.datadog_receiver.use_tls.no_ca": [
           "trusted_ca_url"
@@ -890,10 +1014,16 @@
           "auth_token"
         ],
         "spec.http_receiver.auth_basic.password.blindfold_secret_info": [
-          "clear_secret_info"
+          "clear_secret_info",
+          "none"
         ],
         "spec.http_receiver.auth_basic.password.clear_secret_info": [
-          "blindfold_secret_info"
+          "blindfold_secret_info",
+          "none"
+        ],
+        "spec.http_receiver.auth_basic.password.none": [
+          "blindfold_secret_info",
+          "clear_secret_info"
         ],
         "spec.http_receiver.auth_none": [
           "auth_basic",
@@ -904,10 +1034,16 @@
           "auth_none"
         ],
         "spec.http_receiver.auth_token.token.blindfold_secret_info": [
-          "clear_secret_info"
+          "clear_secret_info",
+          "none"
         ],
         "spec.http_receiver.auth_token.token.clear_secret_info": [
-          "blindfold_secret_info"
+          "blindfold_secret_info",
+          "none"
+        ],
+        "spec.http_receiver.auth_token.token.none": [
+          "blindfold_secret_info",
+          "clear_secret_info"
         ],
         "spec.http_receiver.batch.max_bytes": [
           "max_bytes_disabled"
@@ -964,10 +1100,16 @@
           "mtls_disabled"
         ],
         "spec.http_receiver.use_tls.mtls_enable.key_url.blindfold_secret_info": [
-          "clear_secret_info"
+          "clear_secret_info",
+          "none"
         ],
         "spec.http_receiver.use_tls.mtls_enable.key_url.clear_secret_info": [
-          "blindfold_secret_info"
+          "blindfold_secret_info",
+          "none"
+        ],
+        "spec.http_receiver.use_tls.mtls_enable.key_url.none": [
+          "blindfold_secret_info",
+          "clear_secret_info"
         ],
         "spec.http_receiver.use_tls.no_ca": [
           "trusted_ca_url"
@@ -1043,10 +1185,16 @@
           "mtls_disabled"
         ],
         "spec.kafka_receiver.use_tls.mtls_enable.key_url.blindfold_secret_info": [
-          "clear_secret_info"
+          "clear_secret_info",
+          "none"
         ],
         "spec.kafka_receiver.use_tls.mtls_enable.key_url.clear_secret_info": [
-          "blindfold_secret_info"
+          "blindfold_secret_info",
+          "none"
+        ],
+        "spec.kafka_receiver.use_tls.mtls_enable.key_url.none": [
+          "blindfold_secret_info",
+          "clear_secret_info"
         ],
         "spec.kafka_receiver.use_tls.no_ca": [
           "trusted_ca_url"
@@ -1068,10 +1216,16 @@
           "sumo_logic_receiver"
         ],
         "spec.new_relic_receiver.api_key.blindfold_secret_info": [
-          "clear_secret_info"
+          "clear_secret_info",
+          "none"
         ],
         "spec.new_relic_receiver.api_key.clear_secret_info": [
-          "blindfold_secret_info"
+          "blindfold_secret_info",
+          "none"
+        ],
+        "spec.new_relic_receiver.api_key.none": [
+          "blindfold_secret_info",
+          "clear_secret_info"
         ],
         "spec.new_relic_receiver.eu": [
           "us"
@@ -1159,10 +1313,16 @@
           "mtls_disabled"
         ],
         "spec.qradar_receiver.use_tls.mtls_enable.key_url.blindfold_secret_info": [
-          "clear_secret_info"
+          "clear_secret_info",
+          "none"
         ],
         "spec.qradar_receiver.use_tls.mtls_enable.key_url.clear_secret_info": [
-          "blindfold_secret_info"
+          "blindfold_secret_info",
+          "none"
+        ],
+        "spec.qradar_receiver.use_tls.mtls_enable.key_url.none": [
+          "blindfold_secret_info",
+          "clear_secret_info"
         ],
         "spec.qradar_receiver.use_tls.no_ca": [
           "trusted_ca_url"
@@ -1288,10 +1448,16 @@
           "use_tls"
         ],
         "spec.splunk_receiver.splunk_hec_token.blindfold_secret_info": [
-          "clear_secret_info"
+          "clear_secret_info",
+          "none"
         ],
         "spec.splunk_receiver.splunk_hec_token.clear_secret_info": [
-          "blindfold_secret_info"
+          "blindfold_secret_info",
+          "none"
+        ],
+        "spec.splunk_receiver.splunk_hec_token.none": [
+          "blindfold_secret_info",
+          "clear_secret_info"
         ],
         "spec.splunk_receiver.use_tls": [
           "no_tls"
@@ -1315,10 +1481,16 @@
           "mtls_disabled"
         ],
         "spec.splunk_receiver.use_tls.mtls_enable.key_url.blindfold_secret_info": [
-          "clear_secret_info"
+          "clear_secret_info",
+          "none"
         ],
         "spec.splunk_receiver.use_tls.mtls_enable.key_url.clear_secret_info": [
-          "blindfold_secret_info"
+          "blindfold_secret_info",
+          "none"
+        ],
+        "spec.splunk_receiver.use_tls.mtls_enable.key_url.none": [
+          "blindfold_secret_info",
+          "clear_secret_info"
         ],
         "spec.splunk_receiver.use_tls.no_ca": [
           "trusted_ca_url"
@@ -1340,10 +1512,16 @@
           "splunk_receiver"
         ],
         "spec.sumo_logic_receiver.url.blindfold_secret_info": [
-          "clear_secret_info"
+          "clear_secret_info",
+          "none"
         ],
         "spec.sumo_logic_receiver.url.clear_secret_info": [
-          "blindfold_secret_info"
+          "blindfold_secret_info",
+          "none"
+        ],
+        "spec.sumo_logic_receiver.url.none": [
+          "blindfold_secret_info",
+          "clear_secret_info"
         ]
       },
       "fieldDefaults": {
@@ -1453,6 +1631,8 @@
         "spec.advertise_custom": [
           "advertise_dualstack_on_public",
           "advertise_on_public",
+          "advertise_on_public_default_dualstack_vip",
+          "advertise_on_public_default_ipv6_vip",
           "advertise_on_public_default_vip",
           "advertise_v6_on_public",
           "do_not_advertise"
@@ -1460,6 +1640,8 @@
         "spec.advertise_dualstack_on_public": [
           "advertise_custom",
           "advertise_on_public",
+          "advertise_on_public_default_dualstack_vip",
+          "advertise_on_public_default_ipv6_vip",
           "advertise_on_public_default_vip",
           "advertise_v6_on_public",
           "do_not_advertise"
@@ -1467,6 +1649,26 @@
         "spec.advertise_on_public": [
           "advertise_custom",
           "advertise_dualstack_on_public",
+          "advertise_on_public_default_dualstack_vip",
+          "advertise_on_public_default_ipv6_vip",
+          "advertise_on_public_default_vip",
+          "advertise_v6_on_public",
+          "do_not_advertise"
+        ],
+        "spec.advertise_on_public_default_dualstack_vip": [
+          "advertise_custom",
+          "advertise_dualstack_on_public",
+          "advertise_on_public",
+          "advertise_on_public_default_ipv6_vip",
+          "advertise_on_public_default_vip",
+          "advertise_v6_on_public",
+          "do_not_advertise"
+        ],
+        "spec.advertise_on_public_default_ipv6_vip": [
+          "advertise_custom",
+          "advertise_dualstack_on_public",
+          "advertise_on_public",
+          "advertise_on_public_default_dualstack_vip",
           "advertise_on_public_default_vip",
           "advertise_v6_on_public",
           "do_not_advertise"
@@ -1475,6 +1677,8 @@
           "advertise_custom",
           "advertise_dualstack_on_public",
           "advertise_on_public",
+          "advertise_on_public_default_dualstack_vip",
+          "advertise_on_public_default_ipv6_vip",
           "advertise_v6_on_public",
           "do_not_advertise"
         ],
@@ -1482,6 +1686,8 @@
           "advertise_custom",
           "advertise_dualstack_on_public",
           "advertise_on_public",
+          "advertise_on_public_default_dualstack_vip",
+          "advertise_on_public_default_ipv6_vip",
           "advertise_on_public_default_vip",
           "do_not_advertise"
         ],
@@ -1700,20 +1906,28 @@
           "js_insert_all_pages",
           "js_insert_all_pages_except"
         ],
-        "spec.caching_policy": [
-          "disable_caching"
+        "spec.bot_protection": [
+          "disable_bot_protection"
         ],
-        "spec.caching_policy.default_cache_action.cache_disabled": [
-          "cache_ttl_default",
-          "cache_ttl_override"
+        "spec.bot_protection.disable_js_insert": [
+          "js_insert_all_pages",
+          "js_insert_all_pages_except",
+          "js_insertion_rules"
         ],
-        "spec.caching_policy.default_cache_action.cache_ttl_default": [
-          "cache_disabled",
-          "cache_ttl_override"
+        "spec.bot_protection.js_insert_all_pages": [
+          "disable_js_insert",
+          "js_insert_all_pages_except",
+          "js_insertion_rules"
         ],
-        "spec.caching_policy.default_cache_action.cache_ttl_override": [
-          "cache_disabled",
-          "cache_ttl_default"
+        "spec.bot_protection.js_insert_all_pages_except": [
+          "disable_js_insert",
+          "js_insert_all_pages",
+          "js_insertion_rules"
+        ],
+        "spec.bot_protection.js_insertion_rules": [
+          "disable_js_insert",
+          "js_insert_all_pages",
+          "js_insert_all_pages_except"
         ],
         "spec.captcha_challenge": [
           "enable_challenge",
@@ -2011,8 +2225,11 @@
           "bot_defense",
           "bot_defense_advanced_protection"
         ],
+        "spec.disable_bot_protection": [
+          "bot_protection"
+        ],
         "spec.disable_caching": [
-          "caching_policy"
+          "enable_cdn"
         ],
         "spec.disable_client_side_defense": [
           "client_side_defense"
@@ -2043,6 +2260,8 @@
           "advertise_custom",
           "advertise_dualstack_on_public",
           "advertise_on_public",
+          "advertise_on_public_default_dualstack_vip",
+          "advertise_on_public_default_ipv6_vip",
           "advertise_on_public_default_vip",
           "advertise_v6_on_public"
         ],
@@ -2066,6 +2285,21 @@
         ],
         "spec.enable_api_discovery.enable_learn_from_redirect_traffic": [
           "disable_learn_from_redirect_traffic"
+        ],
+        "spec.enable_cdn": [
+          "disable_caching"
+        ],
+        "spec.enable_cdn.caching_policy.default_cache_action.cache_disabled": [
+          "cache_ttl_default",
+          "cache_ttl_override"
+        ],
+        "spec.enable_cdn.caching_policy.default_cache_action.cache_ttl_default": [
+          "cache_disabled",
+          "cache_ttl_override"
+        ],
+        "spec.enable_cdn.caching_policy.default_cache_action.cache_ttl_override": [
+          "cache_disabled",
+          "cache_ttl_default"
         ],
         "spec.enable_challenge": [
           "captcha_challenge",
@@ -2102,6 +2336,12 @@
         ],
         "spec.enable_trust_client_ip_headers": [
           "disable_trust_client_ip_headers"
+        ],
+        "spec.enable_trust_client_ip_headers.xff_num_trusted_hops_custom": [
+          "xff_num_trusted_hops_default"
+        ],
+        "spec.enable_trust_client_ip_headers.xff_num_trusted_hops_default": [
+          "xff_num_trusted_hops_custom"
         ],
         "spec.http": [
           "https",
@@ -2501,8 +2741,14 @@
         "spec.malware_protection_settings": [
           "disable_malware_protection"
         ],
+        "spec.more_option.disable_http10": [
+          "enable_http10"
+        ],
         "spec.more_option.disable_path_normalize": [
           "enable_path_normalize"
+        ],
+        "spec.more_option.enable_http10": [
+          "disable_http10"
         ],
         "spec.more_option.enable_path_normalize": [
           "disable_path_normalize"
@@ -2775,6 +3021,8 @@
         "spec.bot_defense_advanced_protection.mobile_only.mobile.name",
         "spec.bot_defense_advanced_protection.web_only.js_insertion_rules.rules",
         "spec.bot_defense_advanced_protection.web_only.web.name",
+        "spec.bot_protection.js_insertion_rules.rules",
+        "spec.bot_protection.policy.name",
         "spec.captcha_challenge.cookie_expiry",
         "spec.client_side_defense.policy.js_insertion_rules.rules",
         "spec.cookie_stickiness.name",
@@ -3404,46 +3652,87 @@
           "no_forward_proxy"
         ],
         "spec.admin_user_credentials.admin_password.blindfold_secret_info": [
-          "clear_secret_info"
+          "clear_secret_info",
+          "none"
         ],
         "spec.admin_user_credentials.admin_password.clear_secret_info": [
-          "blindfold_secret_info"
+          "blindfold_secret_info",
+          "none"
         ],
-        "spec.aws": [
+        "spec.admin_user_credentials.admin_password.none": [
+          "blindfold_secret_info",
+          "clear_secret_info"
+        ],
+        "spec.aks_k8s": [
+          "aws",
           "azure",
           "baremetal",
           "eks_k8s",
           "equinix",
           "gcp",
+          "gke_k8s",
+          "hyper_v",
           "kvm",
           "nutanix",
           "oci",
+          "oci_k8s",
+          "openshift_virtualization",
+          "openstack",
+          "vmware"
+        ],
+        "spec.aks_k8s.disable_anti_affinity": [
+          "enable_anti_affinity"
+        ],
+        "spec.aks_k8s.enable_anti_affinity": [
+          "disable_anti_affinity"
+        ],
+        "spec.aws": [
+          "aks_k8s",
+          "azure",
+          "baremetal",
+          "eks_k8s",
+          "equinix",
+          "gcp",
+          "gke_k8s",
+          "hyper_v",
+          "kvm",
+          "nutanix",
+          "oci",
+          "oci_k8s",
           "openshift_virtualization",
           "openstack",
           "vmware"
         ],
         "spec.azure": [
+          "aks_k8s",
           "aws",
           "baremetal",
           "eks_k8s",
           "equinix",
           "gcp",
+          "gke_k8s",
+          "hyper_v",
           "kvm",
           "nutanix",
           "oci",
+          "oci_k8s",
           "openshift_virtualization",
           "openstack",
           "vmware"
         ],
         "spec.baremetal": [
+          "aks_k8s",
           "aws",
           "azure",
           "eks_k8s",
           "equinix",
           "gcp",
+          "gke_k8s",
+          "hyper_v",
           "kvm",
           "nutanix",
           "oci",
+          "oci_k8s",
           "openshift_virtualization",
           "openstack",
           "vmware"
@@ -3465,10 +3754,16 @@
           "disable_re_tunnel"
         ],
         "spec.custom_proxy.password.blindfold_secret_info": [
-          "clear_secret_info"
+          "clear_secret_info",
+          "none"
         ],
         "spec.custom_proxy.password.clear_secret_info": [
-          "blindfold_secret_info"
+          "blindfold_secret_info",
+          "none"
+        ],
+        "spec.custom_proxy.password.none": [
+          "blindfold_secret_info",
+          "clear_secret_info"
         ],
         "spec.custom_proxy_bypass": [
           "no_proxy_bypass"
@@ -3501,6 +3796,12 @@
         "spec.dns_ntp_config.custom_ntp": [
           "f5_ntp_default"
         ],
+        "spec.dns_ntp_config.disable_cedns_record": [
+          "enable_cedns_record"
+        ],
+        "spec.dns_ntp_config.enable_cedns_record": [
+          "disable_cedns_record"
+        ],
         "spec.dns_ntp_config.f5_dns_default": [
           "custom_dns"
         ],
@@ -3508,14 +3809,18 @@
           "custom_ntp"
         ],
         "spec.eks_k8s": [
+          "aks_k8s",
           "aws",
           "azure",
           "baremetal",
           "equinix",
           "gcp",
+          "gke_k8s",
+          "hyper_v",
           "kvm",
           "nutanix",
           "oci",
+          "oci_k8s",
           "openshift_virtualization",
           "openstack",
           "vmware"
@@ -3542,14 +3847,18 @@
           "disable_url_categorization"
         ],
         "spec.equinix": [
+          "aks_k8s",
           "aws",
           "azure",
           "baremetal",
           "eks_k8s",
           "gcp",
+          "gke_k8s",
+          "hyper_v",
           "kvm",
           "nutanix",
           "oci",
+          "oci_k8s",
           "openshift_virtualization",
           "openstack",
           "vmware"
@@ -3559,27 +3868,75 @@
           "private_adn"
         ],
         "spec.gcp": [
+          "aks_k8s",
           "aws",
           "azure",
           "baremetal",
           "eks_k8s",
           "equinix",
+          "gke_k8s",
+          "hyper_v",
           "kvm",
           "nutanix",
           "oci",
+          "oci_k8s",
           "openshift_virtualization",
           "openstack",
           "vmware"
         ],
-        "spec.kvm": [
+        "spec.gke_k8s": [
+          "aks_k8s",
           "aws",
           "azure",
           "baremetal",
           "eks_k8s",
           "equinix",
           "gcp",
+          "hyper_v",
+          "kvm",
           "nutanix",
           "oci",
+          "oci_k8s",
+          "openshift_virtualization",
+          "openstack",
+          "vmware"
+        ],
+        "spec.gke_k8s.disable_anti_affinity": [
+          "enable_anti_affinity"
+        ],
+        "spec.gke_k8s.enable_anti_affinity": [
+          "disable_anti_affinity"
+        ],
+        "spec.hyper_v": [
+          "aks_k8s",
+          "aws",
+          "azure",
+          "baremetal",
+          "eks_k8s",
+          "equinix",
+          "gcp",
+          "gke_k8s",
+          "kvm",
+          "nutanix",
+          "oci",
+          "oci_k8s",
+          "openshift_virtualization",
+          "openstack",
+          "vmware"
+        ],
+        "spec.kvm": [
+          "aks_k8s",
+          "aws",
+          "azure",
+          "baremetal",
+          "eks_k8s",
+          "equinix",
+          "gcp",
+          "gke_k8s",
+          "hyper_v",
+          "nutanix",
+          "oci",
+          "oci_k8s",
           "openshift_virtualization",
           "openstack",
           "vmware"
@@ -3649,30 +4006,61 @@
           "site_mesh_group_on_slo"
         ],
         "spec.nutanix": [
+          "aks_k8s",
           "aws",
           "azure",
           "baremetal",
           "eks_k8s",
           "equinix",
           "gcp",
+          "gke_k8s",
+          "hyper_v",
           "kvm",
           "oci",
+          "oci_k8s",
           "openshift_virtualization",
           "openstack",
           "vmware"
         ],
         "spec.oci": [
+          "aks_k8s",
           "aws",
           "azure",
           "baremetal",
           "eks_k8s",
           "equinix",
           "gcp",
+          "gke_k8s",
+          "hyper_v",
           "kvm",
           "nutanix",
+          "oci_k8s",
           "openshift_virtualization",
           "openstack",
           "vmware"
+        ],
+        "spec.oci_k8s": [
+          "aks_k8s",
+          "aws",
+          "azure",
+          "baremetal",
+          "eks_k8s",
+          "equinix",
+          "gcp",
+          "gke_k8s",
+          "hyper_v",
+          "kvm",
+          "nutanix",
+          "oci",
+          "openshift_virtualization",
+          "openstack",
+          "vmware"
+        ],
+        "spec.oci_k8s.disable_anti_affinity": [
+          "enable_anti_affinity"
+        ],
+        "spec.oci_k8s.enable_anti_affinity": [
+          "disable_anti_affinity"
         ],
         "spec.offline_survivability_mode.enable_offline_survivability_mode": [
           "no_offline_survivability_mode"
@@ -3681,28 +4069,36 @@
           "enable_offline_survivability_mode"
         ],
         "spec.openshift_virtualization": [
+          "aks_k8s",
           "aws",
           "azure",
           "baremetal",
           "eks_k8s",
           "equinix",
           "gcp",
+          "gke_k8s",
+          "hyper_v",
           "kvm",
           "nutanix",
           "oci",
+          "oci_k8s",
           "openstack",
           "vmware"
         ],
         "spec.openstack": [
+          "aks_k8s",
           "aws",
           "azure",
           "baremetal",
           "eks_k8s",
           "equinix",
           "gcp",
+          "gke_k8s",
+          "hyper_v",
           "kvm",
           "nutanix",
           "oci",
+          "oci_k8s",
           "openshift_virtualization",
           "vmware"
         ],
@@ -3793,15 +4189,19 @@
           "disable_vega_upgrade_mode"
         ],
         "spec.vmware": [
+          "aks_k8s",
           "aws",
           "azure",
           "baremetal",
           "eks_k8s",
           "equinix",
           "gcp",
+          "gke_k8s",
+          "hyper_v",
           "kvm",
           "nutanix",
           "oci",
+          "oci_k8s",
           "openshift_virtualization",
           "openstack"
         ]
@@ -3812,6 +4212,7 @@
         "spec.active_forward_proxy_policies.forward_proxy_policies",
         "spec.admin_user_credentials.admin_password.blindfold_secret_info.location",
         "spec.admin_user_credentials.admin_password.clear_secret_info.url",
+        "spec.aks_k8s.enable_anti_affinity.rules",
         "spec.custom_proxy.password.blindfold_secret_info.location",
         "spec.custom_proxy.password.clear_secret_info.url",
         "spec.custom_proxy.proxy_ip_address",
@@ -3819,11 +4220,13 @@
         "spec.dc_cluster_group_sli.name",
         "spec.dc_cluster_group_slo.name",
         "spec.eks_k8s.enable_anti_affinity.rules",
+        "spec.gke_k8s.enable_anti_affinity.rules",
         "spec.local_vrf.sli_config.static_routes.static_routes",
         "spec.local_vrf.sli_config.static_v6_routes.static_routes",
         "spec.local_vrf.slo_config.static_routes.static_routes",
         "spec.local_vrf.slo_config.static_v6_routes.static_routes",
         "spec.log_receiver_with_net.log_receiver.name",
+        "spec.oci_k8s.enable_anti_affinity.rules",
         "spec.private_adn.private_adn",
         "spec.site_mesh_group_on_slo.site_mesh_group.name",
         "spec.upgrade_settings.kubernetes_upgrade_drain.enable_upgrade_drain.drain_node_timeout"

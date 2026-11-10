@@ -142,14 +142,51 @@ def test_server_variable_examples_use_reserved_tenants() -> None:
     assert "example-partners" in tenant["examples"]
 
 
+def _has_acme_placeholder(text: str, *, example: bool = False) -> bool:
+    company = re.compile(r"\bacme(?:\.com|[ .-]+(?:corp(?:oration)?|ltd|inc))\b", re.IGNORECASE)
+    if company.search(text):
+        return True
+    if example and re.fullmatch(r"acme", text.strip(), re.IGNORECASE):
+        return True
+    # Protocol identifiers and the published ACME directory are source contract text.
+    cleaned = text.replace("_acme-challenge", "")
+    cleaned = cleaned.replace("https://acme-v02.api.letsencrypt.org/directory", "")
+    cleaned = cleaned.replace("acme-issuer", "").replace("Acme-issuer", "")
+    cleaned = re.sub(r"\bACME\b", "", cleaned)
+    return re.search(r"\bacme\b", cleaned, re.IGNORECASE) is not None
+
+
+def test_protocol_references_do_not_disable_company_placeholder_detection() -> None:
+    for text in (
+        "ACME certificate issuance",
+        "ACME DNS-01 challenge",
+        "Acme-issuer resource created",
+        "https://acme-v02.api.letsencrypt.org/directory",
+    ):
+        assert not _has_acme_placeholder(text)
+    for text in ("ACME Ltd.", "Acme Corp", "api.acme.com", "acme-key-foo", "Acme-ce01"):
+        assert _has_acme_placeholder(text)
+    assert _has_acme_placeholder("ACME", example=True)
+
+
 def test_published_specs_have_no_acme_placeholders() -> None:
-    placeholder = re.compile(r"\bacme\b", re.IGNORECASE)
+    import json
+
     findings: list[str] = []
 
-    for path in sorted(Path("docs/specifications/api").glob("*.json")):
-        text = path.read_text()
-        without_rfc_8555 = text.replace("_acme-challenge", "")
-        if placeholder.search(without_rfc_8555):
-            findings.append(str(path))
+    def walk(value: object, location: str, field: str = "") -> None:
+        if isinstance(value, str):
+            if _has_acme_placeholder(
+                value, example=field in {"example", "examples", "x-ves-example", "x-f5xc-example"}
+            ):
+                findings.append(location)
+        elif isinstance(value, dict):
+            for key, item in value.items():
+                walk(item, f"{location}/{key}", key)
+        elif isinstance(value, list):
+            for index, item in enumerate(value):
+                walk(item, f"{location}/{index}", field)
 
+    for path in sorted(Path("docs/specifications/api").glob("*.json")):
+        walk(json.loads(path.read_text()), str(path))
     assert findings == []
