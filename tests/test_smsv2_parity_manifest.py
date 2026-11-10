@@ -34,15 +34,19 @@ def test_manifest_contains_complete_nested_paths_and_semantics() -> None:
     assert not set(manifest["current_platform_removals"]) & paths.keys()
     assert len(manifest["choice_groups"]) > 50
     assert manifest["choice_groups"]["spec.provider_choice"] == [
+        "spec.aks_k8s",
         "spec.aws",
         "spec.azure",
         "spec.baremetal",
         "spec.eks_k8s",
         "spec.equinix",
         "spec.gcp",
+        "spec.gke_k8s",
+        "spec.hyper_v",
         "spec.kvm",
         "spec.nutanix",
         "spec.oci",
+        "spec.oci_k8s",
         "spec.openshift_virtualization",
         "spec.openstack",
         "spec.vmware",

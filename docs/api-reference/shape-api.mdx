@@ -9,7 +9,7 @@ Threat recognition with behavioral analysis and device fingerprinting. Mobile SD
 
 - **Category**: Security
 - **Complexity**: advanced
-- **Paths**: 265 | **Schemas**: 838
+- **Paths**: 289 | **Schemas**: 941
 - **Tier**: Advanced
 - **Related domains**: `bot_defense`, `virtual`
 
@@ -58,7 +58,11 @@ Threat recognition with behavioral analysis and device fingerprinting. Mobile SD
 | DELETE | `/api/shape/alerts/namespaces/&#123;namespace&#125;/alert_templates/&#123;name&#125;` | DELETE BRM Alerts Alert Template. |
 | POST | `/api/shape/alerts/namespaces/&#123;namespace&#125;/alert_templates/&#123;name&#125;/clone` | Clone Alert Template. |
 | GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/artifact-registry-token` | GET Artifact Registry Token. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/feature_flags` | GET Feature Flags. |
 | POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/suggest-values` | Suggest Values. |
+| GET | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_deployments` | GET List of Bot Deployments. |
+| GET | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_deployments/stats` | GET Bot Deployment Stats. |
+| GET | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_deployments/&#123;deployment_id&#125;/details` | GET Bot Deployment Details. |
 | POST | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_detection_rules` | Deploy Bot Detection Rules. |
 | GET | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_detection_rules/deployments` | GET list of bot detection rule deployments. |
 | GET | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_detection_rules/deployments/&#123;deployment_id&#125;` | GET details of a bot detection rule deployment. |
@@ -73,15 +77,26 @@ Threat recognition with behavioral analysis and device fingerprinting. Mobile SD
 | GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_detection_updates/download_release_notes` | Download BotDetection Updates Release Notes. |
 | GET | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_endpoint_policies` | List All Bot Endpoint Policies And Versions. |
 | PUT | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_endpoint_policys/&#123;name&#125;` | Custom Replace Bot Endpoint Policy. |
+| POST | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_endpoint_policys/&#123;name&#125;/deploy` | Deploy Bot Endpoint Policy. |
 | PUT | `/api/shape/bot/namespaces/&#123;metadata.namespace&#125;/bot_endpoint_policys/&#123;metadata.name&#125;` | Replace Bot Endpoint Policy. |
 | GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_endpoint_policy/&#123;name&#125;/versions` | Bot Endpoint Policy Versions. |
 | GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_endpoint_policy/&#123;name&#125;/versions/&#123;number&#125;/mobile_base_config/&#123;os&#125;` | GET Mobile Base Configuration File. |
 | GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_endpoint_policys` | List Bot Endpoint Policy. |
 | GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_endpoint_policys/&#123;name&#125;` | GET Bot Endpoint Policy. |
 | GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_endpoint_policys/&#123;name&#125;/versions/&#123;number&#125;` | GET Content. |
+| POST | `/api/shape/bot/namespaces/&#123;metadata.namespace&#125;/bot_fullsite_policys` | Create Full Site Policy. |
+| PUT | `/api/shape/bot/namespaces/&#123;metadata.namespace&#125;/bot_fullsite_policys/&#123;metadata.name&#125;` | Replace Full Site Policy. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_fullsite_policies/mitigation_handling_status` | GET Mitigation Handling Status. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_fullsite_policies/top_known_bots_allowed` | GET Top Known Bots Allowed. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_fullsite_policies/top_known_bots_denied` | GET Top Known Bots Denied. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_fullsite_policys` | List Bot Fullsite Policy. |
+| GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_fullsite_policys/&#123;name&#125;` | GET Full Site Policy. |
+| DELETE | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_fullsite_policys/&#123;name&#125;` | DELETE Bot Fullsite Policy. |
+| GET | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_infrastructures` | Custom List Bot Infrastructures. |
 | POST | `/api/shape/bot/namespaces/&#123;metadata.namespace&#125;/bot_infrastructures` | Create Bot Infrastructure. |
 | PUT | `/api/shape/bot/namespaces/&#123;metadata.namespace&#125;/bot_infrastructures/&#123;metadata.name&#125;` | Replace Bot Infrastructure. |
 | GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_infrastructures` | List Bot Infrastructure. |
+| POST | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_infrastructures/get_infra_deployment_status` | GET Infra Deployment Status. |
 | GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_infrastructures/&#123;name&#125;` | GET Bot Infrastructure. |
 | PUT | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_infrastructures/&#123;name&#125;/apply-certificate` | Apply Certificate. |
 | GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_infrastructures/&#123;name&#125;/deployment_history` | Deployment History. |
@@ -91,6 +106,7 @@ Threat recognition with behavioral analysis and device fingerprinting. Mobile SD
 | GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/ti_packages` | List bot threat intelligence packages. |
 | GET | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_allowlist_policies` | List All Bot Allowlist Policies And Versions. |
 | PUT | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_allowlist_policys/&#123;name&#125;` | Custom Replace Bot allowlist Policy. |
+| POST | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_allowlist_policys/&#123;name&#125;/deploy` | Deploy Bot Allowlist Policy. |
 | PUT | `/api/shape/bot/namespaces/&#123;metadata.namespace&#125;/bot_allowlist_policys/&#123;metadata.name&#125;` | Replace Bot allowlist Policy. |
 | GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_allowlist_policy/&#123;name&#125;/versions` | Bot Allowlist Policy Versions. |
 | GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_allowlist_policys` | List Bot allowlist Policy. |
@@ -98,6 +114,7 @@ Threat recognition with behavioral analysis and device fingerprinting. Mobile SD
 | GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_allowlist_policys/&#123;name&#125;/versions/&#123;number&#125;` | GET Content. |
 | GET | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_network_policies` | List All Bot Network Policies And Versions. |
 | PUT | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_network_policys/&#123;name&#125;` | Custom Replace Bot network Policy. |
+| POST | `/api/shape/bot/custom/namespaces/&#123;namespace&#125;/bot_network_policys/&#123;name&#125;/deploy` | Deploy Bot Network Policy. |
 | PUT | `/api/shape/bot/namespaces/&#123;metadata.namespace&#125;/bot_network_policys/&#123;metadata.name&#125;` | Replace Bot network Policy. |
 | GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_network_policy/&#123;name&#125;/versions` | Bot Network Policy Versions. |
 | GET | `/api/shape/bot/namespaces/&#123;namespace&#125;/bot_network_policys` | List Bot network Policy. |
@@ -122,10 +139,13 @@ Threat recognition with behavioral analysis and device fingerprinting. Mobile SD
 | GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/overview` | GET Scripts Overview. |
 | POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;id&#125;/approval-status` | Update Script Approval Status. |
 | GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;id&#125;/behaviors` | List Behaviors By Script. |
+| POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;id&#125;/cookie-operations` | List Cookie Operations By Script. |
 | GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;id&#125;/dashboard` | GET Script Overview. |
+| POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;id&#125;/dom-mutations` | List DOM Mutations By Script. |
 | GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;id&#125;/formFields` | List Form Fields By Script. |
 | GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;id&#125;/networkInteractions` | List Network Interactions By Script. |
 | POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;id&#125;/readStatus` | Update Script FormFields ReadStatus. |
+| POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;id&#125;/storage-operations` | List Storage Operations By Script. |
 | POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;script_id&#125;/affectedUsers` | List Affected Users. |
 | GET | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;script_id&#125;/inline` | List Inline Scripts. |
 | POST | `/api/shape/csd/namespaces/&#123;namespace&#125;/scripts/&#123;script_id&#125;/justification` | Update Script Justification. |
@@ -163,8 +183,13 @@ Threat recognition with behavioral analysis and device fingerprinting. Mobile SD
 | POST | `/api/device-intelligence/namespaces/&#123;namespace&#125;/analytics/summary` | GET Summary. |
 | POST | `/api/device-intelligence/namespaces/&#123;namespace&#125;/analytics/transactions/high-risk` | GET High-Risk Transactions. |
 | POST | `/api/device-intelligence/namespaces/&#123;namespace&#125;/devices` | List Devices. |
-| POST | `/api/device-intelligence/namespaces/&#123;namespace&#125;/devices/&#123;device_id&#125;/history` | GET Device History. |
-| POST | `/api/device-intelligence/namespaces/&#123;namespace&#125;/devices/&#123;device_id&#125;/summary` | GET Device Summary. |
+| POST | `/api/device-intelligence/namespaces/&#123;namespace&#125;/devices/device-history` | GET Device History. |
+| POST | `/api/device-intelligence/namespaces/&#123;namespace&#125;/devices/device-summary` | GET Device Summary. |
+| POST | `/api/device-intelligence/custom/namespaces/&#123;namespace&#125;/di_rules` | Deploy Device Intelligence Rules. |
+| GET | `/api/device-intelligence/custom/namespaces/&#123;namespace&#125;/di_rules/deployments/pending` | GET device intelligence rule IDs with pending deployment. |
+| GET | `/api/device-intelligence/namespaces/&#123;namespace&#125;/di_rules` | List Device Intelligence Rule. |
+| GET | `/api/device-intelligence/namespaces/&#123;namespace&#125;/di_rules/&#123;id&#125;/history` | GET the change history for a device intelligence rule. |
+| GET | `/api/device-intelligence/namespaces/&#123;namespace&#125;/di_rules/&#123;name&#125;` | GET Device Intelligence Rule. |
 | POST | `/api/device-intelligence/namespaces/system/device-intelligence/addon/subscribe` | Subscribe to Device Intelligence. |
 | POST | `/api/device-intelligence/namespaces/system/device-intelligence/addon/unsubscribe` | Unsubscribe to Device Intelligence. |
 | POST | `/api/mobile/app-shield/namespaces/system/mobile-app-shield/addon/subscribe` | Subscribe to Mobile App Shield. |

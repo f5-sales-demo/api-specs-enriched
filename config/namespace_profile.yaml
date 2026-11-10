@@ -55,6 +55,42 @@ valid_multi_tenant_patterns:
 # Only specify fields that differ from default_profile.
 resources:
 
+  # Current upstream resources have parameterized namespace paths.
+  # Keep placement advisory until namespace CRUD verification is available.
+
+  acme_issuer:
+    _verification: {status: unverified, method: spec_namespace_parameter, date: "2026-11-10"}
+    constraint:
+      allowed: ["custom", "default", "shared", "system"]
+    recommendation:
+      primary: "custom"
+      rationale: "Namespace-scoped ACME issuer configuration; placement is advisory"
+    classification:
+      category: "certificate"
+      multi_tenant_pattern: "per-tenant"
+
+  bot_fullsite_policy:
+    _verification: {status: unverified, method: spec_namespace_parameter, date: "2026-11-10"}
+    constraint:
+      allowed: ["custom", "default", "shared", "system"]
+    recommendation:
+      primary: "custom"
+      rationale: "Namespace-scoped bot policy; placement is advisory"
+    classification:
+      category: "security"
+      multi_tenant_pattern: "per-tenant"
+
+  entitlement:
+    _verification: {status: unverified, method: spec_namespace_parameter, date: "2026-11-10"}
+    constraint:
+      allowed: ["custom", "default", "shared", "system"]
+    recommendation:
+      primary: "system"
+      rationale: "Tenant entitlement and quota configuration; placement is advisory"
+    classification:
+      category: "application"
+      multi_tenant_pattern: "none"
+
   # ── System-only: Site and infrastructure resources ──
 
   aws_vpc_site:

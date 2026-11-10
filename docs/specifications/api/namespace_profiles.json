@@ -1,6 +1,6 @@
 {
   "version": "12.5.2",
-  "generated_at": "2026-10-29T12:14:42+00:00",
+  "generated_at": "2026-11-09T17:58:55+00:00",
   "source": "api-specs-enriched/config/namespace_profile.yaml",
   "default": {
     "constraint": {
@@ -22,6 +22,31 @@
     }
   },
   "resources": {
+    "acme_issuer": {
+      "constraint": {
+        "allowed": [
+          "custom",
+          "default",
+          "shared",
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Namespace-scoped ACME issuer configuration; placement is advisory"
+      },
+      "classification": {
+        "category": "certificate",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": "spec_namespace_parameter"
+      }
+    },
     "addon_subscription": {
       "constraint": {
         "allowed": [
@@ -1068,6 +1093,31 @@
         "method": "conservative_default"
       }
     },
+    "bot_fullsite_policy": {
+      "constraint": {
+        "allowed": [
+          "custom",
+          "default",
+          "shared",
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "custom",
+        "alternatives": [],
+        "rationale": "Namespace-scoped bot policy; placement is advisory"
+      },
+      "classification": {
+        "category": "security",
+        "multi_tenant_pattern": "per-tenant"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": "spec_namespace_parameter"
+      }
+    },
     "bot_infrastructure": {
       "constraint": {
         "allowed": [
@@ -2016,6 +2066,31 @@
         "explicit": true,
         "verification": "verified",
         "method": "crud"
+      }
+    },
+    "entitlement": {
+      "constraint": {
+        "allowed": [
+          "custom",
+          "default",
+          "shared",
+          "system"
+        ],
+        "enforced": false
+      },
+      "recommendation": {
+        "primary": "system",
+        "alternatives": [],
+        "rationale": "Tenant entitlement and quota configuration; placement is advisory"
+      },
+      "classification": {
+        "category": "application",
+        "multi_tenant_pattern": "none"
+      },
+      "_meta": {
+        "explicit": true,
+        "verification": "unverified",
+        "method": "spec_namespace_parameter"
       }
     },
     "external_connector": {
@@ -5590,10 +5665,10 @@
     }
   },
   "_coverage": {
-    "total_explicit": 248,
+    "total_explicit": 251,
     "verified": 73,
     "assumed": 10,
-    "unverified": 165,
+    "unverified": 168,
     "default_deny_worklist_count": 17,
     "default_deny_worklist": [
       "address_allocator",
