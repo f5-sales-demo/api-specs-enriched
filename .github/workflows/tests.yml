@@ -66,6 +66,7 @@ jobs:
         if: github.event_name == 'pull_request'
         env:
           BASE_REF: ${{ github.base_ref }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git fetch origin "$BASE_REF" --depth=50
           python -m scripts.verify_governance --base "origin/$BASE_REF" --head HEAD

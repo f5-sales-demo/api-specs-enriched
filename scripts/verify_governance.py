@@ -32,6 +32,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from scripts.utils.scanner_governance import authorized_scanner_paths
+
 DEFAULT_GOVERNANCE_JSON = Path(".claude/governance.json")
 REPOSITORY_RE = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
 
@@ -175,6 +177,21 @@ def main(argv: list[str] | None = None) -> int:
     except GovernanceViolationError as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 2
+
+    if violations and os.environ.get("GITHUB_HEAD_REF", "").startswith("governance/scanner-"):
+        try:
+            event = json.loads(Path(os.environ["GITHUB_EVENT_PATH"]).read_text())
+            authorized = authorized_scanner_paths(
+                event,
+                os.environ["GITHUB_HEAD_REF"],
+                os.environ["GITHUB_REPOSITORY"],
+                args.base,
+                args.head,
+            )
+        except (KeyError, TypeError, ValueError, OSError, subprocess.CalledProcessError) as exc:
+            print(f"error: canonical scanner ownership verification failed: {exc}", file=sys.stderr)
+            return 2
+        violations = [path for path in violations if path not in authorized]
 
     if not violations:
         print(f"ok: no governed files modified between {args.base} and {args.head}")
