@@ -77,7 +77,7 @@ jobs:
         # of skipping at import time.
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python -m scripts.download --force
+        run: python -m scripts.download --force --receipt .github_release
 
       - name: Run pytest
         run: python -m pytest
@@ -118,7 +118,7 @@ jobs:
         # and absent in CI. Without --force, download skips with 'No updates'.
         run: |
           cp .github_release "$RUNNER_TEMP/previous-upstream-release.json"
-          python -m scripts.download --force
+          python -m scripts.download --force --receipt .github_release
 
       - name: Gate and report upstream contract changes
         env:
