@@ -19,9 +19,11 @@ Example:
 
 import fnmatch
 import json
+import re
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+from urllib.parse import quote
 
 import requests
 from rich.console import Console
@@ -134,6 +136,30 @@ def get_latest_release(
     except requests.RequestException as e:
         console.print(f"[red]Error fetching release: {e}[/red]")
         raise
+
+
+def get_release_by_tag(
+    repo_owner: str,
+    repo_name: str,
+    tag_name: str,
+    token: str | None = None,
+) -> dict[str, Any]:
+    """Fetch exactly the requested tag without consulting latest-release state."""
+    for name in (repo_owner, repo_name):
+        if re.fullmatch(r"[A-Za-z0-9_.-]+", name) is None:
+            raise ValueError("invalid pinned upstream repository")
+    url = (
+        f"{GITHUB_API_BASE}/repos/{repo_owner}/{repo_name}/releases/tags/{quote(tag_name, safe='')}"
+    )
+    response = requests.get(url, headers=_get_headers(token), timeout=30)
+    _check_rate_limit(response)
+    response.raise_for_status()
+    release = response.json()
+    if not isinstance(release, dict) or any(
+        key not in release for key in ("tag_name", "published_at", "assets")
+    ):
+        raise ValueError("incomplete pinned release metadata")
+    return release
 
 
 def parse_release_version(tag_name: str) -> str:

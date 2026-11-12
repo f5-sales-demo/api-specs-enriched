@@ -51,6 +51,7 @@ from scripts.utils.github_release import (
     parse_release_version,
     save_release_metadata,
 )
+from scripts.utils.pinned_release import resolve_pinned_release
 from scripts.utils.version_calculator import get_version_from_tags
 
 console = Console()
@@ -59,6 +60,8 @@ console = Console()
 def verify_release_asset_digest(archive: Path, asset: dict) -> str:
     """Return the archive SHA-256, checking GitHub metadata when available."""
     expected = asset.get("digest")
+    if asset.get("size") is not None and archive.stat().st_size != asset["size"]:
+        raise ValueError("downloaded release asset size does not match metadata")
 
     hasher = hashlib.sha256()
     with archive.open("rb") as source:
@@ -335,12 +338,15 @@ def generate_manifest(
     console.print(f"[green]✅ Generated manifest: {manifest_path}[/green]")
 
 
-def download_from_github_release(config: dict, force: bool = False) -> tuple[bool, dict | None]:
+def download_from_github_release(
+    config: dict, force: bool = False, receipt: Path | None = None
+) -> tuple[bool, dict | None]:
     """Download specifications from GitHub releases.
 
     Args:
         config: Configuration dict with source and paths.
         force: Force download even if no updates detected.
+        receipt: Reproduce exactly this committed upstream release receipt.
 
     Returns:
         Tuple of (success, release_data).
@@ -358,34 +364,36 @@ def download_from_github_release(config: dict, force: bool = False) -> tuple[boo
     if github_token:
         console.print("[blue]🔑 Using GITHUB_TOKEN for authentication[/blue]")
 
-    # Check for updates
-    has_updates, release_data = check_for_updates(
-        repo_owner,
-        repo_name,
-        version_file,
-        token=github_token,
-    )
-
-    if not has_updates and not force:
-        console.print("[blue]✅ No updates needed. Use --force to download anyway.[/blue]")
-        return True, release_data
-
-    if not release_data:
-        console.print("[red]❌ Could not fetch release data[/red]")
-        return False, None
-
-    # Find matching asset
-    asset = find_release_asset(release_data, asset_pattern)
-    if not asset:
-        console.print(f"[red]❌ No asset matching '{asset_pattern}' found in release[/red]")
-        return False, None
+    release_data: dict | None
+    asset: dict | None
+    if receipt is not None:
+        release_data, asset = resolve_pinned_release(config, receipt, github_token)
+    else:
+        has_updates, release_data = check_for_updates(
+            repo_owner,
+            repo_name,
+            version_file,
+            token=github_token,
+        )
+        if not has_updates and not force:
+            console.print("[blue]✅ No updates needed. Use --force to download anyway.[/blue]")
+            return True, release_data
+        if not release_data:
+            console.print("[red]❌ Could not fetch release data[/red]")
+            return False, None
+        asset = find_release_asset(release_data, asset_pattern)
+        if not asset:
+            console.print(f"[red]❌ No asset matching '{asset_pattern}' found in release[/red]")
+            return False, None
 
     console.print(
         f"[green]📦 Found asset: {asset['name']} ({asset['size'] / 1024 / 1024:.1f} MB)[/green]",
     )
 
     # Download asset
-    temp_zip = Path(tempfile.gettempdir()) / "f5xc-api-specs-github.zip"
+    descriptor, archive_name = tempfile.mkstemp(prefix="f5xc-api-specs-", suffix=".zip")
+    os.close(descriptor)
+    temp_zip = Path(archive_name)
     success = download_release_asset(
         asset["browser_download_url"],
         temp_zip,
@@ -487,7 +495,14 @@ Environment Variables:
         help="Override output directory for extracted specs",
     )
 
+    parser.add_argument(
+        "--receipt",
+        type=Path,
+        help="Reproduce the exact committed six-field upstream release receipt",
+    )
     args = parser.parse_args()
+    if args.receipt is not None and args.check_only:
+        parser.error("--receipt cannot be combined with --check-only")
 
     # Load configuration
     config = load_config(args.config)
@@ -531,7 +546,9 @@ Environment Variables:
     source_type = config["source"]["type"]
 
     if source_type == "github_release":
-        success, release_data = download_from_github_release(config, force=args.force)
+        success, release_data = download_from_github_release(
+            config, force=args.force, receipt=args.receipt
+        )
 
         # Set GitHub Actions output
         github_output = os.environ.get("GITHUB_OUTPUT")
