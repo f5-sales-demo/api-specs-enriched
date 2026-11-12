@@ -85,7 +85,7 @@ def candidate(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> dict:
         "title": pr["title"],
         "user": {"login": "example"},
     }
-    replies = {
+    replies: dict[str, dict] = {
         f"{repo}/pulls/2": pr,
         f"{guard.OWNER}/commits/main": {"sha": producer},
         f"{guard.OWNER}/git/trees/{source}?recursive=1": {"truncated": False, "tree": blobs},
