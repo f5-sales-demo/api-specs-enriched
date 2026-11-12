@@ -1,22 +1,22 @@
 # Enrichment coverage
 
-Version: 12.5.2; dialect: 3.0.3
+Version: 12.5.3; dialect: 3.0.3
 
 | Measurement | Count |
 | --- | ---: |
-| catalogApiIdentities | 277 |
-| catalogCategories | 881 |
-| catalogFieldEntries | 45286 |
-| catalogMethodPaths | 1779 |
-| componentSchemas | 6089 |
-| directProperties | 23262 |
+| catalogApiIdentities | 279 |
+| catalogCategories | 906 |
+| catalogFieldEntries | 46229 |
+| catalogMethodPaths | 1827 |
+| componentSchemas | 6209 |
+| directProperties | 23708 |
 | mapRuleFamilies | 19 |
-| mapRuleOccurrences | 285 |
-| mapSites | 89 |
-| requestApiIdentities | 165 |
-| requestKeyValueFields | 558 |
-| requestKeyValueMethods | 315 |
-| requestMapFields | 586 |
-| requestMapMethods | 319 |
-| requestOrResponseIdentities | 194 |
-| requestOrResponseMethods | 734 |
+| mapRuleOccurrences | 286 |
+| mapSites | 90 |
+| requestApiIdentities | 168 |
+| requestKeyValueFields | 616 |
+| requestKeyValueMethods | 319 |
+| requestMapFields | 646 |
+| requestMapMethods | 324 |
+| requestOrResponseIdentities | 198 |
+| requestOrResponseMethods | 753 |
