@@ -56,3 +56,24 @@ def test_incomplete_or_forged_uid_contract_is_rejected(case: str) -> None:
         observation["qualification"]["generated_uid_continuity"] = True
     with pytest.raises(InterfaceContractValidationError, match="runtime endpoints or schemas"):
         validate_aws_v3_contract(contract)
+
+
+def test_uid_schema_mapping_resolves_in_the_generated_api() -> None:
+    import json
+
+    observation = profile()["runtime"]["physical_interfaces"]
+    generated = observation["generated_objects"]
+    schemas = json.loads(
+        (Path(__file__).parents[1] / "docs/specifications/api/openapi.json").read_text()
+    )["components"]["schemas"]
+    exact = schemas[generated["exact_item"]["response_schema"]]
+    metadata_reference = exact["properties"]["system_metadata"]["allOf"][0]["$ref"]
+    metadata_name = metadata_reference.rsplit("/", 1)[1]
+    assert generated["system_metadata_schema"] == metadata_name
+    metadata = schemas[metadata_name]
+    uid = metadata["properties"]["uid"]
+    assert uid["format"] == "uuid"
+    assert uid["x-field-mutability"] == "read-only"
+    assert "not allowed to change on Replace" in uid["description"]
+    assert "owner_view" in metadata["properties"]
+    assert "uid" in schemas[generated["list_item_schema"]]["properties"]
