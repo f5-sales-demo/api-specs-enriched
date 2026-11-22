@@ -25,7 +25,19 @@ AWS_PHYSICAL_INTERFACES: dict[str, Any] = {
             "path": "/api/config/namespaces/{namespace}/network_interfaces/{name}",
             "operation_id": "ves.io.schema.network_interface.API.Get",
             "response_schema": "network_interfaceGetResponse",
+            "uid_field": "system_metadata.uid",
+            "owner_field": "system_metadata.owner_view",
+            "name_field": "metadata.name",
+            "namespace_field": "metadata.namespace",
+            "configuration_field": "spec.ethernet_interface",
+            "uid_format": "uuid",
+            "uid_semantics": "unique_in_time_and_space_immutable_on_replace",
+            "reobserve_after_publication": True,
+            "join_fields": ["uid", "name", "namespace", "owner", "node", "device", "mtu", "role"],
+            "list_metadata_uid": "when_present_must_equal_list_uid_and_exact_get_uid",
         },
+        "list_item_schema": "network_interfaceListResponseItem",
+        "system_metadata_schema": "schemaSystemObjectGetMetaType__ves_io_schema_api_sec_api_crawler",
     },
     "response_mappings": {
         "publications": "status[]",
@@ -39,6 +51,7 @@ AWS_PHYSICAL_INTERFACES: dict[str, Any] = {
         "role": "network_type",
         "operational_link": "link_state",
         "active_backup_role": "active_state",
+        "generated_interface_uid": "items[].uid",
     },
     "identity": {
         "configuration": [
@@ -59,6 +72,7 @@ AWS_PHYSICAL_INTERFACES: dict[str, Any] = {
         ],
         "generated_interface": [
             "name",
+            "uid",
             "get_spec.ethernet_interface.node",
             "get_spec.ethernet_interface.device",
             "get_spec.ethernet_interface.mtu",
@@ -85,6 +99,8 @@ AWS_PHYSICAL_INTERFACES: dict[str, Any] = {
         ],
         "names": "observed_only_never_construct_generated_object_names",
         "coverage": "exactly_one_join_per_trusted_expected_interface",
+        "generated_uid_policy": "observed_uuid_bind_after_discovery_reject_change",
+        "generated_uid_uniqueness": "distinct_per_trusted_expected_interface",
     },
     "state_handling": {
         "link_state_type": "explicit_boolean",
@@ -103,6 +119,8 @@ AWS_PHYSICAL_INTERFACES: dict[str, Any] = {
             "VIRTUAL_NETWORK_SITE_LOCAL_INSIDE": "sli",
         },
         "tunnels": "excluded_from_physical_interface_coverage",
+        "missing_generated_interface_uid": "unknown",
+        "changed_generated_interface_uid": "unknown",
     },
     "freshness": {
         "original_ce_sample_timestamp": "unqualified",
@@ -136,6 +154,11 @@ AWS_PHYSICAL_INTERFACES: dict[str, Any] = {
         "unresolved_binding",
         "ambiguous_binding",
         "identity_change_during_read",
+        "missing_generated_interface_uid",
+        "malformed_generated_interface_uid",
+        "duplicate_generated_interface_uid",
+        "changed_generated_interface_uid",
+        "list_get_identity_mismatch",
     ],
     "mutation_admission": False,
     "qualification": {
@@ -148,5 +171,7 @@ AWS_PHYSICAL_INTERFACES: dict[str, Any] = {
         "full_ce_acceptance": False,
         "receipt_path": "config/evidence/aws-physical-interface-observation-20261023.json",
         "receipt_sha256": "sha256:afb57f5110fcfc96ed8b39ff51e0c1bc5f5d1e7c9c8a5c8946867462480d1ba1",
+        "generated_uid_continuity": False,
+        "exact_get_identity_join": False,
     },
 }

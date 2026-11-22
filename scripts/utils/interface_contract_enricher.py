@@ -21,8 +21,8 @@ from .extension_constants import X_F5XC_CE_AUTOMATION_CONTRACT
 
 CONFIG_PATH = Path(__file__).parent.parent.parent / "config" / "interface_contracts.yaml"
 SUPPORTED_ROLES = frozenset({"slo", "external", "sli"})
-CONFIG_VERSION = "7.3.0"
-CONTRACT_VERSION = "7.3.0"
+CONFIG_VERSION = "7.4.0"
+CONTRACT_VERSION = "7.4.0"
 CONTRACT_ID = "f5xc-smsv2-api/v1"
 CAPABILITY_STATES = frozenset({"available", "unavailable"})
 STABLE_IDENTITY_FIELDS = frozenset(
