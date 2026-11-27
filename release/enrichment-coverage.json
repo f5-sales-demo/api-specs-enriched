@@ -1475,22 +1475,22 @@
   },
   "counting": "Physical schema sites; identical aliases counted once; method/path/field exposures deduplicated; requests separate from responses",
   "counts": {
-    "catalogApiIdentities": 277,
-    "catalogCategories": 881,
-    "catalogFieldEntries": 45286,
-    "catalogMethodPaths": 1779,
-    "componentSchemas": 6089,
-    "directProperties": 23262,
+    "catalogApiIdentities": 279,
+    "catalogCategories": 906,
+    "catalogFieldEntries": 46229,
+    "catalogMethodPaths": 1827,
+    "componentSchemas": 6209,
+    "directProperties": 23708,
     "mapRuleFamilies": 19,
-    "mapRuleOccurrences": 285,
-    "mapSites": 89,
-    "requestApiIdentities": 165,
-    "requestKeyValueFields": 558,
-    "requestKeyValueMethods": 315,
-    "requestMapFields": 586,
-    "requestMapMethods": 319,
-    "requestOrResponseIdentities": 194,
-    "requestOrResponseMethods": 734
+    "mapRuleOccurrences": 286,
+    "mapSites": 90,
+    "requestApiIdentities": 168,
+    "requestKeyValueFields": 616,
+    "requestKeyValueMethods": 319,
+    "requestMapFields": 646,
+    "requestMapMethods": 324,
+    "requestOrResponseIdentities": 198,
+    "requestOrResponseMethods": 753
   },
   "dialect": "3.0.3",
   "families": {
@@ -1503,7 +1503,7 @@
     "ves.io.schema.rules.map.keys.uint32.lte": 3,
     "ves.io.schema.rules.map.keys.uint32.ranges": 1,
     "ves.io.schema.rules.map.max_pairs": 70,
-    "ves.io.schema.rules.map.min_pairs": 2,
+    "ves.io.schema.rules.map.min_pairs": 3,
     "ves.io.schema.rules.map.unique_values": 2,
     "ves.io.schema.rules.map.values.string.ipv4": 3,
     "ves.io.schema.rules.map.values.string.ipv6": 2,
@@ -1515,15 +1515,15 @@
     "ves.io.schema.rules.map.values.string.uri_ref": 4
   },
   "inputs": {
-    "api-catalog.json": "sha256:7abccffe813316eb02d79ac83dfae336ca91aaee99c219e7192e898c5f6a16ed",
-    "openapi.json": "sha256:6ddfd13c58332f29c2bb7e6e1a6a567d1e61e75a48da11dad3605344dca083b9",
+    "api-catalog.json": "sha256:0912c8f28bd0288718a5f2ab5adbfca42a184b2c77c2233e3c8df0aa9d0dcc14",
+    "openapi.json": "sha256:4a7f727bb54ed0fba5b1805048da659f1a14a5c9e93ac45e62a39fcbc94b1444",
     "upstreamReceipt": {
-      "asset_name": "api-specs-v2026.10.28-1.zip",
-      "asset_sha256": "bab6b9c106f95c0f13c954a2163ef1e96a2dde7acde485c50910ad026ba23f0e",
-      "asset_size": 64189241,
-      "published_at": "2026-10-29T12:14:42Z",
-      "tag_name": "v2026.10.28-1",
-      "version": "2026.10.28-1"
+      "asset_name": "api-specs-v2026.11.09-1.zip",
+      "asset_sha256": "fad1c18fbc11b37ca759a2ca06064972ac17b7d7705d81293757196072a85d1a",
+      "asset_size": 65530961,
+      "published_at": "2026-11-09T17:58:55Z",
+      "tag_name": "v2026.11.09-1",
+      "version": "2026.11.09-1"
     }
   },
   "missingCatalogMapFields": [],
@@ -1571,6 +1571,11 @@
     [
       "POST",
       "/api/config/dns/namespaces/{namespace}/geo_location_sets",
+      "metadata.annotations"
+    ],
+    [
+      "POST",
+      "/api/config/namespaces/{namespace}/acme_issuers",
       "metadata.annotations"
     ],
     [
@@ -1636,11 +1641,6 @@
     [
       "POST",
       "/api/config/namespaces/{namespace}/app_types",
-      "metadata.annotations"
-    ],
-    [
-      "POST",
-      "/api/config/namespaces/{namespace}/application_profiless",
       "metadata.annotations"
     ],
     [
@@ -2221,6 +2221,41 @@
     [
       "POST",
       "/api/config/namespaces/{namespace}/securemesh_site_v2s",
+      "spec.aks_k8s.labels"
+    ],
+    [
+      "POST",
+      "/api/config/namespaces/{namespace}/securemesh_site_v2s",
+      "spec.aks_k8s.not_managed.node_list[].interface_list[].dhcp_server.fixed_ip_map"
+    ],
+    [
+      "POST",
+      "/api/config/namespaces/{namespace}/securemesh_site_v2s",
+      "spec.aks_k8s.not_managed.node_list[].interface_list[].dhcp_server.interface_ip_map.interface_ip_map"
+    ],
+    [
+      "POST",
+      "/api/config/namespaces/{namespace}/securemesh_site_v2s",
+      "spec.aks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.fixed_ip_map"
+    ],
+    [
+      "POST",
+      "/api/config/namespaces/{namespace}/securemesh_site_v2s",
+      "spec.aks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.interface_ip_map.interface_ip_map"
+    ],
+    [
+      "POST",
+      "/api/config/namespaces/{namespace}/securemesh_site_v2s",
+      "spec.aks_k8s.not_managed.node_list[].interface_list[].labels"
+    ],
+    [
+      "POST",
+      "/api/config/namespaces/{namespace}/securemesh_site_v2s",
+      "spec.aks_k8s.not_managed.node_list[].interface_list[].static_ipv6_address.cluster_static_ip.interface_ip_map"
+    ],
+    [
+      "POST",
+      "/api/config/namespaces/{namespace}/securemesh_site_v2s",
       "spec.aws.not_managed.node_list[].interface_list[].dhcp_server.fixed_ip_map"
     ],
     [
@@ -2406,6 +2441,71 @@
     [
       "POST",
       "/api/config/namespaces/{namespace}/securemesh_site_v2s",
+      "spec.gke_k8s.labels"
+    ],
+    [
+      "POST",
+      "/api/config/namespaces/{namespace}/securemesh_site_v2s",
+      "spec.gke_k8s.not_managed.node_list[].interface_list[].dhcp_server.fixed_ip_map"
+    ],
+    [
+      "POST",
+      "/api/config/namespaces/{namespace}/securemesh_site_v2s",
+      "spec.gke_k8s.not_managed.node_list[].interface_list[].dhcp_server.interface_ip_map.interface_ip_map"
+    ],
+    [
+      "POST",
+      "/api/config/namespaces/{namespace}/securemesh_site_v2s",
+      "spec.gke_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.fixed_ip_map"
+    ],
+    [
+      "POST",
+      "/api/config/namespaces/{namespace}/securemesh_site_v2s",
+      "spec.gke_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.interface_ip_map.interface_ip_map"
+    ],
+    [
+      "POST",
+      "/api/config/namespaces/{namespace}/securemesh_site_v2s",
+      "spec.gke_k8s.not_managed.node_list[].interface_list[].labels"
+    ],
+    [
+      "POST",
+      "/api/config/namespaces/{namespace}/securemesh_site_v2s",
+      "spec.gke_k8s.not_managed.node_list[].interface_list[].static_ipv6_address.cluster_static_ip.interface_ip_map"
+    ],
+    [
+      "POST",
+      "/api/config/namespaces/{namespace}/securemesh_site_v2s",
+      "spec.hyper_v.not_managed.node_list[].interface_list[].dhcp_server.fixed_ip_map"
+    ],
+    [
+      "POST",
+      "/api/config/namespaces/{namespace}/securemesh_site_v2s",
+      "spec.hyper_v.not_managed.node_list[].interface_list[].dhcp_server.interface_ip_map.interface_ip_map"
+    ],
+    [
+      "POST",
+      "/api/config/namespaces/{namespace}/securemesh_site_v2s",
+      "spec.hyper_v.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.fixed_ip_map"
+    ],
+    [
+      "POST",
+      "/api/config/namespaces/{namespace}/securemesh_site_v2s",
+      "spec.hyper_v.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.interface_ip_map.interface_ip_map"
+    ],
+    [
+      "POST",
+      "/api/config/namespaces/{namespace}/securemesh_site_v2s",
+      "spec.hyper_v.not_managed.node_list[].interface_list[].labels"
+    ],
+    [
+      "POST",
+      "/api/config/namespaces/{namespace}/securemesh_site_v2s",
+      "spec.hyper_v.not_managed.node_list[].interface_list[].static_ipv6_address.cluster_static_ip.interface_ip_map"
+    ],
+    [
+      "POST",
+      "/api/config/namespaces/{namespace}/securemesh_site_v2s",
       "spec.kvm.not_managed.node_list[].interface_list[].dhcp_server.fixed_ip_map"
     ],
     [
@@ -2502,6 +2602,41 @@
       "POST",
       "/api/config/namespaces/{namespace}/securemesh_site_v2s",
       "spec.oci.not_managed.node_list[].interface_list[].static_ipv6_address.cluster_static_ip.interface_ip_map"
+    ],
+    [
+      "POST",
+      "/api/config/namespaces/{namespace}/securemesh_site_v2s",
+      "spec.oci_k8s.labels"
+    ],
+    [
+      "POST",
+      "/api/config/namespaces/{namespace}/securemesh_site_v2s",
+      "spec.oci_k8s.not_managed.node_list[].interface_list[].dhcp_server.fixed_ip_map"
+    ],
+    [
+      "POST",
+      "/api/config/namespaces/{namespace}/securemesh_site_v2s",
+      "spec.oci_k8s.not_managed.node_list[].interface_list[].dhcp_server.interface_ip_map.interface_ip_map"
+    ],
+    [
+      "POST",
+      "/api/config/namespaces/{namespace}/securemesh_site_v2s",
+      "spec.oci_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.fixed_ip_map"
+    ],
+    [
+      "POST",
+      "/api/config/namespaces/{namespace}/securemesh_site_v2s",
+      "spec.oci_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.interface_ip_map.interface_ip_map"
+    ],
+    [
+      "POST",
+      "/api/config/namespaces/{namespace}/securemesh_site_v2s",
+      "spec.oci_k8s.not_managed.node_list[].interface_list[].labels"
+    ],
+    [
+      "POST",
+      "/api/config/namespaces/{namespace}/securemesh_site_v2s",
+      "spec.oci_k8s.not_managed.node_list[].interface_list[].static_ipv6_address.cluster_static_ip.interface_ip_map"
     ],
     [
       "POST",
@@ -2760,6 +2895,16 @@
     ],
     [
       "POST",
+      "/api/device-intelligence/custom/namespaces/{namespace}/di_rules",
+      "config_change_per_device_intelligence_rule[].desired_rule_config_per_bot_infra[].region_rule_config.region_config"
+    ],
+    [
+      "POST",
+      "/api/device-intelligence/custom/namespaces/{namespace}/di_rules",
+      "config_change_per_device_intelligence_rule[].existing_rule_config_per_bot_infra[].region_rule_config.region_config"
+    ],
+    [
+      "POST",
       "/api/infraprotect/namespaces/{namespace}/infraprotect_asn_prefixs",
       "metadata.annotations"
     ],
@@ -2885,6 +3030,11 @@
     ],
     [
       "POST",
+      "/api/shape/bot/namespaces/{namespace}/bot_fullsite_policys",
+      "metadata.annotations"
+    ],
+    [
+      "POST",
       "/api/shape/bot/namespaces/{namespace}/bot_infrastructures",
       "metadata.annotations"
     ],
@@ -2980,6 +3130,11 @@
     ],
     [
       "POST",
+      "/api/web/namespaces/{namespace}/entitlements",
+      "metadata.annotations"
+    ],
+    [
+      "POST",
       "/api/web/namespaces/{namespace}/managed_tenants",
       "metadata.annotations"
     ],
@@ -3050,6 +3205,11 @@
     ],
     [
       "PUT",
+      "/api/config/namespaces/{namespace}/acme_issuers/{name}",
+      "metadata.annotations"
+    ],
+    [
+      "PUT",
       "/api/config/namespaces/{namespace}/advertise_policys/{name}",
       "metadata.annotations"
     ],
@@ -3106,11 +3266,6 @@
     [
       "PUT",
       "/api/config/namespaces/{namespace}/app_types/{name}",
-      "metadata.annotations"
-    ],
-    [
-      "PUT",
-      "/api/config/namespaces/{namespace}/application_profiless/{name}",
       "metadata.annotations"
     ],
     [
@@ -3696,6 +3851,41 @@
     [
       "PUT",
       "/api/config/namespaces/{namespace}/securemesh_site_v2s/{name}",
+      "spec.aks_k8s.labels"
+    ],
+    [
+      "PUT",
+      "/api/config/namespaces/{namespace}/securemesh_site_v2s/{name}",
+      "spec.aks_k8s.not_managed.node_list[].interface_list[].dhcp_server.fixed_ip_map"
+    ],
+    [
+      "PUT",
+      "/api/config/namespaces/{namespace}/securemesh_site_v2s/{name}",
+      "spec.aks_k8s.not_managed.node_list[].interface_list[].dhcp_server.interface_ip_map.interface_ip_map"
+    ],
+    [
+      "PUT",
+      "/api/config/namespaces/{namespace}/securemesh_site_v2s/{name}",
+      "spec.aks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.fixed_ip_map"
+    ],
+    [
+      "PUT",
+      "/api/config/namespaces/{namespace}/securemesh_site_v2s/{name}",
+      "spec.aks_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.interface_ip_map.interface_ip_map"
+    ],
+    [
+      "PUT",
+      "/api/config/namespaces/{namespace}/securemesh_site_v2s/{name}",
+      "spec.aks_k8s.not_managed.node_list[].interface_list[].labels"
+    ],
+    [
+      "PUT",
+      "/api/config/namespaces/{namespace}/securemesh_site_v2s/{name}",
+      "spec.aks_k8s.not_managed.node_list[].interface_list[].static_ipv6_address.cluster_static_ip.interface_ip_map"
+    ],
+    [
+      "PUT",
+      "/api/config/namespaces/{namespace}/securemesh_site_v2s/{name}",
       "spec.aws.not_managed.node_list[].interface_list[].dhcp_server.fixed_ip_map"
     ],
     [
@@ -3881,6 +4071,71 @@
     [
       "PUT",
       "/api/config/namespaces/{namespace}/securemesh_site_v2s/{name}",
+      "spec.gke_k8s.labels"
+    ],
+    [
+      "PUT",
+      "/api/config/namespaces/{namespace}/securemesh_site_v2s/{name}",
+      "spec.gke_k8s.not_managed.node_list[].interface_list[].dhcp_server.fixed_ip_map"
+    ],
+    [
+      "PUT",
+      "/api/config/namespaces/{namespace}/securemesh_site_v2s/{name}",
+      "spec.gke_k8s.not_managed.node_list[].interface_list[].dhcp_server.interface_ip_map.interface_ip_map"
+    ],
+    [
+      "PUT",
+      "/api/config/namespaces/{namespace}/securemesh_site_v2s/{name}",
+      "spec.gke_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.fixed_ip_map"
+    ],
+    [
+      "PUT",
+      "/api/config/namespaces/{namespace}/securemesh_site_v2s/{name}",
+      "spec.gke_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.interface_ip_map.interface_ip_map"
+    ],
+    [
+      "PUT",
+      "/api/config/namespaces/{namespace}/securemesh_site_v2s/{name}",
+      "spec.gke_k8s.not_managed.node_list[].interface_list[].labels"
+    ],
+    [
+      "PUT",
+      "/api/config/namespaces/{namespace}/securemesh_site_v2s/{name}",
+      "spec.gke_k8s.not_managed.node_list[].interface_list[].static_ipv6_address.cluster_static_ip.interface_ip_map"
+    ],
+    [
+      "PUT",
+      "/api/config/namespaces/{namespace}/securemesh_site_v2s/{name}",
+      "spec.hyper_v.not_managed.node_list[].interface_list[].dhcp_server.fixed_ip_map"
+    ],
+    [
+      "PUT",
+      "/api/config/namespaces/{namespace}/securemesh_site_v2s/{name}",
+      "spec.hyper_v.not_managed.node_list[].interface_list[].dhcp_server.interface_ip_map.interface_ip_map"
+    ],
+    [
+      "PUT",
+      "/api/config/namespaces/{namespace}/securemesh_site_v2s/{name}",
+      "spec.hyper_v.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.fixed_ip_map"
+    ],
+    [
+      "PUT",
+      "/api/config/namespaces/{namespace}/securemesh_site_v2s/{name}",
+      "spec.hyper_v.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.interface_ip_map.interface_ip_map"
+    ],
+    [
+      "PUT",
+      "/api/config/namespaces/{namespace}/securemesh_site_v2s/{name}",
+      "spec.hyper_v.not_managed.node_list[].interface_list[].labels"
+    ],
+    [
+      "PUT",
+      "/api/config/namespaces/{namespace}/securemesh_site_v2s/{name}",
+      "spec.hyper_v.not_managed.node_list[].interface_list[].static_ipv6_address.cluster_static_ip.interface_ip_map"
+    ],
+    [
+      "PUT",
+      "/api/config/namespaces/{namespace}/securemesh_site_v2s/{name}",
       "spec.kvm.not_managed.node_list[].interface_list[].dhcp_server.fixed_ip_map"
     ],
     [
@@ -3977,6 +4232,41 @@
       "PUT",
       "/api/config/namespaces/{namespace}/securemesh_site_v2s/{name}",
       "spec.oci.not_managed.node_list[].interface_list[].static_ipv6_address.cluster_static_ip.interface_ip_map"
+    ],
+    [
+      "PUT",
+      "/api/config/namespaces/{namespace}/securemesh_site_v2s/{name}",
+      "spec.oci_k8s.labels"
+    ],
+    [
+      "PUT",
+      "/api/config/namespaces/{namespace}/securemesh_site_v2s/{name}",
+      "spec.oci_k8s.not_managed.node_list[].interface_list[].dhcp_server.fixed_ip_map"
+    ],
+    [
+      "PUT",
+      "/api/config/namespaces/{namespace}/securemesh_site_v2s/{name}",
+      "spec.oci_k8s.not_managed.node_list[].interface_list[].dhcp_server.interface_ip_map.interface_ip_map"
+    ],
+    [
+      "PUT",
+      "/api/config/namespaces/{namespace}/securemesh_site_v2s/{name}",
+      "spec.oci_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.fixed_ip_map"
+    ],
+    [
+      "PUT",
+      "/api/config/namespaces/{namespace}/securemesh_site_v2s/{name}",
+      "spec.oci_k8s.not_managed.node_list[].interface_list[].ipv6_auto_config.router.stateful.interface_ip_map.interface_ip_map"
+    ],
+    [
+      "PUT",
+      "/api/config/namespaces/{namespace}/securemesh_site_v2s/{name}",
+      "spec.oci_k8s.not_managed.node_list[].interface_list[].labels"
+    ],
+    [
+      "PUT",
+      "/api/config/namespaces/{namespace}/securemesh_site_v2s/{name}",
+      "spec.oci_k8s.not_managed.node_list[].interface_list[].static_ipv6_address.cluster_static_ip.interface_ip_map"
     ],
     [
       "PUT",
@@ -4355,6 +4645,11 @@
     ],
     [
       "PUT",
+      "/api/shape/bot/namespaces/{namespace}/bot_fullsite_policys/{name}",
+      "metadata.annotations"
+    ],
+    [
+      "PUT",
       "/api/shape/bot/namespaces/{namespace}/bot_infrastructures/{name}",
       "metadata.annotations"
     ],
@@ -4406,6 +4701,11 @@
     [
       "PUT",
       "/api/web/namespaces/{namespace}/contacts/{name}",
+      "metadata.annotations"
+    ],
+    [
+      "PUT",
+      "/api/web/namespaces/{namespace}/entitlements/{name}",
       "metadata.annotations"
     ],
     [
@@ -4855,7 +5155,7 @@
             "metadata": {
               "confidence": 0.85,
               "source": "inferred",
-              "validatedAt": "2026-10-29T12:14:42+00:00"
+              "validatedAt": "2026-11-09T17:58:55+00:00"
             }
           }
         },
@@ -4948,7 +5248,7 @@
             "metadata": {
               "confidence": 0.85,
               "source": "inferred",
-              "validatedAt": "2026-10-29T12:14:42+00:00"
+              "validatedAt": "2026-11-09T17:58:55+00:00"
             }
           }
         },
@@ -5041,7 +5341,7 @@
             "metadata": {
               "confidence": 0.85,
               "source": "inferred",
-              "validatedAt": "2026-10-29T12:14:42+00:00"
+              "validatedAt": "2026-11-09T17:58:55+00:00"
             }
           }
         },
@@ -5134,7 +5434,7 @@
             "metadata": {
               "confidence": 0.85,
               "source": "inferred",
-              "validatedAt": "2026-10-29T12:14:42+00:00"
+              "validatedAt": "2026-11-09T17:58:55+00:00"
             }
           }
         },
@@ -5227,7 +5527,7 @@
             "metadata": {
               "confidence": 0.85,
               "source": "inferred",
-              "validatedAt": "2026-10-29T12:14:42+00:00"
+              "validatedAt": "2026-11-09T17:58:55+00:00"
             }
           }
         },
@@ -5341,7 +5641,7 @@
             "metadata": {
               "confidence": 0.85,
               "source": "inferred",
-              "validatedAt": "2026-10-29T12:14:42+00:00"
+              "validatedAt": "2026-11-09T17:58:55+00:00"
             },
             "minLength": 1
           }
@@ -5441,7 +5741,7 @@
             "metadata": {
               "confidence": 0.85,
               "source": "inferred",
-              "validatedAt": "2026-10-29T12:14:42+00:00"
+              "validatedAt": "2026-11-09T17:58:55+00:00"
             }
           }
         },
@@ -5575,7 +5875,7 @@
             "metadata": {
               "confidence": 0.85,
               "source": "inferred",
-              "validatedAt": "2026-10-29T12:14:42+00:00"
+              "validatedAt": "2026-11-09T17:58:55+00:00"
             },
             "minLength": 1
           }
@@ -5758,7 +6058,7 @@
         },
         {
           "classification": "exact-native",
-          "originalValue": "4096",
+          "originalValue": "16384",
           "owner": "f5-sales-demo/api-specs-enriched#1854",
           "reason": "Native object pair bound",
           "rule": "ves.io.schema.rules.map.max_pairs",
@@ -5775,7 +6075,7 @@
       ],
       "expected": {
         "cardinality": {
-          "maxProperties": 4096
+          "maxProperties": 16384
         },
         "category": "discovery",
         "constraintType": "map",
@@ -5786,7 +6086,7 @@
         },
         "originalRules": {
           "ves.io.schema.rules.map.keys.string.ip": "true",
-          "ves.io.schema.rules.map.max_pairs": "4096",
+          "ves.io.schema.rules.map.max_pairs": "16384",
           "ves.io.schema.rules.map.values.string.pattern": "^[0-9a-zA-Z._-]*$"
         },
         "values": {
@@ -5804,16 +6104,16 @@
             "metadata": {
               "confidence": 0.85,
               "source": "inferred",
-              "validatedAt": "2026-10-29T12:14:42+00:00"
+              "validatedAt": "2026-11-09T17:58:55+00:00"
             },
             "pattern": "^[0-9a-zA-Z._-]*$"
           }
         },
-        "maxProperties": 4096
+        "maxProperties": 16384
       },
       "normalized": {
         "cardinality": {
-          "maxProperties": 4096
+          "maxProperties": 16384
         },
         "category": "discovery",
         "constraintType": "map",
@@ -5824,7 +6124,7 @@
         },
         "originalRules": {
           "ves.io.schema.rules.map.keys.string.ip": "true",
-          "ves.io.schema.rules.map.max_pairs": "4096",
+          "ves.io.schema.rules.map.max_pairs": "16384",
           "ves.io.schema.rules.map.values.string.pattern": "^[0-9a-zA-Z._-]*$"
         },
         "values": {
@@ -5835,7 +6135,7 @@
       "path": "#/components/schemas/data_groupAddressRecords/properties/records",
       "rules": {
         "ves.io.schema.rules.map.keys.string.ip": "true",
-        "ves.io.schema.rules.map.max_pairs": "4096",
+        "ves.io.schema.rules.map.max_pairs": "16384",
         "ves.io.schema.rules.map.values.string.pattern": "^[0-9a-zA-Z._-]*$"
       }
     },
@@ -5843,7 +6143,7 @@
       "dispositions": [
         {
           "classification": "exact-native",
-          "originalValue": "4096",
+          "originalValue": "16384",
           "owner": "f5-sales-demo/api-specs-enriched#1854",
           "reason": "Native object pair bound",
           "rule": "ves.io.schema.rules.map.max_pairs",
@@ -5860,13 +6160,13 @@
       ],
       "expected": {
         "cardinality": {
-          "maxProperties": 4096
+          "maxProperties": 16384
         },
         "category": "discovery",
         "constraintType": "map",
         "deterministic": true,
         "originalRules": {
-          "ves.io.schema.rules.map.max_pairs": "4096",
+          "ves.io.schema.rules.map.max_pairs": "16384",
           "ves.io.schema.rules.map.values.string.pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$"
         },
         "values": {
@@ -5884,22 +6184,22 @@
             "metadata": {
               "confidence": 0.85,
               "source": "inferred",
-              "validatedAt": "2026-10-29T12:14:42+00:00"
+              "validatedAt": "2026-11-09T17:58:55+00:00"
             },
             "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$"
           }
         },
-        "maxProperties": 4096
+        "maxProperties": 16384
       },
       "normalized": {
         "cardinality": {
-          "maxProperties": 4096
+          "maxProperties": 16384
         },
         "category": "discovery",
         "constraintType": "map",
         "deterministic": true,
         "originalRules": {
-          "ves.io.schema.rules.map.max_pairs": "4096",
+          "ves.io.schema.rules.map.max_pairs": "16384",
           "ves.io.schema.rules.map.values.string.pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$"
         },
         "values": {
@@ -5909,7 +6209,7 @@
       },
       "path": "#/components/schemas/data_groupIntegerRecords/properties/records",
       "rules": {
-        "ves.io.schema.rules.map.max_pairs": "4096",
+        "ves.io.schema.rules.map.max_pairs": "16384",
         "ves.io.schema.rules.map.values.string.pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$"
       }
     },
@@ -5917,7 +6217,7 @@
       "dispositions": [
         {
           "classification": "exact-native",
-          "originalValue": "4096",
+          "originalValue": "16384",
           "owner": "f5-sales-demo/api-specs-enriched#1854",
           "reason": "Native object pair bound",
           "rule": "ves.io.schema.rules.map.max_pairs",
@@ -5934,13 +6234,13 @@
       ],
       "expected": {
         "cardinality": {
-          "maxProperties": 4096
+          "maxProperties": 16384
         },
         "category": "discovery",
         "constraintType": "map",
         "deterministic": true,
         "originalRules": {
-          "ves.io.schema.rules.map.max_pairs": "4096",
+          "ves.io.schema.rules.map.max_pairs": "16384",
           "ves.io.schema.rules.map.values.string.pattern": "^[0-9a-zA-Z._-]*$"
         },
         "values": {
@@ -5958,22 +6258,22 @@
             "metadata": {
               "confidence": 0.85,
               "source": "inferred",
-              "validatedAt": "2026-10-29T12:14:42+00:00"
+              "validatedAt": "2026-11-09T17:58:55+00:00"
             },
             "pattern": "^[0-9a-zA-Z._-]*$"
           }
         },
-        "maxProperties": 4096
+        "maxProperties": 16384
       },
       "normalized": {
         "cardinality": {
-          "maxProperties": 4096
+          "maxProperties": 16384
         },
         "category": "discovery",
         "constraintType": "map",
         "deterministic": true,
         "originalRules": {
-          "ves.io.schema.rules.map.max_pairs": "4096",
+          "ves.io.schema.rules.map.max_pairs": "16384",
           "ves.io.schema.rules.map.values.string.pattern": "^[0-9a-zA-Z._-]*$"
         },
         "values": {
@@ -5983,8 +6283,49 @@
       },
       "path": "#/components/schemas/data_groupStringRecords/properties/records",
       "rules": {
-        "ves.io.schema.rules.map.max_pairs": "4096",
+        "ves.io.schema.rules.map.max_pairs": "16384",
         "ves.io.schema.rules.map.values.string.pattern": "^[0-9a-zA-Z._-]*$"
+      }
+    },
+    {
+      "dispositions": [
+        {
+          "classification": "exact-native",
+          "originalValue": "1",
+          "owner": "f5-sales-demo/api-specs-enriched#1854",
+          "reason": "Native object pair bound",
+          "rule": "ves.io.schema.rules.map.min_pairs",
+          "scope": "cardinality"
+        }
+      ],
+      "expected": {
+        "cardinality": {
+          "minProperties": 1
+        },
+        "category": "discovery",
+        "constraintType": "map",
+        "deterministic": true,
+        "originalRules": {
+          "ves.io.schema.rules.map.min_pairs": "1"
+        }
+      },
+      "native": {
+        "minProperties": 1
+      },
+      "normalized": {
+        "cardinality": {
+          "minProperties": 1
+        },
+        "category": "discovery",
+        "constraintType": "map",
+        "deterministic": true,
+        "originalRules": {
+          "ves.io.schema.rules.map.min_pairs": "1"
+        }
+      },
+      "path": "#/components/schemas/di_ruleRegionRuleConfig/properties/region_config",
+      "rules": {
+        "ves.io.schema.rules.map.min_pairs": "1"
       }
     },
     {
@@ -6212,7 +6553,7 @@
             "metadata": {
               "confidence": 0.85,
               "source": "inferred",
-              "validatedAt": "2026-10-29T12:14:42+00:00"
+              "validatedAt": "2026-11-09T17:58:55+00:00"
             },
             "minLength": 1
           }
@@ -6333,7 +6674,7 @@
             "metadata": {
               "confidence": 0.85,
               "source": "inferred",
-              "validatedAt": "2026-10-29T12:14:42+00:00"
+              "validatedAt": "2026-11-09T17:58:55+00:00"
             },
             "minLength": 1
           }
@@ -6454,7 +6795,7 @@
             "metadata": {
               "confidence": 0.85,
               "source": "inferred",
-              "validatedAt": "2026-10-29T12:14:42+00:00"
+              "validatedAt": "2026-11-09T17:58:55+00:00"
             },
             "minLength": 1
           }
@@ -6575,7 +6916,7 @@
             "metadata": {
               "confidence": 0.85,
               "source": "inferred",
-              "validatedAt": "2026-10-29T12:14:42+00:00"
+              "validatedAt": "2026-11-09T17:58:55+00:00"
             },
             "minLength": 1
           }
@@ -6696,7 +7037,7 @@
             "metadata": {
               "confidence": 0.85,
               "source": "inferred",
-              "validatedAt": "2026-10-29T12:14:42+00:00"
+              "validatedAt": "2026-11-09T17:58:55+00:00"
             },
             "minLength": 1
           }
@@ -6817,7 +7158,7 @@
             "metadata": {
               "confidence": 0.85,
               "source": "inferred",
-              "validatedAt": "2026-10-29T12:14:42+00:00"
+              "validatedAt": "2026-11-09T17:58:55+00:00"
             },
             "minLength": 1
           }
@@ -6938,7 +7279,7 @@
             "metadata": {
               "confidence": 0.85,
               "source": "inferred",
-              "validatedAt": "2026-10-29T12:14:42+00:00"
+              "validatedAt": "2026-11-09T17:58:55+00:00"
             },
             "minLength": 1
           }
@@ -7059,7 +7400,7 @@
             "metadata": {
               "confidence": 0.85,
               "source": "inferred",
-              "validatedAt": "2026-10-29T12:14:42+00:00"
+              "validatedAt": "2026-11-09T17:58:55+00:00"
             },
             "minLength": 1
           }
@@ -7186,7 +7527,7 @@
             "metadata": {
               "confidence": 0.85,
               "source": "inferred",
-              "validatedAt": "2026-10-29T12:14:42+00:00"
+              "validatedAt": "2026-11-09T17:58:55+00:00"
             }
           }
         },
@@ -7899,7 +8240,7 @@
             "metadata": {
               "confidence": 0.85,
               "source": "inferred",
-              "validatedAt": "2026-10-29T12:14:42+00:00"
+              "validatedAt": "2026-11-09T17:58:55+00:00"
             }
           }
         },
@@ -7992,7 +8333,7 @@
             "metadata": {
               "confidence": 0.85,
               "source": "inferred",
-              "validatedAt": "2026-10-29T12:14:42+00:00"
+              "validatedAt": "2026-11-09T17:58:55+00:00"
             }
           }
         },
@@ -8085,7 +8426,7 @@
             "metadata": {
               "confidence": 0.85,
               "source": "inferred",
-              "validatedAt": "2026-10-29T12:14:42+00:00"
+              "validatedAt": "2026-11-09T17:58:55+00:00"
             }
           }
         },
@@ -8178,7 +8519,7 @@
             "metadata": {
               "confidence": 0.85,
               "source": "inferred",
-              "validatedAt": "2026-10-29T12:14:42+00:00"
+              "validatedAt": "2026-11-09T17:58:55+00:00"
             }
           }
         },
@@ -8333,7 +8674,7 @@
             "metadata": {
               "confidence": 0.85,
               "source": "inferred",
-              "validatedAt": "2026-10-29T12:14:42+00:00"
+              "validatedAt": "2026-11-09T17:58:55+00:00"
             },
             "minLength": 1
           }
@@ -8711,7 +9052,7 @@
             "metadata": {
               "confidence": 0.85,
               "source": "inferred",
-              "validatedAt": "2026-10-29T12:14:42+00:00"
+              "validatedAt": "2026-11-09T17:58:55+00:00"
             },
             "minLength": 1
           }
@@ -8814,7 +9155,7 @@
             "metadata": {
               "confidence": 0.85,
               "source": "inferred",
-              "validatedAt": "2026-10-29T12:14:42+00:00"
+              "validatedAt": "2026-11-09T17:58:55+00:00"
             },
             "minLength": 1
           }
@@ -9009,7 +9350,7 @@
             "metadata": {
               "confidence": 0.85,
               "source": "inferred",
-              "validatedAt": "2026-10-29T12:14:42+00:00"
+              "validatedAt": "2026-11-09T17:58:55+00:00"
             },
             "minLength": 1
           }
@@ -9103,7 +9444,7 @@
             "metadata": {
               "confidence": 0.85,
               "source": "inferred",
-              "validatedAt": "2026-10-29T12:14:42+00:00"
+              "validatedAt": "2026-11-09T17:58:55+00:00"
             }
           }
         },
@@ -10087,7 +10428,7 @@
             "metadata": {
               "confidence": 0.85,
               "source": "inferred",
-              "validatedAt": "2026-10-29T12:14:42+00:00"
+              "validatedAt": "2026-11-09T17:58:55+00:00"
             }
           }
         },
@@ -10206,7 +10547,7 @@
             "metadata": {
               "confidence": 0.85,
               "source": "inferred",
-              "validatedAt": "2026-10-29T12:14:42+00:00"
+              "validatedAt": "2026-11-09T17:58:55+00:00"
             }
           }
         },
@@ -10325,7 +10666,7 @@
             "metadata": {
               "confidence": 0.85,
               "source": "inferred",
-              "validatedAt": "2026-10-29T12:14:42+00:00"
+              "validatedAt": "2026-11-09T17:58:55+00:00"
             }
           }
         },
@@ -10445,7 +10786,7 @@
             "metadata": {
               "confidence": 0.85,
               "source": "inferred",
-              "validatedAt": "2026-10-29T12:14:42+00:00"
+              "validatedAt": "2026-11-09T17:58:55+00:00"
             },
             "minLength": 1
           }
@@ -10566,7 +10907,7 @@
             "metadata": {
               "confidence": 0.85,
               "source": "inferred",
-              "validatedAt": "2026-10-29T12:14:42+00:00"
+              "validatedAt": "2026-11-09T17:58:55+00:00"
             },
             "minLength": 1
           }
@@ -10687,7 +11028,7 @@
             "metadata": {
               "confidence": 0.85,
               "source": "inferred",
-              "validatedAt": "2026-10-29T12:14:42+00:00"
+              "validatedAt": "2026-11-09T17:58:55+00:00"
             },
             "minLength": 1
           }
@@ -10787,7 +11128,7 @@
             "metadata": {
               "confidence": 0.85,
               "source": "inferred",
-              "validatedAt": "2026-10-29T12:14:42+00:00"
+              "validatedAt": "2026-11-09T17:58:55+00:00"
             }
           }
         },
@@ -10880,7 +11221,7 @@
             "metadata": {
               "confidence": 0.85,
               "source": "inferred",
-              "validatedAt": "2026-10-29T12:14:42+00:00"
+              "validatedAt": "2026-11-09T17:58:55+00:00"
             }
           }
         },
@@ -10973,7 +11314,7 @@
             "metadata": {
               "confidence": 0.85,
               "source": "inferred",
-              "validatedAt": "2026-10-29T12:14:42+00:00"
+              "validatedAt": "2026-11-09T17:58:55+00:00"
             }
           }
         },
@@ -11066,7 +11407,7 @@
             "metadata": {
               "confidence": 0.85,
               "source": "inferred",
-              "validatedAt": "2026-10-29T12:14:42+00:00"
+              "validatedAt": "2026-11-09T17:58:55+00:00"
             }
           }
         },
@@ -11159,7 +11500,7 @@
             "metadata": {
               "confidence": 0.85,
               "source": "inferred",
-              "validatedAt": "2026-10-29T12:14:42+00:00"
+              "validatedAt": "2026-11-09T17:58:55+00:00"
             }
           }
         },
@@ -11252,7 +11593,7 @@
             "metadata": {
               "confidence": 0.85,
               "source": "inferred",
-              "validatedAt": "2026-10-29T12:14:42+00:00"
+              "validatedAt": "2026-11-09T17:58:55+00:00"
             }
           }
         },
@@ -11345,7 +11686,7 @@
             "metadata": {
               "confidence": 0.85,
               "source": "inferred",
-              "validatedAt": "2026-10-29T12:14:42+00:00"
+              "validatedAt": "2026-11-09T17:58:55+00:00"
             }
           }
         },
@@ -11438,7 +11779,7 @@
             "metadata": {
               "confidence": 0.85,
               "source": "inferred",
-              "validatedAt": "2026-10-29T12:14:42+00:00"
+              "validatedAt": "2026-11-09T17:58:55+00:00"
             }
           }
         },
@@ -11531,7 +11872,7 @@
             "metadata": {
               "confidence": 0.85,
               "source": "inferred",
-              "validatedAt": "2026-10-29T12:14:42+00:00"
+              "validatedAt": "2026-11-09T17:58:55+00:00"
             }
           }
         },
@@ -11624,7 +11965,7 @@
             "metadata": {
               "confidence": 0.85,
               "source": "inferred",
-              "validatedAt": "2026-10-29T12:14:42+00:00"
+              "validatedAt": "2026-11-09T17:58:55+00:00"
             }
           }
         },
@@ -11831,7 +12172,7 @@
             "metadata": {
               "confidence": 0.85,
               "source": "inferred",
-              "validatedAt": "2026-10-29T12:14:42+00:00"
+              "validatedAt": "2026-11-09T17:58:55+00:00"
             }
           }
         },
@@ -11924,7 +12265,7 @@
             "metadata": {
               "confidence": 0.85,
               "source": "inferred",
-              "validatedAt": "2026-10-29T12:14:42+00:00"
+              "validatedAt": "2026-11-09T17:58:55+00:00"
             }
           }
         },
@@ -12079,7 +12420,7 @@
             "metadata": {
               "confidence": 0.85,
               "source": "inferred",
-              "validatedAt": "2026-10-29T12:14:42+00:00"
+              "validatedAt": "2026-11-09T17:58:55+00:00"
             },
             "minLength": 1
           }
@@ -12690,5 +13031,5 @@
     },
     "version": 1
   },
-  "version": "12.5.2"
+  "version": "12.5.3"
 }
