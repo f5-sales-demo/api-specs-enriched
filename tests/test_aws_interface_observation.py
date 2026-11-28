@@ -116,7 +116,7 @@ def test_missing_or_modified_retained_receipt_is_rejected(monkeypatch):
 def test_additive_assets_include_hash_bound_interface_evidence(tmp_path):
     """Producer assets carry the same evidence and preserve pending acceptance."""
     contract = InterfaceContractEnricher().contracts[0][1]
-    assert contract["version"] == "7.3.0"
+    assert contract["version"] == "7.4.0"
     assert contract["contract_id"] == "f5xc-smsv2-api/v1"
     assets = build_release_assets(
         ROOT / "config/interface_contracts.yaml", tmp_path, "v12.5.0", "a" * 40
